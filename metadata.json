@@ -1,0 +1,5 @@
+{
+  "name": "TypingPro",
+  "description": "A pixel-perfect, gamified typing tutor web application replicating the TypingPro experience. Features progressive lessons, real-time visual feedback, virtual keyboard, and AI-generated practice lessons using Gemini.",
+  "requestFramePermissions": []
+}

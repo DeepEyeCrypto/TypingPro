@@ -1,0 +1,167 @@
+
+import React from 'react';
+import { Settings, ChevronLeft, ChevronRight, Moon, Sun, History, User, Award, BarChart2, PanelLeft } from 'lucide-react';
+import { LESSONS } from '../constants';
+import { UserProfile } from '../types';
+
+interface HeaderProps {
+  currentLessonId: number;
+  totalLessons: number;
+  onSelectLesson: (id: number) => void;
+  onOpenSettings: () => void;
+  onOpenHistory: () => void;
+  onOpenAchievements: () => void;
+  onOpenDashboard: () => void;
+  toggleDarkMode: () => void;
+  isDarkMode: boolean;
+  progress: number;
+  unlockedLessons: Record<number, boolean>;
+  currentProfile: UserProfile;
+  onSwitchProfile: () => void;
+  onToggleSidebar: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ 
+    currentLessonId, 
+    totalLessons, 
+    onSelectLesson, 
+    onOpenSettings, 
+    onOpenHistory,
+    onOpenAchievements,
+    onOpenDashboard,
+    toggleDarkMode,
+    isDarkMode,
+    progress,
+    unlockedLessons,
+    currentProfile,
+    onSwitchProfile,
+    onToggleSidebar
+}) => {
+  return (
+    <header className="h-[52px] bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-800 fixed top-0 w-full z-50 select-none shadow-sm transition-colors duration-200">
+      <div 
+        className="absolute bottom-0 left-0 h-[2px] bg-[#007AFF] transition-all duration-300 ease-out z-50" 
+        style={{ width: `${progress}%` }} 
+      />
+
+      {/* Left: Branding & Sidebar Toggle */}
+      <div className="flex items-center gap-3 min-w-[200px]">
+        <button 
+            onClick={onToggleSidebar}
+            className="p-2 -ml-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            title="Toggle Course Map"
+        >
+            <PanelLeft className="w-5 h-5" />
+        </button>
+        <div className="text-gray-900 dark:text-white font-bold text-lg tracking-tight">
+          TypingPro
+        </div>
+      </div>
+
+      {/* Center: Navigation & Progress */}
+      <div className="flex items-center gap-2 md:gap-4">
+        <button
+            onClick={() => onSelectLesson(currentLessonId - 1)}
+            disabled={currentLessonId <= 1}
+            className="p-1 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+        >
+            <ChevronLeft className="w-4 h-4" />
+        </button>
+
+        <div className="flex items-center justify-center gap-1.5 bg-gray-100/50 dark:bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-gray-700/50">
+            {LESSONS.map((lesson) => {
+            const isActive = lesson.id === currentLessonId;
+            const isCompleted = lesson.id < currentLessonId; 
+            const isUnlocked = unlockedLessons[lesson.id];
+
+            return (
+                <div 
+                    key={lesson.id} 
+                    className={`relative group cursor-pointer p-0.5 ${!isUnlocked ? 'cursor-not-allowed opacity-40' : ''}`}
+                    onClick={() => isUnlocked && onSelectLesson(lesson.id)}
+                    title={`Lesson ${lesson.id}`}
+                >
+                    <div 
+                    className={`
+                        w-2 h-2 rounded-full transition-all duration-300
+                        ${isActive 
+                            ? 'bg-gray-800 dark:bg-white scale-125 shadow-sm' 
+                            : isCompleted 
+                                ? 'bg-[#34C759]' 
+                                : isUnlocked 
+                                    ? 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
+                                    : 'bg-gray-200 dark:bg-gray-700'
+                        }
+                    `}
+                    />
+                </div>
+            );
+            })}
+        </div>
+
+        <button
+            onClick={() => onSelectLesson(currentLessonId + 1)}
+            disabled={currentLessonId >= totalLessons || !unlockedLessons[currentLessonId + 1]}
+            className="p-1 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+        >
+            <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Right: Actions */}
+      <div className="flex items-center gap-4 min-w-[200px] justify-end">
+         
+         <div className="flex items-center gap-1">
+             <button 
+                onClick={onSwitchProfile}
+                className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                title="Switch Profile"
+             >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline max-w-[80px] truncate">{currentProfile.name}</span>
+             </button>
+
+             <div className="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+             <button 
+                onClick={toggleDarkMode}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                title="Toggle Dark Mode"
+             >
+                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+             </button>
+
+             <button 
+                onClick={onOpenDashboard}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                title="Stats Dashboard"
+             >
+                <BarChart2 className="w-4 h-4" />
+             </button>
+
+             <button 
+                onClick={onOpenAchievements}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                title="Achievements"
+             >
+                <Award className="w-4 h-4" />
+             </button>
+
+             <button 
+                onClick={onOpenHistory}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                title="History"
+             >
+                <History className="w-4 h-4" />
+             </button>
+
+             <button onClick={onOpenSettings} className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
+                <Settings className="w-4 h-4" />
+             </button>
+         </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
