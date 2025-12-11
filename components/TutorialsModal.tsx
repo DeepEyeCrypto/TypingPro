@@ -3,6 +3,7 @@ import { X, PlayCircle, Video as VideoIcon } from 'lucide-react';
 
 interface TutorialsModalProps {
     onClose: () => void;
+    initialVideoId?: number;
 }
 
 const VIDEOS = [
@@ -20,8 +21,13 @@ const VIDEOS = [
     }
 ];
 
-const TutorialsModal: React.FC<TutorialsModalProps> = ({ onClose }) => {
-    const [currentVideo, setCurrentVideo] = useState(VIDEOS[0]);
+const TutorialsModal: React.FC<TutorialsModalProps> = ({ onClose, initialVideoId }) => {
+    const [currentVideo, setCurrentVideo] = useState(() => {
+        if (initialVideoId) {
+            return VIDEOS.find(v => v.id === initialVideoId) || VIDEOS[0];
+        }
+        return VIDEOS[0];
+    });
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -61,13 +67,13 @@ const TutorialsModal: React.FC<TutorialsModalProps> = ({ onClose }) => {
                                 key={video.id}
                                 onClick={() => setCurrentVideo(video)}
                                 className={`w-full text-left p-3 rounded-lg border transition-all duration-200 flex gap-3 ${currentVideo.id === video.id
-                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 ring-1 ring-blue-500/20'
-                                        : 'bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-white dark:hover:bg-gray-800'
+                                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 ring-1 ring-blue-500/20'
+                                    : 'bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-white dark:hover:bg-gray-800'
                                     }`}
                             >
                                 <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${currentVideo.id === video.id
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                                     }`}>
                                     <PlayCircle className="w-5 h-5" />
                                 </div>

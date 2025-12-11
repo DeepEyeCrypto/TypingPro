@@ -13,15 +13,22 @@ import { Lesson, Stats } from '../types';
 // I'll inline the "Lesson Complete" modal logic (which was 'modalStats') for now, or better, extract it.
 // Let's keep it inline to match previous behavior but cleaner.
 
+// Define the context type
+interface MainLayoutContext {
+    setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    onOpenTutorials: (videoId?: number) => void;
+}
+
 export default function TypingPage() {
     const {
         currentProfile, settings, lessonProgress, recordLessonComplete, toggleSidebar,
         setActiveLessonId: setGlobalLessonId
     } = useApp();
 
-    // We can pull setSidebar from Outlet context if we really need it, or add to AppContext.
-    // In MainLayout we passed it to Outlet context.
-    const { setIsSidebarOpen } = useOutletContext<{ setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }>() || { setIsSidebarOpen: () => { } };
+    const { setIsSidebarOpen, onOpenTutorials } = useOutletContext<MainLayoutContext>();
+
+    // Track if tutorial has been shown for this session/mount
+    const [tutorialShown, setTutorialShown] = useState(false);
 
     // --- State ---
     const [currentLessonId, setCurrentLessonId] = useState(1);
@@ -126,6 +133,21 @@ export default function TypingPage() {
             setRetryCount(0);
         }
     };
+
+    // Auto-trigger tutorial for Lesson 1
+    useEffect(() => {
+        if (currentLessonId === 1 && !tutorialShown) {
+            const hasSeenIntro = sessionStorage.getItem(`seen_intro_${currentProfile.id}`);
+            if (!hasSeenIntro) {
+                // Short delay to ensure mount
+                setTimeout(() => {
+                    onOpenTutorials(1); // 1 = Intro Video
+                    setTutorialShown(true);
+                    sessionStorage.setItem(`seen_intro_${currentProfile.id}`, 'true');
+                }, 500);
+            }
+        }
+    }, [currentLessonId, tutorialShown, onOpenTutorials, currentProfile.id]);
 
     return (
         <div className="flex-1 flex flex-col h-full bg-[#FAFAFA] dark:bg-[#0B1120] relative max-w-7xl mx-auto w-full shadow-sm rounded-lg my-2 overflow-hidden">

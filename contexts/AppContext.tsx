@@ -44,8 +44,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         soundEnabled: true,
         volume: 0.5,
         showKeyboard: true,
-        fontFamily: 'Inter',
-        fontSize: 'large',
+        fontFamily: 'Cinzel',
+        fontSize: 'xl',
         cursorStyle: 'block',
         stopOnError: false
     });

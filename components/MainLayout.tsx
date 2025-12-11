@@ -19,24 +19,12 @@ export default function MainLayout() {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [modal, setModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles' | 'tutorials'>('none');
+    const [initialVideoId, setInitialVideoId] = useState<number | undefined>(undefined);
 
-    // We need to know current lesson ID for Header/Sidebar highlighting?
-    // It's mostly managed by the Page, but Header shows it.
-    // For now, we can pass a dummy or use a specialized context for "Game State" if needed.
-    // Or simpler: The Header props need to be optional or we parse the URL.
-    // Actually, let's keep it simple: formatting props for Header might need adjustment.
-    // The Header component expects `currentLessonId`. We'll pass 0 or handled by page?
-    // Let's modify Header to take explicit props or we refactor Header to use Context too.
-    // Refactoring Header to use Context is better.
-    // But to avoid touching too many files, I'll pass props from a shared state or url.
-
-    // Actually, MainLayout doesn't know the "active lesson". 
-    // Maybe we lift "activeLessonId" to AppContext? accessable globally?
-    // Yes, that makes sense for "Last Active Lesson".
-
-    // The AppContext doesn't retrieve 'last_lesson_ID' implicitly except for loading it.
-    // I'll stick to local state in TypingPage and maybe lift it if needed.
-    // For now, let's just make Header versatile.
+    const handleOpenTutorials = (videoId?: number) => {
+        setInitialVideoId(videoId);
+        setModal('tutorials');
+    };
 
     // Toggle Theme Helper
     const handleThemeToggle = () => {
@@ -72,7 +60,7 @@ export default function MainLayout() {
                 onOpenHistory={() => setModal('history')}
                 onOpenAchievements={() => setModal('achievements')}
                 onOpenDashboard={() => setModal('dashboard')}
-                onOpenTutorials={() => setModal('tutorials')}
+                onOpenTutorials={() => handleOpenTutorials()}
                 toggleDarkMode={handleThemeToggle}
                 isDarkMode={(settings.theme === 'system' ? systemTheme : settings.theme) === 'dark'}
                 progress={0} // Live progress... tough one.
@@ -91,7 +79,7 @@ export default function MainLayout() {
                 />
 
                 <main className="flex-1 flex flex-col relative min-w-0">
-                    <Outlet context={{ setIsSidebarOpen }} />
+                    <Outlet context={{ setIsSidebarOpen, onOpenTutorials: handleOpenTutorials }} />
                 </main>
             </div>
 
@@ -100,7 +88,7 @@ export default function MainLayout() {
             {modal === 'achievements' && <AchievementsModal earnedBadges={earnedBadges} onClose={() => setModal('none')} />}
             {modal === 'dashboard' && <StatsDashboard history={history} onClose={() => setModal('none')} />}
             {modal === 'settings' && <SettingsModal onClose={() => setModal('none')} />}
-            {modal === 'tutorials' && <TutorialsModal onClose={() => setModal('none')} />}
+            {modal === 'tutorials' && <TutorialsModal onClose={() => setModal('none')} initialVideoId={initialVideoId} />}
             {modal === 'profiles' && <UserProfilesModal
                 profiles={profiles}
                 currentProfile={currentProfile}
