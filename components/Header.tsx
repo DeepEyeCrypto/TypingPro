@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, ChevronLeft, ChevronRight, Moon, Sun, History, User, Award, BarChart2, PanelLeft } from 'lucide-react';
+import { Settings, ChevronLeft, ChevronRight, Moon, Sun, History, User, Award, BarChart2, PanelLeft, Video as VideoIcon } from 'lucide-react';
 import { LESSONS } from '../constants';
 import { UserProfile } from '../types';
 
@@ -12,6 +12,7 @@ interface HeaderProps {
   onOpenHistory: () => void;
   onOpenAchievements: () => void;
   onOpenDashboard: () => void;
+  onOpenTutorials: () => void;
   toggleDarkMode: () => void;
   isDarkMode: boolean;
   progress: number;
@@ -29,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({
   onOpenHistory,
   onOpenAchievements,
   onOpenDashboard,
+  onOpenTutorials,
   toggleDarkMode,
   isDarkMode,
   progress,
@@ -138,6 +140,14 @@ const Header: React.FC<HeaderProps> = ({
             title="Stats Dashboard"
           >
             <BarChart2 className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={onOpenTutorials}
+            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            title="Video Tutorials"
+          >
+            <VideoIcon className="w-4 h-4" />
           </button>
 
           <button

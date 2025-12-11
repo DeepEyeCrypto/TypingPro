@@ -9,6 +9,7 @@ import HistoryModal from './HistoryModal';
 import AchievementsModal from './AchievementsModal';
 import StatsDashboard from './StatsDashboard';
 import UserProfilesModal from './UserProfilesModal';
+import TutorialsModal from './TutorialsModal';
 
 export default function MainLayout() {
     const {
@@ -17,7 +18,7 @@ export default function MainLayout() {
     } = useApp();
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [modal, setModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles'>('none');
+    const [modal, setModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles' | 'tutorials'>('none');
 
     // We need to know current lesson ID for Header/Sidebar highlighting?
     // It's mostly managed by the Page, but Header shows it.
@@ -71,6 +72,7 @@ export default function MainLayout() {
                 onOpenHistory={() => setModal('history')}
                 onOpenAchievements={() => setModal('achievements')}
                 onOpenDashboard={() => setModal('dashboard')}
+                onOpenTutorials={() => setModal('tutorials')}
                 toggleDarkMode={handleThemeToggle}
                 isDarkMode={(settings.theme === 'system' ? systemTheme : settings.theme) === 'dark'}
                 progress={0} // Live progress... tough one.
@@ -98,6 +100,7 @@ export default function MainLayout() {
             {modal === 'achievements' && <AchievementsModal earnedBadges={earnedBadges} onClose={() => setModal('none')} />}
             {modal === 'dashboard' && <StatsDashboard history={history} onClose={() => setModal('none')} />}
             {modal === 'settings' && <SettingsModal onClose={() => setModal('none')} />}
+            {modal === 'tutorials' && <TutorialsModal onClose={() => setModal('none')} />}
             {modal === 'profiles' && <UserProfilesModal
                 profiles={profiles}
                 currentProfile={currentProfile}
