@@ -21,6 +21,8 @@
 ## ✨ Features
 
 - **🚀 Smart Lessons**: AI-generated typing exercises tailored to your skill level.
+- **📱 Fully Responsive**: Optimized UI for Desktop, Laptop, and Mobile devices.
+- **⚡️ High Performance**: Memoized components and zero-layout-shift design for smooth typing.
 - **📊 Real-time Analytics**: Track WPM, accuracy, and error rates instantly as you type.
 - **🌙 Dark Mode**: Native dark mode support for late-night practice sessions.
 - **🏆 Gamification**: Earn badges and track your progress over time.

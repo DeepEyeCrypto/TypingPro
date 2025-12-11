@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
 import VirtualKeyboard from '../components/VirtualKeyboard';
+import StatsBar from '../components/StatsBar';
 import { useApp } from '../contexts/AppContext';
 import { generateSmartLesson } from '../services/geminiService';
 import { LESSONS, BADGES } from '../constants';
@@ -93,25 +94,25 @@ export default function TypingPage() {
         }
     }, [lessonProgress, currentProfile.id]);
 
-    const handleRetry = () => {
+    const handleRetry = useCallback(() => {
         setModalStats(null);
         setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
         setRetryCount(c => c + 1);
-    };
+    }, []);
 
-    const handleComplete = (stats: Stats) => {
+    const handleComplete = useCallback((stats: Stats) => {
         const unlockedNext = recordLessonComplete(activeLesson.id, stats);
 
         const passedCriteria = stats.accuracy === 100 && stats.wpm >= 22;
         setModalStats({ ...stats, completed: passedCriteria });
-    };
+    }, [activeLesson.id, recordLessonComplete]);
 
-    const handleNextLesson = () => {
+    const handleNextLesson = useCallback(() => {
         setModalStats(null);
         if (currentLessonId < LESSONS.length) {
             handleLessonSelect(currentLessonId + 1);
         }
-    };
+    }, [currentLessonId, handleLessonSelect]);
 
     const handleSmartLesson = async () => {
         setIsLoadingAi(true);
@@ -164,33 +165,14 @@ export default function TypingPage() {
             </div>
 
             {/* Footer / Stats / Keyboard */}
-            <div className="bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-                <div className="max-w-5xl mx-auto w-full flex flex-col gap-6">
+            <div className="bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4 md:p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] transition-all duration-300">
+                <div className="max-w-5xl mx-auto w-full flex flex-col gap-4 md:gap-6">
                     {/* Live Stats Row */}
-                    <div className="flex items-center justify-center gap-16">
-                        <div className="text-center transform transition-transform hover:scale-105">
-                            <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">WPM</div>
-                            <div className="font-mono text-3xl font-black text-brand-dark dark:text-blue-400">{liveStats.wpm}</div>
-                        </div>
-                        <div className="w-px h-10 bg-gray-200 dark:bg-gray-700"></div>
-                        <div className="text-center transform transition-transform hover:scale-105">
-                            <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Accuracy</div>
-                            <div className={`font-mono text-3xl font-black ${liveStats.accuracy === 100 ? 'text-green-500' : 'text-orange-500'}`}>
-                                {liveStats.accuracy}%
-                            </div>
-                        </div>
-                        <div className="w-px h-10 bg-gray-200 dark:bg-gray-700"></div>
-                        <div className="text-center transform transition-transform hover:scale-105">
-                            <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Errors</div>
-                            <div className={`font-mono text-3xl font-black ${liveStats.errors === 0 ? 'text-gray-400' : 'text-red-500'}`}>
-                                {liveStats.errors}
-                            </div>
-                        </div>
-                    </div>
+                    <StatsBar wpm={liveStats.wpm} accuracy={liveStats.accuracy} errors={liveStats.errors} />
 
                     {/* Keyboard */}
                     {settings.showKeyboard && (
-                        <div className="w-full h-48 lg:h-56 transition-all duration-300">
+                        <div className="w-full h-auto min-h-[140px] md:min-h-[180px] lg:h-56 transition-all duration-300">
                             <VirtualKeyboard
                                 activeKey={activeKey}
                                 pressedKeys={pressedKeys}
