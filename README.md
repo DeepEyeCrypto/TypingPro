@@ -1,14 +1,30 @@
-# TypingPro
 
 <div align="center">
   <img src="public/logo.png" alt="TypingPro Logo" width="120" height="auto" />
   <h1>TypingPro</h1>
-  <p><strong>A Modern, Intelligent Typing Tutor for Professionals.</strong></p>
-  
+  <p><strong>The Final Word in Professional Typing Tutors.</strong></p>
+
+  <p>
+    <a href="https://github.com/DeepEyeCrypto/TypingPro/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="TypingPro is released under the MIT license." />
+    </a>
+    <a href="https://react.dev/">
+      <img src="https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white" alt="Built with React 19" />
+    </a>
+    <a href="https://www.typescriptlang.org/">
+      <img src="https://img.shields.io/badge/TypeScript-5.0-blue.svg?logo=typescript&logoColor=white" alt="Built with TypeScript" />
+    </a>
+    <a href="https://vitejs.dev/">
+      <img src="https://img.shields.io/badge/Vite-6.0-646cff.svg?logo=vite&logoColor=white" alt="Built with Vite" />
+    </a>
+    <a href="https://www.electronjs.org/">
+      <img src="https://img.shields.io/badge/Electron-29-47848f.svg?logo=electron&logoColor=white" alt="Built with Electron" />
+    </a>
+  </p>
+
   <p>
     <a href="#features">Features</a> •
     <a href="#installation">Installation</a> •
-    <a href="#development">Development</a> •
     <a href="#building">Building</a> •
     <a href="#license">License</a>
   </p>
@@ -16,87 +32,77 @@
 
 ---
 
-**TypingPro** is a sleek, cross-platform desktop application designed to improve your typing speed and accuracy. Built with modern web technologies and wrapped in Electron, it offers a native performance feel with a beautiful, responsive UI.
+**TypingPro** is an elegant, high-performance desktop application engineered to transform the way you type. By combining AI-driven lessons with a distraction-free, native environment, TypingPro offers a seamless path to mastery for developers, writers, and professionals.
 
 ## ✨ Features
 
-- **🚀 Smart Lessons**: AI-generated typing exercises tailored to your skill level.
-- **📱 Fully Responsive**: Optimized UI for Desktop, Laptop, and Mobile devices.
-- **⚡️ High Performance**: Memoized components and zero-layout-shift design for smooth typing.
-- **📊 Real-time Analytics**: Track WPM, accuracy, and error rates instantly as you type.
-- **🌙 Dark Mode**: Native dark mode support for late-night practice sessions.
-- **🏆 Gamification**: Earn badges and track your progress over time.
-- **🎹 Virtual Keyboard**: Visual guide to help learn touch typing without looking down.
-- **💻 Cross-Platform**: Optimized builds for **macOS**, **Windows**, and **Linux**.
+- **🚀 Smart AI Lessons**: Dynamic exercises that adapt to your skill level, ensuring constant progression.
+- **🎥 Video Tutorials**: Integrated instructional videos to master touch-typing fundamentals.
+- **🔄 Auto-Updates**: Seamless background updates ensure you're always on the latest version.
+- **📊 Real-Time Analytics**: Instant feedback on WPM, accuracy, and error heatmaps.
+- **🌙 True Dark Mode**: A carefully crafted dark theme that's easy on the eyes during late-night sessions.
+- **🏆 Gamification System**: Earn badges and achievements as you hit new milestones.
+- **⌨️ Virtual Keyboard**: A visual guide to perfect your finger placement without looking down.
+- **⚡️ Native Performance**: Built with Electron and Vite for zero-latency typing and instant startup.
 
-## 🛠 Tech Stack
+## 🛠 Technology Stack
 
-- **Framework**: [Electron](https://www.electronjs.org/) (Security-hardened)
-- **Frontend**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- **Bundler**: [Vite](https://vitejs.dev/) (Fast HMR & Build)
-- **Styling**: [Tailwind CSS 3](https://tailwindcss.com/)
-- **State**: React Context API
-- **Routing**: React Router (HashRouter)
+TypingPro is built on a cutting-edge stack designed for performance and maintainability:
+
+| Component | Technology | Description |
+|-----------|------------|-------------|
+| **Core** | [Electron](https://www.electronjs.org/) | Cross-platform desktop runtime |
+| **UI Library** | [React 19](https://react.dev/) | The latest in component-based UI |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe code for reliability |
+| **Bundler** | [Vite](https://vitejs.dev/) | Lightning-fast HMR and build speeds |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first, responsive design |
+| **State** | React Context | Lightweight global state management |
 
 ## 📥 Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/DeepEyeCrypto/TypingPro.git
-   cd TypingPro
-   ```
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/DeepEyeCrypto/TypingPro.git
+    cd TypingPro
+    ```
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-## 👨‍💻 Development
+3.  **Start Development**:
+    ```bash
+    npm run electron:dev
+    ```
 
-Start the development server with Hot Module Replacement (HMR):
+## 📦 Building & Releasing
 
-```bash
-npm run electron:dev
-```
-This command concurrently runs the Vite dev server and the Electron main process.
-
-## 📦 Building
-
-Create production-ready installers for your platform. The build artifacts will be output to the `release/` directory.
+To create production-ready installers:
 
 ### macOS (DMG)
 ```bash
-npm run electron:pack:mac
+npm run build:mac
 ```
 
-### Windows (EXE/NSIS)
+### Windows (EXE)
 ```bash
-npm run electron:pack:win
+npm run build:win
 ```
 
-### Linux (AppImage & Debian)
+### Linux (AppImage)
 ```bash
-npm run electron:pack:linux
+npm run build:linux
 ```
 
-## 📂 Project Structure
-
-```
-TypingPro/
-├── components/       # Reusable React components (Header, Sidebar, Modals)
-├── contexts/         # Global State (AppContext)
-├── electron-main.cjs # Electron Main Process (System integration)
-├── pages/            # Page components (TypingPage)
-├── preload.cjs       # Preload script for IPC security
-├── public/           # Static assets (Icon, Logo)
-└── services/         # Business logic (Gemini AI service)
-```
+> **Note**: For Auto-Updates to work, you must set `GH_TOKEN` in your environment variables when building/publishing.
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
+
 <div align="center">
-  <sub>Built with ❤️ by the TypingPro Team.</sub>
+  <sub>Designed & Built by the TypingPro Team.</sub>
 </div>
