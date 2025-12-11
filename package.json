@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -11,11 +11,22 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "bump": "npm version patch --no-git-tag-version",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"wait-on tcp:3000 && electron .\"",
-    "electron:build": "npm run build && electron-builder",
-    "electron:pack:mac": "npm run build && electron-builder --mac",
-    "electron:pack:win": "npm run build && electron-builder --win",
-    "electron:pack:linux": "npm run build && electron-builder --linux"
+    "build:all": "npm run bump && npm run build && electron-builder --mac --win --linux",
+    "build:mac": "npm run bump && npm run build && electron-builder --mac",
+    "build:win": "npm run bump && npm run build && electron-builder --win",
+    "build:linux": "npm run bump && npm run build && electron-builder --linux"
+  },
+  "scriptsInfo": {
+    "dev": "Starts the Vite dev server for web development.",
+    "build": "Builds the React application using Vite (output to dist/).",
+    "bump": "Increments the patch version in package.json automatically.",
+    "electron:dev": "Runs the Electron app in development mode with hot-reloading.",
+    "build:all": "Bumps version, builds the app, and packages for macOS (DMG), Windows (EXE), and Linux (AppImage/Deb).",
+    "build:mac": "Bumps version, builds, and packages for macOS only.",
+    "build:win": "Bumps version, builds, and packages for Windows only.",
+    "build:linux": "Bumps version, builds, and packages for Linux only."
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
@@ -42,6 +53,7 @@
   "build": {
     "appId": "com.typingpro.app",
     "productName": "TypingPro",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "release"
     },
@@ -58,6 +70,10 @@
     "win": {
       "target": "nsis",
       "icon": "dist/logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     },
     "linux": {
       "maintainer": "TypingPro Team <team@typingpro.com>",

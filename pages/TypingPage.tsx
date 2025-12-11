@@ -137,53 +137,53 @@ export default function TypingPage() {
                 </div>
             )}
 
-            {/* Lesson Title */}
-            <div className="text-center py-6 px-4">
-                <h2 className="text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight mb-2 opacity-90">{activeLesson.title}</h2>
-                <p className="text-gray-500 dark:text-gray-400 text-sm max-w-lg mx-auto leading-relaxed">{activeLesson.description}</p>
-            </div>
+            {/* Main Center Content */}
+            <div className="flex-1 flex flex-col items-center justify-center w-full px-4 md:px-8 py-6 overflow-y-auto">
+                <div className="w-full max-w-4xl flex flex-col gap-8 md:gap-10">
 
-            {/* Typing Area */}
-            <div className="flex-1 flex items-center justify-center w-full px-8 pb-8">
-                <div className="w-full max-w-4xl relative">
-                    <TypingArea
-                        key={`${activeLesson.id}-${currentProfile.id}-${retryCount}`}
-                        content={activeLesson.content}
-                        activeLessonId={activeLesson.id}
-                        isActive={!modalStats}
-                        soundEnabled={settings.soundEnabled}
-                        onComplete={handleComplete}
-                        onRestart={handleRetry} // Restart just resets
-                        onActiveKeyChange={setActiveKey}
-                        onStatsUpdate={setLiveStats}
-                        fontFamily={settings.fontFamily}
-                        fontSize={settings.fontSize}
-                        cursorStyle={settings.cursorStyle}
-                        stopOnError={settings.stopOnError}
-                    />
+                    {/* Header Section */}
+                    <div className="text-center space-y-2">
+                        <h2 className="text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight opacity-90">{activeLesson.title}</h2>
+                        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-lg mx-auto leading-relaxed">{activeLesson.description}</p>
+                    </div>
+
+                    {/* Typing Area */}
+                    <div className="w-full relative">
+                        <TypingArea
+                            key={`${activeLesson.id}-${currentProfile.id}-${retryCount}`}
+                            content={activeLesson.content}
+                            activeLessonId={activeLesson.id}
+                            isActive={!modalStats}
+                            soundEnabled={settings.soundEnabled}
+                            onComplete={handleComplete}
+                            onRestart={handleRetry}
+                            onActiveKeyChange={setActiveKey}
+                            onStatsUpdate={setLiveStats}
+                            fontFamily={settings.fontFamily}
+                            fontSize={settings.fontSize}
+                            cursorStyle={settings.cursorStyle}
+                            stopOnError={settings.stopOnError}
+                        />
+                    </div>
+
+                    {/* Stats & Keyboard Section */}
+                    <div className="flex flex-col gap-6 w-full">
+                        <StatsBar wpm={liveStats.wpm} accuracy={liveStats.accuracy} errors={liveStats.errors} />
+
+                        {settings.showKeyboard && (
+                            <div className="w-full h-auto min-h-[140px] md:min-h-[180px] lg:h-56 transition-all duration-300">
+                                <VirtualKeyboard
+                                    activeKey={activeKey}
+                                    pressedKeys={pressedKeys}
+                                    layout={settings.keyboardLayout}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Footer / Stats / Keyboard */}
-            <div className="bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-4 md:p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] transition-all duration-300">
-                <div className="max-w-5xl mx-auto w-full flex flex-col gap-4 md:gap-6">
-                    {/* Live Stats Row */}
-                    <StatsBar wpm={liveStats.wpm} accuracy={liveStats.accuracy} errors={liveStats.errors} />
-
-                    {/* Keyboard */}
-                    {settings.showKeyboard && (
-                        <div className="w-full h-auto min-h-[140px] md:min-h-[180px] lg:h-56 transition-all duration-300">
-                            <VirtualKeyboard
-                                activeKey={activeKey}
-                                pressedKeys={pressedKeys}
-                                layout={settings.keyboardLayout}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Completion Result Modal (Inline for now) */}
+            {/* Completion Result Modal */}
             {modalStats && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-gray-100 dark:border-gray-700">
