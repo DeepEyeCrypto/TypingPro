@@ -297,21 +297,38 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     });
   };
 
+  // This useEffect block is added based on the provided diff
+  useEffect(() => {
+    if (isActive && inputRef.current) {
+      inputRef.current.focus({ preventScroll: true });
+    }
+  }, [isActive, activeLessonId]);
+
   // Check if we are at start and have new keys to show
   const showNewKeysTip = cursorIndex === 0 && newKeys && newKeys.length > 0;
 
   return (
     <div
       className="flex flex-col items-center justify-center w-full h-full relative outline-none py-2"
-      onClick={() => inputRef.current?.focus()}
+      onClick={() => inputRef.current?.focus({ preventScroll: true })}
+      onContextMenu={(e) => e.preventDefault()} // Disable context menu (right-click) for distraction-free typing
     >
       <input
         ref={inputRef}
         type="text"
-        className="absolute opacity-0 top-0 left-0 w-full h-full cursor-default"
+        className="fixed opacity-0 top-[-9999px] left-[-9999px] w-1 h-1 cursor-default pointer-events-none -z-10"
         onKeyDown={handleKeyDown}
+        onChange={() => { }} // No-op to satisfy React controlled component
+        value="" // Force empty value at all times
         autoFocus
-        autoComplete="off"
+        autoComplete="new-password"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
+        name={`typing-input-${Math.random()}`}
+        id="typing-hidden-input"
+        data-lpignore="true"
+        onBlur={() => inputRef.current?.focus({ preventScroll: true })} // Keep focus without scrolling
       />
 
       <div

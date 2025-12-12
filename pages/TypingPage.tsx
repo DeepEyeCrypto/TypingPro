@@ -168,7 +168,7 @@ export default function TypingPage() {
     }, [currentLessonId, tutorialShown, onOpenTutorials, currentProfile.id]);
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-[#FAFAFA] dark:bg-[#0B1120] relative max-w-7xl mx-auto w-full shadow-sm rounded-lg my-2 overflow-hidden">
+        <div className="flex-1 flex flex-col h-full bg-[#FAFAFA] dark:bg-[#0B1120] relative max-w-7xl mx-auto w-full shadow-sm rounded-lg overflow-hidden">
             {/* Loading Overlay */}
             {isLoadingAi && (
                 <div className="absolute inset-0 z-50 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center flex-col gap-4">
@@ -178,8 +178,8 @@ export default function TypingPage() {
             )}
 
             {/* Main Center Content */}
-            <div className="flex-1 flex flex-col items-center justify-center w-full px-4 md:px-8 py-6 overflow-y-auto">
-                <div className="w-full max-w-4xl flex flex-col gap-8 md:gap-10">
+            <div className="flex-1 flex flex-col items-center justify-center w-full px-4 md:px-8 py-2 overflow-y-auto no-scrollbar">
+                <div className="w-full max-w-5xl flex flex-col gap-4 md:gap-6">
 
                     {/* Header Section */}
                     <div className="text-center space-y-2 relative">

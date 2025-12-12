@@ -1,38 +1,29 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
   "type": "module",
-  "main": "electron-main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "bump": "npm version patch --no-git-tag-version",
-    "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"wait-on tcp:3000 && electron .\"",
-    "build:all": "npm run bump && npm run build && electron-builder --mac --win --linux",
-    "build:mac": "npm run bump && npm run build && electron-builder --mac",
-    "build:win": "npm run bump && npm run build && electron-builder --win",
-    "build:linux": "npm run bump && npm run build && electron-builder --linux"
-  },
-  "scriptsInfo": {
-    "dev": "Starts the Vite dev server for web development.",
-    "build": "Builds the React application using Vite (output to dist/).",
-    "bump": "Increments the patch version in package.json automatically.",
-    "electron:dev": "Runs the Electron app in development mode with hot-reloading.",
-    "build:all": "Bumps version, builds the app, and packages for macOS (DMG), Windows (EXE), and Linux (AppImage/Deb).",
-    "build:mac": "Bumps version, builds, and packages for macOS only.",
-    "build:win": "Bumps version, builds, and packages for Windows only.",
-    "build:linux": "Bumps version, builds, and packages for Linux only."
+    "tauri": "tauri",
+    "build:all": "tauri build",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "postversion": "node scripts/sync-version.js && git add src-tauri/tauri.conf.json",
+    "release:patch": "npm run version:patch && npm run build:all",
+    "release:minor": "npm run version:minor && npm run build:all",
+    "release:major": "npm run version:major && npm run build:all",
+    "open:debug": "./scripts/open-app-debug.sh"
   },
   "dependencies": {
     "@google/genai": "^1.31.0",
-    "electron-log": "^5.4.3",
-    "electron-squirrel-startup": "^1.0.1",
-    "electron-updater": "^6.6.2",
+    "@tauri-apps/api": "^1.6.0",
     "firebase": "^12.6.0",
     "lucide-react": "^0.556.0",
     "react": "^19.2.1",
@@ -40,60 +31,16 @@
     "react-router-dom": "^7.1.5"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.6.0",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.22",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "electron": "^29.1.0",
-    "electron-builder": "^24.13.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0",
-    "wait-on": "^7.2.0"
-  },
-  "build": {
-    "appId": "com.typingpro.app",
-    "productName": "TypingPro",
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "dist/**/*",
-      "electron-main.cjs",
-      "preload.cjs",
-      "package.json"
-    ],
-    "mac": {
-      "target": "dmg",
-      "icon": "dist/logo.png"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "dist/logo.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    },
-    "linux": {
-      "maintainer": "TypingPro Team <team@typingpro.com>",
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "icon": "dist/logo.png",
-      "category": "Education"
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "DeepEyeCrypto",
-        "repo": "TypingPro"
-      }
-    ]
+    "vite": "^6.2.0"
   },
   "repository": {
     "type": "git",

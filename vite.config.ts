@@ -5,18 +5,21 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: './', // Crucial for Electron to load assets from file:// protocol
+    // Tauri expects strict port and specific server config
+    clearScreen: false,
     server: {
-      port: 3000,
+      port: 1420,
       strictPort: true,
       host: '0.0.0.0',
     },
+    envPrefix: ['VITE_', 'TAURI_'],
     build: {
+      target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
+      minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+      sourcemap: !!process.env.TAURI_DEBUG,
       outDir: 'dist',
       assetsDir: 'assets',
       emptyOutDir: true,
-      sourcemap: false, // Disable sourcemaps for production to reduce bundle size
-      minify: 'esbuild',
       rollupOptions: {
         output: {
           manualChunks: {

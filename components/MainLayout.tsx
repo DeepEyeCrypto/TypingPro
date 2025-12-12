@@ -13,6 +13,8 @@ import TutorialsModal from './TutorialsModal';
 import { auth, googleProvider } from '../services/firebase';
 import { signInWithPopup, signOut } from 'firebase/auth';
 
+import { authService } from '../services/authService';
+
 export default function MainLayout() {
     const {
         currentProfile, settings, systemTheme, lessonProgress, history, earnedBadges, activeLessonId,
@@ -21,19 +23,19 @@ export default function MainLayout() {
 
     const handleLogin = async () => {
         try {
-            await signInWithPopup(auth, googleProvider);
-        } catch (error) {
-            console.error("Login Failed:", error);
-            // Optionally show a toast here
+            await authService.signInWithGoogle();
+        } catch (error: any) {
+            // Error logged in service
+            if (error.message.includes("API Key")) {
+                alert(error.message);
+            } else {
+                alert("Login Failed: " + error.message);
+            }
         }
     };
 
     const handleLogout = async () => {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.error("Logout Failed:", error);
-        }
+        await authService.signOutUser();
     };
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);

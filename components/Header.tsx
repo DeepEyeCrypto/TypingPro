@@ -1,50 +1,17 @@
-import React from 'react';
-import { Settings, ChevronLeft, ChevronRight, Moon, Sun, History, User, Award, BarChart2, PanelLeft, Video as VideoIcon, RefreshCw, LogIn, LogOut } from 'lucide-react';
-import { LESSONS } from '../constants';
-import { UserProfile } from '../types';
-import { User as FirebaseUser } from 'firebase/auth';
+import { getAppVersion } from '../utils/appVersion';
+import React, { useState, useEffect } from 'react';
 
-interface HeaderProps {
-  currentLessonId: number;
-  totalLessons: number;
-  onSelectLesson: (id: number) => void;
-  onOpenSettings: () => void;
-  onOpenHistory: () => void;
-  onOpenAchievements: () => void;
-  onOpenDashboard: () => void;
-  onOpenTutorials: () => void;
-  toggleDarkMode: () => void;
-  isDarkMode: boolean;
-  progress: number;
-  unlockedLessons: Record<number, boolean>;
-  currentProfile: UserProfile;
-  onSwitchProfile: () => void;
-  onToggleSidebar: () => void;
-  user?: FirebaseUser | null;
-  onLogin?: () => void;
-  onLogout?: () => void;
-}
+// ... (imports)
 
 const Header: React.FC<HeaderProps> = ({
-  currentLessonId,
-  totalLessons,
-  onSelectLesson,
-  onOpenSettings,
-  onOpenHistory,
-  onOpenAchievements,
-  onOpenDashboard,
-  onOpenTutorials,
-  toggleDarkMode,
-  isDarkMode,
-  progress,
-  unlockedLessons,
-  currentProfile,
-  onSwitchProfile,
-  onToggleSidebar,
-  user,
-  onLogin,
-  onLogout
+  // ... (props)
 }) => {
+  const [version, setVersion] = useState<string>('');
+
+  useEffect(() => {
+    getAppVersion().then(setVersion);
+  }, []);
+
   return (
     <header className="h-[52px] bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-800 fixed top-0 w-full z-50 select-none shadow-sm transition-colors duration-200">
       <div
@@ -62,8 +29,11 @@ const Header: React.FC<HeaderProps> = ({
           <PanelLeft className="w-5 h-5" />
         </button>
         <img src="logo.png" alt="Logo" className="w-8 h-8 object-contain" />
-        <div className="text-gray-900 dark:text-white font-bold text-lg tracking-tight">
-          TypingPro
+        <div className="flex flex-col leading-none">
+          <div className="text-gray-900 dark:text-white font-bold text-lg tracking-tight">
+            TypingPro
+          </div>
+          <span className="text-[10px] text-gray-400 font-mono pl-0.5">{version}</span>
         </div>
       </div>
 
@@ -197,20 +167,7 @@ const Header: React.FC<HeaderProps> = ({
             <History className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={() => {
-              // @ts-ignore
-              if (window.electronAPI?.checkForUpdates) {
-                // @ts-ignore
-                window.electronAPI.checkForUpdates();
-                console.log("Update check triggered.");
-              }
-            }}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-            title="Check for Updates"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
+
 
           <button onClick={onOpenSettings} className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
             <Settings className="w-4 h-4" />
