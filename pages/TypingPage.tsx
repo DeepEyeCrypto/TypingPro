@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
-import VirtualKeyboard from '../components/VirtualKeyboard';
+import HandKeyboardAnimation from '../components/HandKeyboardAnimation';
 import StatsBar from '../components/StatsBar';
 import ErrorHeatmap from '../components/ErrorHeatmap';
 import DailyGoalsWidget from '../components/DailyGoalsWidget';
@@ -235,11 +235,10 @@ export default function TypingPage() {
                         )}
 
                         {settings.showKeyboard && (
-                            <div className="w-full h-auto min-h-[140px] md:min-h-[180px] lg:h-56 transition-all duration-300">
-                                <VirtualKeyboard
+                            <div className="w-full flex-1 min-h-0 flex items-end justify-center pb-2">
+                                <HandKeyboardAnimation
                                     activeKey={activeKey}
                                     pressedKeys={pressedKeys}
-                                    layout={settings.keyboardLayout}
                                 />
                             </div>
                         )}

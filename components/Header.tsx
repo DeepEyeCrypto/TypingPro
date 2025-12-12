@@ -1,10 +1,53 @@
 import { getAppVersion } from '../utils/appVersion';
 import React, { useState, useEffect } from 'react';
+import {
+  PanelLeft, ChevronLeft, ChevronRight, User, Settings,
+  BarChart2, Award, History, Moon, Sun, VideoIcon, LogIn, LogOut
+} from 'lucide-react';
+import { UserProfile } from '../types';
+import { LESSONS } from '../constants';
+import { User as FirebaseUser } from 'firebase/auth';
 
-// ... (imports)
+interface HeaderProps {
+  currentLessonId: number;
+  totalLessons: number;
+  progress: number;
+  onSelectLesson: (id: number) => void;
+  onOpenSettings: () => void;
+  onOpenHistory: () => void;
+  onOpenAchievements: () => void;
+  onOpenDashboard: () => void;
+  onOpenTutorials: () => void;
+  toggleDarkMode: () => void;
+  isDarkMode: boolean;
+  unlockedLessons: Record<number, boolean>;
+  currentProfile: UserProfile;
+  onSwitchProfile: () => void;
+  onToggleSidebar: () => void;
+  user: FirebaseUser | null;
+  onLogin: () => void;
+  onLogout: () => void;
+}
 
 const Header: React.FC<HeaderProps> = ({
-  // ... (props)
+  currentLessonId,
+  totalLessons,
+  progress,
+  onSelectLesson,
+  onOpenSettings,
+  onOpenHistory,
+  onOpenAchievements,
+  onOpenDashboard,
+  onOpenTutorials,
+  toggleDarkMode,
+  isDarkMode,
+  unlockedLessons,
+  currentProfile,
+  onSwitchProfile,
+  onToggleSidebar,
+  user,
+  onLogin,
+  onLogout,
 }) => {
   const [version, setVersion] = useState<string>('');
 
