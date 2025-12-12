@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Settings, ChevronLeft, ChevronRight, Moon, Sun, History, User, Award, BarChart2, PanelLeft, Video as VideoIcon } from 'lucide-react';
+import { Settings, ChevronLeft, ChevronRight, Moon, Sun, History, User, Award, BarChart2, PanelLeft, Video as VideoIcon, RefreshCw } from 'lucide-react';
 import { LESSONS } from '../constants';
 import { UserProfile } from '../types';
 
@@ -164,6 +164,21 @@ const Header: React.FC<HeaderProps> = ({
             title="History"
           >
             <History className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => {
+              // @ts-ignore
+              if (window.electronAPI?.checkForUpdates) {
+                // @ts-ignore
+                window.electronAPI.checkForUpdates();
+                console.log("Update check triggered.");
+              }
+            }}
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            title="Check for Updates"
+          >
+            <RefreshCw className="w-4 h-4" />
           </button>
 
           <button onClick={onOpenSettings} className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">

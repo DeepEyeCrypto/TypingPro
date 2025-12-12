@@ -80,6 +80,16 @@ app.on('window-all-closed', () => {
     }
 });
 
+// IPC Handlers
+ipcMain.handle('check-for-updates', () => {
+    if (app.isPackaged) {
+        return autoUpdater.checkForUpdatesAndNotify();
+    } else {
+        log.info('App not packaged, skipping update check.');
+        return null; // Or mock response
+    }
+});
+
 /* Auto Updater Events */
 autoUpdater.on('checking-for-update', () => {
     log.info('Checking for update...');
