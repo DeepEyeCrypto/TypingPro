@@ -1,15 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
     UserProfile, UserSettings, LessonProgress, HistoryEntry, EarnedBadge,
-    ThemeMode, KeyboardLayoutType, Stats
+    ThemeMode, KeyboardLayoutType, Stats, KeyStats, DailyGoal
 } from '../types';
 import {
     getProfiles, createProfile, getSettings, saveSettings,
     getLessonProgress, getHistory, getEarnedBadges,
-    updateLessonProgress, saveHistory, saveEarnedBadge, unlockLesson, clearHistory
+    updateLessonProgress, saveHistory, saveEarnedBadge, unlockLesson, clearHistory,
+    getKeyStats, updateKeyStats, getDailyGoals, saveDailyGoals
 } from '../services/storageService';
 import { setVolume } from '../services/audioService';
 import { BADGES, FANCY_FONTS } from '../constants';
+
+import { auth } from '../services/firebase';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 interface AppContextType {
     // State
@@ -21,15 +25,19 @@ interface AppContextType {
     earnedBadges: EarnedBadge[];
     systemTheme: 'light' | 'dark';
     activeLessonId: number;
+    user: FirebaseUser | null; // Added user state
+    keyStats: Record<string, KeyStats>;
+    dailyGoals: DailyGoal[];
 
     // Actions
     setActiveLessonId: (id: number) => void;
     switchProfile: (profile: UserProfile) => void;
     createNewProfile: (name: string) => void;
     updateUserSetting: (key: keyof UserSettings, val: any) => void;
-    recordLessonComplete: (lessonId: number, stats: Stats) => boolean; // returns true if next lesson unlocked
+    recordLessonComplete: (lessonId: number, stats: Stats) => boolean;
     clearUserHistory: () => void;
     refreshUserData: () => void;
+    recordKeyStats: (sessionStats: Record<string, KeyStats>) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -38,6 +46,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // --- State ---
     const [profiles, setProfiles] = useState<UserProfile[]>([]);
     const [currentProfile, setCurrentProfile] = useState<UserProfile>({ id: 'default', name: 'Guest', createdAt: '' });
+    const [user, setUser] = useState<FirebaseUser | null>(null);
     const [settings, setSettings] = useState<UserSettings>({
         theme: 'system',
         keyboardLayout: 'qwerty',
@@ -47,12 +56,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         fontFamily: 'Cinzel',
         fontSize: 'xl',
         cursorStyle: 'block',
-        stopOnError: false
+        stopOnError: false,
+        trainingMode: 'accuracy'
     });
 
     const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [earnedBadges, setEarnedBadges] = useState<EarnedBadge[]>([]);
+    const [keyStats, setKeyStats] = useState<Record<string, KeyStats>>({});
+    const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
     const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
     const [activeLessonId, setActiveLessonId] = useState(1);
 
@@ -68,11 +80,45 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const loaded = getProfiles();
         setProfiles(loaded);
         if (loaded.length > 0) {
-            // Could check localStorage for last active profile
             setCurrentProfile(loaded[0]);
         }
 
-        return () => mediaQuery.removeEventListener('change', handleThemeChange);
+        // Firebase Auth Listener
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            setUser(firebaseUser);
+            if (firebaseUser) {
+                // Check if profile exists for this UID
+                const existing = getProfiles().find(p => p.id === firebaseUser.uid);
+                if (existing) {
+                    setCurrentProfile(existing);
+                } else {
+                    // Create new profile linked to Firebase UID
+                    const newProfile: UserProfile = {
+                        id: firebaseUser.uid,
+                        name: firebaseUser.displayName || 'Google User',
+                        createdAt: new Date().toISOString()
+                    };
+                    // Save to local storage manually to skip generic createProfile ID gen logic if needed,
+                    // but calling createProfile generates a random ID. We want ID = UID.
+                    // So we modify local storage list directly here or add a specialized service method.
+                    // For simplicity, we'll reuse the storage service logic but we need to inject the ID.
+                    // Since createProfile doesn't accept ID, let's just create it and then swap the ID, or better, 
+                    // just append to the list we have and save it.
+
+                    // Actually, let's trust createProfile but overwrite the ID? 
+                    // No, cleaner is to manually manage the profiles array update here for this special case.
+                    const updatedProfiles = [...getProfiles(), newProfile];
+                    localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
+                    setProfiles(updatedProfiles);
+                    setCurrentProfile(newProfile);
+                }
+            }
+        });
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleThemeChange);
+            unsubscribe();
+        };
     }, []);
 
     // --- Profile Data Sync ---
@@ -81,13 +127,28 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const hist = getHistory(profileId);
         const prefs = getSettings(profileId);
         const badges = getEarnedBadges(profileId);
+        const keys = getKeyStats(profileId);
+        const goals = getDailyGoals(profileId);
 
         setLessonProgress(prog);
         setHistory(hist);
         setSettings(prefs);
         setEarnedBadges(badges);
+        setKeyStats(keys);
+        setDailyGoals(goals.length > 0 ? goals : initDailyGoals(profileId)); // usage of initDailyGoals here implies we need it
         setVolume(prefs.volume);
     };
+
+    // Helper to init goals if empty
+    const initDailyGoals = (profileId: string) => {
+        // Simple default goals
+        const defaults: DailyGoal[] = [
+            { id: 'g1', description: 'Complete 3 Lessons', targetValue: 3, currentValue: 0, isCompleted: false, type: 'lessons' },
+            { id: 'g2', description: 'Type for 5 minutes', targetValue: 300, currentValue: 0, isCompleted: false, type: 'time' }
+        ];
+        saveDailyGoals(profileId, defaults);
+        return defaults;
+    }
 
     useEffect(() => {
         if (currentProfile.id) {
@@ -144,9 +205,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setHistory([]);
     };
 
+    const recordKeyStatsAction = (sessionStats: Record<string, KeyStats>) => {
+        const updated = updateKeyStats(currentProfile.id, sessionStats);
+        setKeyStats(updated);
+    };
+
     const recordLessonComplete = (lessonId: number, stats: Stats): boolean => {
         // Logic from App.tsx handleComplete
-        const passedCriteria = stats.accuracy === 100 && stats.wpm >= 22;
+        const passedCriteria = stats.accuracy >= (settings.trainingMode === 'accuracy' ? 98 : 90) && stats.wpm >= 15; // Adjusted criteria
 
         const updatedProgress = updateLessonProgress(currentProfile.id, lessonId, {
             wpm: stats.wpm,
@@ -156,14 +222,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         let unlockedNext = false;
         if (passedCriteria) {
+            // Logic to find next ID strictly by numerical order might fail if gaps exist, 
+            // but we'll assume constants.ts IDs are sequential for now.
+            // Actually, with new granular lessons, IDs are 1..N.
             const nextId = lessonId + 1;
-            // Check availability logic should be in caller or service, but we'll assume valid here
-            // or check simple existence if we had the list. 
-            // For now, we trust the logic that calls this or checks afterwards.
-            // Actually, we need to know if next exists to unlock it.
-            // We'll optimistically unlock. The UI handles existence check.
             unlockLesson(currentProfile.id, nextId);
-            updatedProgress[nextId] = { ...updatedProgress[nextId], unlocked: true };
+            if (updatedProgress[nextId]) { // Only if it exists
+                updatedProgress[nextId] = { ...updatedProgress[nextId], unlocked: true };
+            }
             unlockedNext = true;
         }
 
@@ -183,6 +249,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const newHistory = [entry, ...history];
         setHistory(newHistory);
 
+        // Update Daily Goals
+        const newGoals = dailyGoals.map(g => {
+            if (g.isCompleted) return g;
+            let val = g.currentValue;
+            if (g.type === 'lessons' && passedCriteria) val += 1;
+            if (g.type === 'time') val += entry.durationSeconds;
+            // wpm/accuracy goals usually "achieve X once"
+
+            return {
+                ...g,
+                currentValue: val,
+                isCompleted: val >= g.targetValue
+            };
+        });
+        if (JSON.stringify(newGoals) !== JSON.stringify(dailyGoals)) {
+            setDailyGoals(newGoals);
+            saveDailyGoals(currentProfile.id, newGoals);
+        }
+
         // Badge Logic
         BADGES.forEach(badge => {
             if (!earnedBadges.some(eb => eb.badgeId === badge.id)) {
@@ -200,8 +285,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <AppContext.Provider value={{
-            profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme, activeLessonId,
-            setActiveLessonId, switchProfile, createNewProfile, updateUserSetting, recordLessonComplete, clearUserHistory, refreshUserData
+            profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme, activeLessonId, user, keyStats, dailyGoals,
+            setActiveLessonId, switchProfile, createNewProfile, updateUserSetting, recordLessonComplete, clearUserHistory, refreshUserData, recordKeyStats: recordKeyStatsAction
         }}>
             {children}
         </AppContext.Provider>

@@ -6,6 +6,25 @@ export interface Lesson {
   keys: string[]; // Keys introduced/focused in this lesson
   content: string; // The practice text
   isAiGenerated?: boolean;
+  newKeys?: string[]; // Keys specifically introduced in this lesson
+}
+
+export interface KeyStats {
+  char: string;
+  totalPresses: number;
+  errorCount: number;
+  accuracy: number; // 0-100
+}
+
+export type GoalType = 'wpm' | 'accuracy' | 'lessons' | 'time';
+
+export interface DailyGoal {
+  id: string;
+  description: string;
+  targetValue: number;
+  currentValue: number;
+  isCompleted: boolean;
+  type: GoalType;
 }
 
 export interface Stats {
@@ -15,6 +34,7 @@ export interface Stats {
   progress: number; // 0-100
   startTime: number | null;
   completed: boolean;
+  keyStats?: Record<string, KeyStats>;
 }
 
 export enum GameState {
@@ -54,6 +74,7 @@ export type KeyboardLayoutType = 'qwerty' | 'dvorak' | 'colemak';
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type FontSize = 'small' | 'medium' | 'large' | 'xl';
 export type CursorStyle = 'block' | 'line' | 'underline' | 'box';
+export type TrainingMode = 'speed' | 'accuracy';
 
 export interface UserSettings {
   theme: ThemeMode;
@@ -65,6 +86,7 @@ export interface UserSettings {
   fontSize: FontSize;
   cursorStyle: CursorStyle;
   stopOnError: boolean;
+  trainingMode: TrainingMode;
 }
 
 export interface UserProfile {

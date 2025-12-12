@@ -5,6 +5,7 @@ import { LESSONS } from "../constants";
 const DEFAULT_PROFILE_ID = 'default';
 
 // Helper to namespace keys by profile
+// Helper to namespace keys by profile
 const getKey = (base: string, profileId: string = DEFAULT_PROFILE_ID) => `${base}_${profileId}`;
 
 const KEYS = {
@@ -12,7 +13,9 @@ const KEYS = {
     PROGRESS: 'typing_progress_v2',
     PREFS: 'typing_prefs_v3', // v3 for new settings structure
     PROFILES: 'typing_profiles_v1',
-    BADGES: 'typing_badges_v1'
+    BADGES: 'typing_badges_v1',
+    KEY_STATS: 'typing_key_stats_v1',
+    DAILY_GOALS: 'typing_daily_goals_v1'
 };
 
 // --- Profiles ---
@@ -47,22 +50,22 @@ export const createProfile = (name: string): UserProfile => {
 // --- History ---
 
 export const saveHistory = (profileId: string, entry: HistoryEntry) => {
-  const history = getHistory(profileId);
-  history.unshift(entry);
-  try {
-      localStorage.setItem(getKey(KEYS.HISTORY, profileId), JSON.stringify(history));
-  } catch (e) {
-      console.error("Storage full or error saving history", e);
-  }
+    const history = getHistory(profileId);
+    history.unshift(entry);
+    try {
+        localStorage.setItem(getKey(KEYS.HISTORY, profileId), JSON.stringify(history));
+    } catch (e) {
+        console.error("Storage full or error saving history", e);
+    }
 };
 
 export const getHistory = (profileId: string): HistoryEntry[] => {
-  try {
-    const data = localStorage.getItem(getKey(KEYS.HISTORY, profileId));
-    return data ? JSON.parse(data) : [];
-  } catch (e) {
-    return [];
-  }
+    try {
+        const data = localStorage.getItem(getKey(KEYS.HISTORY, profileId));
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        return [];
+    }
 };
 
 export const clearHistory = (profileId: string) => {
@@ -94,7 +97,7 @@ export const getLessonProgress = (profileId: string): Record<number, LessonProgr
 
 export const updateLessonProgress = (profileId: string, lessonId: number, stats: { wpm: number, accuracy: number, completed: boolean }) => {
     const progress = getLessonProgress(profileId);
-    
+
     if (!progress[lessonId]) {
         progress[lessonId] = { unlocked: false, completed: false, bestWpm: 0, bestAccuracy: 0, runCount: 0 };
     }
@@ -120,6 +123,54 @@ export const unlockLesson = (profileId: string, lessonId: number) => {
     return progress;
 };
 
+// --- Key Stats ---
+
+import { KeyStats, DailyGoal } from "../types";
+
+export const getKeyStats = (profileId: string): Record<string, KeyStats> => {
+    try {
+        const data = localStorage.getItem(getKey(KEYS.KEY_STATS, profileId));
+        return data ? JSON.parse(data) : {};
+    } catch {
+        return {};
+    }
+};
+
+export const updateKeyStats = (profileId: string, sessionStats: Record<string, KeyStats>) => {
+    const current = getKeyStats(profileId);
+
+    Object.values(sessionStats).forEach(stat => {
+        if (!current[stat.char]) {
+            current[stat.char] = { char: stat.char, totalPresses: 0, errorCount: 0, accuracy: 0 };
+        }
+        const existing = current[stat.char];
+        existing.totalPresses += stat.totalPresses;
+        existing.errorCount += stat.errorCount;
+        existing.accuracy = Math.round(((existing.totalPresses - existing.errorCount) / existing.totalPresses) * 100);
+    });
+
+    localStorage.setItem(getKey(KEYS.KEY_STATS, profileId), JSON.stringify(current));
+    return current;
+};
+
+// --- Daily Goals ---
+
+export const getDailyGoals = (profileId: string): DailyGoal[] => {
+    try {
+        const data = localStorage.getItem(getKey(KEYS.DAILY_GOALS, profileId));
+        // Reset goals if it's a new day? Logic for that belongs in a service/effect, 
+        // strictly storage just retrieves.
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
+    }
+};
+
+export const saveDailyGoals = (profileId: string, goals: DailyGoal[]) => {
+    localStorage.setItem(getKey(KEYS.DAILY_GOALS, profileId), JSON.stringify(goals));
+};
+
+
 // --- Settings ---
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -131,7 +182,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     fontFamily: 'Inter',
     fontSize: 'large',
     cursorStyle: 'block',
-    stopOnError: false
+    stopOnError: false,
+    trainingMode: 'accuracy'
 };
 
 export const getSettings = (profileId: string): UserSettings => {

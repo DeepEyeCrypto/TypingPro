@@ -10,12 +10,31 @@ import AchievementsModal from './AchievementsModal';
 import StatsDashboard from './StatsDashboard';
 import UserProfilesModal from './UserProfilesModal';
 import TutorialsModal from './TutorialsModal';
+import { auth, googleProvider } from '../services/firebase';
+import { signInWithPopup, signOut } from 'firebase/auth';
 
 export default function MainLayout() {
     const {
         currentProfile, settings, systemTheme, lessonProgress, history, earnedBadges, activeLessonId,
-        updateUserSetting, switchProfile, clearUserHistory, profiles, createNewProfile
+        updateUserSetting, switchProfile, clearUserHistory, profiles, createNewProfile, user
     } = useApp();
+
+    const handleLogin = async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+        } catch (error) {
+            console.error("Login Failed:", error);
+            // Optionally show a toast here
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error("Logout Failed:", error);
+        }
+    };
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [modal, setModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles' | 'tutorials'>('none');
@@ -68,6 +87,9 @@ export default function MainLayout() {
                 currentProfile={currentProfile}
                 onSwitchProfile={() => setModal('profiles')}
                 onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
+                user={user}
+                onLogin={handleLogin}
+                onLogout={handleLogout}
             />
 
             <div className="flex flex-1 overflow-hidden pt-[52px]">

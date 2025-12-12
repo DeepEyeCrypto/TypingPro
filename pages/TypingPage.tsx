@@ -3,17 +3,15 @@ import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
 import VirtualKeyboard from '../components/VirtualKeyboard';
 import StatsBar from '../components/StatsBar';
+import ErrorHeatmap from '../components/ErrorHeatmap';
+import DailyGoalsWidget from '../components/DailyGoalsWidget';
 import { useApp } from '../contexts/AppContext';
 import { generateSmartLesson } from '../services/geminiService';
+import { generateDrill } from '../services/drillService';
 import { LESSONS, BADGES } from '../constants';
-import { Trophy, Lock, Loader2 } from 'lucide-react';
-import { Lesson, Stats } from '../types';
-// Note: We need to import the Modal implementation or code it here. 
-// In App.tsx it was inline. I will extract the "LessonCompleteModal" to a component if possible, or inline it for now to save time/complexity.
-// I'll inline the "Lesson Complete" modal logic (which was 'modalStats') for now, or better, extract it.
-// Let's keep it inline to match previous behavior but cleaner.
+import { Trophy, Lock, Loader2, Zap } from 'lucide-react';
+import { Lesson, Stats, KeyStats } from '../types';
 
-// Define the context type
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
     onOpenTutorials: (videoId?: number) => void;
@@ -22,7 +20,7 @@ interface MainLayoutContext {
 export default function TypingPage() {
     const {
         currentProfile, settings, lessonProgress, recordLessonComplete, toggleSidebar,
-        setActiveLessonId: setGlobalLessonId
+        setActiveLessonId: setGlobalLessonId, keyStats, recordKeyStats, dailyGoals
     } = useApp();
 
     const { setIsSidebarOpen, onOpenTutorials } = useOutletContext<MainLayoutContext>();
@@ -81,23 +79,26 @@ export default function TypingPage() {
             window.removeEventListener('keydown', handleDown);
             window.removeEventListener('keyup', handleUp);
         };
-    }, [activeLesson, currentLessonId]); // Re-bind if lesson changes? Actually only deps needed for handlers
+    }, [activeLesson, currentLessonId]);
 
     // --- Handlers ---
 
     const handleLessonSelect = useCallback((id: number, save = true) => {
         const progress = lessonProgress[id];
-        // Allow selecting unlocked lessons OR lesson 1 always
-        if (!progress?.unlocked && id !== 1 && id !== 999) return;
+        // Allow selecting unlocked lessons OR lesson 1 always OR special lessons (-1)
+        if (id > 0 && !progress?.unlocked && id !== 1) return;
 
-        const lesson = LESSONS.find(l => l.id === id);
+        let lesson = LESSONS.find(l => l.id === id);
+
+        // Handle Drill/Smart Lessons if ID is special (though usually we pass object directly for those)
+
         if (lesson) {
             setCurrentLessonId(id);
-            setGlobalLessonId(id); // Keep global state in sync for Header
+            setGlobalLessonId(id);
             setActiveLesson(lesson);
             setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
             setRetryCount(0);
-            if (save) localStorage.setItem(`last_lesson_${currentProfile.id}`, id.toString());
+            if (save && id > 0) localStorage.setItem(`last_lesson_${currentProfile.id}`, id.toString());
         }
     }, [lessonProgress, currentProfile.id]);
 
@@ -110,21 +111,31 @@ export default function TypingPage() {
     const handleComplete = useCallback((stats: Stats) => {
         const unlockedNext = recordLessonComplete(activeLesson.id, stats);
 
-        const passedCriteria = stats.accuracy === 100 && stats.wpm >= 22;
+        // Adjust criteria based on mode
+        const thresholdAcc = settings.trainingMode === 'accuracy' ? 98 : 90;
+        const passedCriteria = stats.accuracy >= thresholdAcc && stats.wpm >= 15;
         setModalStats({ ...stats, completed: passedCriteria });
-    }, [activeLesson.id, recordLessonComplete]);
+    }, [activeLesson.id, recordLessonComplete, settings.trainingMode]);
+
+    const handleSessionStats = useCallback((sessionStats: Record<string, KeyStats>) => {
+        recordKeyStats(sessionStats);
+    }, [recordKeyStats]);
 
     const handleNextLesson = useCallback(() => {
         setModalStats(null);
-        if (currentLessonId < LESSONS.length) {
+        if (currentLessonId > 0 && currentLessonId < LESSONS.length) {
             handleLessonSelect(currentLessonId + 1);
+        } else if (currentLessonId === -1) {
+            // If finishing a drill, go back to last regular lesson? or generate new drill?
+            // For now, go back to lesson 1 or saved lesson
+            const savedId = localStorage.getItem(`last_lesson_${currentProfile.id}`);
+            handleLessonSelect(savedId ? parseInt(savedId) : 1);
         }
-    }, [currentLessonId, handleLessonSelect]);
+    }, [currentLessonId, handleLessonSelect, currentProfile.id]);
 
     const handleSmartLesson = async () => {
         setIsLoadingAi(true);
-        // Generate based on some hardcoded keys for now, or analyze history (future improvement)
-        const lesson = await generateSmartLesson(['f', 'j', 'd', 'k', 's', 'l'], 'medium'); // This service needs to be robust
+        const lesson = await generateSmartLesson(['f', 'j', 'd', 'k', 's', 'l'], 'medium');
         setIsLoadingAi(false);
 
         if (lesson) {
@@ -134,14 +145,21 @@ export default function TypingPage() {
         }
     };
 
+    const handleStartDrill = () => {
+        const drillLesson = generateDrill(keyStats);
+        setActiveLesson(drillLesson);
+        setCurrentLessonId(-1); // Special ID for drill
+        setRetryCount(0);
+        setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
+    };
+
     // Auto-trigger tutorial for Lesson 1
     useEffect(() => {
         if (currentLessonId === 1 && !tutorialShown) {
             const hasSeenIntro = sessionStorage.getItem(`seen_intro_${currentProfile.id}`);
             if (!hasSeenIntro) {
-                // Short delay to ensure mount
                 setTimeout(() => {
-                    onOpenTutorials(1); // 1 = Intro Video
+                    onOpenTutorials(1);
                     setTutorialShown(true);
                     sessionStorage.setItem(`seen_intro_${currentProfile.id}`, 'true');
                 }, 500);
@@ -164,7 +182,18 @@ export default function TypingPage() {
                 <div className="w-full max-w-4xl flex flex-col gap-8 md:gap-10">
 
                     {/* Header Section */}
-                    <div className="text-center space-y-2">
+                    <div className="text-center space-y-2 relative">
+                        {/* Drill Button (Conditional) */}
+                        {currentLessonId > 0 && Object.keys(keyStats).length > 3 && (
+                            <button
+                                onClick={handleStartDrill}
+                                className="absolute right-0 top-0 text-xs flex items-center gap-1 text-orange-600 bg-orange-100 hover:bg-orange-200 px-3 py-1.5 rounded-full font-bold transition-colors"
+                                title="Practice your weakest keys"
+                            >
+                                <Zap className="w-3 h-3" /> Practice Weak Keys
+                            </button>
+                        )}
+
                         <h2 className="text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight opacity-90">{activeLesson.title}</h2>
                         <p className="text-gray-500 dark:text-gray-400 text-sm max-w-lg mx-auto leading-relaxed">{activeLesson.description}</p>
                     </div>
@@ -181,16 +210,29 @@ export default function TypingPage() {
                             onRestart={handleRetry}
                             onActiveKeyChange={setActiveKey}
                             onStatsUpdate={setLiveStats}
+                            onSessionStats={handleSessionStats}
                             fontFamily={settings.fontFamily}
                             fontSize={settings.fontSize}
                             cursorStyle={settings.cursorStyle}
                             stopOnError={settings.stopOnError}
+                            trainingMode={settings.trainingMode}
+                            newKeys={activeLesson.newKeys}
                         />
                     </div>
 
                     {/* Stats & Keyboard Section */}
                     <div className="flex flex-col gap-6 w-full">
-                        <StatsBar wpm={liveStats.wpm} accuracy={liveStats.accuracy} errors={liveStats.errors} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <StatsBar wpm={liveStats.wpm} accuracy={liveStats.accuracy} errors={liveStats.errors} />
+                            <DailyGoalsWidget goals={dailyGoals} />
+                        </div>
+
+                        {/* Error Heatmap */}
+                        {Object.keys(keyStats).length > 0 && activeLesson.id !== -1 && (
+                            <div className="self-center">
+                                <ErrorHeatmap keyStats={keyStats} />
+                            </div>
+                        )}
 
                         {settings.showKeyboard && (
                             <div className="w-full h-auto min-h-[140px] md:min-h-[180px] lg:h-56 transition-all duration-300">
@@ -218,7 +260,7 @@ export default function TypingPage() {
                             {modalStats.completed ? "Lesson Complete!" : "Keep Practicing"}
                         </h2>
                         <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
-                            {modalStats.completed ? "Excellent work! You've mastered this lesson." : "Aim for 100% accuracy and 22 WPM."}
+                            {modalStats.completed ? "Excellent work! You've mastered this lesson." : `Aim for ${settings.trainingMode === 'accuracy' ? '98' : '90'}% accuracy.`}
                         </p>
 
                         <div className="grid grid-cols-3 gap-2 mb-6">
