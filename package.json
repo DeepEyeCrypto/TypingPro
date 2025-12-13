@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.12",
+  "version": "0.0.13",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "build:all": "tauri build",
+    "build:all": "node scripts/build-release.cjs",
     "// NOTE": "Use 'npm run tauri:build' for releases to auto-increment version. 'tauri build' does NOT bump version.",
     "tauri:build:all": "npm run version:bump && tauri build --target x86_64-apple-darwin && tauri build --target aarch64-apple-darwin && tauri build --target x86_64-pc-windows-msvc && tauri build --target x86_64-unknown-linux-gnu",
     "tauri:build:debug": "tauri build --debug",
