@@ -2,61 +2,72 @@
 <div align="center">
   <img src="public/logo.png" alt="TypingPro Logo" width="120" height="auto" />
   <h1>TypingPro</h1>
-  <p><strong>The Final Word in Professional Typing Tutors.</strong></p>
+  <p><strong>The Ultimate Open-Source Typing Master.</strong></p>
 
   <p>
+    <a href="https://github.com/DeepEyeCrypto/TypingPro/releases">
+      <img src="https://img.shields.io/github/v/release/DeepEyeCrypto/TypingPro?style=flat-square&color=blue" alt="Latest Release" />
+    </a>
     <a href="https://github.com/DeepEyeCrypto/TypingPro/blob/main/LICENSE">
-      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="TypingPro is released under the MIT license." />
+      <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" />
     </a>
     <a href="https://react.dev/">
-      <img src="https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=white" alt="Built with React 19" />
-    </a>
-    <a href="https://www.typescriptlang.org/">
-      <img src="https://img.shields.io/badge/TypeScript-5.0-blue.svg?logo=typescript&logoColor=white" alt="Built with TypeScript" />
-    </a>
-    <a href="https://vitejs.dev/">
-      <img src="https://img.shields.io/badge/Vite-6.0-646cff.svg?logo=vite&logoColor=white" alt="Built with Vite" />
-    </a>
-    <a href="https://tauri.app/">
-      <img src="https://img.shields.io/badge/Tauri-1.6-ffc131.svg?logo=tauri&logoColor=black" alt="Built with Tauri" />
+      <img src="https://img.shields.io/badge/Stack-Tauri%20%2B%20React-orange?style=flat-square" alt="Tech Stack" />
     </a>
   </p>
 
   <p>
-    <a href="#features">Features</a> •
+    <a href="#key-features">Features</a> •
+    <a href="#downloads">Downloads</a> •
     <a href="#installation">Installation</a> •
-    <a href="#building">Building</a> •
-    <a href="#license">License</a>
+    <a href="#development">Development</a>
   </p>
 </div>
 
 ---
 
-**TypingPro** is an elegant, high-performance desktop application engineered to transform the way you type. By combining AI-driven lessons with a distraction-free, native environment, TypingPro offers a seamless path to mastery for developers, writers, and professionals.
+**TypingPro** is a modern, privacy-focused typing tutor designed for speed and focus. Built with **Tauri** and **React**, it offers a native performance feel with a web-like development experience. Whether you're a developer looking to boost your WPM or a beginner starting from scratch, TypingPro provides the tools you need in a beautiful, distraction-free package.
 
-## ✨ Features
+## 🌟 Key Features
 
-- **🚀 Smart AI Lessons**: Dynamic exercises that adapt to your skill level.
-- **✋ Geometric Hand Overlay**: A custom, beautiful visual guide with dynamic finger highlighting.
-- **🎥 Video Tutorials**: Integrated instructional videos to master touch-typing fundamentals.
-- **📊 Real-Time Analytics**: Instant feedback on WPM, accuracy, and error heatmaps.
-- **🌙 True Dark Mode**: A carefully crafted dark theme that's easy on the eyes.
-- **🏆 Gamification System**: Earn badges and achievements as you hit new milestones.
-- **⚡️ Native Performance**: Built with **Tauri** (Rust) and **Vite** for <10MB installers and instant startup.
+### 🎯 **Smart Training**
+- **Dynamic Lessons**: From home row basics to advanced code snippets.
+- **Real-Time Analytics**: Instant feedback on WPM, accuracy, and error heatmaps.
+- **Smart Hands Overlay**: A realistic, animated hand guide that shows exactly which finger to use.
+
+### 🎨 **Deep Customization**
+- **Visual Preferences**: Choose your font (Cinzel, customized sans-serif), size (A+ Medium), and cursor style (Underline, Block, Line).
+- **High Contrast Mode**: Default **Bright Yellow** text on dark backgrounds for maximum readability.
+- **Focus Mode**: "Stop on Error" disabled by default for smoother flow (toggleable).
+
+### 🚀 **Performance & Offline**
+- **Native Speed**: Built on Rust, the app launches instantly and uses minimal RAM.
+- **Offline First**: No internet required. All assets, including high-quality video tutorials, are bundled locally.
+- **Optimized Assets**: Compressed video tutorials for instant playback without buffering.
+
+### 🎥 **Interactive Tutorials**
+- Integrated video lessons for proper posture and technique.
+- Visual keyboard mapping for every key press.
+
+## 📥 Downloads
+
+Download the latest version for your OS from the [Releases Page](https://github.com/DeepEyeCrypto/TypingPro/releases).
+
+| Platform | Installer Type |
+|----------|---------------|
+| **macOS** | `.dmg` (Intel & Apple Silicon) |
+| **Windows** | `.exe` / `.msi` |
+| **Linux** | `.deb` / `.AppImage` |
 
 ## 🛠 Technology Stack
 
-TypingPro is built on a cutting-edge stack designed for performance and maintainability:
+- **Core**: Tauri (Rust)
+- **Frontend**: React 19, TypeScript, Vite
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Build System**: GitHub Actions (Cross-platform CI)
 
-| Component | Technology | Description |
-|-----------|------------|-------------|
-| **Core** | [Tauri](https://tauri.app/) | Ultra-lightweight cross-platform runtime (Rust) |
-| **UI Library** | [React 19](https://react.dev/) | The latest in component-based UI |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe code for reliability |
-| **Bundler** | [Vite](https://vitejs.dev/) | Lightning-fast HMR and build speeds |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first, responsive design |
-
-## 📥 Installation
+## 💻 Installation (For Developers)
 
 1.  **Clone the repository**:
     ```bash
@@ -69,36 +80,32 @@ TypingPro is built on a cutting-edge stack designed for performance and maintain
     npm install
     ```
 
-3.  **Start Development**:
+3.  **Run Locally**:
     ```bash
     npm run dev
+    # This starts the React dev server and the Tauri window
     ```
 
-## 📦 Building & Releasing
+## 📦 Building
 
-We use a unified build system to generate production-ready installers for all platforms.
-
-### Build All Targets
-To build for macOS (Intel & Apple Silicon), Windows, and Linux in one go:
+We use a unified build script to handle versioning and cross-platform considerations (where possible locally).
 
 ```bash
+# Build for your current OS
+npm run build
+
+# Trigger a release build (bumps version & builds)
 npm run build:all
 ```
 
-**Artifacts** will be generated in the `release/` folder:
-- `release/TypingPro_x.x.x_x64.dmg` (macOS Intel)
-- `release/TypingPro_x.x.x_aarch64.dmg` (macOS M1/M2)
-- `release/TypingPro_x.x.x_x64_en-US.msi` (Windows - requires MSVC on host)
-- `release/TypingPro_x.x.x_amd64.deb` (Linux - requires gtk libs on host)
-
-> **Note**: Cross-compilation (e.g. building Windows apps on macOS) requires specific toolchains. If `npm run build:all` fails for a specific platform, it will skip it and produce the others.
+**Note on CI/CD**:
+We utilize **GitHub Actions** to build native binaries for Windows (.exe), Linux (.deb), and macOS (.dmg) automatically on every release tag. This ensures valid signatures and correct platform targeting.
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
 <div align="center">
-  <sub>Designed & Built by the TypingPro Team.</sub>
+  <sub>Built with ❤️ by the TypingPro Team</sub>
 </div>
