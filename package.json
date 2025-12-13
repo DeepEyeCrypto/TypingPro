@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -13,6 +13,8 @@
     "tauri": "tauri",
     "build:all": "tauri build",
     "// NOTE": "Use 'npm run tauri:build' for releases to auto-increment version. 'tauri build' does NOT bump version.",
+    "tauri:build:all": "npm run version:bump && tauri build --target x86_64-apple-darwin,aarch64-apple-darwin,x86_64-pc-windows-nsis,x86_64-unknown-linux-gnu",
+    "tauri:build:debug": "tauri build --debug",
     "version:bump": "standard-version --release-as patch --skip.tag --skip.changelog && node scripts/sync-version.js",
     "tauri:build": "npm run version:bump && tauri build",
     "open:debug": "./scripts/open-app-debug.sh"
