@@ -13,7 +13,7 @@ const KEY_RADIUS = 6;
 const KEYBOARD_PADDING = 20;
 
 // Render Constants
-const KEYBOARD_WIDTH = 15 * (KEY_BASE_SIZE + KEY_GAP); // Approx width
+const KEYBOARD_WIDTH = 1000; // Increased to ensure full layout fits (approx 15u + padding)
 const KEYBOARD_HEIGHT = 5 * (KEY_BASE_SIZE + KEY_GAP) + 50;
 
 // Hand Constants
@@ -142,9 +142,13 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                                     const w = (key.width || 1) * KEY_BASE_SIZE;
                                     const h = KEY_BASE_SIZE;
                                     const isActive = key.id === activeKeyId || key.id === activeShiftKeyId;
+                                    const keyX = currentX;
+
+                                    // Update X for next key
+                                    currentX += w + KEY_GAP;
 
                                     return (
-                                        <g key={key.id} transform={`translate(${currentX}, ${currentY})`}>
+                                        <g key={key.id} transform={`translate(${keyX}, ${currentY})`}>
                                             <rect
                                                 width={w}
                                                 height={h}
@@ -173,7 +177,6 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                                             </text>
                                         </g>
                                     );
-                                    currentX += w + KEY_GAP;
                                 })}
                             </g>
                         );
@@ -181,60 +184,87 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                 </g>
 
                 {/* --- HANDS LAYER --- */}
-                {/* Helper to render a finger */}
-                {/* We use specific logic: simple line for resting, curve for active?
-            For simplicity and robustness, we'll keep using lines but style them thick.
-        */}
+                {/* 
+                   Human-like Hand Construction using individual finger paths.
+                   Each finger is a path relative to the hand center.
+                */}
 
                 {/* Left Hand */}
                 <g transform={`translate(${LEFT_HAND_POS.x}, ${LEFT_HAND_POS.y}) scale(${HAND_SCALE})`}>
-                    {['left-pinky', 'left-ring', 'left-middle', 'left-index', 'left-thumb'].map(f => {
-                        const coords = FINGER_COORDS[f as Finger];
-                        const isActive = f === activeFinger || f === activeShiftFinger;
-
-                        // If active, we could ideally point TO the key.
-                        // But calculating that inverse kinematics inside SVG JSX is heavy.
-                        // We will stick to the "Highlight" strategy + Connection Line for clarity.
-
-                        return (
-                            <line
-                                key={f}
-                                x1={0} y1={0} x2={coords.x} y2={coords.y - coords.length}
-                                className={`
-                            stroke-linecap-round transition-all duration-200 stroke-[10px]
-                            ${isActive ? 'stroke-[#4a90e2] dark:stroke-blue-500' : 'stroke-[#cccccc] dark:stroke-gray-600'}
-                        `}
-                            />
-                        )
-                    })}
-                    {/* Palm */}
+                    {/* Palm Base */}
                     <path
-                        d={LEFT_PALM_PATH}
-                        className="fill-[#f0f0f0] dark:fill-gray-800 stroke-[#cccccc] dark:stroke-gray-600 stroke-[3px]"
+                        d="M -40 20 Q -45 50 -20 60 Q 30 60 45 40 Q 50 10 40 -10 Q 0 -10 -40 20"
+                        className="fill-[#e0e0e0] dark:fill-gray-700 stroke-[#bbbbbb] dark:stroke-gray-600 stroke-2"
                     />
+
+                    {/* Fingers (Pinky to Thumb) */}
+                    {[
+                        { id: 'left-pinky', d: "M -40 20 Q -55 -10 -45 -30 Q -35 -35 -25 -20 L -30 20" },
+                        { id: 'left-ring', d: "M -25 -10 Q -30 -40 -20 -60 Q -5 -65 0 -40 L -5 -10" },
+                        { id: 'left-middle', d: "M -5 -10 Q -5 -50 10 -70 Q 25 -70 25 -40 L 20 -10" },
+                        { id: 'left-index', d: "M 20 -10 Q 25 -40 40 -60 Q 55 -55 45 -20 L 35 10" },
+                        { id: 'left-thumb', d: "M 35 10 Q 60 10 70 30 Q 75 50 50 50 L 40 40" }
+                    ].map(f => {
+                        const isActive = f.id === activeFinger || f.id === activeShiftFinger;
+                        return (
+                            <path
+                                key={f.id}
+                                d={f.d}
+                                className={`
+                                    transition-all duration-200 stroke-2
+                                    ${isActive
+                                        ? 'fill-[#4a90e2] stroke-[#2d68a8] dark:fill-blue-600 dark:stroke-blue-400'
+                                        : 'fill-[#e0e0e0] dark:fill-gray-700 stroke-[#bbbbbb] dark:stroke-gray-600'
+                                    }
+                                `}
+                            />
+                        );
+                    })}
                 </g>
 
-                {/* Right Hand */}
-                <g transform={`translate(${RIGHT_HAND_POS.x}, ${RIGHT_HAND_POS.y}) scale(${HAND_SCALE})`}>
-                    {['right-thumb', 'right-index', 'right-middle', 'right-ring', 'right-pinky'].map(f => {
-                        const coords = FINGER_COORDS[f as Finger];
-                        const isActive = f === activeFinger || f === activeShiftFinger;
-                        return (
-                            <line
-                                key={f}
-                                x1={0} y1={0} x2={coords.x} y2={coords.y - coords.length}
-                                className={`
-                            stroke-linecap-round transition-all duration-200 stroke-[10px]
-                            ${isActive ? 'stroke-[#4a90e2] dark:stroke-blue-500' : 'stroke-[#cccccc] dark:stroke-gray-600'}
-                        `}
-                            />
-                        )
-                    })}
-                    {/* Palm */}
+                {/* Right Hand (Mirrored logic manually for paths or transform scale-x?) 
+                    Transform scale(-1, 1) keeps Y same, flips X. 
+                    We need to adjust position to flip around its own center, or just flip the group and translate properly.
+                */}
+                <g transform={`translate(${RIGHT_HAND_POS.x}, ${RIGHT_HAND_POS.y}) scale(-${HAND_SCALE}, ${HAND_SCALE})`}>
+                    {/* Palm Base (Same path, just flipped via group transform) */}
                     <path
-                        d={RIGHT_PALM_PATH}
-                        className="fill-[#f0f0f0] dark:fill-gray-800 stroke-[#cccccc] dark:stroke-gray-600 stroke-[3px]"
+                        d="M -40 20 Q -45 50 -20 60 Q 30 60 45 40 Q 50 10 40 -10 Q 0 -10 -40 20"
+                        className="fill-[#e0e0e0] dark:fill-gray-700 stroke-[#bbbbbb] dark:stroke-gray-600 stroke-2"
                     />
+
+                    {/* Fingers (Pinky to Thumb - mapped to RIGHT finger IDs) 
+                        Note: Since we flipped X, 'left' logic visual applies, but IDs need strictly RIGHT mapping.
+                        Left layout was Pinky -> Thumb (Left to Right visually).
+                        Flipped X means Left visual becomes Right visual. 
+                        So the leftmost path in local coords (Pinky path) becomes Rightmost in global.
+                        Wait, standard flip: (-x, y). 
+                        Original Left Pinky is at x=-40. Flipped it is at x=40 (Right side). 
+                        A Right Pinky is on the Right side of the Right Hand. 
+                        So Left Pinky path -> Right Pinky visual location.
+                    */}
+                    {[
+                        { id: 'right-pinky', d: "M -40 20 Q -55 -10 -45 -30 Q -35 -35 -25 -20 L -30 20" }, // Far Left in local = Far Right in global (Pinky)
+                        { id: 'right-ring', d: "M -25 -10 Q -30 -40 -20 -60 Q -5 -65 0 -40 L -5 -10" },
+                        { id: 'right-middle', d: "M -5 -10 Q -5 -50 10 -70 Q 25 -70 25 -40 L 20 -10" },
+                        { id: 'right-index', d: "M 20 -10 Q 25 -40 40 -60 Q 55 -55 45 -20 L 35 10" },
+                        { id: 'right-thumb', d: "M 35 10 Q 60 10 70 30 Q 75 50 50 50 L 40 40" }
+                    ].map(f => {
+                        const isActive = f.id === activeFinger || f.id === activeShiftFinger;
+                        return (
+                            <path
+                                key={f.id}
+                                d={f.d}
+                                className={`
+                                    transition-all duration-200 stroke-2
+                                    ${isActive
+                                        ? 'fill-[#4a90e2] stroke-[#2d68a8] dark:fill-blue-600 dark:stroke-blue-400'
+                                        : 'fill-[#e0e0e0] dark:fill-gray-700 stroke-[#bbbbbb] dark:stroke-gray-600'
+                                    }
+                                `}
+                            />
+                        );
+                    })}
                 </g>
 
                 {/* --- CONNECTION LINES (Overlay) --- */}
