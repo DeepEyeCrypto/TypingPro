@@ -26,6 +26,9 @@ export default function MainLayout() {
             await authService.signInWithGoogle();
         } catch (error: any) {
             // Error logged in service
+            if (error.message === "Cancelled") {
+                return; // User knowingly cancelled
+            }
             if (error.message.includes("API Key")) {
                 alert(error.message);
             } else {

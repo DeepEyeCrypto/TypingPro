@@ -267,26 +267,28 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     const cursorClass = getCursorClass();
 
     return content.split('').map((char, idx) => {
-      let className = `inline-block text-center border-b-4 border-transparent transition-all duration-75 leading-none px-[2px] font-normal ${sizeClass}`;
+      // Base styles
+      let className = `inline-block text-center border-b-2 border-transparent transition-all duration-100 ease-out leading-none px-[1px] ${sizeClass}`;
 
-      if (idx < cursorIndex) {
-        // PAST TEXT
+      // Cursor / Active Character
+      if (idx === cursorIndex) {
+        // Force blue block cursor for premium feel regardless of mode
+        className += " bg-blue-600 text-white rounded-md shadow-lg shadow-blue-500/30 scale-110 z-10 mx-0.5";
+
+        if (shake) className += " animate-pulse bg-red-500 shadow-red-500/30";
+      }
+      // Past Text (Correct/Error)
+      else if (idx < cursorIndex) {
         if (errors.includes(idx)) {
-          // Error (Red)
-          className += " text-[#EF4444] dark:text-[#EF4444]";
+          className += " text-red-500 dark:text-red-400 opacity-60";
         } else {
-          // Correct (Green)
-          className += " text-[#10B981] dark:text-[#34C759]";
+          // Completed text fades to gray to reduce distraction
+          className += " text-gray-500 dark:text-gray-400";
         }
-      } else if (idx === cursorIndex) {
-        // CURRENT CURSOR
-        className += cursorClass;
-        if (cursorStyle === 'box') {
-          className += " text-gray-800 dark:text-gray-100";
-        }
-      } else {
-        // FUTURE TEXT
-        className += " text-gray-800 dark:text-gray-300";
+      }
+      // Future Text
+      else {
+        className += " text-gray-300 dark:text-gray-600 font-normal opacity-40";
       }
 
       return (
@@ -335,26 +337,15 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         ref={containerRef}
         style={{ fontFamily: fontFamily }}
         className={`
-            w-full max-w-7xl mx-auto
-            bg-white dark:bg-[#1F2937]
-            rounded-3xl border border-gray-100 dark:border-gray-700
-            p-6 md:p-8
-            leading-relaxed tracking-normal
+            w-full h-full
             flex flex-wrap content-center justify-center
-            shadow-[0_4px_24px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]
-            h-full select-none transition-all duration-100
-            ${shake ? 'translate-x-[2px] border-red-400 dark:border-red-500' : ''}
+            leading-relaxed tracking-normal
+            select-none transition-all duration-100
+            ${shake ? 'translate-x-[2px]' : ''}
         `}
       >
         {renderText()}
       </div>
-
-      {showNewKeysTip && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 animate-bounce">
-          <AlertCircle size={16} />
-          New Keys: {newKeys.map(k => k.toUpperCase()).join(" & ")}
-        </div>
-      )}
     </div>
   );
 };

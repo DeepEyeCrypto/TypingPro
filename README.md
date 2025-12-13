@@ -17,8 +17,8 @@
     <a href="https://vitejs.dev/">
       <img src="https://img.shields.io/badge/Vite-6.0-646cff.svg?logo=vite&logoColor=white" alt="Built with Vite" />
     </a>
-    <a href="https://www.electronjs.org/">
-      <img src="https://img.shields.io/badge/Electron-29-47848f.svg?logo=electron&logoColor=white" alt="Built with Electron" />
+    <a href="https://tauri.app/">
+      <img src="https://img.shields.io/badge/Tauri-1.6-ffc131.svg?logo=tauri&logoColor=black" alt="Built with Tauri" />
     </a>
   </p>
 
@@ -36,14 +36,13 @@
 
 ## ✨ Features
 
-- **🚀 Smart AI Lessons**: Dynamic exercises that adapt to your skill level, ensuring constant progression.
+- **🚀 Smart AI Lessons**: Dynamic exercises that adapt to your skill level.
+- **✋ Geometric Hand Overlay**: A custom, beautiful visual guide with dynamic finger highlighting.
 - **🎥 Video Tutorials**: Integrated instructional videos to master touch-typing fundamentals.
-- **🔄 Auto-Updates**: Seamless background updates ensure you're always on the latest version.
 - **📊 Real-Time Analytics**: Instant feedback on WPM, accuracy, and error heatmaps.
-- **🌙 True Dark Mode**: A carefully crafted dark theme that's easy on the eyes during late-night sessions.
+- **🌙 True Dark Mode**: A carefully crafted dark theme that's easy on the eyes.
 - **🏆 Gamification System**: Earn badges and achievements as you hit new milestones.
-- **⌨️ Virtual Keyboard**: A visual guide to perfect your finger placement without looking down.
-- **⚡️ Native Performance**: Built with Electron and Vite for zero-latency typing and instant startup.
+- **⚡️ Native Performance**: Built with **Tauri** (Rust) and **Vite** for <10MB installers and instant startup.
 
 ## 🛠 Technology Stack
 
@@ -51,12 +50,11 @@ TypingPro is built on a cutting-edge stack designed for performance and maintain
 
 | Component | Technology | Description |
 |-----------|------------|-------------|
-| **Core** | [Electron](https://www.electronjs.org/) | Cross-platform desktop runtime |
+| **Core** | [Tauri](https://tauri.app/) | Ultra-lightweight cross-platform runtime (Rust) |
 | **UI Library** | [React 19](https://react.dev/) | The latest in component-based UI |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe code for reliability |
 | **Bundler** | [Vite](https://vitejs.dev/) | Lightning-fast HMR and build speeds |
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first, responsive design |
-| **State** | React Context | Lightweight global state management |
 
 ## 📥 Installation
 
@@ -73,29 +71,27 @@ TypingPro is built on a cutting-edge stack designed for performance and maintain
 
 3.  **Start Development**:
     ```bash
-    npm run electron:dev
+    npm run dev
     ```
 
 ## 📦 Building & Releasing
 
-To create production-ready installers:
+We use a unified build system to generate production-ready installers for all platforms.
 
-### macOS (DMG)
+### Build All Targets
+To build for macOS (Intel & Apple Silicon), Windows, and Linux in one go:
+
 ```bash
-npm run build:mac
+npm run build:all
 ```
 
-### Windows (EXE)
-```bash
-npm run build:win
-```
+**Artifacts** will be generated in the `release/` folder:
+- `release/TypingPro_x.x.x_x64.dmg` (macOS Intel)
+- `release/TypingPro_x.x.x_aarch64.dmg` (macOS M1/M2)
+- `release/TypingPro_x.x.x_x64_en-US.msi` (Windows - requires MSVC on host)
+- `release/TypingPro_x.x.x_amd64.deb` (Linux - requires gtk libs on host)
 
-### Linux (AppImage)
-```bash
-npm run build:linux
-```
-
-> **Note**: For Auto-Updates to work, you must set `GH_TOKEN` in your environment variables when building/publishing.
+> **Note**: Cross-compilation (e.g. building Windows apps on macOS) requires specific toolchains. If `npm run build:all` fails for a specific platform, it will skip it and produce the others.
 
 ## 📄 License
 

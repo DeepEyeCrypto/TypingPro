@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
-import HandKeyboardAnimation from '../components/HandKeyboardAnimation';
+import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
 import StatsBar from '../components/StatsBar';
 import ErrorHeatmap from '../components/ErrorHeatmap';
 import DailyGoalsWidget from '../components/DailyGoalsWidget';
@@ -168,7 +168,7 @@ export default function TypingPage() {
     }, [currentLessonId, tutorialShown, onOpenTutorials, currentProfile.id]);
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-[#FAFAFA] dark:bg-[#0B1120] relative max-w-7xl mx-auto w-full shadow-sm rounded-lg overflow-hidden">
+        <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#0B1120] overflow-hidden">
             {/* Loading Overlay */}
             {isLoadingAi && (
                 <div className="absolute inset-0 z-50 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center flex-col gap-4">
@@ -177,74 +177,42 @@ export default function TypingPage() {
                 </div>
             )}
 
-            {/* Main Center Content */}
-            <div className="flex-1 flex flex-col items-center justify-center w-full px-4 md:px-8 py-2 overflow-y-auto no-scrollbar">
-                <div className="w-full max-w-5xl flex flex-col gap-4 md:gap-6">
-
-                    {/* Header Section */}
-                    <div className="text-center space-y-2 relative">
-                        {/* Drill Button (Conditional) */}
-                        {currentLessonId > 0 && Object.keys(keyStats).length > 3 && (
-                            <button
-                                onClick={handleStartDrill}
-                                className="absolute right-0 top-0 text-xs flex items-center gap-1 text-orange-600 bg-orange-100 hover:bg-orange-200 px-3 py-1.5 rounded-full font-bold transition-colors"
-                                title="Practice your weakest keys"
-                            >
-                                <Zap className="w-3 h-3" /> Practice Weak Keys
-                            </button>
-                        )}
-
-                        <h2 className="text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight opacity-90">{activeLesson.title}</h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-lg mx-auto leading-relaxed">{activeLesson.description}</p>
-                    </div>
-
-                    {/* Typing Area */}
-                    <div className="w-full relative">
-                        <TypingArea
-                            key={`${activeLesson.id}-${currentProfile.id}-${retryCount}`}
-                            content={activeLesson.content}
-                            activeLessonId={activeLesson.id}
-                            isActive={!modalStats}
-                            soundEnabled={settings.soundEnabled}
-                            onComplete={handleComplete}
-                            onRestart={handleRetry}
-                            onActiveKeyChange={setActiveKey}
-                            onStatsUpdate={setLiveStats}
-                            onSessionStats={handleSessionStats}
-                            fontFamily={settings.fontFamily}
-                            fontSize={settings.fontSize}
-                            cursorStyle={settings.cursorStyle}
-                            stopOnError={settings.stopOnError}
-                            trainingMode={settings.trainingMode}
-                            newKeys={activeLesson.newKeys}
-                        />
-                    </div>
-
-                    {/* Stats & Keyboard Section */}
-                    <div className="flex flex-col gap-6 w-full">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <StatsBar wpm={liveStats.wpm} accuracy={liveStats.accuracy} errors={liveStats.errors} />
-                            <DailyGoalsWidget goals={dailyGoals} />
-                        </div>
-
-                        {/* Error Heatmap */}
-                        {Object.keys(keyStats).length > 0 && activeLesson.id !== -1 && (
-                            <div className="self-center">
-                                <ErrorHeatmap keyStats={keyStats} />
-                            </div>
-                        )}
-
-                        {settings.showKeyboard && (
-                            <div className="w-full flex-1 min-h-0 flex items-end justify-center pb-2">
-                                <HandKeyboardAnimation
-                                    activeKey={activeKey}
-                                    pressedKeys={pressedKeys}
-                                />
-                            </div>
-                        )}
-                    </div>
+            {/* MAIN CONTENT AREA - Edclub-style Focused Lesson Layout */}
+            {/* Top/Middle: Typing Area - Centered, comfortable width, takes available vertical space */}
+            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-0 overflow-y-auto no-scrollbar">
+                <div className="w-full max-w-[1000px] px-4 md:px-8 lg:px-12 flex flex-col items-center">
+                    <TypingArea
+                        key={`${activeLesson.id}-${currentProfile.id}-${retryCount}`}
+                        content={activeLesson.content}
+                        activeLessonId={activeLesson.id}
+                        isActive={!modalStats}
+                        soundEnabled={settings.soundEnabled}
+                        onComplete={handleComplete}
+                        onRestart={handleRetry}
+                        onActiveKeyChange={setActiveKey}
+                        onStatsUpdate={setLiveStats}
+                        onSessionStats={handleSessionStats}
+                        fontFamily={settings.fontFamily}
+                        fontSize={settings.fontSize || 28}
+                        cursorStyle={settings.cursorStyle}
+                        stopOnError={settings.stopOnError}
+                        trainingMode={settings.trainingMode}
+                        newKeys={activeLesson.newKeys}
+                    />
                 </div>
             </div>
+
+            {/* Bottom: Keyboard & Hands - Fixed at bottom, horizontally centered */}
+            {settings.showKeyboard && (
+                <div className="flex-shrink-0 w-full flex items-end justify-center pb-4 px-4 bg-transparent z-20">
+                    {/* Scale wrapper for smaller screens if needed */}
+                    <div className="w-full max-w-[900px] relative origin-bottom transition-transform duration-300 keyboard-scaler">
+                        <KeyboardHandsOverlay
+                            currentChar={activeKey}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* Completion Result Modal */}
             {modalStats && (

@@ -1,5 +1,5 @@
 import { auth, googleProvider } from './firebase';
-import { signInWithPopup, signOut, User } from 'firebase/auth';
+import { signInWithPopup, signOut, User, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 /**
  * Service to handle Authentication logic.
@@ -17,17 +17,25 @@ export const authService = {
      */
     signInWithGoogle: async (): Promise<User> => {
         try {
-            // @ts-ignore - Check for placeholder API key manually before invoking SDK
+            // @ts-ignore - Check for placeholder API key manually
             const apiKey = auth.app.options.apiKey;
             if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
                 throw new Error("Firebase API Key is missing or invalid. Please configure services/firebase.ts");
             }
 
+            // Ensure persistence is set to Local (survives browser restart)
+            await setPersistence(auth, browserLocalPersistence);
+
             const result = await signInWithPopup(auth, googleProvider);
             return result.user;
         } catch (error: any) {
+            // Ignore popup closed by user, it's a normal cancellation
+            if (error.code === 'auth/popup-closed-by-user') {
+                console.log("Sign-in cancelled by user");
+                throw new Error("Cancelled");
+            }
             console.error("Auth Service: Login Failed", error);
-            throw error; // Re-throw for UI to handle
+            throw error;
         }
     },
 

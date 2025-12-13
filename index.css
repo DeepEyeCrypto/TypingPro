@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force full height and no scroll for app feel */
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Keyboard Horizontal Scaling for short screens */
+@media (max-height: 800px) {
+  .keyboard-scaler {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-height: 650px) {
+  .keyboard-scaler {
+    transform: scale(0.75);
+  }
+}
+
 /* Custom scrollbar for a cleaner app feel */
 ::-webkit-scrollbar {
   width: 8px;

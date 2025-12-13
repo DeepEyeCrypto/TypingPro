@@ -76,7 +76,16 @@ const Header: React.FC<HeaderProps> = ({
           <div className="text-gray-900 dark:text-white font-bold text-lg tracking-tight">
             TypingPro
           </div>
-          <span className="text-[10px] text-gray-400 font-mono pl-0.5">{version}</span>
+          <button
+            onClick={() => {
+              // Placeholder Update Logic
+              alert(`TypingPro v${version}\n\nYou are on the latest version.`);
+            }}
+            className="text-[10px] text-gray-400 font-mono pl-0.5 hover:text-blue-500 dark:hover:text-blue-400 transition-colors text-left"
+            title="Check for updates"
+          >
+            v{version}
+          </button>
         </div>
       </div>
 
