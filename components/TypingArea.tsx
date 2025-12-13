@@ -20,6 +20,7 @@ interface TypingAreaProps {
   stopOnError: boolean;
   trainingMode: TrainingMode;
   newKeys?: string[];
+  fontColor?: string;
 }
 
 const IDLE_THRESHOLD = 5000; // 5 seconds
@@ -39,7 +40,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   cursorStyle,
   stopOnError,
   trainingMode,
-  newKeys
+  newKeys,
+  fontColor
 }) => {
   const [input, setInput] = useState('');
   const [cursorIndex, setCursorIndex] = useState(0);
@@ -288,11 +290,17 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       }
       // Future Text
       else {
-        className += " text-gray-300 dark:text-gray-600 font-normal opacity-40";
+        // If fontColor is set, full opacity. Otherwise default opacity.
+        className += fontColor ? " font-normal opacity-100" : " text-gray-300 dark:text-gray-600 font-normal opacity-40";
+      }
+
+      const style: React.CSSProperties = {};
+      if (idx > cursorIndex && fontColor) {
+        style.color = fontColor;
       }
 
       return (
-        <span key={idx} className={className}>
+        <span key={idx} className={className} style={style}>
           {char === ' ' ? '\u00A0' : char}
         </span>
       );

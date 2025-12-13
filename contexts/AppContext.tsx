@@ -54,10 +54,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         volume: 0.5,
         showKeyboard: true,
         fontFamily: 'Cinzel',
-        fontSize: 'xl',
-        cursorStyle: 'block',
+        fontSize: 'medium', // A+
+        cursorStyle: 'underline',
         stopOnError: false,
-        trainingMode: 'accuracy'
+        trainingMode: 'accuracy',
+        fontColor: '#FFFF00' // Bright Yellow
     });
 
     const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});

@@ -87,6 +87,7 @@ export interface UserSettings {
   cursorStyle: CursorStyle;
   stopOnError: boolean;
   trainingMode: TrainingMode;
+  fontColor: string;
 }
 
 export interface UserProfile {

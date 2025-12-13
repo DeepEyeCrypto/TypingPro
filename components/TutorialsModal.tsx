@@ -11,13 +11,13 @@ const VIDEOS = [
         id: 1,
         title: "Introduction to Touch Typing",
         description: "Learn the proper posture and finger placement.",
-        src: "assets/Learn teach 1.mp4"
+        src: "assets/learn-teach-1.mp4"
     },
     {
         id: 2,
         title: "Basic Keys & Home Row",
         description: "Master the home row keys and basic hand movements.",
-        src: "assets/Learn teach 2.mp4"
+        src: "assets/learn-teach-2.mp4"
     }
 ];
 

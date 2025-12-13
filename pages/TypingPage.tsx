@@ -197,6 +197,7 @@ export default function TypingPage() {
                         cursorStyle={settings.cursorStyle}
                         stopOnError={settings.stopOnError}
                         trainingMode={settings.trainingMode}
+                        fontColor={settings.fontColor}
                         newKeys={activeLesson.newKeys}
                     />
                 </div>
