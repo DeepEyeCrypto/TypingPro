@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -12,13 +12,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "build:all": "tauri build",
-    "version:patch": "npm version patch",
-    "version:minor": "npm version minor",
-    "version:major": "npm version major",
-    "postversion": "node scripts/sync-version.js && git add src-tauri/tauri.conf.json",
-    "release:patch": "npm run version:patch && npm run build:all",
-    "release:minor": "npm run version:minor && npm run build:all",
-    "release:major": "npm run version:major && npm run build:all",
+    "// NOTE": "Use 'npm run tauri:build' for releases to auto-increment version. 'tauri build' does NOT bump version.",
+    "version:bump": "standard-version --release-as patch --skip.tag --skip.changelog && node scripts/sync-version.js",
+    "tauri:build": "npm run version:bump && tauri build",
     "open:debug": "./scripts/open-app-debug.sh"
   },
   "dependencies": {
@@ -38,6 +34,7 @@
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "postcss": "^8.5.6",
+    "standard-version": "^9.5.0",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
