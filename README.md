@@ -88,18 +88,15 @@ Download the latest version for your OS from the [Releases Page](https://github.
 
 ## 📦 Building
 
-We use a unified build script to handle versioning and cross-platform considerations (where possible locally).
+We use a unified build script. See [BUILD.md](BUILD.md) for detailed prerequisites and artifact details.
 
 ```bash
-# Build for your current OS
-npm run build
-
-# Trigger a release build (bumps version & builds)
+# Build for all valid targets on current OS
 npm run build:all
 ```
 
 **Note on CI/CD**:
-We utilize **GitHub Actions** to build native binaries for Windows (.exe), Linux (.deb), and macOS (.dmg) automatically on every release tag. This ensures valid signatures and correct platform targeting.
+We utilize **GitHub Actions** to build native binaries for Windows (.exe), Linux (.deb), and macOS (.dmg) automatically on every release tag.
 
 ## 📄 License
 

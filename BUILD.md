@@ -1,68 +1,50 @@
-# TypingPro Build Guide
+# Build Instructions
 
-## Overview
-TypingPro uses Tauri + Vite + React. This guide covers how to build for macOS, Windows, and Linux.
+This project is configured to build for macOS (Intel & Silicon), Windows, and Linux.
 
-## Quick Start
-To increment the version (patch) and build for all configured targets:
+## 🚀 Quick Start
+
+To build for all supported platforms on your current OS:
 
 ```bash
-npm run tauri:build:all
+npm run build:all
 ```
 
-This command will:
-1. Bump the version in `package.json`.
-2. Sync the version to `src-tauri/tauri.conf.json` and `src-tauri/Cargo.toml`.
-3. Run `tauri build` for the specified targets:
-   - macOS: `x86_64-apple-darwin`, `aarch64-apple-darwin`
-   - Windows: `x86_64-pc-windows-nsis` (requires setup, see below)
-   - Linux: `x86_64-unknown-linux-gnu` (requires setup, see below)
+To build **without** bumping the version number:
 
-## Output Locations
-- **macOS**: `src-tauri/target/release/bundle/dmg/` and `src-tauri/target/release/bundle/macos/`
-- **Windows**: `src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/` (or similar depending on cross-compile target)
-- **Linux**: `src-tauri/target/unknown-linux-gnu/release/bundle/deb/` and `appimage/`
+```bash
+npm run build:all -- --no-bump
+```
 
-## Cross-Compilation Setup from macOS
+## 📦 Artifacts
 
-> [!IMPORTANT]
-> Cross-compiling for Windows and Linux from macOS has significant limitations and requirements.
+Artifacts are generated in the `release/` directory with the following naming convention:
 
-### 1. Rust Targets
-You must add the target architectures to your Rust toolchain:
+- **macOS (Intel)**: `TypingPro-<version>-mac-x64.dmg`
+- **macOS (Silicon)**: `TypingPro-<version>-mac-arm64.dmg`
+- **Windows**: `TypingPro-<version>-win-x64.exe`
+- **Linux (Deb)**: `typingpro_<version>_amd64.deb`
+- **Linux (AppImage)**: `TypingPro-<version>-linux-x64.AppImage`
+
+## 🛠 Prerequisites
+
+### macOS Requirements
+To build both Intel and Apple Silicon DMGs on a macOS machine, you must add the Rust targets:
 
 ```bash
 rustup target add x86_64-apple-darwin
 rustup target add aarch64-apple-darwin
-rustup target add x86_64-pc-windows-msvc
-rustup target add x86_64-unknown-linux-gnu
 ```
 
-### 2. Windows Build on macOS
-To build a Windows NSIS installer on macOS, you need `nsis`:
+### Cross-Compilation Notes
+Tauri relies on native system libraries for bundling (NSIS for Windows, GTK for Linux).
 
+- **On macOS**: You CANNOT build Windows `.exe` or Linux `.deb` locally without strictly configured cross-compilation toolchains or Docker. The `build:all` script will **skip** these targets and warn you if run on macOS.
+- **Solution**: Use the provided **GitHub Actions** workflow (`.github/workflows/release.yml`) which automatically builds correct native binaries for all platforms whenever you push a tag (e.g., `v1.2.3`).
+
+## 🔧 Targets Configuration (`tauri.conf.json`)
+
+Dependencies for Linux builds (if building on Linux):
 ```bash
-brew install nsis
+sudo apt-get install libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
 ```
-
-**Note**: Building for `x86_64-pc-windows-msvc` requires MSVC libraries which are not redistributable on macOS. You might need to use `x86_64-pc-windows-gnu` instead or use a Windows machine/CI.
-
-If using `gnu` target:
-```bash
-rustup target add x86_64-pc-windows-gnu
-brew install mingw-w64
-```
-And update the build command target to `x86_64-pc-windows-gnu`.
-
-### 3. Linux Build on macOS
-Building for Linux on macOS is **highly experimental** and often fails due to linking against system libraries (glibc, GTK, webkit2gtk) that are not present or binary-compatible on macOS.
-
-**Recommended Approach:** Use Docker.
-Run the build inside a Linux container that has all the build prerequisites.
-
-```bash
-# Example using tauri-build docker image (conceptual)
-docker run --rm -v $(pwd):/app -w /app dfrg/tauri-build:latest npm run tauri:build
-```
-
-**Alternative**: Use GitHub Actions to build automatically on push.
