@@ -4,8 +4,8 @@ const path = require('path');
 const fs = require('fs');
 
 const FILES = [
-    { input: 'Learn teach 1.mp4', output: 'learn-teach-1.mp4' },
-    { input: 'Learn teach 2.mp4', output: 'learn-teach-2.mp4' }
+    { input: 'learn-teach-1.mp4', output: 'learn-teach-1-opt.mp4' },
+    { input: 'learn-teach-2.mp4', output: 'learn-teach-2-opt.mp4' }
 ];
 
 const ASSETS_DIR = path.join(__dirname, '../public/assets');
@@ -35,12 +35,13 @@ async function compressVideo(file) {
         '-y', // Overwrite output
         '-i', inputPath,
         '-vcodec', 'libx264',
-        '-crf', '28',
-        '-preset', 'fast', // fast for speed, veryslow takes too long
+        '-crf', '32', // Higher CRF = lower quality/size (was 28)
+        '-preset', 'veryfast',
+        '-pix_fmt', 'yuv420p', // Ensure max compatibility
         '-acodec', 'aac',
-        '-b:a', '128k',
+        '-b:a', '96k', // Lower audio bitrate
         '-movflags', '+faststart',
-        '-vf', "scale='min(1280,iw)':-2",
+        '-vf', "scale='min(854,iw)':-2", // Downscale to 480p width (approx) if larger
         outputPath
     ];
 
@@ -63,6 +64,12 @@ async function compressVideo(file) {
                 const oldSize = (fs.statSync(inputPath).size / 1024 / 1024).toFixed(2);
                 const newSize = (fs.statSync(outputPath).size / 1024 / 1024).toFixed(2);
                 console.log(`Success! ${oldSize}MB -> ${newSize}MB`);
+
+                // Replace original with optimized
+                fs.unlinkSync(inputPath);
+                fs.renameSync(outputPath, inputPath);
+                console.log(`Replaced ${file.input} with optimized version.`);
+
                 resolve();
             } else {
                 console.error(`FFmpeg finished with code ${code}`);
