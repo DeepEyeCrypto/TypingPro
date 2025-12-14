@@ -22,14 +22,17 @@ struct UserProfile {
     token: String,
 }
 
-const GOOGLE_CLIENT_ID: &str = "YOUR_CLIENT_ID_HERE";
-const GOOGLE_CLIENT_SECRET: &str = "YOUR_CLIENT_SECRET_HERE";
-
 #[tauri::command]
 async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
+    use dotenv_codegen::dotenv;
+
+    // Load credentials at compile time
+    let google_client_id = dotenv!("GOOGLE_CLIENT_ID");
+    let google_client_secret = dotenv!("GOOGLE_CLIENT_SECRET");
+
     // 1. Setup Client
-    let client_id = ClientId::new(GOOGLE_CLIENT_ID.to_string());
-    let client_secret = ClientSecret::new(GOOGLE_CLIENT_SECRET.to_string());
+    let client_id = ClientId::new(google_client_id.to_string());
+    let client_secret = ClientSecret::new(google_client_secret.to_string());
     
     // 2. Start Local Server
     let listener = TcpListener::bind("127.0.0.1:0").map_err(|e| e.to_string())?;
@@ -56,6 +59,10 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.email".to_string()))
         .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.profile".to_string()))
+        .add_scope(Scope::new("openid".to_string()))
+        // CRITICAL FOR DESKTOP: Force consent to ensure we get a refresh token if needed
+        .add_extra_param("prompt", "consent") 
+        .add_extra_param("access_type", "offline")
         .set_pkce_challenge(pkce_challenge)
         .url();
 

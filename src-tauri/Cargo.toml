@@ -1,6 +1,6 @@
 [package]
 name = "typingpro"
-version = "0.0.25"
+version = "0.0.30"
 description = "A professional typing tutor application"
 authors = ["TypingPro Team"]
 license = ""
@@ -15,6 +15,9 @@ tauri = { version = "1.6", features = [ "shell-open", "devtools"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 chrono = "0.4.42"
+
+dotenv = "0.15"
+dotenv_codegen = "0.15"
 oauth2 = "4.4"
 tokio = { version = "1.36", features = ["full"] }
 reqwest = { version = "0.11", features = ["json"] }
