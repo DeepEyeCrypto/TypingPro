@@ -1,39 +1,30 @@
-import { auth, googleProvider } from './firebase';
-import { signInWithPopup, signOut, User, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { invoke } from '@tauri-apps/api/tauri';
+import { Store } from 'tauri-plugin-store-api';
 
-/**
- * Service to handle Authentication logic.
- * Abstracts the underlying Firebase implementation.
- */
-
-export interface AuthUser extends User {
-    // Extend if we need custom properties in the future
+export interface AuthUser {
+    id: string;
+    name: string;
+    email: string;
+    picture: string;
+    token: string;
 }
+
+const store = new Store('auth_store.dat');
 
 export const authService = {
     /**
-     * Initiates Google Sign-In popup flow.
-     * @returns Promise resolving to the signed-in User or throwing an error.
+     * Initiates Google Sign-In via native system browser.
+     * @returns Promise resolving to the signed-in User.
      */
-    signInWithGoogle: async (): Promise<User> => {
+    signInWithGoogle: async (): Promise<AuthUser> => {
         try {
-            // @ts-ignore - Check for placeholder API key manually
-            const apiKey = auth.app.options.apiKey;
-            if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
-                throw new Error("Firebase API Key is missing or invalid. Please configure services/firebase.ts");
-            }
-
-            // Ensure persistence is set to Local (survives browser restart)
-            await setPersistence(auth, browserLocalPersistence);
-
-            const result = await signInWithPopup(auth, googleProvider);
-            return result.user;
-        } catch (error: any) {
-            // Ignore popup closed by user, it's a normal cancellation
-            if (error.code === 'auth/popup-closed-by-user') {
-                console.log("Sign-in cancelled by user");
-                throw new Error("Cancelled");
-            }
+            console.log("Invoking native Google Login...");
+            const user = await invoke<AuthUser>('login_google');
+            console.log("Login success, saving user...");
+            await store.set('user', user);
+            await store.save();
+            return user;
+        } catch (error) {
             console.error("Auth Service: Login Failed", error);
             throw error;
         }
@@ -44,7 +35,8 @@ export const authService = {
      */
     signOutUser: async (): Promise<void> => {
         try {
-            await signOut(auth);
+            await store.delete('user');
+            await store.save();
         } catch (error) {
             console.error("Auth Service: Logout Failed", error);
             throw error;
@@ -52,10 +44,16 @@ export const authService = {
     },
 
     /**
-     * Gets the current synchronous user state (may be null if not loaded yet).
-     * Note: Prefer using `useAuthState` or `onAuthStateChanged` for reactive updates.
+     * Gets the current user from secure store.
      */
-    getCurrentUser: (): User | null => {
-        return auth.currentUser;
+    getCurrentUser: async (): Promise<AuthUser | null> => {
+        try {
+            const user = await store.get<AuthUser>('user');
+            return user || null;
+        } catch (e) {
+            console.warn("Failed to load user from store", e);
+            return null;
+        }
     }
 };
+

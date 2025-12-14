@@ -12,8 +12,7 @@ import {
 import { setVolume } from '../services/audioService';
 import { BADGES, FANCY_FONTS } from '../constants';
 
-import { auth } from '../services/firebase';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { authService, AuthUser } from '../services/authService';
 
 interface AppContextType {
     // State
@@ -25,7 +24,7 @@ interface AppContextType {
     earnedBadges: EarnedBadge[];
     systemTheme: 'light' | 'dark';
     activeLessonId: number;
-    user: FirebaseUser | null; // Added user state
+    user: AuthUser | null;
     keyStats: Record<string, KeyStats>;
     dailyGoals: DailyGoal[];
 
@@ -38,6 +37,10 @@ interface AppContextType {
     clearUserHistory: () => void;
     refreshUserData: () => void;
     recordKeyStats: (sessionStats: Record<string, KeyStats>) => void;
+
+    // Auth
+    login: () => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -46,7 +49,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // --- State ---
     const [profiles, setProfiles] = useState<UserProfile[]>([]);
     const [currentProfile, setCurrentProfile] = useState<UserProfile>({ id: 'default', name: 'Guest', createdAt: '' });
-    const [user, setUser] = useState<FirebaseUser | null>(null);
+    const [user, setUser] = useState<AuthUser | null>(null);
     const [settings, setSettings] = useState<UserSettings>({
         theme: 'system',
         keyboardLayout: 'qwerty',
@@ -84,43 +87,47 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             setCurrentProfile(loaded[0]);
         }
 
-        // Firebase Auth Listener
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            setUser(firebaseUser);
-            if (firebaseUser) {
-                // Check if profile exists for this UID
-                const existing = getProfiles().find(p => p.id === firebaseUser.uid);
-                if (existing) {
-                    setCurrentProfile(existing);
-                } else {
-                    // Create new profile linked to Firebase UID
-                    const newProfile: UserProfile = {
-                        id: firebaseUser.uid,
-                        name: firebaseUser.displayName || 'Google User',
-                        createdAt: new Date().toISOString()
-                    };
-                    // Save to local storage manually to skip generic createProfile ID gen logic if needed,
-                    // but calling createProfile generates a random ID. We want ID = UID.
-                    // So we modify local storage list directly here or add a specialized service method.
-                    // For simplicity, we'll reuse the storage service logic but we need to inject the ID.
-                    // Since createProfile doesn't accept ID, let's just create it and then swap the ID, or better, 
-                    // just append to the list we have and save it.
-
-                    // Actually, let's trust createProfile but overwrite the ID? 
-                    // No, cleaner is to manually manage the profiles array update here for this special case.
-                    const updatedProfiles = [...getProfiles(), newProfile];
-                    localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
-                    setProfiles(updatedProfiles);
-                    setCurrentProfile(newProfile);
-                }
-            }
+        // Check Auth
+        authService.getCurrentUser().then(u => {
+            if (u) handleAuthUser(u);
         });
 
         return () => {
             mediaQuery.removeEventListener('change', handleThemeChange);
-            unsubscribe();
         };
     }, []);
+
+    const handleAuthUser = (authUser: AuthUser) => {
+        setUser(authUser);
+        // Sync with Profiles
+        const existing = getProfiles().find(p => p.id === authUser.id);
+        if (existing) {
+            setCurrentProfile(existing);
+        } else {
+            // Create new profile linked to Google ID
+            const newProfile: UserProfile = {
+                id: authUser.id,
+                name: authUser.name || 'Google User',
+                createdAt: new Date().toISOString()
+            };
+            const updatedProfiles = [...getProfiles(), newProfile];
+            localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
+            setProfiles(updatedProfiles);
+            setCurrentProfile(newProfile);
+        }
+    };
+
+    const login = async () => {
+        const u = await authService.signInWithGoogle();
+        handleAuthUser(u);
+    };
+
+    const logout = async () => {
+        await authService.signOutUser();
+        setUser(null);
+        // Optionally switch back to default/guest or stay on current profile?
+        // Let's stay on current but clearing 'user' state changes UI to "Sign In"
+    };
 
     // --- Profile Data Sync ---
     const loadProfileData = (profileId: string) => {
@@ -287,7 +294,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (
         <AppContext.Provider value={{
             profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme, activeLessonId, user, keyStats, dailyGoals,
-            setActiveLessonId, switchProfile, createNewProfile, updateUserSetting, recordLessonComplete, clearUserHistory, refreshUserData, recordKeyStats: recordKeyStatsAction
+            setActiveLessonId, switchProfile, createNewProfile, updateUserSetting, recordLessonComplete, clearUserHistory, refreshUserData, recordKeyStats: recordKeyStatsAction,
+            login, logout
         }}>
             {children}
         </AppContext.Provider>

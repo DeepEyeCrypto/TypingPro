@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { LESSONS } from '../constants';
-import { User as FirebaseUser } from 'firebase/auth';
+import { AuthUser } from '../services/authService';
 
 interface HeaderProps {
   currentLessonId: number;
@@ -24,10 +24,21 @@ interface HeaderProps {
   currentProfile: UserProfile;
   onSwitchProfile: () => void;
   onToggleSidebar: () => void;
-  user: FirebaseUser | null;
+  user: AuthUser | null;
   onLogin: () => void;
   onLogout: () => void;
 }
+className = "flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+title = "Switch Profile"
+  >
+  {
+    user?.picture?(
+    <img src = { user.picture } alt = "Avatar" className = "w-5 h-5 rounded-full" />
+  ): (
+        <User className = "w-3.5 h-3.5" />
+  )}
+<span className="hidden lg:inline max-w-[80px] truncate">{currentProfile.name}</span>
+</button >
 
 const Header: React.FC<HeaderProps> = ({
   currentLessonId,
@@ -170,8 +181,8 @@ const Header: React.FC<HeaderProps> = ({
               className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
               title="Switch Profile"
             >
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="Avatar" className="w-5 h-5 rounded-full" />
+              {user?.picture ? (
+                <img src={user.picture} alt="Avatar" className="w-5 h-5 rounded-full" />
               ) : (
                 <User className="w-3.5 h-3.5" />
               )}

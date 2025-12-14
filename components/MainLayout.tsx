@@ -10,35 +10,25 @@ import AchievementsModal from './AchievementsModal';
 import StatsDashboard from './StatsDashboard';
 import UserProfilesModal from './UserProfilesModal';
 import TutorialsModal from './TutorialsModal';
-import { auth, googleProvider } from '../services/firebase';
-import { signInWithPopup, signOut } from 'firebase/auth';
-
-import { authService } from '../services/authService';
 
 export default function MainLayout() {
     const {
         currentProfile, settings, systemTheme, lessonProgress, history, earnedBadges, activeLessonId,
-        updateUserSetting, switchProfile, clearUserHistory, profiles, createNewProfile, user
+        updateUserSetting, switchProfile, clearUserHistory, profiles, createNewProfile, user,
+        login, logout
     } = useApp();
 
     const handleLogin = async () => {
         try {
-            await authService.signInWithGoogle();
+            await login();
         } catch (error: any) {
-            // Error logged in service
-            if (error.message === "Cancelled") {
-                return; // User knowingly cancelled
-            }
-            if (error.message.includes("API Key")) {
-                alert(error.message);
-            } else {
-                alert("Login Failed: " + error.message);
-            }
+            if (error === "Cancelled" || error.message === "Cancelled") return;
+            alert("Login Failed: " + error);
         }
     };
 
     const handleLogout = async () => {
-        await authService.signOutUser();
+        await logout();
     };
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);

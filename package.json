@@ -26,7 +26,8 @@
     "lucide-react": "^0.556.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "react-router-dom": "^7.1.5"
+    "react-router-dom": "^7.1.5",
+    "tauri-plugin-store-api": "^0.0.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.6.0",
