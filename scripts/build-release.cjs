@@ -39,18 +39,11 @@ if (!skipBump) {
 // 2. Define Targets
 const targets = [
     {
-        name: 'macOS (Intel)',
-        target: 'x86_64-apple-darwin',
+        name: 'macOS (Universal)',
+        target: 'universal-apple-darwin',
         bundleDir: 'bundle/dmg',
         ext: '.dmg',
-        renameTo: (v) => `TypingPro-${v}-mac-x64.dmg`
-    },
-    {
-        name: 'macOS (Apple Silicon)',
-        target: 'aarch64-apple-darwin',
-        bundleDir: 'bundle/dmg',
-        ext: '.dmg',
-        renameTo: (v) => `TypingPro-${v}-mac-arm64.dmg`
+        renameTo: (v) => `TypingPro-${v}-mac-universal.dmg`
     },
     {
         name: 'Windows',

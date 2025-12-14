@@ -20,20 +20,18 @@ npm run build:all -- --no-bump
 
 Artifacts are generated in the `release/` directory with the following naming convention:
 
-- **macOS (Intel)**: `TypingPro-<version>-mac-x64.dmg`
-- **macOS (Silicon)**: `TypingPro-<version>-mac-arm64.dmg`
+- **macOS (Universal)**: `TypingPro-<version>-mac-universal.dmg` (Contains Intel + Silicon)
 - **Windows**: `TypingPro-<version>-win-x64.exe`
 - **Linux (Deb)**: `typingpro_<version>_amd64.deb`
 - **Linux (AppImage)**: `TypingPro-<version>-linux-x64.AppImage`
 
 ## 🛠 Prerequisites
 
-### macOS Requirements
-To build both Intel and Apple Silicon DMGs on a macOS machine, you must add the Rust targets:
+### macOS Requirements (Universal Build)
+To build the Universal DMG on a macOS machine, you must add **both** architectures to your Rust toolchain:
 
 ```bash
-rustup target add x86_64-apple-darwin
-rustup target add aarch64-apple-darwin
+rustup target add x86_64-apple-darwin aarch64-apple-darwin
 ```
 
 ### Cross-Compilation Notes
