@@ -58,9 +58,12 @@ jobs:
 
       - name: Create .env file for OAuth
         shell: bash
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> src-tauri/.env
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> src-tauri/.env
+          echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> src-tauri/.env
+          echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> src-tauri/.env
 
       # --- Build & Release ---
       - name: Build the app
