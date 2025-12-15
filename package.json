@@ -13,7 +13,7 @@
     "build:frontend": "vite build",
     "build:desktop": "tauri build",
     "build:all": "npm run check:requirements && npm run build:frontend && npm run build:desktop",
-    "release:bump": "standard-version --release-as patch --skip.tag --skip.changelog && node scripts/sync-version.js",
+    "release:bump": "standard-version --release-as patch --skip.changelog && node scripts/sync-version.js",
     "release:github": "git push --follow-tags origin main",
     "release:all": "npm run build:all && npm run release:bump && npm run release:github"
   },

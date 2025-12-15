@@ -1,14 +1,14 @@
 {
   "build": {
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "npm run build:frontend",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
     "withGlobalTauri": true
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.31"
+    "version": "0.0.39"
   },
   "tauri": {
     "allowlist": {
