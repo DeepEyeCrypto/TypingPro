@@ -70,10 +70,28 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     tauri::api::shell::open(&app_handle.shell_scope(), auth_url.as_str(), None)
         .map_err(|e| e.to_string())?;
 
-    // 5. Wait for Callback
-    let (mut stream, _) = tauri::async_runtime::spawn_blocking(move || {
-        listener.accept()
-    }).await.map_err(|e| e.to_string())?.map_err(|e| e.to_string())?;
+    // 5. Wait for Callback (with 2 min timeout)
+    let start_time = std::time::Instant::now();
+    let timeout = std::time::Duration::from_secs(120);
+    
+    listener.set_nonblocking(true).map_err(|e| e.to_string())?;
+
+    let (mut stream, _) = loop {
+        if start_time.elapsed() > timeout {
+            return Err("Login timed out. Please try again.".to_string());
+        }
+        match listener.accept() {
+            Ok(conn) => break conn,
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                std::thread::sleep(std::time::Duration::from_millis(100));
+                continue;
+            }
+            Err(e) => return Err(e.to_string()),
+        }
+    };
+    
+    // Set back to blocking for reliable reading
+    stream.set_nonblocking(false).map_err(|e| e.to_string())?;
     
     let mut reader = BufReader::new(&stream);
     let mut request_line = String::new();

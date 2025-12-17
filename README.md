@@ -1,18 +1,20 @@
-
 <div align="center">
   <img src="public/logo.png" alt="TypingPro Logo" width="120" height="auto" />
   <h1>TypingPro</h1>
-  <p><strong>The Ultimate Open-Source Typing Master.</strong></p>
+  <p><strong>The Professional, Privacy-Focused Typing Master.</strong></p>
 
   <p>
     <a href="https://github.com/DeepEyeCrypto/TypingPro/releases">
-      <img src="https://img.shields.io/github/v/release/DeepEyeCrypto/TypingPro?style=flat-square&color=blue" alt="Latest Release" />
+      <img src="https://img.shields.io/github/v/release/DeepEyeCrypto/TypingPro?style=flat-square&color=blue&label=Latest%20Release" alt="Latest Release" />
+    </a>
+    <a href="https://github.com/DeepEyeCrypto/TypingPro/actions">
+      <img src="https://img.shields.io/github/actions/workflow/status/DeepEyeCrypto/TypingPro/release.yml?style=flat-square&label=Build" alt="Build Status" />
+    </a>
+    <a href="https://react.dev/">
+      <img src="https://img.shields.io/badge/Stack-Tauri%20%2B%20React%2019-orange?style=flat-square" alt="Tech Stack" />
     </a>
     <a href="https://github.com/DeepEyeCrypto/TypingPro/blob/main/LICENSE">
       <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License" />
-    </a>
-    <a href="https://react.dev/">
-      <img src="https://img.shields.io/badge/Stack-Tauri%20%2B%20React-orange?style=flat-square" alt="Tech Stack" />
     </a>
   </p>
 
@@ -26,46 +28,43 @@
 
 ---
 
-**TypingPro** is a modern, privacy-focused typing tutor designed for speed and focus. Built with **Tauri** and **React**, it offers a native performance feel with a web-like development experience. Whether you're a developer looking to boost your WPM or a beginner starting from scratch, TypingPro provides the tools you need in a beautiful, distraction-free package.
+**TypingPro** is a modern, high-performance typing tutor app designed for speed, focus, and aesthetics. Built with **Tauri (Rust)** and **React 19**, it delivers a native desktop experience with 60FPS animations and zero latency. Whether you're a developer optimizing your workflow or a student learning to touch type, TypingPro adapts to your skill level.
 
 ## 🌟 Key Features
 
-### 🎯 **Smart Training**
-- **Dynamic Lessons**: From home row basics to advanced code snippets.
-- **Real-Time Analytics**: Instant feedback on WPM, accuracy, and error heatmaps.
-- **Smart Hands Overlay**: A realistic, animated hand guide that shows exactly which finger to use.
+### 🎯 **Professional Training**
+- **Adaptive Lessons**: Curriculum ranging from home row basics to complex programming syntax.
+- **Real-Time Analytics**: Instant tracking of WPM, Accuracy, and Error Heatmaps.
+- **Smart Hands Overlay**: Animated hand guides that teach correct finger placement in real-time.
 
-### 🎨 **Deep Customization**
-- **Visual Preferences**: Choose your font (Cinzel, customized sans-serif), size (A+ Medium), and cursor style (Underline, Block, Line).
-- **High Contrast Mode**: Default **Bright Yellow** text on dark backgrounds for maximum readability.
-- **Focus Mode**: "Stop on Error" disabled by default for smoother flow (toggleable).
+### 🎥 **Cinematic Video Player**
+- **Glassmorphism UI**: Beautiful, responsive video player with liquid glass controls.
+- **HLS Streaming**: Instant playback with zero buffering using `hls.js`.
+- **Focus Mode**: Fullscreen support and distraction-free viewing.
 
-### 🚀 **Performance & Offline**
-- **Native Speed**: Built on Rust, the app launches instantly and uses minimal RAM.
-- **Offline First**: No internet required. All assets, including high-quality video tutorials, are bundled locally.
-- **Optimized Assets**: Compressed video tutorials for instant playback without buffering.
-
-### 🎥 **Interactive Tutorials**
-- Integrated video lessons for proper posture and technique.
-- Visual keyboard mapping for every key press.
+### 🎨 **Modern Experience**
+- **Deep Customization**: Adjust fonts (Cinzel, Sans), sizes, and cursor styles (Block, Line, Underline).
+- **High Contrast**: Optimized color themes for maximum legibility.
+- **Offline First**: Fully functional without an internet connection.
 
 ## 📥 Downloads
 
 Download the latest version for your OS from the [Releases Page](https://github.com/DeepEyeCrypto/TypingPro/releases).
 
-| Platform | Installer Type |
-|----------|---------------|
-| **macOS** | `.dmg` (Intel & Apple Silicon) |
-| **Windows** | `.exe` / `.msi` |
-| **Linux** | `.deb` / `.AppImage` |
+| Platform | Installer | Architecture |
+|----------|-----------|--------------|
+| **macOS** | `.dmg` | Universal (Apple Silicon & Intel) |
+| **Windows** | `.exe` / `.msi` | x64 |
+| **Linux** | `.deb` / `.AppImage` | x64 |
 
 ## 🛠 Technology Stack
 
 - **Core**: Tauri (Rust)
 - **Frontend**: React 19, TypeScript, Vite
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS (v3), Glassmorphism Utils
+- **Media**: HLS.js, Custom Video Controls
 - **Icons**: Lucide React
-- **Build System**: GitHub Actions (Cross-platform CI)
+- **CI/CD**: GitHub Actions (Cross-platform Release Pipeline)
 
 ## 💻 Installation (For Developers)
 
@@ -78,25 +77,33 @@ Download the latest version for your OS from the [Releases Page](https://github.
 2.  **Install dependencies**:
     ```bash
     npm install
+    # Ensure you have Rust installed via rustup
     ```
 
 3.  **Run Locally**:
     ```bash
     npm run dev
-    # This starts the React dev server and the Tauri window
+    # Starts the Vite dev server and Tauri window
     ```
 
-## 📦 Building
+## 📦 Building & Release
 
-We use a unified build script. See [BUILD.md](BUILD.md) for detailed prerequisites and artifact details.
+We use a **Strict Version Sync** pipeline to ensure artifacts always match the package version.
 
-```bash
-# Build for all valid targets on current OS
-npm run build:all
-```
+### Key Commands
 
-**Note on CI/CD**:
-We utilize **GitHub Actions** to build native binaries for Windows (.exe), Linux (.deb), and macOS (.dmg) automatically on every release tag.
+| Command | Description |
+|---------|-------------|
+| `npm run build:all` | **Build & Package**: Runs sync -> clean -> frontend -> desktop (Universal DMG). |
+| `npm run release:all` | **Full Release**: Bumps version -> Syncs -> Builds -> Tags Git -> Pushes. |
+| `npm run sync-version` | **Verify Sync**: Checks if `package.json` and `tauri.conf.json` match. |
+
+### CI/CD Pipeline
+Our GitHub Actions workflow automatically:
+1.  **Syncs Versions**: Runs `scripts/force-sync.js` to prevent version mismatch.
+2.  **Cleans Environment**: Removes stale artifacts.
+3.  **Builds Universal**: Generates optimized binaries for all platforms.
+4.  **Publishes**: Uploads assets to GitHub Releases.
 
 ## 📄 License
 
@@ -104,5 +111,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 <div align="center">
-  <sub>Built with ❤️ by the TypingPro Team</sub>
+  <sub>Built with ❤️ by the DeepEyeCrypto Team</sub>
 </div>

@@ -39,7 +39,10 @@ const TutorialsModal: React.FC<TutorialsModalProps> = ({ onClose, initialVideoId
                         key={currentVideo.src}
                         controls
                         autoPlay
-                        className="max-h-[60vh] md:max-h-full w-full object-contain"
+                        muted
+                        playsInline
+                        preload="auto"
+                        className="max-h-[60vh] md:max-h-full w-full aspect-video object-contain bg-black"
                     >
                         <source src={currentVideo.src} type="video/mp4" />
                         Your browser does not support the video tag.
