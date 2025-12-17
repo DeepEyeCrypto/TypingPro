@@ -1,4 +1,8 @@
 name: Release
+
+env:
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 on:
   push:
     tags:
@@ -58,16 +62,33 @@ jobs:
 
       - name: Create .env file for OAuth
         shell: bash
-        env:
-          #noinspection YAMLSchemaValidation
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          #noinspection YAMLSchemaValidation
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
           echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> src-tauri/.env
           echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> src-tauri/.env
 
       # --- Build & Release ---
+      - name: Debug - Pre-Sync Version Check
+        run: |
+          echo "📦 Package.json Version:"
+          cat package.json | grep version
+          echo "⚙️ Tauri Config Version (Before):"
+          cat src-tauri/tauri.conf.json | grep version
+
+      - name: Sync Version Before Build (Shell Force)
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "🚀 Forcing version: $VERSION"
+          # sed command adapted for Linux runner (GitHub Actions)
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" src-tauri/tauri.conf.json
+
+      - name: Clean Build Artifacts
+        run: rm -rf src-tauri/target/release/bundle
+
+      - name: Debug - Post-Sync Version Check
+        run: |
+          echo "✅ Tauri Config Version (After):"
+          cat src-tauri/tauri.conf.json | grep version
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
