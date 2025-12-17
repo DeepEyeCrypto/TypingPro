@@ -3,6 +3,7 @@ name: Release
 env:
   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
 on:
   push:
     tags:
@@ -40,18 +41,17 @@ jobs:
       # --- Setup Rust ---
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
-        with:
-          # Mac needs both targets for universal build
-          # targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }} (Commented out to use explicit step below)
-
-      - name: Add macOS Rust Targets (Explicit)
-        if: matrix.platform == 'macos-latest'
-        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+        # 'with' block removed because default 'stable' is sufficient, 
+        # and targets are added explicitly below to avoid YAML syntax errors.
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
+
+      - name: Add macOS Rust Targets
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
       # --- System Dependencies (Linux) ---
       - name: Install Linux dependencies
@@ -70,28 +70,36 @@ jobs:
           echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> src-tauri/.env
           echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> src-tauri/.env
 
-      # --- Build & Release ---
+      # --- Version Sync (Critical) ---
       - name: Debug - Pre-Sync Version Check
+        shell: bash
         run: |
           echo "📦 Package.json Version:"
-          cat package.json | grep version
+          cat package.json | grep version || echo "Cannot read package.json"
           echo "⚙️ Tauri Config Version (Before):"
-          cat src-tauri/tauri.conf.json | grep version
+          cat src-tauri/tauri.conf.json | grep version || echo "Cannot read tauri.conf.json"
 
       - name: Sync Version Before Build (Shell Force)
+        shell: bash
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "🚀 Forcing version: $VERSION"
-          # sed command adapted for Linux runner (GitHub Actions)
-          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" src-tauri/tauri.conf.json
-
-      - name: Clean Build Artifacts
-        run: rm -rf src-tauri/target/release/bundle
+          # sed command adapted for cross-platform runners (using -i w/o backup extension can differ, assuming standard LINUX/BASH behavior for Actions)
+          # Note: macOS runner uses BSD sed which requires extension. Windows uses Git Bash.
+          # Best practice: use temp file and mv for cross-platform safety in a simple script.
+          
+          sed "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" src-tauri/tauri.conf.json > src-tauri/tauri.conf.json.tmp && mv src-tauri/tauri.conf.json.tmp src-tauri/tauri.conf.json
 
       - name: Debug - Post-Sync Version Check
+        shell: bash
         run: |
           echo "✅ Tauri Config Version (After):"
           cat src-tauri/tauri.conf.json | grep version
+
+      # --- Build & Release ---
+      - name: Clean Build Artifacts
+        shell: bash
+        run: rm -rf src-tauri/target/release/bundle
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
