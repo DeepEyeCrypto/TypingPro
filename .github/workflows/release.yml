@@ -42,7 +42,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # Mac needs both targets for universal build
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          # targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }} (Commented out to use explicit step below)
+
+      - name: Add macOS Rust Targets (Explicit)
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
