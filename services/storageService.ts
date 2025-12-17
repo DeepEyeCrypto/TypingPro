@@ -95,7 +95,7 @@ export const getLessonProgress = (profileId: string): Record<number, LessonProgr
     return initialProgress;
 };
 
-export const updateLessonProgress = (profileId: string, lessonId: number, stats: { wpm: number, accuracy: number, completed: boolean }) => {
+export const updateLessonProgress = (profileId: string, lessonId: number, stats: { wpm: number, accuracy: number, completed: boolean }): Record<number, LessonProgress> => {
     const progress = getLessonProgress(profileId);
 
     if (!progress[lessonId]) {
@@ -112,7 +112,7 @@ export const updateLessonProgress = (profileId: string, lessonId: number, stats:
     return progress;
 };
 
-export const unlockLesson = (profileId: string, lessonId: number) => {
+export const unlockLesson = (profileId: string, lessonId: number): Record<number, LessonProgress> => {
     const progress = getLessonProgress(profileId);
     if (!progress[lessonId]) {
         progress[lessonId] = { unlocked: true, completed: false, bestWpm: 0, bestAccuracy: 0, runCount: 0 };
@@ -136,7 +136,7 @@ export const getKeyStats = (profileId: string): Record<string, KeyStats> => {
     }
 };
 
-export const updateKeyStats = (profileId: string, sessionStats: Record<string, KeyStats>) => {
+export const updateKeyStats = (profileId: string, sessionStats: Record<string, KeyStats>): Record<string, KeyStats> => {
     const current = getKeyStats(profileId);
 
     Object.values(sessionStats).forEach(stat => {
@@ -183,7 +183,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     fontSize: 'large',
     cursorStyle: 'block',
     stopOnError: false,
-    trainingMode: 'accuracy'
+    trainingMode: 'accuracy',
+    fontColor: 'white'
 };
 
 export const getSettings = (profileId: string): UserSettings => {

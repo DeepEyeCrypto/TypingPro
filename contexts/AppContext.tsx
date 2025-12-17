@@ -32,7 +32,7 @@ interface AppContextType {
     setActiveLessonId: (id: number) => void;
     switchProfile: (profile: UserProfile) => void;
     createNewProfile: (name: string) => void;
-    updateUserSetting: (key: keyof UserSettings, val: any) => void;
+    updateUserSetting: <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => void;
     recordLessonComplete: (lessonId: number, stats: Stats) => boolean;
     clearUserHistory: () => void;
     refreshUserData: () => void;
@@ -204,7 +204,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setCurrentProfile(p);
     };
 
-    const updateUserSetting = (key: keyof UserSettings, val: any) => {
+    const updateUserSetting = <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => {
         setSettings(prev => ({ ...prev, [key]: val }));
     };
 
@@ -291,12 +291,35 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const refreshUserData = () => loadProfileData(currentProfile.id);
 
+    const contextValue = React.useMemo(() => ({
+        profiles,
+        currentProfile,
+        settings,
+        lessonProgress,
+        history,
+        earnedBadges,
+        systemTheme,
+        activeLessonId,
+        user,
+        keyStats,
+        dailyGoals,
+        setActiveLessonId,
+        switchProfile,
+        createNewProfile,
+        updateUserSetting,
+        recordLessonComplete,
+        clearUserHistory,
+        refreshUserData,
+        recordKeyStats: recordKeyStatsAction,
+        login,
+        logout
+    }), [
+        profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme,
+        activeLessonId, user, keyStats, dailyGoals
+    ]);
+
     return (
-        <AppContext.Provider value={{
-            profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme, activeLessonId, user, keyStats, dailyGoals,
-            setActiveLessonId, switchProfile, createNewProfile, updateUserSetting, recordLessonComplete, clearUserHistory, refreshUserData, recordKeyStats: recordKeyStatsAction,
-            login, logout
-        }}>
+        <AppContext.Provider value={contextValue}>
             {children}
         </AppContext.Provider>
     );

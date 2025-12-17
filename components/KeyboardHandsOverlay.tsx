@@ -1,9 +1,12 @@
+
 import React, { useMemo } from 'react';
 import { KEYBOARD_ROWS, getKeyForChar, getFingerForKeyId, requiresShift, Finger } from '../utils/keyToFingerMap';
+import { KeyStats } from '../types';
 
 interface KeyboardHandsOverlayProps {
     currentChar: string | null;
     className?: string;
+    heatmapStats?: Record<string, KeyStats>;
 }
 
 // Layout Constants
@@ -50,7 +53,7 @@ const FINGER_COORDS: Record<Finger, { x: number, y: number, length: number }> = 
 const LEFT_HAND_POS = { x: 230, y: 410 };
 const RIGHT_HAND_POS = { x: 670, y: 410 };
 
-const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar, className = '' }) => {
+const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar, className = '', heatmapStats }) => {
     // 1. Determine Active Key and Finger
     const activeKeyId = useMemo(() => getKeyForChar(currentChar), [currentChar]);
     const activeFinger = useMemo(() => activeKeyId ? getFingerForKeyId(activeKeyId) : null, [activeKeyId]);
@@ -106,6 +109,26 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
         };
     };
 
+    // Helper to get heat color
+    const getHeatColor = (keyLabel: string) => {
+        if (!heatmapStats) return null;
+        const char = keyLabel.toLowerCase();
+        const stat = heatmapStats[char];
+        if (!stat || stat.errorCount === 0) return null;
+
+        // Gradient from slight orange to deep red based on error count
+        // Cap at 10 errors for max redness
+        // We return TAILWIND COLORS suitable for SVG usage if we were using tailwind classes, 
+        // but this SVG uses inline classes or styles.
+        // 'fill-red-500' works because we likely have tailwind config?
+        // But SVG fill needs proper color values if we don't trust classes in complex SVGs.
+        // Let's stick to the class approach used in the original component.
+
+        if (stat.errorCount > 5) return 'fill-red-500 dark:fill-red-600';
+        if (stat.errorCount > 2) return 'fill-orange-400 dark:fill-orange-500';
+        return 'fill-orange-200 dark:fill-orange-800';
+    };
+
     // Active Key Center
     const targetKeyPos = activeKeyId ? getKeyCenter(activeKeyId) : null;
     const activeFingerPos = activeFinger ? getFingerTip(activeFinger) : null;
@@ -143,6 +166,7 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                                     const h = KEY_BASE_SIZE;
                                     const isActive = key.id === activeKeyId || key.id === activeShiftKeyId;
                                     const keyX = currentX;
+                                    const heatClass = getHeatColor(key.label);
 
                                     // Update X for next key
                                     currentX += w + KEY_GAP;
@@ -157,7 +181,9 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                             transition-all duration-150 stroke-[1.5px]
                             ${isActive
                                                         ? 'fill-[#cfe8ff] dark:fill-blue-900 stroke-[#4a90e2] dark:stroke-blue-500'
-                                                        : 'fill-white dark:fill-gray-800 stroke-[#bbbbbb] dark:stroke-gray-600'
+                                                        : heatClass
+                                                            ? `${heatClass} stroke-red-300 dark:stroke-red-700`
+                                                            : 'fill-white dark:fill-gray-800 stroke-[#bbbbbb] dark:stroke-gray-600'
                                                     }
                           `}
                                             />
@@ -169,7 +195,9 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                             text-[16px] font-sans transition-colors duration-150 select-none
                             ${isActive
                                                         ? 'fill-[#255a9b] dark:fill-blue-100 font-bold'
-                                                        : 'fill-[#555555] dark:fill-gray-400 font-medium'
+                                                        : heatClass
+                                                            ? 'fill-red-900 dark:fill-red-100 font-bold'
+                                                            : 'fill-[#555555] dark:fill-gray-400 font-medium'
                                                     }
                           `}
                                             >

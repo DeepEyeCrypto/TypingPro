@@ -1,37 +1,60 @@
-import { createRequire } from 'module';
-import path from 'path';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
-const fs = require('fs');
+const packageJsonPath = resolve(__dirname, '../package.json');
+const tauriConfPath = resolve(__dirname, '../src-tauri/tauri.conf.json');
+const cargoTomlPath = resolve(__dirname, '../src-tauri/Cargo.toml');
 
-const packageJsonPath = path.resolve(__dirname, '../package.json');
-const tauriConfPath = path.resolve(__dirname, '../src-tauri/tauri.conf.json');
-const cargoTomlPath = path.resolve(__dirname, '../src-tauri/Cargo.toml');
+console.log('🔄 STRICT SYNC: Starting version synchronization...');
 
-const packageJson = require(packageJsonPath);
-const tauriConf = require(tauriConfPath);
+try {
+    // 1. Read Truth (package.json)
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+    const targetVersion = packageJson.version;
+    console.log(`📍 Source of Truth (package.json): v${targetVersion}`);
 
-const newVersion = packageJson.version;
+    // 2. Sync Tauri Config
+    if (existsSync(tauriConfPath)) {
+        const tauriConf = JSON.parse(readFileSync(tauriConfPath, 'utf8'));
+        const currentTauriVersion = tauriConf.package.version;
 
-console.log(`Syncing version ${newVersion} to tauri.conf.json...`);
-tauriConf.package.version = newVersion;
-fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
+        if (currentTauriVersion !== targetVersion) {
+            console.log(`⚠️  Mismatch found in tauri.conf.json (v${currentTauriVersion}). Fixing...`);
+            tauriConf.package.version = targetVersion;
+            writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
+            console.log(`✅ Updated tauri.conf.json to v${targetVersion}`);
+        } else {
+            console.log(`✅ tauri.conf.json is already matched (v${targetVersion})`);
+        }
+    } else {
+        console.error('❌ tauri.conf.json NOT FOUND!');
+        process.exit(1);
+    }
 
-console.log(`Syncing version ${newVersion} to Cargo.toml...`);
-if (fs.existsSync(cargoTomlPath)) {
-    let cargoTomlContent = fs.readFileSync(cargoTomlPath, 'utf8');
-    // Replace version = "x.y.z"
-    cargoTomlContent = cargoTomlContent.replace(
-        /^version = "[^"]+"$/m,
-        `version = "${newVersion}"`
-    );
-    fs.writeFileSync(cargoTomlPath, cargoTomlContent);
-} else {
-    console.warn('Cargo.toml not found, skipping.');
+    // 3. Sync Cargo.toml (Optional but recommended)
+    if (existsSync(cargoTomlPath)) {
+        let cargoToml = readFileSync(cargoTomlPath, 'utf8');
+        const versionRegex = /^version\s*=\s*"[^"]+"/m;
+        if (versionRegex.test(cargoToml)) {
+            const currentCargoVersion = cargoToml.match(versionRegex)[0].split('"')[1];
+            if (currentCargoVersion !== targetVersion) {
+                console.log(`⚠️  Mismatch found in Cargo.toml (v${currentCargoVersion}). Fixing...`);
+                cargoToml = cargoToml.replace(versionRegex, `version = "${targetVersion}"`);
+                writeFileSync(cargoTomlPath, cargoToml);
+                console.log(`✅ Updated Cargo.toml to v${targetVersion}`);
+            } else {
+                console.log(`✅ Cargo.toml is already matched (v${targetVersion})`);
+            }
+        }
+    }
+
+    console.log('✨ Strict Sync Complete. Build can proceed.');
+
+} catch (error) {
+    console.error('❌ FATAL ERROR during version sync:', error);
+    process.exit(1);
 }
-
-console.log('Done.');

@@ -88,6 +88,8 @@ export interface UserSettings {
   stopOnError: boolean;
   trainingMode: TrainingMode;
   fontColor: string;
+  wpmGoal?: number;
+  accuracyGoal?: number;
 }
 
 export interface UserProfile {
@@ -107,4 +109,12 @@ export interface Badge {
 export interface EarnedBadge {
   badgeId: string;
   earnedAt: string;
+}
+
+export interface VirtualKey {
+  code: string;
+  width?: number;
+  finger: string;
+  homing?: boolean;
+  label?: string;
 }

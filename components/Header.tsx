@@ -2,11 +2,12 @@ import { getAppVersion } from '../utils/appVersion';
 import React, { useState, useEffect } from 'react';
 import {
   PanelLeft, ChevronLeft, ChevronRight, User, Settings,
-  BarChart2, Award, History, Moon, Sun, VideoIcon, LogIn, LogOut
+  BarChart2, Award, History, Moon, Sun, LogIn, LogOut
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { LESSONS } from '../constants';
 import { AuthUser } from '../services/authService';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface HeaderProps {
   currentLessonId: number;
@@ -17,9 +18,9 @@ interface HeaderProps {
   onOpenHistory: () => void;
   onOpenAchievements: () => void;
   onOpenDashboard: () => void;
-  onOpenTutorials: () => void;
-  toggleDarkMode: () => void;
-  isDarkMode: boolean;
+  // toggleDarkMode & isDarkMode are now handled internally via ThemeContext
+  toggleDarkMode?: () => void;
+  isDarkMode?: boolean;
   unlockedLessons: Record<number, boolean>;
   currentProfile: UserProfile;
   onSwitchProfile: () => void;
@@ -38,9 +39,6 @@ const Header: React.FC<HeaderProps> = ({
   onOpenHistory,
   onOpenAchievements,
   onOpenDashboard,
-  onOpenTutorials,
-  toggleDarkMode,
-  isDarkMode,
   unlockedLessons,
   currentProfile,
   onSwitchProfile,
@@ -50,15 +48,19 @@ const Header: React.FC<HeaderProps> = ({
   onLogout,
 }) => {
   const [version, setVersion] = useState<string>('');
+  const { theme, toggleTheme, resolvedTheme } = useTheme();
 
   useEffect(() => {
     getAppVersion().then(setVersion);
   }, []);
 
+  const isDark = resolvedTheme === 'dark';
+
   return (
-    <header className="h-[52px] bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-800 fixed top-0 w-full z-50 select-none shadow-sm transition-colors duration-200">
+    <header className="h-[52px] flex items-center justify-between px-4 border-b border-border bg-bg-surface backdrop-blur-md fixed top-0 w-full z-50 select-none shadow-sm transition-colors duration-200">
+      {/* Progress Bar */}
       <div
-        className="absolute bottom-0 left-0 h-[2px] bg-[#007AFF] transition-all duration-300 ease-out z-50"
+        className="absolute bottom-0 left-0 h-[2px] bg-brand transition-all duration-300 ease-out z-50"
         style={{ width: `${progress}%` }}
       />
 
@@ -66,22 +68,25 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-3 min-w-[200px]">
         <button
           onClick={onToggleSidebar}
-          className="p-2 -ml-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+          className="p-2 -ml-2 text-text-muted hover:text-text-primary hover:bg-bg-secondary rounded-md transition-colors"
           title="Toggle Course Map"
         >
           <PanelLeft className="w-5 h-5" />
         </button>
-        <img src="logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+        {/* Logo placeholder - replacing raw img with maybe a text/icon combo for now or keeping img */}
+        <div className="flex items-center justify-center w-8 h-8 rounded bg-brand/10 text-brand">
+          <span className="font-bold font-mono">Tp</span>
+        </div>
+
         <div className="flex flex-col leading-none">
-          <div className="text-gray-900 dark:text-white font-bold text-lg tracking-tight">
+          <div className="text-text-primary font-bold text-lg tracking-tight">
             TypingPro
           </div>
           <button
             onClick={() => {
-              // Placeholder Update Logic
               alert(`TypingPro v${version}\n\nYou are on the latest version.`);
             }}
-            className="text-[10px] text-gray-400 font-mono pl-0.5 hover:text-blue-500 dark:hover:text-blue-400 transition-colors text-left"
+            className="text-[10px] text-text-muted font-mono pl-0.5 hover:text-brand transition-colors text-left"
             title="Check for updates"
           >
             v{version}
@@ -94,15 +99,17 @@ const Header: React.FC<HeaderProps> = ({
         <button
           onClick={() => onSelectLesson(currentLessonId - 1)}
           disabled={currentLessonId <= 1}
-          className="p-1 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+          className="p-1 rounded-full text-text-muted hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-all"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center justify-center gap-1.5 bg-gray-100/50 dark:bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-gray-700/50">
+        <div className="flex items-center justify-center gap-1.5 bg-bg-secondary px-3 py-1.5 rounded-full border border-border">
           {LESSONS.map((lesson) => {
-            const isActive = lesson.id === currentLessonId;
-            const isCompleted = lesson.id < currentLessonId;
+            const isActive = lesson.id === currentLessonId; // Actually just use currentLessonId
+            // Wait, activeLessonId is passed as props.
+            const isCurrent = lesson.id === currentLessonId;
+            const isCompleted = lesson.id < currentLessonId; // Simplified logic for UI
             const isUnlocked = unlockedLessons[lesson.id];
 
             return (
@@ -115,13 +122,13 @@ const Header: React.FC<HeaderProps> = ({
                 <div
                   className={`
                         w-2 h-2 rounded-full transition-all duration-300
-                        ${isActive
-                      ? 'bg-gray-800 dark:bg-white scale-125 shadow-sm'
+                        ${isCurrent
+                      ? 'bg-text-primary scale-125 shadow-sm'
                       : isCompleted
-                        ? 'bg-[#34C759]'
+                        ? 'bg-status-success'
                         : isUnlocked
-                          ? 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
-                          : 'bg-gray-200 dark:bg-gray-700'
+                          ? 'bg-text-muted hover:bg-text-secondary'
+                          : 'bg-border-hover'
                     }
                     `}
                 />
@@ -133,7 +140,7 @@ const Header: React.FC<HeaderProps> = ({
         <button
           onClick={() => onSelectLesson(currentLessonId + 1)}
           disabled={currentLessonId >= totalLessons || !unlockedLessons[currentLessonId + 1]}
-          className="p-1 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+          className="p-1 rounded-full text-text-muted hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-all"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -144,12 +151,11 @@ const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-1">
           {/* User / Profile Area */}
-          <div className="flex items-center gap-1 border-r border-gray-200 dark:border-gray-700 pr-2 mr-1">
-            {/* If user is logged in via Firebase, show Logout, else Login */}
+          <div className="flex items-center gap-1 border-r border-border pr-2 mr-1">
             {user ? (
               <button
                 onClick={onLogout}
-                className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                className="p-1.5 text-status-error hover:bg-status-error/10 rounded-md transition-colors"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
@@ -157,7 +163,7 @@ const Header: React.FC<HeaderProps> = ({
             ) : (
               <button
                 onClick={onLogin}
-                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors shadow-sm"
+                className="flex items-center gap-1.5 bg-brand hover:bg-brand-hover text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors shadow-sm"
                 title="Sign in with Google"
               >
                 <LogIn className="w-3.5 h-3.5" />
@@ -167,7 +173,7 @@ const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={onSwitchProfile}
-              className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary rounded-md transition-colors"
               title="Switch Profile"
             >
               {user?.picture ? (
@@ -180,32 +186,25 @@ const Header: React.FC<HeaderProps> = ({
           </div>
 
           <button
-            onClick={toggleDarkMode}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-            title="Toggle Dark Mode"
+            onClick={toggleTheme}
+            className="p-2 text-text-muted hover:bg-bg-secondary rounded-md transition-colors"
+            title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
           <button
             onClick={onOpenDashboard}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            className="p-2 text-text-muted hover:bg-bg-secondary rounded-md transition-colors"
             title="Stats Dashboard"
           >
             <BarChart2 className="w-4 h-4" />
           </button>
 
-          <button
-            onClick={onOpenTutorials}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-            title="Video Tutorials"
-          >
-            <VideoIcon className="w-4 h-4" />
-          </button>
 
           <button
             onClick={onOpenAchievements}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            className="p-2 text-text-muted hover:bg-bg-secondary rounded-md transition-colors"
             title="Achievements"
           >
             <Award className="w-4 h-4" />
@@ -213,15 +212,13 @@ const Header: React.FC<HeaderProps> = ({
 
           <button
             onClick={onOpenHistory}
-            className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            className="p-2 text-text-muted hover:bg-bg-secondary rounded-md transition-colors"
             title="History"
           >
             <History className="w-4 h-4" />
           </button>
 
-
-
-          <button onClick={onOpenSettings} className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
+          <button onClick={onOpenSettings} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-secondary rounded-md transition-colors">
             <Settings className="w-4 h-4" />
           </button>
         </div>

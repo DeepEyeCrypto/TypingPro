@@ -2,33 +2,126 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force full height and no scroll for app feel */
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+@layer base {
+  :root {
+    /* --- LIGHT THEME (Default) --- */
 
-/* Keyboard Horizontal Scaling for short screens */
-@media (max-height: 800px) {
-  .keyboard-scaler {
-    transform: scale(0.85);
+    /* Backgrounds */
+    --bg-primary: 255 255 255;
+    /* #ffffff */
+    --bg-secondary: 249 250 251;
+    /* #f9fafb (gray-50) */
+    --bg-surface: 255 255 255;
+    /* #ffffff */
+    --bg-elevated: 255 255 255;
+    /* #ffffff */
+
+    /* Text */
+    --text-primary: 17 24 39;
+    /* #111827 (gray-900) */
+    --text-secondary: 75 85 99;
+    /* #4b5563 (gray-600) */
+    --text-muted: 156 163 175;
+    /* #9ca3af (gray-400) */
+    --text-inverted: 255 255 255;
+    /* #ffffff */
+
+    /* Brand / Accent */
+    --color-brand: 37 99 235;
+    /* #2563eb (blue-600) */
+    --color-brand-hover: 29 78 216;
+    /* #1d4ed8 (blue-700) */
+
+    /* Functional */
+    --color-success: 16 185 129;
+    /* #10b981 */
+    --color-error: 239 68 68;
+    /* #ef4444 */
+    --color-warning: 245 158 11;
+    /* #f59e0b */
+
+    /* Borders */
+    --border-color: 229 231 235;
+    /* #e5e7eb (gray-200) */
+    --border-hover: 209 213 219;
+    /* #d1d5db (gray-300) */
+
+    /* Spacing Tokens */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+  }
+
+  .dark {
+    /* --- DARK THEME --- */
+
+    /* Backgrounds */
+    --bg-primary: 11 17 32;
+    /* #0B1120 (Custom deep dark blue) */
+    --bg-secondary: 17 24 39;
+    /* #111827 (gray-900) */
+    --bg-surface: 31 41 55;
+    /* #1f2937 (gray-800) */
+    --bg-elevated: 55 65 81;
+    /* #374151 (gray-700) */
+
+    /* Text */
+    --text-primary: 243 244 246;
+    /* #f3f4f6 (gray-100) */
+    --text-secondary: 156 163 175;
+    /* #9ca3af (gray-400) */
+    --text-muted: 107 114 128;
+    /* #6b7280 (gray-500) */
+    --text-inverted: 17 24 39;
+    /* #111827 */
+
+    /* Brand / Accent - Slightly lighter for contrast */
+    --color-brand: 96 165 250;
+    /* #60a5fa (blue-400) */
+    --color-brand-hover: 59 130 246;
+    /* #3b82f6 (blue-500) */
+
+    /* Borders */
+    --border-color: 55 65 81;
+    /* #374151 (gray-700) */
+    --border-hover: 75 85 99;
+    /* #4b5563 (gray-600) */
+  }
+
+  /* App Shell Reset */
+  html,
+  body,
+  #root {
+    @apply h-full w-full m-0 p-0 overflow-hidden bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))];
+    /* Prevent rubber-banding on Mac */
+    overscroll-behavior: none;
   }
 }
 
-@media (max-height: 650px) {
-  .keyboard-scaler {
-    transform: scale(0.75);
+/* Animations */
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
   }
 }
 
-/* Custom scrollbar for a cleaner app feel */
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Scrollbar Styling using CSS Vars */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -36,37 +129,45 @@ body,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background-color: rgb(var(--border-color));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background-color: rgb(var(--text-muted));
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #374151;
-}
-
-.cursor-blink {
-  animation: blink-animation 1s steps(2, start) infinite;
-}
-
-@keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Utilities */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
   -ms-overflow-style: none;
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+/* Responsive Keyboard Scaling */
+.keyboard-scaler {
+  transform: scale(1);
+}
+
+@media (max-height: 800px) {
+  .keyboard-scaler {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-height: 700px) {
+  .keyboard-scaler {
+    transform: scale(0.8);
+  }
+}
+
+@media (max-height: 600px) {
+  .keyboard-scaler {
+    transform: scale(0.7);
+  }
 }

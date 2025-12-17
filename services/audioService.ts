@@ -6,7 +6,7 @@ let isLoading = false;
 
 const initAudio = () => {
     if (!audioContext) {
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
         // Preload sound immediately when context is created
         loadTypingSound();
     }

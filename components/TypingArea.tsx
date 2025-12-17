@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Stats, FontSize, CursorStyle, KeyStats, TrainingMode } from '../types';
-import { playSound } from '../services/audioService';
+import { useSound } from '../contexts/SoundContext'; // Changed import
 import { AlertCircle } from 'lucide-react';
 
 interface TypingAreaProps {
@@ -13,6 +13,7 @@ interface TypingAreaProps {
   soundEnabled: boolean;
   onActiveKeyChange?: (key: string | null) => void;
   onStatsUpdate: (stats: { wpm: number; accuracy: number; errors: number; progress: number }) => void;
+  onKeyStatsUpdate?: (stats: Record<string, KeyStats>) => void; // New prop for live heatmap
   onSessionStats?: (stats: Record<string, KeyStats>) => void;
   fontFamily: string;
   fontSize: FontSize;
@@ -41,8 +42,10 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   stopOnError,
   trainingMode,
   newKeys,
-  fontColor
+  fontColor,
+  onKeyStatsUpdate // Added
 }) => {
+  const { playSound } = useSound(); // Hook usage
   const [input, setInput] = useState('');
   const [cursorIndex, setCursorIndex] = useState(0);
   const [errors, setErrors] = useState<number[]>([]);
@@ -60,7 +63,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   // Focus management
   useEffect(() => {
     if (isActive && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus({ preventScroll: true });
     }
   }, [isActive, activeLessonId]);
 
@@ -122,8 +125,9 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (startTime && cursorIndex < content.length) {
       interval = setInterval(() => {
         const stats = calculateStats();
+        // Only update if something changed (at least 500ms has passed anyway)
         onStatsUpdate(stats);
-      }, 500);
+      }, 1000); // 1s interval is enough for UI updates, reduces re-renders
     }
 
     return () => clearInterval(interval);
@@ -138,7 +142,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       const newErrors = current.errorCount + (isError ? 1 : 0);
       const newAcc = Math.round(((newTotal - newErrors) / newTotal) * 100);
 
-      return {
+      const updated = {
         ...prev,
         [key]: {
           ...current,
@@ -147,6 +151,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
           accuracy: newAcc
         }
       };
+      if (onKeyStatsUpdate) onKeyStatsUpdate(updated);
+      return updated;
     });
   };
 
@@ -179,11 +185,11 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
     if (e.key === targetChar) {
       // Correct key press
-      if (soundEnabled) playSound('click');
+      if (soundEnabled) playSound(); // Corrected: no args
       updateKeyStat(keyChar, false);
     } else {
       // Incorrect key press
-      if (soundEnabled) playSound('error');
+      if (soundEnabled) playSound(); // Corrected: no args
 
       // Visual Shake
       setShake(true);
@@ -243,30 +249,14 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     switch (fontSize) {
       case 'small': return "text-2xl md:text-3xl lg:text-4xl";
       case 'medium': return "text-3xl md:text-5xl lg:text-6xl";
-      case 'large': return "text-5xl md:text-7xl lg:text-8xl"; // Default
-      case 'xl': return "text-6xl md:text-8xl lg:text-9xl";
-      default: return "text-5xl md:text-7xl lg:text-8xl";
+      case 'large': return "text-4xl md:text-6xl lg:text-7xl"; // Adjusted for better desktop feel
+      case 'xl': return "text-5xl md:text-7xl lg:text-8xl";
+      default: return "text-4xl md:text-6xl lg:text-7xl";
     }
   };
 
-  const getCursorClass = () => {
-    const base = " animate-pulse text-white";
-    // Accuracy mode: Blue cursor? Regular: Orange.
-    const color = trainingMode === 'accuracy' ? 'bg-blue-500 border-blue-500' : 'bg-[#F97316] border-[#F97316]';
-
-    // Actually, text color needs to be handled too if block
-    switch (cursorStyle) {
-      case 'block': return base + ` ${color} rounded-[6px]`;
-      case 'line': return ` animate-pulse border-l-4 ${color} -ml-[2px]`;
-      case 'underline': return ` animate-pulse border-b-4 ${color}`;
-      case 'box': return ` animate-pulse border-2 ${color} text-inherit bg-transparent rounded-[6px]`;
-      default: return base + ` ${color} rounded-[6px]`;
-    }
-  };
-
-  const renderText = () => {
+  const renderedText = React.useMemo(() => {
     const sizeClass = getTextSizeClass();
-    const cursorClass = getCursorClass();
 
     return content.split('').map((char, idx) => {
       // Base styles
@@ -274,27 +264,29 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
       // Cursor / Active Character
       if (idx === cursorIndex) {
-        // Force blue block cursor for premium feel regardless of mode
-        className += " bg-blue-600 text-white rounded-md shadow-lg shadow-blue-500/30 scale-110 z-10 mx-0.5";
+        // Active Highlight styles
+        className += " bg-brand text-text-inverted rounded-md shadow-lg shadow-brand/30 scale-110 z-10 mx-0.5";
 
-        if (shake) className += " animate-pulse bg-red-500 shadow-red-500/30";
+        if (shake) className += " animate-pulse bg-status-error shadow-status-error/30";
       }
       // Past Text (Correct/Error)
       else if (idx < cursorIndex) {
         if (errors.includes(idx)) {
-          className += " text-red-500 dark:text-red-400 opacity-60";
+          className += " text-status-error opacity-60";
         } else {
           // Completed text fades to gray to reduce distraction
-          className += " text-gray-500 dark:text-gray-400";
+          className += " text-text-muted opacity-40";
         }
       }
       // Future Text
       else {
         // If fontColor is set, full opacity. Otherwise default opacity.
-        className += fontColor ? " font-normal opacity-100" : " text-gray-300 dark:text-gray-600 font-normal opacity-40";
+        className += fontColor ? " font-normal opacity-100" : " text-text-secondary opacity-60 font-normal";
       }
 
       const style: React.CSSProperties = {};
+
+      // Override text color if custom fontColor is passed (but respect active logic)
       if (idx > cursorIndex && fontColor) {
         style.color = fontColor;
       }
@@ -305,31 +297,21 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         </span>
       );
     });
-  };
-
-  // This useEffect block is added based on the provided diff
-  useEffect(() => {
-    if (isActive && inputRef.current) {
-      inputRef.current.focus({ preventScroll: true });
-    }
-  }, [isActive, activeLessonId]);
-
-  // Check if we are at start and have new keys to show
-  const showNewKeysTip = cursorIndex === 0 && newKeys && newKeys.length > 0;
+  }, [content, cursorIndex, errors, shake, fontSize, fontColor, fontFamily]);
 
   return (
     <div
       className="flex flex-col items-center justify-center w-full h-full relative outline-none py-2"
       onClick={() => inputRef.current?.focus({ preventScroll: true })}
-      onContextMenu={(e) => e.preventDefault()} // Disable context menu (right-click) for distraction-free typing
+      onContextMenu={(e) => e.preventDefault()}
     >
       <input
         ref={inputRef}
         type="text"
         className="fixed opacity-0 top-[-9999px] left-[-9999px] w-1 h-1 cursor-default pointer-events-none -z-10"
         onKeyDown={handleKeyDown}
-        onChange={() => { }} // No-op to satisfy React controlled component
-        value="" // Force empty value at all times
+        onChange={() => { }}
+        value=""
         autoFocus
         autoComplete="new-password"
         autoCorrect="off"
@@ -338,7 +320,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         name={`typing-input-${Math.random()}`}
         id="typing-hidden-input"
         data-lpignore="true"
-        onBlur={() => inputRef.current?.focus({ preventScroll: true })} // Keep focus without scrolling
+        onBlur={() => inputRef.current?.focus({ preventScroll: true })}
       />
 
       <div
@@ -352,7 +334,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
             ${shake ? 'translate-x-[2px]' : ''}
         `}
       >
-        {renderText()}
+        {renderedText}
       </div>
     </div>
   );

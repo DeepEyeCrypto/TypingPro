@@ -1,14 +1,14 @@
 {
   "build": {
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build:frontend",
+    "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
     "withGlobalTauri": true
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.50"
+    "version": "0.0.52"
   },
   "tauri": {
     "allowlist": {
@@ -21,11 +21,9 @@
     "bundle": {
       "active": true,
       "targets": [
-        "app",
-        "updater",
+        "dmg",
         "nsis",
-        "deb",
-        "appimage"
+        "deb"
       ],
       "identifier": "com.typingpro.app",
       "icon": [

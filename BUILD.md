@@ -1,48 +1,22 @@
 # Build Instructions
 
-This project is configured to build for macOS (Intel & Silicon), Windows, and Linux.
-
-## 🚀 Quick Start
-
-To build for all supported platforms on your current OS:
+## Single Command Run
+To build the application for your current platform (and universal DMG on macOS), run:
 
 ```bash
 npm run build:all
 ```
+This will:
+1. Check requirements.
+2. Build the frontend (`dist/`).
+3. Build the desktop installer(s) using `scripts/build-desktop.js`.
+   - On **macOS**, this attempts to build a **Universal Binary** (Intel + Apple Silicon).
+   - On Windows/Linux, it builds for the host architecture.
+4. Move artifacts to the `release/` directory.
 
-To build **without** bumping the version number:
+## Output Locations
+- **macOS**: `release/TypingPro-<version>_universal.dmg` (or standard .dmg)
+- **Windows**: `release/TypingPro-<version>-x64.exe`
+- **Linux**: `release/typingpro_<version>_amd64.deb` & `.AppImage`
 
-```bash
-npm run build:all -- --no-bump
-```
-
-## 📦 Artifacts
-
-Artifacts are generated in the `release/` directory with the following naming convention:
-
-- **macOS (Universal)**: `TypingPro-<version>-mac-universal.dmg` (Contains Intel + Silicon)
-- **Windows**: `TypingPro-<version>-win-x64.exe`
-- **Linux (Deb)**: `typingpro_<version>_amd64.deb`
-- **Linux (AppImage)**: `TypingPro-<version>-linux-x64.AppImage`
-
-## 🛠 Prerequisites
-
-### macOS Requirements (Universal Build)
-To build the Universal DMG on a macOS machine, you must add **both** architectures to your Rust toolchain:
-
-```bash
-rustup target add x86_64-apple-darwin aarch64-apple-darwin
-```
-
-### Cross-Compilation Notes
-Tauri relies on native system libraries for bundling (NSIS for Windows, GTK for Linux).
-
-- **On macOS**: You CANNOT build Windows `.exe` or Linux `.deb` locally without strictly configured cross-compilation toolchains or Docker. The `build:all` script will **skip** these targets and warn you if run on macOS.
-- **Solution**: Use the provided **GitHub Actions** workflow (`.github/workflows/release.yml`) which automatically builds correct native binaries for all platforms whenever you push a tag (e.g., `v1.2.3`).
-
-## 🔧 Targets Configuration (`tauri.conf.json`)
-
-Dependencies for Linux builds (if building on Linux):
-```bash
-sudo apt-get install libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-```
+> **Note**: To build for Windows/Linux while on macOS, please use the GitHub Actions workflow (`.github/workflows/release.yml`) as cross-compilation requires complex environment setup.

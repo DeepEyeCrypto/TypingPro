@@ -5,22 +5,41 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
         "./components/**/*.{js,ts,jsx,tsx}",
         "./pages/**/*.{js,ts,jsx,tsx}",
-        "./*.{js,ts,jsx,tsx}",
+        "./contexts/**/*.{js,ts,jsx,tsx}"
     ],
     darkMode: 'class',
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
-                mono: ['"JetBrains Mono"', 'monospace'],
+                mono: ['"JetBrains Mono"', 'Menlo', 'monospace'],
             },
             colors: {
+                // Using CSS variables with fallback handling for opacity
+                bg: {
+                    primary: 'rgb(var(--bg-primary) / <alpha-value>)',
+                    secondary: 'rgb(var(--bg-secondary) / <alpha-value>)',
+                    surface: 'rgb(var(--bg-surface) / <alpha-value>)',
+                    elevated: 'rgb(var(--bg-elevated) / <alpha-value>)',
+                },
+                text: {
+                    primary: 'rgb(var(--text-primary) / <alpha-value>)',
+                    secondary: 'rgb(var(--text-secondary) / <alpha-value>)',
+                    muted: 'rgb(var(--text-muted) / <alpha-value>)',
+                    inverted: 'rgb(var(--text-inverted) / <alpha-value>)',
+                },
                 brand: {
-                    dark: '#1E3A8A',
-                    orange: '#F97316',
-                    green: '#10B981',
-                    red: '#EF4444',
-                    gray: '#F3F4F6',
+                    DEFAULT: 'rgb(var(--color-brand) / <alpha-value>)',
+                    hover: 'rgb(var(--color-brand-hover) / <alpha-value>)',
+                },
+                status: {
+                    success: 'rgb(var(--color-success) / <alpha-value>)',
+                    error: 'rgb(var(--color-error) / <alpha-value>)',
+                    warning: 'rgb(var(--color-warning) / <alpha-value>)',
+                },
+                border: {
+                    DEFAULT: 'rgb(var(--border-color) / <alpha-value>)',
+                    hover: 'rgb(var(--border-hover) / <alpha-value>)',
                 }
             },
             animation: {
