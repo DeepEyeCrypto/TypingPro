@@ -41,7 +41,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                     but ensure the main area is flex-col for the stacking of text + keyboard.
                  */}
                 {sidebar && (
-                    <aside className="hidden xl:block w-72 flex-shrink-0 border-r border-border bg-bg-secondary h-full overflow-y-auto z-10">
+                    <aside className="hidden lg:block w-72 flex-shrink-0 border-r border-border bg-bg-secondary h-full overflow-y-auto z-10">
                         {sidebar}
                     </aside>
                 )}

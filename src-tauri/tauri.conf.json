@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.52"
+    "version": "0.0.54"
   },
   "tauri": {
     "allowlist": {
@@ -21,7 +21,6 @@
     "bundle": {
       "active": true,
       "targets": [
-        "dmg",
         "nsis",
         "deb"
       ],

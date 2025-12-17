@@ -180,7 +180,7 @@ export default function TypingPage() {
 
 
             {/* Main Grid Layout */}
-            <div className="flex-1 min-h-0 flex flex-col lg:flex-row relative">
+            <div className="flex-1 min-h-0 flex flex-col lg:flex-row relative w-full h-full">
 
                 {/* Top Controls (Mode Toggle) */}
                 <div className="absolute top-4 left-4 z-40 flex gap-2">
@@ -238,8 +238,8 @@ export default function TypingPage() {
                     )}
 
                     {/* Typing Area Container */}
-                    <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 overflow-y-auto no-scrollbar">
-                        <div className="w-full max-w-4xl flex-1 flex flex-col">
+                    <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-12 overflow-y-auto no-scrollbar">
+                        <div className="w-full h-full flex flex-col">
                             <TypingArea
                                 key={`${activeLesson.id}-${currentProfile.id}-${retryCount}`}
                                 content={activeLesson.content}
@@ -265,8 +265,8 @@ export default function TypingPage() {
 
                     {/* Bottom: Keyboard (Fixed) */}
                     {settings.showKeyboard && (
-                        <div className="flex-shrink-0 w-full flex items-end justify-center pb-2 px-4 bg-bg-surface/90 backdrop-blur-md z-30 border-t border-border">
-                            <div className="w-full max-w-[900px] relative origin-bottom transition-transform duration-300 keyboard-scaler">
+                        <div className="flex-shrink-0 w-full flex items-end justify-center pb-4 px-6 bg-bg-surface/90 backdrop-blur-md z-30 border-t border-border">
+                            <div className="w-full max-w-5xl relative origin-bottom transition-transform duration-300 keyboard-scaler">
                                 <KeyboardHandsOverlay
                                     currentChar={activeKey}
                                     heatmapStats={liveKeyStats} // Pass stats for heatmap
@@ -277,7 +277,7 @@ export default function TypingPage() {
                 </div>
 
                 {/* Right Panel: Stats & Goals (Hidden on mobile maybe? Or stacked?) */}
-                <div className="hidden xl:flex w-72 flex-col gap-6 p-6 border-l border-border bg-bg-secondary/30 overflow-y-auto">
+                <div className="hidden lg:flex w-80 flex-col gap-6 p-8 border-l border-border bg-bg-secondary/30 overflow-y-auto">
                     <GoalsPanel
                         wpmGoal={settings.wpmGoal || 40}
                         accuracyGoal={settings.accuracyGoal || 95}
@@ -293,7 +293,7 @@ export default function TypingPage() {
                 </div>
 
                 {/* Mobile/Tablet Stats Bar (Visible when sidebar hidden) */}
-                <div className="xl:hidden absolute top-4 right-4 flex flex-col gap-2 z-20 pointer-events-none opacity-50 hover:opacity-100 transition-opacity">
+                <div className="lg:hidden absolute top-4 right-4 flex flex-col gap-2 z-20 pointer-events-none opacity-50 hover:opacity-100 transition-opacity">
                     <span className="font-mono text-xl font-bold text-text-muted">{liveStats.wpm} <span className="text-[10px]">WPM</span></span>
                     <span className="font-mono text-sm text-text-muted">{liveStats.accuracy}% <span className="text-[10px]">ACC</span></span>
                 </div>
