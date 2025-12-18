@@ -52,28 +52,28 @@ jobs:
       - name: Version Sync
         run: node scripts/sync-version.js
 
-      - name: Build and Package
-        # Is step mein saare secrets inject ho rahe hain
+      - name: Inject Configuration
         shell: bash
         run: |
           mkdir -p src-tauri
           echo "GOOGLE_CLIENT_ID=$G_ID" > src-tauri/.env
           echo "GOOGLE_CLIENT_SECRET=$G_SECRET" >> src-tauri/.env
           echo "GEMINI_API_KEY=$G_API" > .env
-          npm run build:desktop -- --target ${{ matrix.target }}
         env:
           G_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           G_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           G_API: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Build and Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-
-      - name: GitHub Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
-            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
-            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
+          tagName: v__VERSION__
+          releaseName: "TypingPro v__VERSION__"
+          releaseBody: "Automated release from GitHub Actions"
+          releaseDraft: true
+          prerelease: false
+          args: --target ${{ matrix.target }}
