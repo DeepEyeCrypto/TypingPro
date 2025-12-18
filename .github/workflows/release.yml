@@ -63,7 +63,7 @@ jobs:
           mkdir -p src-tauri
           echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}" > src-tauri/.env
           echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}" >> src-tauri/.env
-          echo "VITE_GEMINI_API_KEY=${GEMINI_API_KEY}" > .env
+          echo "GEMINI_API_KEY=${GEMINI_API_KEY}" > .env
 
       - name: Sync Version
         shell: bash
