@@ -266,7 +266,7 @@ export default function TypingPage() {
                     {/* Bottom: Keyboard (Fixed) */}
                     {settings.showKeyboard && (
                         <div className="flex-shrink-0 w-full flex items-end justify-center pb-4 px-6 bg-bg-surface/90 backdrop-blur-md z-30 border-t border-border">
-                            <div className="w-full max-w-5xl relative origin-bottom transition-transform duration-300 keyboard-scaler">
+                            <div className="w-full relative origin-bottom transition-transform duration-300 keyboard-scaler">
                                 <KeyboardHandsOverlay
                                     currentChar={activeKey}
                                     heatmapStats={liveKeyStats} // Pass stats for heatmap
@@ -301,47 +301,51 @@ export default function TypingPage() {
             </div>
 
             {/* Modal */}
-            {modalStats && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
-                    <div className="bg-bg-surface rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-border">
-                        {/* Result Content... */}
-                        <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6 shadow-xl ${modalStats.completed ? 'bg-status-success text-white' : 'bg-status-warning text-white'}`}>
-                            {modalStats.completed ? <div className="text-4xl">🏆</div> : <div className="text-4xl">🔒</div>}
-                        </div>
-                        <h2 className="text-2xl font-bold text-text-primary mb-2">
-                            {modalStats.completed ? "Lesson Complete!" : "Keep Practicing"}
-                        </h2>
-                        {/* ... etc ... */}
-                        <div className="grid grid-cols-3 gap-2 mb-6 mt-4">
-                            <StatsCard label="WPM" value={modalStats.wpm} icon="wpm" />
-                            <StatsCard label="ACC" value={`${modalStats.accuracy}%`} icon="accuracy" />
-                            <StatsCard label="ERR" value={modalStats.errors} icon="errors" />
-                        </div>
+            {
+                modalStats && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
+                        <div className="bg-bg-surface rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-border">
+                            {/* Result Content... */}
+                            <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6 shadow-xl ${modalStats.completed ? 'bg-status-success text-white' : 'bg-status-warning text-white'}`}>
+                                {modalStats.completed ? <div className="text-4xl">🏆</div> : <div className="text-4xl">🔒</div>}
+                            </div>
+                            <h2 className="text-2xl font-bold text-text-primary mb-2">
+                                {modalStats.completed ? "Lesson Complete!" : "Keep Practicing"}
+                            </h2>
+                            {/* ... etc ... */}
+                            <div className="grid grid-cols-3 gap-2 mb-6 mt-4">
+                                <StatsCard label="WPM" value={modalStats.wpm} icon="wpm" />
+                                <StatsCard label="ACC" value={`${modalStats.accuracy}%`} icon="accuracy" />
+                                <StatsCard label="ERR" value={modalStats.errors} icon="errors" />
+                            </div>
 
-                        <div className="flex gap-3">
-                            <button onClick={handleRetry} className="flex-1 py-3 bg-bg-secondary text-text-primary rounded-xl font-bold hover:bg-bg-secondary/80 transition-colors">
-                                Retry
-                            </button>
-                            <button
-                                onClick={handleNextLesson}
-                                disabled={!modalStats.completed}
-                                className={`flex-1 py-3 text-white rounded-xl font-bold shadow-lg transition-all ${modalStats.completed ? 'bg-brand hover:bg-brand-hover' : 'bg-text-muted cursor-not-allowed opacity-50'}`}
-                            >
-                                Next
-                            </button>
+                            <div className="flex gap-3">
+                                <button onClick={handleRetry} className="flex-1 py-3 bg-bg-secondary text-text-primary rounded-xl font-bold hover:bg-bg-secondary/80 transition-colors">
+                                    Retry
+                                </button>
+                                <button
+                                    onClick={handleNextLesson}
+                                    disabled={!modalStats.completed}
+                                    className={`flex-1 py-3 text-white rounded-xl font-bold shadow-lg transition-all ${modalStats.completed ? 'bg-brand hover:bg-brand-hover' : 'bg-text-muted cursor-not-allowed opacity-50'}`}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Video Modal */}
-            {videoVisible && activeLesson.videoUrl && (
-                <LessonVideoPlayer
-                    hlsUrl={activeLesson.videoUrl}
-                    onClose={() => setVideoVisible(false)}
-                    autoPlay={true}
-                />
-            )}
-        </div>
+            {
+                videoVisible && activeLesson.videoUrl && (
+                    <LessonVideoPlayer
+                        hlsUrl={activeLesson.videoUrl}
+                        onClose={() => setVideoVisible(false)}
+                        autoPlay={true}
+                    />
+                )
+            }
+        </div >
     );
 }

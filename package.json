@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.60",
+  "version": "0.0.63",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -20,7 +20,8 @@
     "build:core": "node scripts/bump-version.js && npm run clean && npm run check:requirements && npm run build && npm run build:desktop && npm run organize-artifacts",
     "build:all": "node scripts/bump-version.js && npm run build && npm run build:desktop",
     "organize-artifacts": "node scripts/organize-artifacts.js",
-    "release:push": "node scripts/release.js",
+    "ship": "node scripts/ship.js",
+    "release:push": "node scripts/ship.js",
     "release:bump": "standard-version --release-as patch --skip.changelog && node scripts/sync-version.js",
     "release:github": "git push --follow-tags origin main",
     "release:all": "npm run release:bump && npm run build:core && npm run release:github"

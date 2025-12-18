@@ -136,8 +136,8 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
     return (
         <div className={`w-full flex justify-center ${className}`}>
             <svg
-                viewBox={`0 0 ${KEYBOARD_WIDTH} 550`}
-                className="w-full max-w-[800px] h-auto select-none"
+                viewBox="0 0 800 300"
+                className="w-full h-auto select-none"
                 preserveAspectRatio="xMidYMid meet"
             >
                 <defs>

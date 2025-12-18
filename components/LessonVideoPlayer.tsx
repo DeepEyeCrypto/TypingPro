@@ -20,7 +20,8 @@ const LessonVideoPlayer: React.FC<LessonVideoPlayerProps> = ({
     const [hasError, setHasError] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [isMuted, setIsMuted] = useState(false);
+    const [isMuted, setIsMuted] = useState(true); // Default to muted for safer autoplay, then try to unmute
+    const [isAutoplayMuted, setIsAutoplayMuted] = useState(false);
 
     // Auto-hide controls
     const [showControls, setShowControls] = useState(true);
@@ -65,11 +66,18 @@ const LessonVideoPlayer: React.FC<LessonVideoPlayerProps> = ({
             hls.loadSource(hlsUrl);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                video.muted = false;
                 video.volume = 1.0;
-                if (autoPlay) video.play().catch(() => {
-                    console.log("Autoplay blocked, user interaction required.");
-                });
+                if (autoPlay) {
+                    video.muted = false; // Try unmuted first
+                    video.play().catch(() => {
+                        console.log("Autoplay with sound blocked, falling back to muted.");
+                        video.muted = true;
+                        setIsMuted(true);
+                        video.play().then(() => {
+                            setIsAutoplayMuted(true);
+                        }).catch(err => console.error("Muted autoplay also failed:", err));
+                    });
+                }
             });
             hls.on(Hls.Events.ERROR, (_, data) => {
                 if (data.fatal) {
@@ -116,13 +124,11 @@ const LessonVideoPlayer: React.FC<LessonVideoPlayerProps> = ({
         if (videoRef.current) {
             if (videoRef.current.paused) {
                 videoRef.current.muted = false; // Unmute on explicit play
+                setIsMuted(false);
+                setIsAutoplayMuted(false);
                 videoRef.current.volume = 1.0;
                 videoRef.current.play().catch(err => {
-                    console.warn("Autoplay with sound blocked? Retrying muted...", err);
-                    if (videoRef.current) {
-                        videoRef.current.muted = true;
-                        videoRef.current.play();
-                    }
+                    console.warn("Play failed:", err);
                 });
             } else {
                 videoRef.current.pause();
@@ -144,7 +150,7 @@ const LessonVideoPlayer: React.FC<LessonVideoPlayerProps> = ({
             {/* Main Player Container */}
             <div
                 ref={containerRef}
-                className={`relative w-full max-w-5xl aspect-video bg-black/40 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/20 group ${className}`}
+                className={`relative w-full aspect-video bg-black/40 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/20 group ${className}`}
                 onMouseMove={handleUserActivity}
                 onMouseLeave={() => isPlaying && setShowControls(false)}
             >
@@ -200,6 +206,25 @@ const LessonVideoPlayer: React.FC<LessonVideoPlayerProps> = ({
                         <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xl">
                             <Play className="w-8 h-8 text-white fill-current ml-1" />
                         </div>
+                    </div>
+                )}
+
+                {/* Unmute Prompt for Autoplay */}
+                {isAutoplayMuted && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[60]">
+                        <button
+                            onClick={() => {
+                                if (videoRef.current) {
+                                    videoRef.current.muted = false;
+                                    setIsMuted(false);
+                                    setIsAutoplayMuted(false);
+                                }
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-full font-bold shadow-2xl hover:bg-brand-hover animate-bounce"
+                        >
+                            <Volume2 className="w-5 h-5" />
+                            Click to Unmute
+                        </button>
                     </div>
                 )}
             </div>
