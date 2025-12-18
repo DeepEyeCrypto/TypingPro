@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.69"
+    "version": "0.0.71"
   },
   "tauri": {
     "allowlist": {
@@ -40,10 +40,6 @@
       "windows": {
         "wix": {
           "language": "en-US"
-        },
-        "nsis": {
-          "oneClick": false,
-          "allowToChangeInstallationDirectory": true
         }
       }
     },
