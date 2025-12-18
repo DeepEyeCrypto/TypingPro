@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.58"
+    "version": "0.0.60"
   },
   "tauri": {
     "allowlist": {
@@ -41,6 +41,14 @@
           "language": "en-US"
         }
       }
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://raw.githubusercontent.com/enayat/TypingPro/main/updater/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IHRhdXJpIHByaXZhdGUga2V5ClJXUlZMdUtSREdaREpndWd3UjFkTXN2N2JUTmZXVFFwMk5LdlRzQWd4QkI3L2tCbit4VzZLeHk5Cg=="
     },
     "security": {
       "csp": null
