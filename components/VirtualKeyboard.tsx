@@ -1,96 +1,117 @@
-
-import React from 'react';
+import React, { useMemo } from 'react';
 import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
-import { KeyboardLayoutType, VirtualKey } from '../types';
+import { KeyboardLayoutType, VirtualKey, KeyStats } from '../types';
 
 interface VirtualKeyboardProps {
   activeKey: string | null;
   pressedKeys: Set<string>;
   layout: KeyboardLayoutType;
+  heatmapStats?: Record<string, KeyStats>;
 }
 
-const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ activeKey, pressedKeys, layout }) => {
+/**
+ * VirtualKeyboard - Clean Rewrite
+ * Features:
+ * - Premium Liquid Glass styling
+ * - Heatmap integration for missed keys
+ * - High-performance rendering with React.memo
+ */
+const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
+  activeKey,
+  pressedKeys,
+  layout,
+  heatmapStats
+}) => {
 
   const getKeyStyle = (keyObj: VirtualKey) => {
     const mapping = LAYOUTS[layout][keyObj.code] || { default: '', shift: '' };
     const label = keyObj.label || mapping.default.toUpperCase();
     const subLabel = keyObj.label ? '' : mapping.shift;
 
-    // Check if THIS key code is pressed (based on mapping logic or physical key)
-    // For a Tutor, we usually highlight based on character match if we don't have physical access API
-    // Here we check if the char associated with this key is pressed.
-
-    // Simplification: We check if the Active Key matches the character this key produces
     const producesActiveKey = activeKey && (mapping.default === activeKey || mapping.shift === activeKey);
-
-    // We assume 'pressedKeys' contains characters.
     const isPressed = pressedKeys.has(mapping.default) || pressedKeys.has(mapping.shift) || (keyObj.label && pressedKeys.has(keyObj.label));
+
+    // Heatmap Logic
+    let heatIntensity = 0;
+    if (heatmapStats) {
+      const char = mapping.default.toLowerCase();
+      const stat = heatmapStats[char];
+      if (stat && stat.errorCount > 0) {
+        heatIntensity = Math.min(stat.errorCount / 5, 1); // Cap at 5 errors for max intensity
+      }
+    }
 
     // Special handling for Space
     if (keyObj.code === 'Space') {
-      if (activeKey === ' ') return { ...styleResult(true, pressedKeys.has(' ')), label: '', subLabel: '' };
-      return { ...styleResult(false, pressedKeys.has(' ')), label: '', subLabel: '' };
+      const spacePressed = pressedKeys.has(' ');
+      const spaceTarget = activeKey === ' ';
+      return { ...styleResult(spaceTarget, spacePressed, 0), label: '', subLabel: '' };
     }
 
-    return { ...styleResult(producesActiveKey, isPressed), label, subLabel };
+    return { ...styleResult(!!producesActiveKey, isPressed, heatIntensity), label, subLabel };
   };
 
-  const styleResult = (isTarget: boolean, isPressed: boolean) => {
-    // Base classes for layout and transition
-    let baseClass = "rounded md:rounded-md flex flex-col items-center justify-center text-sm md:text-base lg:text-xl font-medium transition-all duration-100 select-none shadow-sm border h-full relative";
+  const styleResult = (isTarget: boolean, isPressed: boolean, heat: number) => {
+    let baseClass = "rounded-lg flex flex-col items-center justify-center text-sm md:text-base font-semibold transition-all duration-75 select-none border h-full relative overflow-hidden";
 
-    // Default Colors
-    let colorClass = "bg-bg-surface text-text-primary border-border shadow-[0_1px_0_rgba(0,0,0,0.05)] dark:shadow-[0_2px_0_rgba(0,0,0,0.3)]";
+    // Default Glass Style
+    let colorClass = "bg-white/5 text-white/70 border-white/10 shadow-lg backdrop-blur-md";
+
+    // Heatmap Background (Red tint)
+    let heatStyle: React.CSSProperties = {};
+    if (heat > 0 && !isTarget && !isPressed) {
+      heatStyle = {
+        backgroundColor: `rgba(239, 68, 68, ${heat * 0.4})`,
+        borderColor: `rgba(239, 68, 68, ${heat * 0.6})`,
+        color: '#fff'
+      };
+    }
 
     if (isTarget) {
-      // Target Styling (Brand Color)
-      colorClass = "bg-brand/10 text-brand border-brand/30 ring-2 ring-brand/50 z-10";
+      colorClass = "bg-brand/20 text-brand border-brand/40 ring-2 ring-brand/50 z-10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)]";
     }
 
     if (isPressed) {
-      // Pressed State: Pressed down, solid color
-      baseClass += " transform scale-[0.96] translate-y-[1px] shadow-none ring-0";
-      if (isTarget) {
-        colorClass = "bg-status-success text-text-inverted border-status-success shadow-inner";
-      } else {
-        colorClass = "bg-brand text-text-inverted border-brand shadow-inner";
-      }
-    } else {
-      // Idle/Hover State: Add hover lift and glow
-      // Only apply hover effects if not pressed to avoid conflict
-      baseClass += " hover:scale-105 hover:-translate-y-0.5 hover:shadow-md hover:z-20 hover:border-border-hover";
+      baseClass += " transform scale-95 translate-y-0.5 shadow-none ring-0";
+      colorClass = isTarget
+        ? "bg-green-500 text-white border-green-400 shadow-inner"
+        : "bg-brand text-white border-brand shadow-inner";
     }
 
-    return { className: `${baseClass} ${colorClass}` };
+    return { className: `${baseClass} ${colorClass}`, style: heatStyle };
   };
 
   return (
-    <div className="w-full h-full p-1 md:p-2 select-none flex flex-col justify-end">
-      <div className="flex flex-col items-stretch justify-between gap-1 md:gap-1.5 w-full h-full max-h-[50vh] bg-bg-secondary/50 p-1.5 md:p-2 rounded-xl border border-border shadow-inner">
+    <div className="w-full flex justify-center py-6 overflow-hidden">
+      <div className="inline-flex flex-col gap-2 p-5 glass-panel rounded-[2rem] border border-white/10 shadow-2xl origin-top transition-transform duration-500 
+        scale-[0.55] sm:scale-[0.7] md:scale-75 lg:scale-90 xl:scale-100 2xl:scale-110">
         {KEYBOARD_ROWS.map((row, rowIdx) => (
-          <div key={rowIdx} className="flex w-full h-full gap-1 md:gap-1.5">
+          <div key={rowIdx} className="flex gap-2 h-10 md:h-12 lg:h-14">
             {row.map((keyObj, keyIdx) => {
-              const { className, label, subLabel } = getKeyStyle(keyObj);
+              const { className, label, subLabel, style } = getKeyStyle(keyObj);
               return (
-                <div key={`${rowIdx}-${keyIdx}`} className={className} style={{ flexGrow: keyObj.width || 1, flexBasis: 0, minWidth: 0 }}>
+                <div
+                  key={`${rowIdx}-${keyIdx}`}
+                  className={`${className} border-white/5 hover:border-white/20`}
+                  style={{ ...style, flexGrow: keyObj.width || 1, flexBasis: 0, minWidth: 0 }}
+                >
                   <div className="flex flex-col items-center leading-none pointer-events-none">
-                    {/* Show Shift char if it's a single letter key, else hide or custom logic */}
-                    {(!keyObj.label && subLabel && subLabel !== label) && <span className="text-[0.6em] opacity-60 mb-[2px]">{subLabel}</span>}
-                    <span>{label}</span>
+                    {(!keyObj.label && subLabel && subLabel !== label) && (
+                      <span className="text-[10px] opacity-30 mb-1 font-bold">{subLabel}</span>
+                    )}
+                    <span className="truncate font-black tracking-tighter opacity-80">{label}</span>
                   </div>
                   {keyObj.homing && (
-                    <div className="absolute bottom-1.5 md:bottom-2 w-3 md:w-4 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                    <div className="absolute bottom-1.5 w-4 h-0.5 bg-white/20 rounded-full" />
+                  )}
+                  {style.backgroundColor && (
+                    <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse" />
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         ))}
-      </div>
-
-      <div className="flex justify-between w-full px-2 mt-1 text-[9px] text-gray-400 dark:text-gray-600 font-bold uppercase tracking-widest opacity-60">
-        <span>{layout.toUpperCase()}</span>
-        <span>Right Hand</span>
       </div>
     </div>
   );

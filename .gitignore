@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 release
+.env
+src-tauri/.env
 
 
 # Editor directories and files

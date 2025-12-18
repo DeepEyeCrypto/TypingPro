@@ -259,36 +259,18 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     const sizeClass = getTextSizeClass();
 
     return content.split('').map((char, idx) => {
-      // Base styles
-      let className = `inline-block text-center border-b-2 border-transparent transition-all duration-100 ease-out leading-none px-[1px] ${sizeClass}`;
-
-      // Cursor / Active Character
-      if (idx === cursorIndex) {
-        // Active Highlight styles
-        className += " bg-brand text-text-inverted rounded-md shadow-lg shadow-brand/30 scale-110 z-10 mx-0.5";
-
-        if (shake) className += " animate-pulse bg-status-error shadow-status-error/30";
-      }
-      // Past Text (Correct/Error)
-      else if (idx < cursorIndex) {
-        if (errors.includes(idx)) {
-          className += " text-status-error opacity-60";
-        } else {
-          // Completed text fades to gray to reduce distraction
-          className += " text-text-muted opacity-40";
-        }
-      }
-      // Future Text
-      else {
-        // If fontColor is set, full opacity. Otherwise default opacity.
-        className += fontColor ? " font-normal opacity-100" : " text-text-secondary opacity-60 font-normal";
-      }
-
+      // Phase 3: Flattened DOM to minimize depth
       const style: React.CSSProperties = {};
+      let className = `inline text-center transition-all duration-75 px-[0.5px] ${sizeClass} `;
 
-      // Override text color if custom fontColor is passed (but respect active logic)
-      if (idx > cursorIndex && fontColor) {
-        style.color = fontColor;
+      if (idx === cursorIndex) {
+        className += "bg-brand/80 text-white rounded-lg shadow-[0_0_20px_rgba(var(--brand-rgb),0.5)] glow-text scale-110 relative z-10 mx-1";
+        if (shake) className += " animate-pulse bg-red-500 shadow-red-500/50";
+      } else if (idx < cursorIndex) {
+        className += errors.includes(idx) ? "text-red-500/80" : "text-white/20";
+      } else {
+        className += "text-white/40";
+        if (fontColor) style.color = fontColor;
       }
 
       return (
@@ -301,38 +283,25 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
   return (
     <div
-      className="flex flex-col items-center justify-center w-full h-full relative outline-none py-2"
+      className="w-full h-full flex flex-col items-center justify-center relative outline-none py-10"
       onClick={() => inputRef.current?.focus({ preventScroll: true })}
-      onContextMenu={(e) => e.preventDefault()}
     >
       <input
         ref={inputRef}
         type="text"
-        className="fixed opacity-0 top-[-9999px] left-[-9999px] w-1 h-1 cursor-default pointer-events-none -z-10"
+        className="absolute opacity-0 pointer-events-none"
         onKeyDown={handleKeyDown}
         onChange={() => { }}
         value=""
         autoFocus
-        autoComplete="new-password"
-        autoCorrect="off"
-        autoCapitalize="off"
+        autoComplete="off"
         spellCheck="false"
-        name={`typing-input-${Math.random()}`}
-        id="typing-hidden-input"
-        data-lpignore="true"
-        onBlur={() => inputRef.current?.focus({ preventScroll: true })}
       />
 
       <div
         ref={containerRef}
         style={{ fontFamily: fontFamily }}
-        className={`
-            w-full h-full
-            flex flex-wrap content-center justify-center
-            leading-relaxed tracking-normal
-            select-none transition-all duration-100
-            ${shake ? 'translate-x-[2px]' : ''}
-        `}
+        className={`w-full max-w-7xl px-12 flex flex-wrap content-center justify-center leading-normal tracking-tight select-none ${shake ? 'animate-shake' : ''}`}
       >
         {renderedText}
       </div>

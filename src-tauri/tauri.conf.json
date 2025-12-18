@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.63"
+    "version": "0.0.67"
   },
   "tauri": {
     "allowlist": {
@@ -34,11 +34,16 @@
         "icons/icon.ico"
       ],
       "macOS": {
-        "signingIdentity": null
+        "signingIdentity": null,
+        "entitlements": null
       },
       "windows": {
         "wix": {
           "language": "en-US"
+        },
+        "nsis": {
+          "oneClick": false,
+          "allowToChangeInstallationDirectory": true
         }
       }
     },

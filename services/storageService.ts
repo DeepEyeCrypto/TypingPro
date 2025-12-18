@@ -184,7 +184,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     cursorStyle: 'block',
     stopOnError: false,
     trainingMode: 'accuracy',
-    fontColor: 'white'
+    fontColor: 'white',
+    showHands: true
 };
 
 export const getSettings = (profileId: string): UserSettings => {

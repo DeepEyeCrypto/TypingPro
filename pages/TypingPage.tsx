@@ -1,136 +1,80 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import TypingArea from '../components/TypingArea'; // We treat this as "TypingPanel"
+import TypingArea from '../components/TypingArea';
+import VirtualKeyboard from '../components/VirtualKeyboard';
 import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
 import LessonVideoPlayer from '../components/LessonVideoPlayer';
 import { StatsCard } from '../components/stats/StatsCard';
 import { GoalsPanel } from '../components/stats/GoalsPanel';
 import { useApp } from '../contexts/AppContext';
-import { generateSmartLesson } from '../services/geminiService';
-import { generateDrill } from '../services/drillService';
+import { LESSONS } from '../constants';
 import { CODE_SNIPPETS } from '../constants/codeSnippets';
-import { LESSONS } from '../constants'; // RESTORED
-import { Loader2, Code, Type } from 'lucide-react'; // Added icons
-import { Stats, KeyStats } from '../types';
+import { Code, Type, RotateCcw, ChevronRight, BarChart3 } from 'lucide-react';
+import { Stats, KeyStats, Lesson } from '../types';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// HLS Intro Video moved to constants.ts
-
-export default function TypingPage() {
+/**
+ * TypingPage - Liquid Overhaul
+ * Integrated with Adaptive Grid System
+ */
+export default function TypingPage(): React.ReactNode {
     const {
         currentProfile, settings, lessonProgress, recordLessonComplete,
-        setActiveLessonId: setGlobalLessonId, recordKeyStats
+        setActiveLessonId, recordKeyStats
     } = useApp();
 
-    const { setIsSidebarOpen } = useOutletContext<MainLayoutContext>();
-    const [videoVisible, setVideoVisible] = useState(false);
+    const { setIsSidebarOpen } = useOutletContext<MainLayoutContext>() || {};
 
-    // --- State ---
-    const [currentLessonId, setCurrentLessonId] = useState(1);
-    const [activeLesson, setActiveLesson] = useState(LESSONS[0]);
-    const [retryCount, setRetryCount] = useState(0);
+    // --- Core State ---
+    const [isCodeMode, setIsCodeMode] = useState<boolean>(false);
+    const [currentLessonId, setCurrentLessonId] = useState<number>(1);
+    const [activeLesson, setActiveLesson] = useState<Lesson>(LESSONS[0]);
+    const [retryCount, setRetryCount] = useState<number>(0);
+    const [videoVisible, setVideoVisible] = useState<boolean>(false);
+    const [showMobileStats, setShowMobileStats] = useState(false);
 
+    // --- Live Progress State ---
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
     const [activeKey, setActiveKey] = useState<string | null>(null);
-    const [modalStats, setModalStats] = useState<Stats | null>(null);
     const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
-    const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({}); // Heatmap stats
-    const [isCodeMode, setIsCodeMode] = useState(false); // Code Mode Toggle
-    const [isLoadingAi, setIsLoadingAi] = useState(false);
-
-    // --- Effects ---
-    useEffect(() => {
-        handleLessonSelect(currentLessonId, false);
-        // We reset stats here effectively via handleLessonSelect
-    }, [isCodeMode]); // Reload when mode toggles
-
-    useEffect(() => {
-        const savedId = localStorage.getItem(`last_lesson_${currentProfile.id}`);
-        const id = savedId ? parseInt(savedId, 10) : 1;
-        if (lessonProgress[id]?.unlocked || id === 1) {
-            handleLessonSelect(id, false);
-        } else {
-            handleLessonSelect(1, false);
-        }
-    }, [currentProfile.id]);
-
-    useEffect(() => {
-        const handleDown = (e: KeyboardEvent) => {
-            setPressedKeys(prev => new Set(prev).add(e.key));
-            if (e.altKey) {
-                if (e.code === 'KeyN') handleNextLesson();
-                if (e.code === 'KeyR') handleRetry();
-                if (e.code === 'KeyB') setIsSidebarOpen(prev => !prev);
-            }
-        };
-
-        const handleUp = (e: KeyboardEvent) => {
-            setPressedKeys(prev => {
-                const next = new Set(prev);
-                next.delete(e.key);
-                return next;
-            });
-        };
-
-        window.addEventListener('keydown', handleDown);
-        window.addEventListener('keyup', handleUp);
-        return () => {
-            window.removeEventListener('keydown', handleDown);
-            window.removeEventListener('keyup', handleUp);
-        };
-    }, [activeLesson, currentLessonId]);
+    const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({});
+    const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
 
     // --- Handlers ---
-    const handleLessonSelect = useCallback((id: number, save = true) => {
-        const progress = lessonProgress[id];
-        // In Code Mode, we don't strictly enforce unlocking for now, or we map IDs to snippets
-        if (!isCodeMode && id > 0 && !progress?.unlocked && id !== 1) return;
-
-        if (isCodeMode) {
-            if (!CODE_SNIPPETS || CODE_SNIPPETS.length === 0) {
-                console.error("Code Snippets missing!");
-                return; // Prevent crash
-            }
-            // Map ID to code snippet (modulo length) - careful with 0 or negative
-            // Ensure positive index
-            const snippetIndex = Math.abs((id - 1)) % CODE_SNIPPETS.length;
-            const snippet = CODE_SNIPPETS[snippetIndex];
-
-            if (!snippet) {
-                console.error("Snippet not found for index", snippetIndex);
-                return;
-            }
-
-            const codeLesson = {
-                id: id,
-                title: `Code Snippet: ${snippet.language}`,
+    const initializeLesson = useCallback((id: number, codeMode: boolean) => {
+        let lesson: Lesson | undefined;
+        if (codeMode) {
+            const index = Math.abs(id - 1) % CODE_SNIPPETS.length;
+            const snippet = CODE_SNIPPETS[index];
+            lesson = {
+                id,
+                title: `Code: ${snippet.language}`,
                 content: snippet.content,
                 newKeys: [],
-                keys: [], // Added to satisfy Lesson interface
-                description: `Practice ${snippet.language} syntax`
+                keys: [],
+                description: `Master ${snippet.language} syntax`
             };
-            setCurrentLessonId(id);
-            setGlobalLessonId(id);
-            setActiveLesson(codeLesson);
-            setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
-            setLiveKeyStats({}); // Reset heatmap
-            setRetryCount(0);
         } else {
-            let lesson = LESSONS.find(l => l.id === id);
-            if (lesson) {
-                setCurrentLessonId(id);
-                setGlobalLessonId(id);
-                setActiveLesson(lesson);
-                setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
-                setLiveKeyStats({}); // Reset heatmap
-                setRetryCount(0);
-                if (save && id > 0) localStorage.setItem(`last_lesson_${currentProfile.id}`, id.toString());
-            }
+            lesson = LESSONS.find(l => l.id === id) || LESSONS[0];
         }
-    }, [lessonProgress, currentProfile.id, isCodeMode]); // Added isCodeMode dep
+
+        if (lesson) {
+            setActiveLesson(lesson);
+            setCurrentLessonId(id);
+            setActiveLessonId(id);
+            setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
+            setLiveKeyStats({});
+            setRetryCount(0);
+            setModalStats(null);
+        }
+    }, [setActiveLessonId]);
+
+    useEffect(() => {
+        initializeLesson(currentLessonId, isCodeMode);
+    }, [isCodeMode, initializeLesson, currentLessonId]);
 
     const handleRetry = useCallback(() => {
         setModalStats(null);
@@ -140,212 +84,212 @@ export default function TypingPage() {
 
     const handleComplete = useCallback((stats: Stats) => {
         recordLessonComplete(activeLesson.id, stats);
-        const thresholdAcc = settings.trainingMode === 'accuracy' ? 98 : 90;
-        const passedCriteria = stats.accuracy >= thresholdAcc && stats.wpm >= 15;
-        setModalStats({ ...stats, completed: passedCriteria });
-    }, [activeLesson.id, recordLessonComplete, settings.trainingMode]);
+        recordKeyStats(liveKeyStats);
+        const passed = stats.accuracy >= (settings.trainingMode === 'accuracy' ? 98 : 90);
+        setModalStats({ ...stats, completed: passed });
+    }, [activeLesson.id, recordLessonComplete, recordKeyStats, liveKeyStats, settings.trainingMode]);
 
-    const handleSessionStats = useCallback((sessionStats: Record<string, KeyStats>) => {
-        recordKeyStats(sessionStats);
-    }, [recordKeyStats]);
+    const handleNext = useCallback(() => {
+        const nextId = currentLessonId + 1;
+        if (!isCodeMode && nextId > LESSONS.length) return;
+        initializeLesson(nextId, isCodeMode);
+    }, [currentLessonId, isCodeMode, initializeLesson]);
 
-    const handleNextLesson = useCallback(() => {
-        setModalStats(null);
-        if (currentLessonId > 0 && currentLessonId < LESSONS.length) {
-            handleLessonSelect(currentLessonId + 1);
-        }
-    }, [currentLessonId, handleLessonSelect]);
-
-    // Auto-trigger tutorial
     useEffect(() => {
-        if (activeLesson.videoUrl) {
-            const hasSeenIntro = sessionStorage.getItem(`seen_video_${activeLesson.id}_${currentProfile.id}`);
-            if (!hasSeenIntro) {
-                setVideoVisible(true);
-                sessionStorage.setItem(`seen_video_${activeLesson.id}_${currentProfile.id}`, 'true');
-            }
-        }
-    }, [activeLesson.id, activeLesson.videoUrl, currentProfile.id]);
+        const handleDown = (e: KeyboardEvent) => {
+            setPressedKeys(prev => new Set(prev).add(e.key));
+            if (e.altKey && e.code === 'KeyR') handleRetry();
+        };
+        const handleUp = (e: KeyboardEvent) => {
+            setPressedKeys(prev => {
+                const next = new Set(prev);
+                next.delete(e.key);
+                return next;
+            });
+        };
+        window.addEventListener('keydown', handleDown);
+        window.addEventListener('keyup', handleUp);
+        return () => {
+            window.removeEventListener('keydown', handleDown);
+            window.removeEventListener('keyup', handleUp);
+        };
+    }, [handleRetry]);
+
+    const StatsSidebar = () => (
+        <div className="flex flex-col gap-8 p-10 h-full overflow-y-auto">
+            <GoalsPanel
+                wpmGoal={settings.wpmGoal}
+                accuracyGoal={settings.accuracyGoal}
+                dailyProgress={75}
+            />
+
+            <div className="space-y-6">
+                <h3 className="text-xs font-black text-white/30 uppercase tracking-[0.2em]">Live Performance</h3>
+                <div className="grid grid-cols-1 gap-4">
+                    <StatsCard label="WPM" value={liveStats.wpm} icon="wpm" />
+                    <StatsCard label="Accuracy" value={`${liveStats.accuracy}%`} icon="accuracy" />
+                    <StatsCard label="Progress" value={`${liveStats.progress}%`} icon="progress" />
+                </div>
+            </div>
+        </div>
+    );
 
     return (
-        <div className="flex-1 flex flex-col h-full bg-bg-surface overflow-hidden relative">
-            {/* Loading Overlay */}
-            {isLoadingAi && (
-                <div className="absolute inset-0 z-50 bg-bg-surface/80 backdrop-blur-sm flex items-center justify-center flex-col gap-4">
-                    <Loader2 className="w-10 h-10 text-brand animate-spin" />
-                    <p className="text-sm font-medium text-text-muted">Generating...</p>
-                </div>
-            )}
-
-
-
-            {/* Main Grid Layout */}
-            <div className="flex-1 min-h-0 flex flex-col lg:flex-row relative w-full h-full">
-
-                {/* Top Controls (Mode Toggle) */}
-                <div className="absolute top-4 left-4 z-40 flex gap-2">
+        <div className="flex-1 flex flex-col h-full relative overflow-hidden">
+            {/* Context-aware Controls (Mobile Top Bar) */}
+            <div className="p-4 flex items-center justify-between xl:absolute xl:top-6 xl:left-8 z-50 w-full xl:w-auto gap-4">
+                <div className="flex p-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
                     <button
-                        onClick={() => {
-                            const newMode = !isCodeMode;
-                            setIsCodeMode(newMode);
-                            // Trigger lesson reload/switch immediately
-                            // We prefer to just toggle state and let effect or manual call handle? 
-                            // handleLessonSelect uses the state, but we need to call it.
-                            // But handleLessonSelect is callback. Let's force a reset or rely on effect?
-                            // Effect for activeLesson handles content updates? No.
-                            // Let's manually trigger select for current ID
-                            // We need to wait for state to update? 
-                            // Better: pass the new mode to a helper or just reload page logic?
-                            // Simple: Reload current lesson ID with new mode assumption.
-                            // We can't call handleLessonSelect immediately with new state visible unless we pass it.
-                            // Let's use a useEffect on isCodeMode?
-                        }}
-                        className={`
-                            flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all
-                            ${!isCodeMode
-                                ? 'bg-brand text-text-inverted shadow-lg shadow-brand/20'
-                                : 'bg-bg-secondary text-text-muted hover:bg-bg-secondary/80'
-                            }
-                        `}
+                        onClick={() => setIsCodeMode(false)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${!isCodeMode ? 'bg-brand text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
                     >
-                        <Type className="w-3 h-3" /> Text
+                        <Type size={16} /> <span className="hidden sm:inline">Text</span>
                     </button>
                     <button
                         onClick={() => setIsCodeMode(true)}
-                        className={`
-                            flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all
-                            ${isCodeMode
-                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/20'
-                                : 'bg-bg-secondary text-text-muted hover:bg-bg-secondary/80'
-                            }
-                        `}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${isCodeMode ? 'bg-purple-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
                     >
-                        <Code className="w-3 h-3" /> Code
+                        <Code size={16} /> <span className="hidden sm:inline">Code</span>
                     </button>
                 </div>
 
-                {/* Center Panel: Typing Area & Video Toggle */}
-                <div className="flex-1 flex flex-col min-w-0 relative">
-                    {activeLesson.videoUrl && !videoVisible && (
-                        <div className="w-full flex justify-center pt-2">
-                            <button
-                                onClick={() => setVideoVisible(true)}
-                                className="text-xs text-brand hover:text-brand-hover font-medium flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity"
-                            >
-                                Show Tutorial Video
-                            </button>
-                        </div>
+                <div className="flex items-center gap-2">
+                    {activeLesson.videoUrl && (
+                        <button
+                            onClick={() => setVideoVisible(true)}
+                            className="px-4 py-2 glass-card rounded-xl text-xs font-bold text-white/60 hover:text-white transition-all sm:inline-flex hidden"
+                        >
+                            Watch Tutorial
+                        </button>
                     )}
-
-                    {/* Typing Area Container */}
-                    <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-12 overflow-y-auto no-scrollbar">
-                        <div className="w-full h-full flex flex-col">
-                            <TypingArea
-                                key={`${activeLesson.id}-${currentProfile.id}-${retryCount}`}
-                                content={activeLesson.content}
-                                activeLessonId={activeLesson.id}
-                                isActive={!modalStats}
-                                soundEnabled={settings.soundEnabled}
-                                onComplete={handleComplete}
-                                onRestart={handleRetry}
-                                onActiveKeyChange={setActiveKey}
-                                onStatsUpdate={setLiveStats}
-                                onKeyStatsUpdate={setLiveKeyStats} // Pass live stats updater
-                                onSessionStats={handleSessionStats}
-                                fontFamily={settings.fontFamily}
-                                fontSize={settings.fontSize || 'large'}
-                                cursorStyle={settings.cursorStyle}
-                                stopOnError={settings.stopOnError}
-                                trainingMode={settings.trainingMode}
-                                fontColor={settings.fontColor}
-                                newKeys={activeLesson.newKeys}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Bottom: Keyboard (Fixed) */}
-                    {settings.showKeyboard && (
-                        <div className="flex-shrink-0 w-full flex items-end justify-center pb-4 px-6 bg-bg-surface/90 backdrop-blur-md z-30 border-t border-border">
-                            <div className="w-full relative origin-bottom transition-transform duration-300 keyboard-scaler">
-                                <KeyboardHandsOverlay
-                                    currentChar={activeKey}
-                                    heatmapStats={liveKeyStats} // Pass stats for heatmap
-                                />
-                            </div>
-                        </div>
-                    )}
+                    <button
+                        onClick={() => setShowMobileStats(!showMobileStats)}
+                        className="2xl:hidden p-2 glass-card rounded-xl text-white/60"
+                        title="Toggle Stats"
+                    >
+                        <BarChart3 size={20} />
+                    </button>
                 </div>
-
-                {/* Right Panel: Stats & Goals (Hidden on mobile maybe? Or stacked?) */}
-                <div className="hidden lg:flex w-80 flex-col gap-6 p-8 border-l border-border bg-bg-secondary/30 overflow-y-auto">
-                    <GoalsPanel
-                        wpmGoal={settings.wpmGoal || 40}
-                        accuracyGoal={settings.accuracyGoal || 95}
-                        dailyProgress={75} // Mock progress for now
-                    />
-
-                    <div className="space-y-4">
-                        <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest">Live Metrics</h3>
-                        <StatsCard label="WPM" value={liveStats.wpm} icon="wpm" />
-                        <StatsCard label="Accuracy" value={`${liveStats.accuracy}%`} icon="accuracy" subtext={liveStats.errors > 0 ? `${liveStats.errors} err` : 'Perfect'} />
-                        <StatsCard label="Progress" value={`${liveStats.progress}%`} icon="progress" />
-                    </div>
-                </div>
-
-                {/* Mobile/Tablet Stats Bar (Visible when sidebar hidden) */}
-                <div className="lg:hidden absolute top-4 right-4 flex flex-col gap-2 z-20 pointer-events-none opacity-50 hover:opacity-100 transition-opacity">
-                    <span className="font-mono text-xl font-bold text-text-muted">{liveStats.wpm} <span className="text-[10px]">WPM</span></span>
-                    <span className="font-mono text-sm text-text-muted">{liveStats.accuracy}% <span className="text-[10px]">ACC</span></span>
-                </div>
-
             </div>
 
-            {/* Modal */}
-            {
-                modalStats && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
-                        <div className="bg-bg-surface rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-border">
-                            {/* Result Content... */}
-                            <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6 shadow-xl ${modalStats.completed ? 'bg-status-success text-white' : 'bg-status-warning text-white'}`}>
-                                {modalStats.completed ? <div className="text-4xl">🏆</div> : <div className="text-4xl">🔒</div>}
-                            </div>
-                            <h2 className="text-2xl font-bold text-text-primary mb-2">
-                                {modalStats.completed ? "Lesson Complete!" : "Keep Practicing"}
-                            </h2>
-                            {/* ... etc ... */}
-                            <div className="grid grid-cols-3 gap-2 mb-6 mt-4">
-                                <StatsCard label="WPM" value={modalStats.wpm} icon="wpm" />
-                                <StatsCard label="ACC" value={`${modalStats.accuracy}%`} icon="accuracy" />
-                                <StatsCard label="ERR" value={modalStats.errors} icon="errors" />
-                            </div>
+            <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+                {/* Main Typing Area */}
+                <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+                    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
+                        <TypingArea
+                            key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
+                            content={activeLesson.content}
+                            activeLessonId={activeLesson.id}
+                            isActive={!modalStats}
+                            onComplete={handleComplete}
+                            onRestart={handleRetry}
+                            onActiveKeyChange={setActiveKey}
+                            onStatsUpdate={setLiveStats}
+                            onKeyStatsUpdate={setLiveKeyStats}
+                            fontFamily={settings.fontFamily}
+                            fontSize={settings.fontSize}
+                            soundEnabled={settings.soundEnabled}
+                            cursorStyle={settings.cursorStyle}
+                            stopOnError={settings.stopOnError}
+                            trainingMode={settings.trainingMode}
+                        />
+                    </div>
 
-                            <div className="flex gap-3">
-                                <button onClick={handleRetry} className="flex-1 py-3 bg-bg-secondary text-text-primary rounded-xl font-bold hover:bg-bg-secondary/80 transition-colors">
-                                    Retry
-                                </button>
-                                <button
-                                    onClick={handleNextLesson}
-                                    disabled={!modalStats.completed}
-                                    className={`flex-1 py-3 text-white rounded-xl font-bold shadow-lg transition-all ${modalStats.completed ? 'bg-brand hover:bg-brand-hover' : 'bg-text-muted cursor-not-allowed opacity-50'}`}
-                                >
-                                    Next
-                                </button>
-                            </div>
+                    {/* Adaptive Keyboard Footer */}
+                    <div className="p-4 sm:p-8 bg-black/40 backdrop-blur-3xl border-t border-white/5 mt-auto">
+                        <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
+                            <VirtualKeyboard
+                                activeKey={activeKey}
+                                pressedKeys={pressedKeys}
+                                layout={settings.keyboardLayout || 'qwerty'}
+                                heatmapStats={liveKeyStats}
+                            />
+                            {settings.showHands && (
+                                <div className="hidden md:block w-full">
+                                    <KeyboardHandsOverlay
+                                        currentChar={activeKey}
+                                        heatmapStats={liveKeyStats}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
-                )
-            }
+                </div>
 
-            {/* Video Modal */}
-            {
-                videoVisible && activeLesson.videoUrl && (
-                    <LessonVideoPlayer
-                        hlsUrl={activeLesson.videoUrl}
-                        onClose={() => setVideoVisible(false)}
-                        autoPlay={true}
-                    />
-                )
-            }
-        </div >
+                {/* Right Panel (Desktop only - 2xl breakpoint) */}
+                <aside className="hidden 2xl:block w-96 border-l border-white/5 bg-white/2 backdrop-blur-3xl h-full overflow-y-auto">
+                    <StatsSidebar />
+                </aside>
+
+                {/* Mobile/Tablet Stats Drawer */}
+                {showMobileStats && (
+                    <div className="fixed inset-0 z-[100] 2xl:hidden">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMobileStats(false)} />
+                        <div className="absolute right-0 top-0 bottom-0 w-80 bg-[#0d0d12] border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300">
+                            <div className="flex justify-start p-4 border-b border-white/5">
+                                <button onClick={() => setShowMobileStats(false)} className="text-white/40"><X /></button>
+                            </div>
+                            <StatsSidebar />
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Modals & Overlays */}
+            {modalStats && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#0a0a0f]/80 backdrop-blur-lg animate-in fade-in duration-300">
+                    <div className="glass-panel p-8 sm:p-12 rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] max-w-lg w-full text-center">
+                        <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto flex items-center justify-center mb-8 shadow-2xl ${modalStats.completed ? 'bg-brand' : 'bg-red-500'}`}>
+                            <span className="text-3xl sm:text-4xl">{modalStats.completed ? '🏆' : '💪'}</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">{modalStats.completed ? 'Mastered!' : 'Keep Going!'}</h2>
+                        <p className="text-white/40 mb-8 font-medium">Your persistence is the key to speed.</p>
+
+                        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-10 text-center">
+                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                <div className="text-xl sm:text-2xl font-black text-white">{modalStats.wpm}</div>
+                                <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">WPM</div>
+                            </div>
+                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                <div className="text-xl sm:text-2xl font-black text-white">{modalStats.accuracy}%</div>
+                                <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Accuracy</div>
+                            </div>
+                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                <div className="text-xl sm:text-2xl font-black text-white">{modalStats.errors}</div>
+                                <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Errors</div>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                onClick={handleRetry}
+                                className="flex-1 py-4 glass-card text-white font-bold flex items-center justify-center gap-2"
+                            >
+                                <RotateCcw size={18} /> Retry
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                disabled={!modalStats.completed && !isCodeMode}
+                                className={`flex-1 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${modalStats.completed || isCodeMode ? 'bg-brand hover:scale-105 text-white' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                            >
+                                Next <ChevronRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {videoVisible && activeLesson.videoUrl && (
+                <LessonVideoPlayer
+                    hlsUrl={activeLesson.videoUrl}
+                    onClose={() => setVideoVisible(false)}
+                />
+            )}
+        </div>
     );
 }
+
+// Helper X component for closing the stats drawer
+const X = ({ className }: { className?: string }) => (
+    <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+);

@@ -49,35 +49,10 @@ export default function MainLayout() {
     return (
         <AppShell
             header={
-                <Header
-                    currentLessonId={activeLessonId}
-                    totalLessons={LESSONS.length}
-                    onSelectLesson={setActiveLessonId}
-                    onOpenSettings={() => setModal('settings')}
-                    onOpenHistory={() => setModal('history')}
-                    onOpenAchievements={() => setModal('achievements')}
-                    onOpenDashboard={() => setModal('dashboard')}
-                    // Theme logic is now in ThemeContext/Header, but Header still expects props.
-                    // We temporarily pass props until we refactor Header.
-                    toggleDarkMode={handleThemeToggle}
-                    isDarkMode={(settings.theme === 'system' ? systemTheme : settings.theme) === 'dark'}
-                    progress={0}
-                    unlockedLessons={unlockedMap}
-                    currentProfile={currentProfile}
-                    onSwitchProfile={() => setModal('profiles')}
-                    onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
-                    user={user}
-                    onLogin={handleLogin}
-                    onLogout={handleLogout}
-                />
+                <Header />
             }
             sidebar={
-                <Sidebar
-                    currentLessonId={activeLessonId}
-                    onSelectLesson={setActiveLessonId}
-                    lessonProgress={lessonProgress}
-                    isOpen={isSidebarOpen}
-                />
+                <Sidebar />
             }
         >
             <Outlet context={{ setIsSidebarOpen }} />

@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const packageJsonPath = path.resolve(__dirname, '../package.json');
+const tauriConfPath = path.resolve(__dirname, '../src-tauri/tauri.conf.json');
+const cargoTomlPath = path.resolve(__dirname, '../src-tauri/Cargo.toml');
 
 function run(command, msg) {
     console.log(`\n🚀 ${msg}...`);
@@ -18,31 +20,60 @@ function run(command, msg) {
     }
 }
 
-// 1. Check Code
-run('npm run lint', 'Running type-check (tsc)');
+// 1. Sync & Bump Version
+console.log('\n📈 VERSION SYNC & BUMP...');
+try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    const oldVersion = packageJson.version;
+    const parts = oldVersion.split('.').map(Number);
+    parts[2] += 1; // Increment Patch
+    const newVersion = parts.join('.');
 
-// 2. Bump Version
-run('node scripts/bump-version.js', 'Incrementing version');
+    packageJson.version = newVersion;
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-// 3. Get New Version
+    if (fs.existsSync(tauriConfPath)) {
+        const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
+        tauriConf.package.version = newVersion;
+        fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
+    }
+
+    if (fs.existsSync(cargoTomlPath)) {
+        let cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
+        cargoToml = cargoToml.replace(/^version\s*=\s*"[^"]+"/m, `version = "${newVersion}"`);
+        fs.writeFileSync(cargoTomlPath, cargoToml);
+    }
+
+    console.log(`✅ Version bumped: ${oldVersion} -> ${newVersion}`);
+} catch (e) {
+    console.error('❌ Version bump failed:', e);
+    process.exit(1);
+}
+
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-const version = packageJson.version;
-const tagName = `v${version}`;
+const tagName = `v${packageJson.version}`;
 
-// 4. Local Build (Fast - current machine only)
-console.log('\n📦 Building local installers for verification...');
-run('npm run build', 'Building Vite frontend');
-run('npm run tauri build', 'Generating standard installers');
+// 2. Clean Build
+run('npm run clean', 'Cleaning old artifacts');
+
+// 3. Lint Check
+run('npm run lint', 'Checking code stability (tsc)');
+
+// 4. Local Build Check (Fast)
+run('npm run build', 'Verifying Frontend build');
 
 // 5. Git Operations
-run('git add .', 'Staging changes');
-run(`git commit -m "chore(release): ${tagName}"`, `Committing release ${tagName}`);
-run(`git tag ${tagName}`, `Creating tag ${tagName}`);
+run('git add .', 'Staging clean slate');
+run(`git commit -m "chore(release): ${tagName} - project rewrite"`, `Committing ${tagName}`);
+run(`git tag ${tagName}`, `Tagging ${tagName}`);
 
-// 6. Push
-console.log('\n📡 Pushing to GitHub...');
+// 6. Push & Release
+console.log('\n📡 TRIGGERING SHIPMENT...');
 run('git push origin main', 'Pushing code');
 run('git push origin --tags', 'Pushing tags');
 
-console.log(`\n✅ SHIPMENT COMPLETE: ${tagName}`);
-console.log(`🔗 CI/CD will build other architectures: https://github.com/DeepEyeCrypto/TypingPro/actions`);
+// 7. Organize Local artifacts (Optional helper)
+run('npm run organize', 'Organizing local artifacts into /release');
+
+console.log(`\n✅ PROJECT REWRITE SHIPPED: ${tagName}`);
+console.log(`🔗 Monitor builds here: https://github.com/DeepEyeCrypto/TypingPro/actions`);

@@ -61,7 +61,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         cursorStyle: 'underline',
         stopOnError: false,
         trainingMode: 'accuracy',
-        fontColor: '#FFFF00' // Bright Yellow
+        fontColor: '#FFFF00', // Bright Yellow
+        showHands: true
     });
 
     const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});

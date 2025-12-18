@@ -1,7 +1,10 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface Props {
     children: ReactNode;
+    fallback?: ReactNode;
+    name?: string;
 }
 
 interface State {
@@ -9,56 +12,66 @@ interface State {
     error: Error | null;
 }
 
+/**
+ * ErrorBoundary - Glass Styled
+ * Prevents the entire app from crashing on local component failures.
+ */
 export class ErrorBoundary extends Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = { hasError: false, error: null };
-    }
+    public state: State = {
+        hasError: false,
+        error: null
+    };
 
-    static getDerivedStateFromError(error: Error): State {
+    public static getDerivedStateFromError(error: Error): State {
         return { hasError: true, error };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        // Log the full stack trace to the console in both dev and prod for debugging
-        console.error('Uncaught error:', error);
-        console.error('Component Stack:', errorInfo.componentStack);
+    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error(`Error caught by ${this.props.name || 'Boundary'}:`, error, errorInfo);
     }
 
-    render() {
+    private handleReset = () => {
+        this.setState({ hasError: false, error: null });
+        window.location.reload();
+    };
+
+    public render() {
         if (this.state.hasError) {
+            if (this.props.fallback) return this.props.fallback;
+
             return (
-                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-8">
-                    <div className="bg-red-800/20 border border-red-500 rounded-lg p-6 max-w-lg text-center shadow-2xl backdrop-blur-sm">
-                        <h1 className="text-2xl font-bold mb-4 text-red-500 flex items-center justify-center gap-2">
-                            <span>⚠️</span> Something went wrong
-                        </h1>
-                        <p className="mb-6 text-gray-300">
-                            The application encountered an unexpected error.
+                <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f] p-6">
+                    <div className="max-w-md w-full bg-white/5 backdrop-blur-2xl border border-white/10 p-10 rounded-[2.5rem] shadow-2xl text-center">
+                        <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/30">
+                            <AlertTriangle className="text-red-500 w-10 h-10" />
+                        </div>
+
+                        <h1 className="text-2xl font-black text-white mb-2">Something went wrong</h1>
+                        <p className="text-white/40 mb-8 text-sm leading-relaxed">
+                            We've encountered an unexpected error. Don't worry, your progress is likely safe.
                         </p>
 
-                        {/* In production, we might want to hide the stack trace from the UI, 
-                            but keeping it collapsible or hidden by default is good practice if per user request "friendly in prod". 
-                            We will hide the raw stack trace container unless we are debugging. 
-                            actually, user asked: "in production it still shows the friendly error UI" 
-                            leaving out the pre block or making it dev-only would be safer.
-                            Let's use a subtle check. */}
-                        {(process.env.NODE_ENV === 'development') && (
-                            <pre className="text-[10px] bg-black/50 p-4 rounded text-left overflow-auto mb-6 max-h-40 font-mono text-status-error">
-                                {this.state.error?.toString()}
-                                {this.state.error?.stack}
-                            </pre>
-                        )}
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={this.handleReset}
+                                className="w-full py-4 bg-brand hover:scale-105 text-white rounded-2xl font-bold transition-all flex items-center justify-center gap-2 shadow-xl shadow-brand/20"
+                            >
+                                <RefreshCw size={18} /> Reload Application
+                            </button>
 
-                        <button
-                            onClick={() => {
-                                this.setState({ hasError: false, error: null });
-                                window.location.reload();
-                            }}
-                            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded transition shadow-lg"
-                        >
-                            Reload Application
-                        </button>
+                            <button
+                                onClick={() => window.location.href = '/'}
+                                className="w-full py-4 bg-white/5 hover:bg-white/10 text-white/60 rounded-2xl font-bold transition-all border border-white/5 flex items-center justify-center gap-2"
+                            >
+                                <Home size={18} /> Return Home
+                            </button>
+                        </div>
+
+                        {process.env.NODE_ENV === 'development' && (
+                            <div className="mt-8 p-4 bg-black/40 rounded-xl border border-white/5 text-left overflow-auto max-h-40">
+                                <code className="text-pink-400 text-xs font-mono">{this.state.error?.message}</code>
+                            </div>
+                        )}
                     </div>
                 </div>
             );

@@ -91,6 +91,7 @@ export interface UserSettings {
   fontColor: string;
   wpmGoal?: number;
   accuracyGoal?: number;
+  showHands: boolean;
 }
 
 export interface UserProfile {

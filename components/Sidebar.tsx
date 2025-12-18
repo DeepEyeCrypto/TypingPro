@@ -1,104 +1,66 @@
 import React from 'react';
 import { SECTIONS, LESSONS } from '../constants';
 import { Lock, PlayCircle, CheckCircle } from 'lucide-react';
-import { LessonProgress } from '../types';
+import { useApp } from '../contexts/AppContext';
 
-interface SidebarProps {
-    currentLessonId: number;
-    onSelectLesson: (id: number) => void;
-    lessonProgress: Record<number, LessonProgress>;
-    isOpen: boolean;
-}
+/**
+ * Sidebar - Context Integrated
+ * Rewritten for Clean Slate
+ */
+const Sidebar: React.FC = () => {
+    const { activeLessonId, lessonProgress, setActiveLessonId } = useApp();
 
-const Sidebar: React.FC<SidebarProps> = ({ currentLessonId, onSelectLesson, lessonProgress, isOpen }) => {
     return (
-        <aside
-            className={`
-            bg-bg-secondary/80 border-r border-border h-full overflow-y-auto backdrop-blur-sm z-20 transition-all duration-300 ease-in-out
-            ${isOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}
-        `}
-        >
-            {/* Inner container with fixed width to prevent reflow during collapse */}
-            <div className="min-w-[16rem] flex flex-col h-full">
-                <div className="p-6">
-                    <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Course Map</h3>
-                    <div className="space-y-6">
-                        {SECTIONS.map((section, idx) => (
-                            <div key={idx} className="space-y-2">
-                                <div className="flex items-center justify-between text-sm font-semibold text-text-primary">
-                                    <span>{section.title}</span>
-                                    <span className="text-[10px] bg-bg-surface text-text-muted px-1.5 py-0.5 rounded-md border border-border">
-                                        {section.range}
-                                    </span>
-                                </div>
+        <aside className="w-full h-full flex flex-col p-6 overflow-y-auto bg-transparent">
+            <div className="space-y-8">
+                {SECTIONS.map((section, idx) => (
+                    <div key={idx} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">{section.title}</h4>
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-white/40">
+                                {section.range}
+                            </span>
+                        </div>
 
-                                {section.active ? (
-                                    <div className="space-y-1 ml-2 border-l-2 border-border pl-3">
-                                        {LESSONS.map((lesson) => {
-                                            const progress = lessonProgress[lesson.id] || {
-                                                unlocked: false,
-                                                completed: false,
-                                                bestWpm: 0,
-                                                bestAccuracy: 0,
-                                                runCount: 0
-                                            };
-                                            const isActive = lesson.id === currentLessonId;
-                                            const isUnlocked = progress.unlocked;
-                                            const isCompleted = progress.completed;
+                        <div className="space-y-1">
+                            {LESSONS.filter(l => l.id >= parseInt(section.range.split('-')[0]) && l.id <= parseInt(section.range.split('-')[1]))
+                                .map((lesson) => {
+                                    const progress = lessonProgress[lesson.id];
+                                    const isActive = lesson.id === activeLessonId;
+                                    const isUnlocked = progress?.unlocked || lesson.id === 1;
+                                    const isCompleted = progress?.completed;
 
-                                            return (
-                                                <button
-                                                    key={lesson.id}
-                                                    disabled={!isUnlocked}
-                                                    onClick={() => onSelectLesson(lesson.id)}
-                                                    className={`
-                                w-full text-left text-xs py-2 px-2 rounded-md flex items-center gap-2 transition-all
-                                ${isActive
-                                                            ? 'bg-brand/10 text-brand font-medium shadow-sm'
-                                                            : !isUnlocked
-                                                                ? 'text-text-muted cursor-not-allowed opacity-50'
-                                                                : 'text-text-secondary hover:bg-bg-surface hover:text-text-primary'
-                                                        }
-                            `}
-                                                >
-                                                    {isCompleted ? (
-                                                        <CheckCircle className="w-3.5 h-3.5 text-status-success" />
-                                                    ) : !isUnlocked ? (
-                                                        <Lock className="w-3.5 h-3.5" />
-                                                    ) : isActive ? (
-                                                        <PlayCircle className="w-3.5 h-3.5" />
-                                                    ) : (
-                                                        <span className="w-3.5 text-center text-[10px] font-mono opacity-50">{lesson.id}</span>
-                                                    )}
-
-                                                    <div className="flex flex-col items-start truncate">
-                                                        <span className="truncate">{lesson.title}</span>
-                                                        {progress.bestAccuracy > 0 && (
-                                                            <span className="text-[9px] opacity-60 font-mono">{progress.bestAccuracy}% Acc</span>
-                                                        )}
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                ) : (
-                                    <div className="ml-5 flex items-center gap-2 text-xs text-text-muted opacity-60">
-                                        <Lock className="w-3 h-3" />
-                                        <span>Locked</span>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                    return (
+                                        <button
+                                            key={lesson.id}
+                                            disabled={!isUnlocked}
+                                            onClick={() => setActiveLessonId(lesson.id)}
+                                            className={`
+                                                w-full flex items-center gap-3 p-3 rounded-2xl transition-all border
+                                                ${isActive
+                                                    ? 'bg-brand/10 border-brand/20 text-brand shadow-lg'
+                                                    : !isUnlocked
+                                                        ? 'opacity-20 grayscale cursor-not-allowed border-transparent'
+                                                        : 'hover:bg-white/5 text-white/60 border-transparent hover:border-white/5'
+                                                }
+                                            `}
+                                        >
+                                            <div className="flex-shrink-0">
+                                                {isCompleted ? (
+                                                    <CheckCircle size={16} className="text-brand" />
+                                                ) : !isUnlocked ? (
+                                                    <Lock size={16} />
+                                                ) : (
+                                                    <PlayCircle size={16} />
+                                                )}
+                                            </div>
+                                            <span className="text-xs font-bold truncate">{lesson.title}</span>
+                                        </button>
+                                    );
+                                })}
+                        </div>
                     </div>
-                </div>
-
-                {/* Footer */}
-                <div className="mt-auto p-6 border-t border-border">
-                    <div className="text-[10px] text-text-muted leading-relaxed">
-                        &copy; 2024 TypingPro Inc.<br />
-                        v2.5.0 Pro
-                    </div>
-                </div>
+                ))}
             </div>
         </aside>
     );

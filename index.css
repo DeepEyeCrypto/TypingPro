@@ -95,9 +95,66 @@
   html,
   body,
   #root {
-    @apply h-full w-full m-0 p-0 overflow-hidden bg-[rgb(var(--bg-primary))] text-[rgb(var(--text-primary))];
-    /* Prevent rubber-banding on Mac */
+    @apply h-full w-full m-0 p-0 overflow-hidden bg-[#030305] text-white/90;
     overscroll-behavior: none;
+    font-size: 16px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Animated Background Layer */
+  .bg-animate {
+    background: radial-gradient(circle at 50% 50%, #0a0a0f 0%, #030305 100%);
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .bg-glow {
+    position: absolute;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse-glow 15s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    0% {
+      transform: translate(-10%, -10%) scale(1);
+    }
+
+    100% {
+      transform: translate(10%, 10%) scale(1.1);
+    }
+  }
+
+  /* Fluid Typography */
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px;
+    }
+  }
+}
+
+/* Glassmorphism Utilities */
+@layer components {
+  .glass-panel {
+    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0, 0, 0, 0.37)];
+  }
+
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-3xl transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10;
+  }
+
+  .glass-input {
+    @apply bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-brand/50 transition-all;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -115,13 +172,12 @@
 }
 
 .animate-blink {
-  animation: blink 1s step-end infinite;
+  animation: blink 1 step-end infinite;
 }
 
-/* Scrollbar Styling using CSS Vars */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -129,45 +185,5 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(var(--border-color));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(var(--text-muted));
-}
-
-/* Utilities */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
-}
-
-/* Responsive Keyboard Scaling */
-.keyboard-scaler {
-  transform: scale(1);
-}
-
-@media (max-height: 800px) {
-  .keyboard-scaler {
-    transform: scale(0.9);
-  }
-}
-
-@media (max-height: 700px) {
-  .keyboard-scaler {
-    transform: scale(0.8);
-  }
-}
-
-@media (max-height: 600px) {
-  .keyboard-scaler {
-    transform: scale(0.7);
-  }
+  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
 }
