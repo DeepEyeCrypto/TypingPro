@@ -17,7 +17,7 @@ interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const HLS_VIDEO_URL = "https://videos2.edclub.com/hls/196638853/3c53ad84-d876-4af8-ad8a-4140ab7bf929/index-1.m3u8";
+// HLS Intro Video moved to constants.ts
 
 export default function TypingPage() {
     const {
@@ -158,14 +158,14 @@ export default function TypingPage() {
 
     // Auto-trigger tutorial
     useEffect(() => {
-        if (currentLessonId === 1) {
-            const hasSeenIntro = sessionStorage.getItem(`seen_intro_hls_${currentProfile.id}`);
+        if (activeLesson.videoUrl) {
+            const hasSeenIntro = sessionStorage.getItem(`seen_video_${activeLesson.id}_${currentProfile.id}`);
             if (!hasSeenIntro) {
                 setVideoVisible(true);
-                sessionStorage.setItem(`seen_intro_hls_${currentProfile.id}`, 'true');
+                sessionStorage.setItem(`seen_video_${activeLesson.id}_${currentProfile.id}`, 'true');
             }
         }
-    }, [currentLessonId, currentProfile.id]);
+    }, [activeLesson.id, activeLesson.videoUrl, currentProfile.id]);
 
     return (
         <div className="flex-1 flex flex-col h-full bg-bg-surface overflow-hidden relative">
@@ -226,7 +226,7 @@ export default function TypingPage() {
 
                 {/* Center Panel: Typing Area & Video Toggle */}
                 <div className="flex-1 flex flex-col min-w-0 relative">
-                    {!videoVisible && (
+                    {activeLesson.videoUrl && !videoVisible && (
                         <div className="w-full flex justify-center pt-2">
                             <button
                                 onClick={() => setVideoVisible(true)}
@@ -335,9 +335,9 @@ export default function TypingPage() {
             )}
 
             {/* Video Modal */}
-            {videoVisible && (
+            {videoVisible && activeLesson.videoUrl && (
                 <LessonVideoPlayer
-                    hlsUrl={HLS_VIDEO_URL}
+                    hlsUrl={activeLesson.videoUrl}
                     onClose={() => setVideoVisible(false)}
                     autoPlay={true}
                 />

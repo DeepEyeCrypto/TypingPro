@@ -7,6 +7,7 @@ export interface Lesson {
   content: string; // The practice text
   isAiGenerated?: boolean;
   newKeys?: string[]; // Keys specifically introduced in this lesson
+  videoUrl?: string; // Optional HLS tutorial video
 }
 
 export interface KeyStats {

@@ -47,7 +47,8 @@ export const LESSONS: Lesson[] = [
     description: "Your home base. Place index fingers on F and J.",
     keys: ['f', 'j', ' '],
     newKeys: ['f', 'j'],
-    content: "fff jjj fj fj jf jf ff jj fff jjj fjf jfj fff jjj f j f j"
+    content: "fff jjj fj fj jf jf ff jj fff jjj fjf jfj fff jjj f j f j",
+    videoUrl: "https://videos2.edclub.com/hls/196638853/3c53ad84-d876-4af8-ad8a-4140ab7bf929/index-1.m3u8"
   },
   {
     id: 2,
