@@ -198,12 +198,14 @@ export default function TypingPage(): React.ReactNode {
                     {/* Adaptive Keyboard Footer */}
                     <div className="p-4 sm:p-8 bg-black/40 backdrop-blur-3xl border-t border-white/5 mt-auto">
                         <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
-                            <VirtualKeyboard
-                                activeKey={activeKey}
-                                pressedKeys={pressedKeys}
-                                layout={settings.keyboardLayout || 'qwerty'}
-                                heatmapStats={liveKeyStats}
-                            />
+                            <div className="hidden lg:block w-full">
+                                <VirtualKeyboard
+                                    activeKey={activeKey}
+                                    pressedKeys={pressedKeys}
+                                    layout={settings.keyboardLayout || 'qwerty'}
+                                    heatmapStats={liveKeyStats}
+                                />
+                            </div>
                             {settings.showHands && (
                                 <div className="hidden md:block w-full">
                                     <KeyboardHandsOverlay

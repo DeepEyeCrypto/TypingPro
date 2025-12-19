@@ -289,6 +289,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       <input
         ref={inputRef}
         type="text"
+        inputMode="none"
         className="absolute opacity-0 pointer-events-none"
         onKeyDown={handleKeyDown}
         onChange={() => { }}
