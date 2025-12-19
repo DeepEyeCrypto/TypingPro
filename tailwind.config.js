@@ -56,8 +56,8 @@ export default {
             boxShadow: {
                 'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
                 '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.5)',
-                'cyan-glow': '0 0 15px rgba(0, 242, 255, 0.3)',
-                'violet-glow': '0 0 15px rgba(188, 19, 254, 0.3)',
+                'cyan-glow': '0 0 10px rgba(0, 242, 255, 0.2)',
+                'violet-glow': '0 0 10px rgba(188, 19, 254, 0.2)',
             },
             keyframes: {
                 shake: {

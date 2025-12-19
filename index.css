@@ -152,16 +152,18 @@
 @layer components {
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+    will-change: transform, opacity, backdrop-filter;
   }
 
   .glass-card {
     background: rgba(13, 13, 13, 0.25);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(8px);
     border: 1px solid rgba(188, 19, 254, 0.15);
+    will-change: transform, opacity;
     @apply rounded-3xl transition-all duration-500 hover:border-cyber-cyan/40 hover:shadow-cyan-glow;
   }
 
