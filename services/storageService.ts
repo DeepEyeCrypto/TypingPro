@@ -1,20 +1,20 @@
 
-import { HistoryEntry, LessonProgress, UserSettings, UserProfile, EarnedBadge } from "../types";
+import { HistoryEntry, LessonProgress, UserSettings, UserProfile, EarnedBadge, KeyStats, DailyGoal, FingerStats } from "../types";
 import { LESSONS } from "../constants";
 
 const DEFAULT_PROFILE_ID = 'default';
 
-// Helper to namespace keys by profile
 // Helper to namespace keys by profile
 const getKey = (base: string, profileId: string = DEFAULT_PROFILE_ID) => `${base}_${profileId}`;
 
 const KEYS = {
     HISTORY: 'typing_history_v2',
     PROGRESS: 'typing_progress_v2',
-    PREFS: 'typing_prefs_v3', // v3 for new settings structure
+    PREFS: 'typing_prefs_v3',
     PROFILES: 'typing_profiles_v1',
     BADGES: 'typing_badges_v1',
     KEY_STATS: 'typing_key_stats_v1',
+    FINGER_STATS: 'typing_finger_stats_v1',
     DAILY_GOALS: 'typing_daily_goals_v1'
 };
 
@@ -139,8 +139,6 @@ export const unlockLesson = (profileId: string, lessonId: number): Record<number
 
 // --- Key Stats ---
 
-import { KeyStats, DailyGoal } from "../types";
-
 export const getKeyStats = (profileId: string): Record<string, KeyStats> => {
     try {
         const data = localStorage.getItem(getKey(KEYS.KEY_STATS, profileId));
@@ -160,10 +158,38 @@ export const updateKeyStats = (profileId: string, sessionStats: Record<string, K
         const existing = current[stat.char];
         existing.totalPresses += stat.totalPresses;
         existing.errorCount += stat.errorCount;
-        existing.accuracy = Math.round(((existing.totalPresses - existing.errorCount) / existing.totalPresses) * 100);
+        existing.accuracy = Math.round(((existing.totalPresses - existing.errorCount) / Math.max(1, existing.totalPresses)) * 100);
     });
 
     localStorage.setItem(getKey(KEYS.KEY_STATS, profileId), JSON.stringify(current));
+    return current;
+};
+
+// --- Finger Stats ---
+
+export const getFingerStats = (profileId: string): Record<string, FingerStats> => {
+    try {
+        const data = localStorage.getItem(getKey(KEYS.FINGER_STATS, profileId));
+        return data ? JSON.parse(data) : {};
+    } catch {
+        return {};
+    }
+};
+
+export const updateFingerStats = (profileId: string, sessionFingerStats: Record<string, FingerStats>): Record<string, FingerStats> => {
+    const current = getFingerStats(profileId);
+
+    Object.values(sessionFingerStats).forEach(stat => {
+        if (!current[stat.finger]) {
+            current[stat.finger] = { finger: stat.finger, totalPresses: 0, errorCount: 0, accuracy: 0 };
+        }
+        const existing = current[stat.finger];
+        existing.totalPresses += stat.totalPresses;
+        existing.errorCount += stat.errorCount;
+        existing.accuracy = Math.round(((existing.totalPresses - existing.errorCount) / Math.max(1, existing.totalPresses)) * 100);
+    });
+
+    localStorage.setItem(getKey(KEYS.FINGER_STATS, profileId), JSON.stringify(current));
     return current;
 };
 
@@ -172,8 +198,6 @@ export const updateKeyStats = (profileId: string, sessionStats: Record<string, K
 export const getDailyGoals = (profileId: string): DailyGoal[] => {
     try {
         const data = localStorage.getItem(getKey(KEYS.DAILY_GOALS, profileId));
-        // Reset goals if it's a new day? Logic for that belongs in a service/effect, 
-        // strictly storage just retrieves.
         return data ? JSON.parse(data) : [];
     } catch {
         return [];
@@ -207,7 +231,6 @@ export const getSettings = (profileId: string): UserSettings => {
         const data = localStorage.getItem(getKey(KEYS.PREFS, profileId));
         if (data) {
             const parsed = JSON.parse(data);
-            // Migration for old boolean darkMode
             if (typeof parsed.darkMode === 'boolean') {
                 parsed.theme = parsed.darkMode ? 'dark' : 'light';
                 delete parsed.darkMode;

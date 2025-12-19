@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import FuturisticBackground from './FuturisticBackground';
 
 interface AppShellProps {
@@ -8,32 +8,27 @@ interface AppShellProps {
     children: React.ReactNode;
     rightPanel?: React.ReactNode;
     className?: string;
+    isSidebarCollapsed?: boolean;
+    onToggleSidebar?: (collapsed: boolean) => void;
 }
 
-/**
- * AppShell - Adaptive Grid System
- * Breakpoints:
- * - Desktop (xl): 3-column (Sidebar | Main | RightPanel)
- * - Tablet (lg): 2-column (Sidebar | Main + TopBar Stats)
- * - Mobile (md/sm): 1-column stack (Hamburger Menu for Sidebar)
- */
 export const AppShell: React.FC<AppShellProps> = ({
     header,
     sidebar,
     children,
     rightPanel,
-    className = ''
+    className = '',
+    isSidebarCollapsed = false,
+    onToggleSidebar
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className={`grid grid-rows-[auto_1fr] h-screen w-full bg-deep-charcoal text-white/90 selection:bg-cyber-cyan/30 relative overflow-hidden ${className}`}>
-            {/* Phase 1: Sci-Fi Animated Background */}
+        <div className={`flex flex-col h-screen w-full bg-deep-charcoal text-white/90 selection:bg-cyber-cyan/30 relative overflow-hidden ${className}`}>
             <FuturisticBackground />
 
-            {/* Header: Full Width */}
             {header && (
-                <header className="z-[60] glass-panel border-b border-white/5 relative h-16 md:h-20 flex items-center px-4 md:px-6">
+                <header className="z-[60] bg-black/40 backdrop-blur-md border-b border-white/5 h-16 md:h-20 flex items-center px-4 md:px-6 shrink-0">
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="lg:hidden p-2 text-white/40 hover:text-white transition-colors mr-4"
@@ -46,15 +41,25 @@ export const AppShell: React.FC<AppShellProps> = ({
                 </header>
             )}
 
-            {/* 3-Zone Content Grid */}
-            <div className={`grid grid-cols-1 lg:grid-cols-[250px_1fr] 2xl:grid-cols-[280px_1fr_minmax(0,320px)] h-full overflow-hidden`}>
-
+            <div className="flex flex-1 overflow-hidden relative">
                 {/* 1. Left Sidebar */}
                 {sidebar && (
                     <>
-                        <aside className="hidden lg:block h-full glass-panel border-r border-white/5 overflow-y-auto scrollbar-hide">
-                            {sidebar}
+                        <aside
+                            className={`hidden lg:flex flex-col h-full bg-black/20 border-r border-white/5 transition-all duration-500 ease-in-out relative ${isSidebarCollapsed ? 'w-0 opacity-0 -translate-x-full' : 'w-[260px] opacity-100 translate-x-0'}`}
+                        >
+                            <div className="flex-1 overflow-y-auto scrollbar-hide w-[260px]">
+                                {sidebar}
+                            </div>
                         </aside>
+
+                        {/* Sidebar Toggle Button (Desktop) */}
+                        <button
+                            onClick={() => onToggleSidebar?.(!isSidebarCollapsed)}
+                            className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-[70] p-1.5 bg-brand/80 text-white rounded-r-xl shadow-lg hover:bg-brand transition-all duration-300 ${isSidebarCollapsed ? 'translate-x-0 opacity-100' : 'translate-x-[260px] opacity-40 hover:opacity-100'}`}
+                        >
+                            {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                        </button>
 
                         {/* Mobile Side Drawer */}
                         {isMobileMenuOpen && (
@@ -75,21 +80,19 @@ export const AppShell: React.FC<AppShellProps> = ({
                 )}
 
                 {/* 2. Center Stage (Main Content) */}
-                <main className="relative h-full overflow-hidden flex flex-col min-w-0">
+                <main className="flex-1 relative h-full flex flex-col min-w-0 transition-all duration-500">
                     <div className="flex-1 overflow-y-auto scrollbar-hide">
-                        <div className="h-full w-full">
+                        <div className="h-full w-full flex flex-col items-center">
                             {children}
                         </div>
                     </div>
                 </main>
 
-                {/* 3. Right Panel (Ultra-wide screens) */}
-                {rightPanel ? (
-                    <aside className="hidden 2xl:block h-full glass-panel border-l border-white/5 overflow-y-auto scrollbar-hide">
+                {/* 3. Right Panel */}
+                {rightPanel && (
+                    <aside className="hidden 2xl:block w-[300px] h-full bg-black/10 border-l border-white/5 overflow-y-auto scrollbar-hide">
                         {rightPanel}
                     </aside>
-                ) : (
-                    <div className="hidden 2xl:block" /> // Empty column for symmetry on 2xl
                 )}
             </div>
         </div>

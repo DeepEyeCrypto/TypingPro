@@ -148,23 +148,25 @@
   }
 }
 
-/* Glassmorphism Utilities - Responsive Depth */
+/* Glassmorphism Utilities - Optimized for Performance */
 @layer components {
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
-    will-change: transform, opacity, backdrop-filter;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    /* Force GPU */
   }
 
   .glass-card {
-    background: rgba(13, 13, 13, 0.25);
-    backdrop-filter: blur(8px);
+    background: rgba(13, 13, 13, 0.6);
+    /* Slightly more opaque for removal of blur */
     border: 1px solid rgba(188, 19, 254, 0.15);
-    will-change: transform, opacity;
-    @apply rounded-3xl transition-all duration-500 hover:border-cyber-cyan/40 hover:shadow-cyan-glow;
+    @apply rounded-3xl transition-all duration-300 hover:border-cyber-cyan/40 hover:shadow-cyan-glow;
+    will-change: transform;
   }
 
   .glass-input {

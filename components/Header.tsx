@@ -60,6 +60,19 @@ const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+              } else {
+                document.exitFullscreen();
+              }
+            }}
+            className="p-2 text-white/40 hover:text-cyber-cyan hover:shadow-cyan-glow transition-all rounded-lg"
+            title="Toggle Fullscreen"
+          >
+            <PanelLeft size={20} />
+          </button>
           <button onClick={toggleTheme} className="p-2 text-white/40 hover:text-cyber-cyan hover:shadow-cyan-glow transition-all rounded-lg">
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>

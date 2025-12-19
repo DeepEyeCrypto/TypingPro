@@ -1,8 +1,9 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Stats, FontSize, CursorStyle, KeyStats, TrainingMode } from '../types';
-import { useSound } from '../contexts/SoundContext'; // Changed import
+import React, { useEffect, useRef, useState, useCallback, memo, useMemo } from 'react';
+import { Stats, FontSize, CursorStyle, KeyStats, TrainingMode, FingerStats } from '../types';
+import { useSound } from '../contexts/SoundContext';
 import { AlertCircle } from 'lucide-react';
+import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
 
 interface TypingAreaProps {
   content: string;
@@ -14,7 +15,7 @@ interface TypingAreaProps {
   onActiveKeyChange?: (key: string | null) => void;
   onStatsUpdate: (stats: { wpm: number; accuracy: number; errors: number; progress: number }) => void;
   onKeyStatsUpdate?: (stats: Record<string, KeyStats>) => void;
-  onFingerChange?: (finger: string | null) => void; // New callback
+  onFingerChange?: (finger: string | null) => void;
   fontFamily: string;
   fontSize: FontSize;
   cursorStyle: CursorStyle;
@@ -27,6 +28,30 @@ interface TypingAreaProps {
 }
 
 const IDLE_THRESHOLD = 5000;
+
+// Optimized character component
+const CharSpan = memo(({ char, idx, cursorIndex, isError, isPassed, shake, fontSize }: {
+  char: string,
+  idx: number,
+  cursorIndex: number,
+  isError: boolean,
+  isPassed: boolean,
+  shake: boolean,
+  fontSize: FontSize
+}) => {
+  let className = `inline text-center transition-all duration-75 px-[0.5px] ${getTextSizeClass(fontSize)} `;
+
+  if (idx === cursorIndex) {
+    className += "bg-brand/80 text-white rounded-lg shadow-[0_0_20px_rgba(var(--brand-rgb),0.5)] glow-text scale-110 relative z-10 mx-1";
+    if (shake) className += " animate-pulse bg-red-500 shadow-red-500/50";
+  } else if (isPassed) {
+    className += isError ? "text-red-500/80" : "text-white/20";
+  } else {
+    className += "text-white/40";
+  }
+
+  return <span className={className}>{char === ' ' ? '\u00A0' : char}</span>;
+});
 
 const TypingArea: React.FC<TypingAreaProps> = ({
   content,
@@ -56,14 +81,14 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const [startTime, setStartTime] = useState<number | null>(null);
   const [shake, setShake] = useState(false);
   const [currentKeyStats, setCurrentKeyStats] = useState<Record<string, KeyStats>>({});
+  const [currentFingerStats, setCurrentFingerStats] = useState<Record<string, FingerStats>>({});
   const [combo, setCombo] = useState(0);
   const [lastCorrectFinger, setLastCorrectFinger] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const finalizeSession = () => {
+  const finalizeSession = useCallback(() => {
     if (!startTime) return;
     const finalTime = Date.now();
     const durationMs = finalTime - startTime;
@@ -77,11 +102,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       errors: errors.length,
       progress: Math.round((cursorIndex / content.length) * 100),
       startTime: startTime,
-      completed: true
+      completed: true,
+      keyStats: currentKeyStats,
+      fingerStats: currentFingerStats,
+      formAccuracy: Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100)
     });
-  };
+  }, [startTime, cursorIndex, errors.length, content.length, onComplete, currentKeyStats, currentFingerStats]);
 
-  // Burst Mode Timer
   useEffect(() => {
     if (lessonType === 'burst' && startTime && isActive) {
       setTimeLeft(15);
@@ -98,29 +125,14 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [lessonType, startTime, isActive]);
+  }, [lessonType, startTime, isActive, finalizeSession]);
 
-  // Helper to get finger for the current char
-  const getExpectedFinger = (idx: number) => {
-    const char = content[idx];
-    if (!char) return null;
-
-    // Find in KEYBOARD_ROWS constant from keyToFingerMap utils/mapping
-    // Actually we can use the existing constants.ts rows as they have finger info
-    const lower = char.toLowerCase();
-    const rows = (window as any).TAURI_KEYBOARD_ROWS || []; // Fallback if handled globally
-    // We'll import KEYBOARD_ROWS for this
-    return null; // Placeholder - will implement properly below
-  };
-
-  // Focus management
   useEffect(() => {
     if (isActive && inputRef.current) {
       inputRef.current.focus({ preventScroll: true });
     }
   }, [isActive, activeLessonId]);
 
-  // Reset state
   useEffect(() => {
     setInput('');
     setCursorIndex(0);
@@ -132,32 +144,47 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (onActiveKeyChange) onActiveKeyChange(content[0] || null);
   }, [content, onActiveKeyChange]);
 
-  // Report active finger/key
+  // Synchronous reaching of finger - Zero Lag
+  const getFingerForChar = useCallback((c: string): string => {
+    const char = c.toLowerCase();
+    if (char === ' ') return 'thumb';
+    for (const row of KEYBOARD_ROWS) {
+      const key = row.find(k => {
+        const mappings = LAYOUTS['qwerty'][k.code];
+        return mappings && (mappings.default === char || mappings.shift === char);
+      });
+      if (key) return key.finger || 'thumb';
+    }
+    return 'thumb';
+  }, []);
+
+  const [rollingKeypresses, setRollingKeypresses] = useState<number[]>([]);
+
   useEffect(() => {
     const targetChar = content[cursorIndex];
     if (onActiveKeyChange) onActiveKeyChange(targetChar || null);
 
-    // Compute finger (moved from getExpectedFinger logic)
-    import('../constants').then(({ KEYBOARD_ROWS, LAYOUTS }) => {
-      let finger: string | null = null;
-      const char = targetChar?.toLowerCase();
-      if (char === ' ') finger = 'thumb';
-      else {
-        for (const row of KEYBOARD_ROWS) {
-          const key = row.find(k => {
-            const mappings = LAYOUTS['qwerty'][k.code];
-            return mappings && (mappings.default === char || mappings.shift === char);
-          });
-          if (key) {
-            finger = key.finger;
-            break;
-          }
-        }
-      }
-      if (onFingerChange) onFingerChange(finger);
-      setLastCorrectFinger(finger);
-    });
-  }, [cursorIndex, content, onActiveKeyChange, onFingerChange]);
+    const finger = targetChar ? getFingerForChar(targetChar) : null;
+    if (onFingerChange) onFingerChange(finger);
+    setLastCorrectFinger(finger);
+  }, [cursorIndex, content, onActiveKeyChange, onFingerChange, getFingerForChar]);
+
+  // Rolling WPM Updater
+  useEffect(() => {
+    if (!startTime || !isActive) return;
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const cutoff = now - 60000;
+      setRollingKeypresses(prev => {
+        const filtered = prev.filter(t => t > cutoff);
+        const wpm = Math.round((filtered.length / 5));
+        const acc = Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100);
+        onStatsUpdate({ wpm, accuracy: acc, errors: errors.length, progress: Math.round((cursorIndex / content.length) * 100) });
+        return filtered;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [startTime, isActive, cursorIndex, errors.length, content.length, onStatsUpdate]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (cursorIndex >= content.length) return;
@@ -168,37 +195,41 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (!startTime) setStartTime(now);
 
     const targetChar = content[cursorIndex];
+    if (!targetChar) return;
     const isCorrect = e.key === targetChar;
+
+    const finger = getFingerForChar(targetChar);
+
+    setCurrentFingerStats(prev => {
+      const existing = prev[finger] || { finger, totalPresses: 0, errorCount: 0, accuracy: 0 };
+      const newPresses = existing.totalPresses + 1;
+      const newErrors = existing.errorCount + (isCorrect ? 0 : 1);
+      return {
+        ...prev,
+        [finger]: {
+          ...existing,
+          totalPresses: newPresses,
+          errorCount: newErrors,
+          accuracy: Math.round(((newPresses - newErrors) / newPresses) * 100)
+        }
+      };
+    });
 
     if (isCorrect) {
       if (soundEnabled) playSound();
-      setCombo(prev => {
-        const next = prev + 1;
-        if (onComboUpdate) onComboUpdate(next);
-        return next;
-      });
-      setInput(prev => prev + e.key);
-      setCursorIndex(prev => prev + 1);
+      setRollingKeypresses(prev => [...prev, now]);
+      const nextCombo = combo + 1;
+      setCombo(nextCombo);
+      if (onComboUpdate) onComboUpdate(nextCombo);
 
-      // Check Completion
-      if (cursorIndex + 1 === content.length) {
-        const finalTime = Date.now();
-        const activeDurationMs = Math.max(1, finalTime - (startTime || finalTime));
-        const timeMin = activeDurationMs / 60000;
-        const finalWpm = Math.round((content.length / 5) / timeMin);
-        const finalAcc = Math.round(((content.length - errors.length) / content.length) * 100);
+      const nextIdx = cursorIndex + 1;
+      setInput(input + e.key);
+      setCursorIndex(nextIdx);
 
-        onComplete({
-          wpm: finalWpm,
-          accuracy: Math.max(0, finalAcc),
-          errors: errors.length,
-          progress: 100,
-          startTime: startTime,
-          completed: true
-        });
+      if (nextIdx === content.length) {
+        finalizeSession();
       }
     } else {
-      // In "Accuracy Lock" (stopOnError) mode, we don't advance and show corrective feedback
       if (soundEnabled) playSound();
       setCombo(0);
       if (onComboUpdate) onComboUpdate(0);
@@ -206,36 +237,27 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       setTimeout(() => setShake(false), 200);
 
       if (!errors.includes(cursorIndex)) {
-        setErrors(prev => [...prev, cursorIndex]);
+        setErrors([...errors, cursorIndex]);
       }
 
       if (!stopOnError) {
-        setInput(prev => prev + e.key);
-        setCursorIndex(prev => prev + 1);
+        setInput(input + e.key);
+        setCursorIndex(cursorIndex + 1);
       }
     }
   };
 
-  const renderedText = React.useMemo(() => {
-    return content.split('').map((char, idx) => {
-      let className = `inline text-center transition-all duration-75 px-[0.5px] ${getTextSizeClass(fontSize)} `;
-      if (idx === cursorIndex) {
-        className += "bg-brand/80 text-white rounded-lg shadow-[0_0_20px_rgba(var(--brand-rgb),0.5)] glow-text scale-110 relative z-10 mx-1";
-        if (shake) className += " animate-pulse bg-red-500 shadow-red-500/50";
-      } else if (idx < cursorIndex) {
-        className += errors.includes(idx) ? "text-red-500/80" : "text-white/20";
-      } else {
-        className += "text-white/40";
-      }
-      return <span key={idx} className={className}>{char === ' ' ? '\u00A0' : char}</span>;
-    });
-  }, [content, cursorIndex, errors, shake, fontSize]);
-
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative py-10" onClick={() => inputRef.current?.focus()}>
-      <input ref={inputRef} type="text" inputMode="none" className="absolute opacity-0" onKeyDown={handleKeyDown} autoComplete="off" />
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="none"
+        className="absolute opacity-0 pointer-events-none"
+        onKeyDown={handleKeyDown}
+        autoComplete="off"
+      />
 
-      {/* Burst Timer Overlay */}
       {timeLeft !== null && (
         <div className="absolute top-10 right-10 flex flex-col items-center">
           <span className="text-white/20 text-[10px] font-black uppercase tracking-widest">Time Remaining</span>
@@ -245,7 +267,6 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         </div>
       )}
 
-      {/* Finger Hint Popup */}
       {shake && lastCorrectFinger && (
         <div className="absolute top-0 animate-bounce bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
           <AlertCircle size={14} /> Use {lastCorrectFinger.replace('-', ' ')}
@@ -253,7 +274,18 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       )}
 
       <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed tracking-tight select-none ${shake ? 'animate-shake' : ''}`}>
-        {renderedText}
+        {content.split('').map((char, idx) => (
+          <CharSpan
+            key={idx}
+            char={char}
+            idx={idx}
+            cursorIndex={cursorIndex}
+            isError={errors.includes(idx)}
+            isPassed={idx < cursorIndex}
+            shake={shake}
+            fontSize={fontSize}
+          />
+        ))}
       </div>
     </div>
   );
@@ -269,4 +301,4 @@ const getTextSizeClass = (size: FontSize) => {
   }
 };
 
-export default React.memo(TypingArea);
+export default memo(TypingArea);

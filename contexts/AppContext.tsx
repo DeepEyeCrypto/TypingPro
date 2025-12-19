@@ -7,8 +7,9 @@ import {
     getProfiles, createProfile, getSettings, saveSettings,
     getLessonProgress, getHistory, getEarnedBadges,
     updateLessonProgress, saveHistory, saveEarnedBadge, unlockLesson, clearHistory,
-    getKeyStats, updateKeyStats, getDailyGoals, saveDailyGoals
+    getKeyStats, updateKeyStats, getDailyGoals, saveDailyGoals, updateFingerStats, getFingerStats
 } from '../services/storageService';
+import { FingerStats } from '../types';
 import { setVolume } from '../services/audioService';
 import { BADGES, FANCY_FONTS, XP_LEVELS } from '../constants';
 
@@ -26,6 +27,7 @@ interface AppContextType {
     activeLessonId: number;
     user: AuthUser | null;
     keyStats: Record<string, KeyStats>;
+    fingerStats: Record<string, FingerStats>;
     dailyGoals: DailyGoal[];
 
     // Actions
@@ -37,6 +39,7 @@ interface AppContextType {
     clearUserHistory: () => void;
     refreshUserData: () => void;
     recordKeyStats: (sessionStats: Record<string, KeyStats>) => void;
+    getWeaknessDrill: () => { content: string, title: string } | null;
 
     // Auth
     login: () => Promise<void>;
@@ -75,6 +78,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [earnedBadges, setEarnedBadges] = useState<EarnedBadge[]>([]);
     const [keyStats, setKeyStats] = useState<Record<string, KeyStats>>({});
+    const [fingerStats, setFingerStats] = useState<Record<string, FingerStats>>({});
     const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
     const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
     const [activeLessonId, setActiveLessonId] = useState(1);
@@ -162,7 +166,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         // Simple default goals
         const defaults: DailyGoal[] = [
             { id: 'g1', description: 'Complete 3 Lessons', targetValue: 3, currentValue: 0, isCompleted: false, type: 'lessons' },
-            { id: 'g2', description: 'Type for 5 minutes', targetValue: 300, currentValue: 0, isCompleted: false, type: 'time' }
+            { id: 'g2', description: 'Type for 5 minutes', targetValue: 300, currentValue: 0, isCompleted: false, type: 'time' },
+            { id: 'g3', description: 'Maintain 98% Form', targetValue: 1, currentValue: 0, isCompleted: false, type: 'form' }
         ];
         saveDailyGoals(profileId, defaults);
         return defaults;
@@ -234,6 +239,34 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setKeyStats(updated);
     };
 
+    const getWeaknessDrill = (): { content: string, title: string } | null => {
+        const sortedFingers = Object.values(fingerStats).sort((a, b) => a.accuracy - b.accuracy);
+        if (sortedFingers.length === 0) return null;
+
+        const weakest = sortedFingers[0];
+        if (weakest.accuracy >= 98 || weakest.totalPresses < 10) return null;
+
+        const weakestFinger = weakest.finger;
+        const mappings: Record<string, string> = {
+            'left-pinky': 'q a z',
+            'left-ring': 'w s x',
+            'left-middle': 'e d c',
+            'left-index': 'r f v t g b',
+            'right-index': 'y h n u j m',
+            'right-middle': 'i k ,',
+            'right-ring': 'o l .',
+            'right-pinky': 'p ; /'
+        };
+
+        const chars = mappings[weakestFinger] || 'f j';
+        const content = Array(8).fill(chars).join(' ');
+
+        return {
+            content,
+            title: `Bonus Drill: ${weakestFinger.replace('-', ' ').toUpperCase()} Reinforcement`
+        };
+    };
+
     const recordLessonComplete = (lessonId: number, stats: Stats): boolean => {
         // Logic from App.tsx handleComplete
         const passedCriteria = stats.accuracy >= (settings.trainingMode === 'accuracy' ? 98 : 90) && stats.wpm >= 15; // Adjusted criteria
@@ -269,13 +302,45 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             errors: stats.errors,
             durationSeconds: (Date.now() - (stats.startTime || 0)) / 1000
         };
+
+        // --- Adaptive Intelligence: Pace Adjustment ---
+        if (stats.accuracy < 98) {
+            console.log("Adaptive Intelligence: Accuracy below 98%. Recommending focus on form over speed.");
+            // We could set a global 'paceHint' or 'slowDown' state here if needed
+        }
+
         saveHistory(currentProfile.id, entry);
         const newHistory = [entry, ...history];
         setHistory(newHistory);
 
-        // --- Phase 3: Gamification (XP & Leveling) ---
+        // --- Session Velocity ---
+        const lastSession = history[0];
+        if (lastSession) {
+            const velocity = entry.wpm - lastSession.wpm;
+            if (velocity > 0) {
+                console.log(`Session Velocity: +${velocity} WPM improvement!`);
+            }
+        }
+
+        // --- Phase 4: Scientific Mastery (XP & Adaptive Leveling) ---
         if (passedCriteria) {
             const gainedXp = Math.round((stats.wpm * stats.accuracy) / 10);
+
+            // Mastery Unlock: 3 consecutive 99%+ accuracy unlocks next tier immediately
+            const recentHistory = [entry, ...history].slice(0, 3);
+            const isMasteryAchieved = recentHistory.length >= 3 && recentHistory.every(h => h.accuracy >= 99);
+
+            if (isMasteryAchieved) {
+                // Unlock the next Tier (Start of next stage)
+                // Stages: 1-5, 6-10, 11-15, 16-20, 21-25, 26-30
+                const currentStageEnd = Math.ceil(lessonId / 5) * 5;
+                const nextStageStart = currentStageEnd + 1;
+                if (nextStageStart <= 30) {
+                    unlockLesson(currentProfile.id, nextStageStart);
+                    // Note: updatedProgress already has the next lesson unlocked normally
+                }
+            }
+
             const newXp = currentProfile.xp + gainedXp;
             const newLevel = getLevelFromXp(newXp);
 
@@ -286,6 +351,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             const updatedProfiles = profiles.map(p => p.id === updatedProfile.id ? updatedProfile : p);
             setProfiles(updatedProfiles);
             localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
+        }
+
+        // --- Finger Analytics Update ---
+        if (stats.fingerStats) {
+            const updatedFingerStats = updateFingerStats(currentProfile.id, stats.fingerStats);
+            // Finger Independence Score calculation
+            const total = Object.values(updatedFingerStats).reduce((a, b: FingerStats) => a + b.totalPresses, 0);
+            if (total > 0) {
+                const targetUsage = total / 8;
+                const fingers = ['left-pinky', 'left-ring', 'left-middle', 'left-index', 'right-index', 'right-middle', 'right-ring', 'right-pinky'];
+                let variance = 0;
+                fingers.forEach(f => {
+                    const fingerStat = updatedFingerStats[f] as FingerStats | undefined;
+                    const usage = fingerStat?.totalPresses || 0;
+                    variance += Math.pow(usage - targetUsage, 2);
+                });
+                const stdDev = Math.sqrt(variance / 8);
+                const independenceScore = Math.max(0, 100 - (stdDev / (total / 4)) * 100);
+                console.log(`Finger Independence Score: ${independenceScore.toFixed(1)}%`);
+            }
         }
 
         // Update Daily Goals
@@ -333,6 +418,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         activeLessonId,
         user,
         keyStats,
+        fingerStats,
         dailyGoals,
         setActiveLessonId,
         switchProfile,
@@ -342,11 +428,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         clearUserHistory,
         refreshUserData,
         recordKeyStats: recordKeyStatsAction,
+        getWeaknessDrill,
         login,
         logout
     }), [
         profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme,
-        activeLessonId, user, keyStats, dailyGoals
+        activeLessonId, user, keyStats, fingerStats, dailyGoals, getWeaknessDrill
     ]);
 
     return (

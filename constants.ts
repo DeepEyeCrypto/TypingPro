@@ -32,145 +32,289 @@ export const FANCY_FONTS = [
 ];
 
 export const SECTIONS = [
-  { title: "Stage 1: Home Row Anchors", range: "1 - 5", active: true },
-  { title: "Stage 2: Top Row Words", range: "6 - 10", active: false },
-  { title: "Stage 3: Bottom Row", range: "11 - 15", active: false },
-  { title: "Advanced Practice", range: "16+", active: false }
+  { title: "Foundation (1-5): Home Row Anchors", range: "1 - 5", active: true },
+  { title: "Expansion (6-10): Top Row Integration", range: "6 - 10", active: false },
+  { title: "Mastery (11-15): Bottom Row + Symbols", range: "11 - 15", active: false },
+  { title: "Fluency (16-20): Common Words", range: "16 - 20", active: false },
+  { title: "Speed Building (21-25): Mixed Passages", range: "21 - 25", active: false },
+  { title: "Competitive (26-30): Timed Sprints", range: "26 - 30", active: false }
 ];
 
 export const XP_LEVELS = [
   { title: 'Recruit', minXp: 0 },
-  { title: 'Pilot', minXp: 500 },
-  { title: 'Commander', minXp: 2000 },
-  { title: 'Legend', minXp: 5000 },
+  { title: 'Pilot', minXp: 1000 },
+  { title: 'Commander', minXp: 5000 },
+  { title: 'Legend', minXp: 15000 },
 ];
 
 export const LESSONS: Lesson[] = [
-  // --- Stage 1: Home Row Foundation (Muscle Memory Anchors) ---
+  // --- Level 1: Foundation (Home Row Anchors) ---
   {
     id: 1,
-    title: "Anchor Point: F & J",
-    description: "The most important keys. Feel the bumps with your index fingers.",
+    title: "Anchor Points: F & J",
+    description: "Initialize muscle memory anchors. Feel the home row ridges.",
     keys: ['f', 'j', ' '],
     newKeys: ['f', 'j'],
-    content: "fff jjj fj fj jf jf ff jj fff jjj fjf jfj f j f j ff jj",
-    videoUrl: "https://videos2.edclub.com/hls/196638853/3c53ad84-d876-4af8-ad8a-4140ab7bf929/index-1.m3u8"
+    content: "fff jjj fj fj jf jf ff jj fjf jfj f j f j ff jj fjf jfj f f j j",
+    targetAccuracy: 99
   },
   {
     id: 2,
     title: "Inner Stretch: D & K",
-    description: "Middle fingers. Maintain the index finger anchors.",
+    description: "Maintain anchors while reaching with middle fingers.",
     keys: ['d', 'k', 'f', 'j', ' '],
     newKeys: ['d', 'k'],
-    content: "ddd kkk dk dk kd kd df jk df jk ddd kkk dkd kdk dk dk"
+    content: "ddd kkk dk dk kd kd df jk df jk dkd kdk dk dk fj f d k j d k",
+    targetAccuracy: 99
   },
   {
     id: 3,
-    title: "Ring Stability: S & L",
-    description: "Ring fingers. These are often the weakest; keep them steady.",
+    title: "Outer Ring: S & L",
+    description: "Strengthening the ring fingers for lateral balance.",
     keys: ['s', 'l', 'd', 'k', 'f', 'j', ' '],
     newKeys: ['s', 'l'],
-    content: "sss lll sl sl ls ls sdf jkl sdf jkl sss lll sls lsl sl sl"
+    content: "sss lll sl sl ls ls sdf jkl sdf jkl sls lsl sl sl k l d s k l d s",
+    targetAccuracy: 99
   },
   {
     id: 4,
-    title: "Pinky Power: A & ;",
-    description: "The edges of the home row. Use your pinkies.",
+    title: "Pinky Precision: A & ;",
+    description: "Stabilizing the weak outer edges of the home row.",
     keys: ['a', ';', 's', 'l', 'd', 'k', 'f', 'j', ' '],
     newKeys: ['a', ';'],
-    content: "aaa ;;; a; a; ;a ;a asdf jkl; asdf jkl; aaa ;;; ada ;k; a; ;a"
+    content: "aaa ;;; a; a; ;a ;a asdf jkl; asdf jkl; ada ;k; a; ;a j k l ; a s d f",
+    targetAccuracy: 99
   },
   {
     id: 5,
     title: "Home Row Mastery",
-    description: "The full home row. Speed up now while maintaining form.",
+    description: "Unconscious competence checkpoint. All home row fingers acting independently.",
     keys: ['a', 's', 'd', 'f', 'j', 'k', 'l', ';', 'g', 'h', ' '],
     newKeys: ['g', 'h'],
-    content: "asdf jkl; asdf jkl; gh gh fg jh hg jf salad asks dash flask"
+    content: "asdf jkl; gh gh fg jh hg jf salad asks dash flask glad slag alfalfa",
+    targetAccuracy: 99
   },
-  // --- Stage 2: Top Row Integration (Precise Reaches) ---
+
+  // --- Level 2: Expansion (Top Row Integration) ---
   {
     id: 6,
     title: "Index Reach: R & U",
-    description: "Index fingers reach UP one row. Return to home immediately.",
+    description: "Precise vertical reaches for the index fingers.",
     keys: ['r', 'u', ' '],
     newKeys: ['r', 'u'],
-    content: "fr ju fr ju rrr uuu fur jug rug fur rug jug fur ju fr r u"
+    content: "fr ju fr ju rrr uuu fur jug rug fur rug jug fur ju fr r u r r u u",
+    targetAccuracy: 98
   },
   {
     id: 7,
     title: "Middle Reach: E & I",
-    description: "Middle fingers reach UP. Keep your index fingers on F and J.",
+    description: "Middle finger vertical reaches. Keep your index fingers anchored.",
     keys: ['e', 'i', ' '],
     newKeys: ['e', 'i'],
-    content: "de ki de ki eee iii die kid led lid side risk fire ride e i"
+    content: "de ki de ki eee iii die kid led lid side risk fire ride red rid ire",
+    targetAccuracy: 98
   },
   {
     id: 8,
     title: "Ring Reach: W & O",
-    description: "Ring fingers reach UP. This requires palm lift.",
+    description: "Lateral Ring reach. Lift palm slightly if needed.",
     keys: ['w', 'o', ' '],
     newKeys: ['w', 'o'],
-    content: "sw lo sw lo www ooo low owl work word slow wool flow w o"
+    content: "sw lo sw lo www ooo low owl work word slow wool flow row low old",
+    targetAccuracy: 98
   },
   {
     id: 9,
     title: "Pinky Reach: Q & P",
-    description: "Pinky fingers reach to the upper corners.",
+    description: "Corner reaches. Don't let your hand drift from the home row.",
     keys: ['q', 'p', ' '],
     newKeys: ['q', 'p'],
-    content: "aq ;p aq ;p qqq ppp up pulp quit past pure quiet page q p"
+    content: "aq ;p aq ;p qqq ppp up pulp quit past pure quiet page quip pipe gap",
+    targetAccuracy: 98
   },
   {
     id: 10,
-    title: "Upper Row Fluency",
-    description: "Mixing top and home rows. Focus on the vertical movement.",
+    title: "Expansion Mastery",
+    description: "Integrating Home and Top rows for seamless flow.",
     keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', ' '],
     newKeys: ['t', 'y'],
-    content: "type your word tree root power quiet water tower party you"
+    content: "type your word tree root power quiet water tower party you toy top",
+    targetAccuracy: 98
   },
-  // --- Stage 3: High Frequency & Technique ---
+
+  // --- Level 3: Mastery (Bottom Row + Symbols) ---
   {
     id: 11,
-    title: "Common: THE, AND, THAT",
-    description: "Short bursts of the most common English words.",
-    keys: [' '],
-    content: "the and that with have this from they will would there their"
+    title: "Index Drop: V & M",
+    description: "Tucking the index fingers down. Precision is key.",
+    keys: ['v', 'm', ' '],
+    newKeys: ['v', 'm'],
+    content: "fv jm fv jm vvv mmm move view main game volume move main vim mad",
+    targetAccuracy: 98
   },
   {
     id: 12,
-    title: "Bottom Reach: V & M",
-    description: "Index fingers reach DOWN. Tuck them in tightly.",
-    keys: ['v', 'm', ' '],
-    newKeys: ['v', 'm'],
-    content: "fv jm fv jm vvv mmm move view main game volume move main v m"
+    title: "Middle Drop: C & ,",
+    description: "Middle finger descent. Watch for 'mashing' the keys.",
+    keys: ['c', ',', ' '],
+    newKeys: ['c', ','],
+    content: "dc k, dc k, ccc ,,, ice car cow code, corn, rice, mice, dice, cold,",
+    targetAccuracy: 98
   },
   {
     id: 13,
-    title: "High-Frequency I",
-    description: "The most common words in English. (Burst Mode)",
-    keys: ["t", "h", "e", "a", "n", "d", "i"],
-    content: "the and the and the and the and",
-    newKeys: ["the", "and"],
-    type: "burst"
+    title: "Ring Drop: X & .",
+    description: "Ring finger control. The most difficult reach for many.",
+    keys: ['x', '.', ' '],
+    newKeys: ['x', '.'],
+    content: "sx l. sx l. xxx ... box fix wax tax. hex. sax. mix. six. lax. axe.",
+    targetAccuracy: 98
   },
   {
     id: 14,
-    title: "High-Frequency II",
-    description: "Focusing on transitions. (Burst Mode)",
-    keys: ["o", "f", "t", "o", "i", "n", "u"],
-    content: "of to in of to in of to in",
-    newKeys: ["of", "to", "in"],
-    type: "burst"
+    title: "Pinky Drop: Z & /",
+    description: "Corner descent. Keep the rest of the hand still.",
+    keys: ['z', '/', ' '],
+    newKeys: ['z', '/'],
+    content: "az ;/ az ;/ zzz /// zip zap zoo/zeal/zone/zero/zinc/zest/jazz/buzz/",
+    targetAccuracy: 98
   },
   {
     id: 15,
-    title: "Speed Mastery Final",
-    description: "Full row integration at speed. (Burst Mode)",
-    keys: ["a-z"],
-    content: "the quick brown fox jumps over the lazy dog",
-    newKeys: ["all"],
-    type: "burst"
+    title: "Bottom Row Completion",
+    description: "Fluid movement across the lower deck.",
+    keys: ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', ' '],
+    newKeys: ['b', 'n'],
+    content: "bank name back next vine maze zero/fix. move next. bank down bank",
+    targetAccuracy: 98
+  },
+
+  // --- Level 4: Fluency (Common Words) ---
+  {
+    id: 16,
+    title: "Top 10 Words",
+    description: "Muscle memory for the core of the English language.",
+    keys: [' '],
+    content: "the be to of and a in that have i the to of and that have in to the",
+    targetAccuracy: 97
+  },
+  {
+    id: 17,
+    title: "Connecting Particles",
+    description: "It, for, not, on, with, he, as, you, do, at.",
+    keys: [' '],
+    content: "it for not on with he as you do at it for not on with he as you at",
+    targetAccuracy: 97
+  },
+  {
+    id: 18,
+    title: "Action Verbs",
+    description: "Say, go, get, make, know. Dynamic flows.",
+    keys: [' '],
+    content: "say go get make know can will take find come want use help work go",
+    targetAccuracy: 97
+  },
+  {
+    id: 19,
+    title: "High-Speed Transitions",
+    description: "Common bigrams and trigrams (th, er, on, an).",
+    keys: [' '],
+    content: "the there than that other another then mother weather father rather",
+    targetAccuracy: 97
+  },
+  {
+    id: 20,
+    title: "Fluency Checkpoint",
+    description: "Mixing common words into complete sentences.",
+    keys: [' '],
+    content: "the quick brown fox and the lazy dog went to the park and played",
+    targetAccuracy: 97
+  },
+
+  // --- Level 5: Speed Building (Mixed Passages) ---
+  {
+    id: 21,
+    title: "Pacing Drill: 20 WPM",
+    description: "Slow and steady. Focus on zero errors.",
+    keys: [' '],
+    content: "typing is a skill that requires both precision and patience to master",
+    targetAccuracy: 95
+  },
+  {
+    id: 22,
+    title: "Pacing Drill: 40 WPM",
+    description: "Maintain form as the speed increases.",
+    keys: [' '],
+    content: "it is better to type slowly and accurately than to type fast with errors",
+    targetAccuracy: 95
+  },
+  {
+    id: 23,
+    title: "Rhythmic Hitting",
+    description: "Find your tempo. Don't rush certain keys.",
+    keys: [' '],
+    content: "muscle memory is developed through consistent practice over many days",
+    targetAccuracy: 95
+  },
+  {
+    id: 24,
+    title: "Technical Phrases",
+    description: "Using numbers and symbols within sentences.",
+    keys: ['0-9', '!', '@', '#', '$'],
+    newKeys: ['1', '2', '3', '4', '5'],
+    content: "the value is 100 dollars @ the rate of 5 percent per year today",
+    targetAccuracy: 95
+  },
+  {
+    id: 25,
+    title: "Endurance Test",
+    description: "Longer passage requiring sustained focus.",
+    keys: [' '],
+    content: "to achieve greatness one must be willing to endure the tedious work",
+    targetAccuracy: 95
+  },
+
+  // --- Level 6: Competitive (Timed Sprints) ---
+  {
+    id: 26,
+    title: "30-Second Sprint",
+    description: "Max speed. Ignore the timer and trust your hands.",
+    keys: [' '],
+    type: "burst",
+    content: "the quick brown fox jumps over the lazy dog again and again",
+    targetAccuracy: 90
+  },
+  {
+    id: 27,
+    title: "60-Second Challenge",
+    description: "Sustained high speed. Keep your breathing steady.",
+    keys: [' '],
+    content: "practice makes perfect and perfect practice makes for a perfect typist",
+    targetAccuracy: 90
+  },
+  {
+    id: 28,
+    title: "Precision Sprint",
+    description: "High speed with 95% accuracy requirement.",
+    keys: [' '],
+    content: "focus all of your energy on the next character and the speed will come",
+    targetAccuracy: 95
+  },
+  {
+    id: 29,
+    title: "Full Text Integration",
+    description: "Real-world text with mixed punctuation.",
+    keys: [' '],
+    content: "wait, did you see that? the fox was fast, but the dog was faster!",
+    targetAccuracy: 90
+  },
+  {
+    id: 30,
+    title: "The Ultimate Mastery",
+    description: "The final 100 WPM challenge.",
+    keys: [' '],
+    content: "you have achieved complete mastery of the keyboard and finger movement",
+    targetAccuracy: 90
   }
 ];
 

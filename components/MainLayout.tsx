@@ -31,7 +31,7 @@ export default function MainLayout() {
         await logout();
     };
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [modal, setModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles'>('none');
 
     // Toggle Theme Helper
@@ -48,6 +48,8 @@ export default function MainLayout() {
 
     return (
         <AppShell
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={setIsSidebarCollapsed}
             header={
                 <Header />
             }
@@ -55,7 +57,7 @@ export default function MainLayout() {
                 <Sidebar />
             }
         >
-            <Outlet context={{ setIsSidebarOpen }} />
+            <Outlet context={{ setIsSidebarOpen: setIsSidebarCollapsed }} />
 
             {/* Modals */}
             {modal === 'history' && <HistoryModal history={history} onClose={() => setModal('none')} onClear={clearUserHistory} />}

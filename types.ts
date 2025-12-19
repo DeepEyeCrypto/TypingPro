@@ -9,6 +9,8 @@ export interface Lesson {
   newKeys?: string[]; // Keys specifically introduced in this lesson
   videoUrl?: string; // Optional HLS tutorial video
   type?: 'standard' | 'burst'; // Speed drills
+  targetAccuracy?: number; // Proposed 98-99%
+  fingerMap?: Record<string, string>; // Maps chars to fingers for specifically this lesson's drills
 }
 
 export interface KeyStats {
@@ -18,7 +20,14 @@ export interface KeyStats {
   accuracy: number; // 0-100
 }
 
-export type GoalType = 'wpm' | 'accuracy' | 'lessons' | 'time';
+export interface FingerStats {
+  finger: string;
+  totalPresses: number;
+  errorCount: number;
+  accuracy: number;
+}
+
+export type GoalType = 'wpm' | 'accuracy' | 'lessons' | 'time' | 'form';
 
 export interface DailyGoal {
   id: string;
@@ -37,6 +46,8 @@ export interface Stats {
   startTime: number | null;
   completed: boolean;
   keyStats?: Record<string, KeyStats>;
+  fingerStats?: Record<string, FingerStats>;
+  formAccuracy?: number; // Percentage of correct finger usage
 }
 
 export enum GameState {

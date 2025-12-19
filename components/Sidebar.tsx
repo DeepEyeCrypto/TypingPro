@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
                             </span>
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-0.5">
                             {LESSONS.filter(l => l.id >= parseInt(section.range.split('-')[0]) && l.id <= parseInt(section.range.split('-')[1]))
                                 .map((lesson) => {
                                     const progress = lessonProgress[lesson.id];
@@ -36,25 +36,23 @@ const Sidebar: React.FC = () => {
                                             disabled={!isUnlocked}
                                             onClick={() => setActiveLessonId(lesson.id)}
                                             className={`
-                                                w-full flex items-center gap-3 p-3 rounded-xl transition-all border font-sci-fi
+                                                w-full flex items-center gap-2.5 p-2 rounded-lg transition-all border font-sci-fi
                                                 ${isActive
-                                                    ? 'glass-panel border-cyber-cyan/40 text-cyber-cyan shadow-cyan-glow scale-[1.02] z-10'
+                                                    ? 'bg-cyber-cyan/10 border-cyber-cyan/30 text-cyber-cyan shadow-cyan-glow z-10'
                                                     : !isUnlocked
-                                                        ? 'opacity-20 grayscale cursor-not-allowed border-transparent'
-                                                        : 'glass-card border-transparent hover:border-white/10 text-white/50 hover:text-white/80'
+                                                        ? 'opacity-10 grayscale cursor-not-allowed border-transparent'
+                                                        : 'hover:bg-white/5 border-transparent text-white/40 hover:text-white/70'
                                                 }
                                             `}
                                         >
                                             <div className="flex-shrink-0">
                                                 {isCompleted ? (
-                                                    <CheckCircle size={16} className="text-cyber-cyan" />
-                                                ) : !isUnlocked ? (
-                                                    <Lock size={16} />
+                                                    <CheckCircle size={14} className="text-cyber-cyan" />
                                                 ) : (
-                                                    <PlayCircle size={16} className={isActive ? "animate-pulse" : ""} />
+                                                    <PlayCircle size={14} className={isActive ? "animate-pulse" : ""} />
                                                 )}
                                             </div>
-                                            <span className="text-xs font-bold truncate tracking-tight">{lesson.title}</span>
+                                            <span className="text-[11px] font-medium truncate tracking-tight">{lesson.title}</span>
                                         </button>
                                     );
                                 })}
