@@ -1,6 +1,6 @@
 [package]
 name = "typingpro"
-version = "0.0.72"
+version = "0.0.73"
 description = "A professional typing tutor application"
 authors = ["TypingPro Team"]
 license = ""

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
-import VirtualKeyboard from '../components/VirtualKeyboard';
-import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
 import LessonVideoPlayer from '../components/LessonVideoPlayer';
 import { StatsCard } from '../components/stats/StatsCard';
 import { GoalsPanel } from '../components/stats/GoalsPanel';
@@ -38,7 +36,6 @@ export default function TypingPage(): React.ReactNode {
 
     // --- Live Progress State ---
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
-    const [activeKey, setActiveKey] = useState<string | null>(null);
     const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
     const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({});
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
@@ -183,7 +180,6 @@ export default function TypingPage(): React.ReactNode {
                             isActive={!modalStats}
                             onComplete={handleComplete}
                             onRestart={handleRetry}
-                            onActiveKeyChange={setActiveKey}
                             onStatsUpdate={setLiveStats}
                             onKeyStatsUpdate={setLiveKeyStats}
                             fontFamily={settings.fontFamily}
@@ -193,28 +189,6 @@ export default function TypingPage(): React.ReactNode {
                             stopOnError={settings.stopOnError}
                             trainingMode={settings.trainingMode}
                         />
-                    </div>
-
-                    {/* Adaptive Keyboard Footer */}
-                    <div className="p-4 sm:p-8 bg-black/40 backdrop-blur-3xl border-t border-white/5 mt-auto">
-                        <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
-                            <div className="hidden lg:block w-full">
-                                <VirtualKeyboard
-                                    activeKey={activeKey}
-                                    pressedKeys={pressedKeys}
-                                    layout={settings.keyboardLayout || 'qwerty'}
-                                    heatmapStats={liveKeyStats}
-                                />
-                            </div>
-                            {settings.showHands && (
-                                <div className="hidden md:block w-full">
-                                    <KeyboardHandsOverlay
-                                        currentChar={activeKey}
-                                        heatmapStats={liveKeyStats}
-                                    />
-                                </div>
-                            )}
-                        </div>
                     </div>
                 </div>
 
