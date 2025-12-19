@@ -156,16 +156,6 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                     })}
                 </g>
 
-                {activeKeyId && activeFinger && targetKeyPos && activeFingerPos && (
-                    <path
-                        d={`M ${activeFingerPos.x} ${activeFingerPos.y} Q ${activeFingerPos.x} ${targetKeyPos.y} ${targetKeyPos.x} ${targetKeyPos.y}`}
-                        fill="none"
-                        stroke="#4a90e2"
-                        strokeWidth="3"
-                        strokeDasharray="6 6"
-                        className="opacity-60 animate-pulse"
-                    />
-                )}
             </svg>
         </div>
     );
