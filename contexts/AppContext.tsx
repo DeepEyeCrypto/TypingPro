@@ -10,7 +10,7 @@ import {
     getKeyStats, updateKeyStats, getDailyGoals, saveDailyGoals
 } from '../services/storageService';
 import { setVolume } from '../services/audioService';
-import { BADGES, FANCY_FONTS } from '../constants';
+import { BADGES, FANCY_FONTS, XP_LEVELS } from '../constants';
 
 import { authService, AuthUser } from '../services/authService';
 
@@ -48,7 +48,13 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
     // --- State ---
     const [profiles, setProfiles] = useState<UserProfile[]>([]);
-    const [currentProfile, setCurrentProfile] = useState<UserProfile>({ id: 'default', name: 'Guest', createdAt: '' });
+    const [currentProfile, setCurrentProfile] = useState<UserProfile>({
+        id: 'default',
+        name: 'Guest',
+        xp: 0,
+        level: 'Recruit',
+        createdAt: ''
+    });
     const [user, setUser] = useState<AuthUser | null>(null);
     const [settings, setSettings] = useState<UserSettings>({
         theme: 'system',
@@ -109,6 +115,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             const newProfile: UserProfile = {
                 id: authUser.id,
                 name: authUser.name || 'Google User',
+                avatar: authUser.picture,
+                xp: 0,
+                level: 'Recruit',
                 createdAt: new Date().toISOString()
             };
             const updatedProfiles = [...getProfiles(), newProfile];
@@ -199,10 +208,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const switchProfile = (p: UserProfile) => setCurrentProfile(p);
 
+    const getLevelFromXp = (xp: number) => {
+        const sorted = [...XP_LEVELS].sort((a, b) => b.minXp - a.minXp);
+        return sorted.find(l => xp >= l.minXp)?.title || 'Recruit';
+    };
+
     const createNewProfile = (name: string) => {
         const p = createProfile(name);
-        setProfiles(prev => [...prev, p]);
-        setCurrentProfile(p);
+        const fullProfile: UserProfile = { ...p, xp: 0, level: 'Recruit' };
+        setProfiles(prev => [...prev, fullProfile]);
+        setCurrentProfile(fullProfile);
     };
 
     const updateUserSetting = <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => {
@@ -257,6 +272,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         saveHistory(currentProfile.id, entry);
         const newHistory = [entry, ...history];
         setHistory(newHistory);
+
+        // --- Phase 3: Gamification (XP & Leveling) ---
+        if (passedCriteria) {
+            const gainedXp = Math.round((stats.wpm * stats.accuracy) / 10);
+            const newXp = currentProfile.xp + gainedXp;
+            const newLevel = getLevelFromXp(newXp);
+
+            const updatedProfile = { ...currentProfile, xp: newXp, level: newLevel };
+            setCurrentProfile(updatedProfile);
+
+            // Save to profiles list
+            const updatedProfiles = profiles.map(p => p.id === updatedProfile.id ? updatedProfile : p);
+            setProfiles(updatedProfiles);
+            localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
+        }
 
         // Update Daily Goals
         const newGoals = dailyGoals.map(g => {

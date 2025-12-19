@@ -20,7 +20,7 @@ export const authService = {
         try {
             console.log("Invoking native Google Login...");
             const user = await invoke<AuthUser>('login_google');
-            console.log("Login success, saving user...");
+            console.log("Login success, Fetched User:", user.name);
             await store.set('user', user);
             await store.save();
             return user;

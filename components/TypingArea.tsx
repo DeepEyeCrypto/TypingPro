@@ -22,6 +22,7 @@ interface TypingAreaProps {
   trainingMode: TrainingMode;
   newKeys?: string[];
   fontColor?: string;
+  onComboUpdate?: (combo: number) => void;
 }
 
 const IDLE_THRESHOLD = 5000; // 5 seconds
@@ -43,6 +44,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   trainingMode,
   newKeys,
   fontColor,
+  onComboUpdate,
   onKeyStatsUpdate // Added
 }) => {
   const { playSound } = useSound(); // Hook usage
@@ -52,6 +54,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const [startTime, setStartTime] = useState<number | null>(null);
   const [shake, setShake] = useState(false);
   const [currentKeyStats, setCurrentKeyStats] = useState<Record<string, KeyStats>>({});
+  const [combo, setCombo] = useState(0);
 
   // Advanced Timing: Idle Time Tracking
   const [totalIdleTime, setTotalIdleTime] = useState(0);
@@ -75,6 +78,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     setStartTime(null);
     setTotalIdleTime(0);
     setCurrentKeyStats({});
+    setCombo(0);
     lastInputTime.current = 0;
     onStatsUpdate({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
     if (inputRef.current) inputRef.current.value = '';
@@ -185,11 +189,18 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
     if (e.key === targetChar) {
       // Correct key press
-      if (soundEnabled) playSound(); // Corrected: no args
+      if (soundEnabled) playSound();
       updateKeyStat(keyChar, false);
+      setCombo(prev => {
+        const next = prev + 1;
+        if (onComboUpdate) onComboUpdate(next);
+        return next;
+      });
     } else {
       // Incorrect key press
-      if (soundEnabled) playSound(); // Corrected: no args
+      if (soundEnabled) playSound();
+      setCombo(0);
+      if (onComboUpdate) onComboUpdate(0);
 
       // Visual Shake
       setShake(true);

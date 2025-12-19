@@ -97,6 +97,9 @@ export interface UserSettings {
 export interface UserProfile {
   id: string;
   name: string;
+  avatar?: string;
+  xp: number;
+  level: string;
   createdAt: string;
 }
 

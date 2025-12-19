@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
 import VirtualKeyboard from '../components/VirtualKeyboard';
 import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
+import ComboMeter from '../components/typing/ComboMeter';
 import LessonVideoPlayer from '../components/LessonVideoPlayer';
 import { StatsCard } from '../components/stats/StatsCard';
 import { GoalsPanel } from '../components/stats/GoalsPanel';
@@ -42,6 +43,7 @@ export default function TypingPage(): React.ReactNode {
     const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({});
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
+    const [combo, setCombo] = useState(0);
 
     // --- Handlers ---
     const initializeLesson = useCallback((id: number, codeMode: boolean) => {
@@ -69,6 +71,7 @@ export default function TypingPage(): React.ReactNode {
             setLiveKeyStats({});
             setRetryCount(0);
             setModalStats(null);
+            setCombo(0);
         }
     }, [setActiveLessonId]);
 
@@ -80,6 +83,7 @@ export default function TypingPage(): React.ReactNode {
         setModalStats(null);
         setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
         setRetryCount(c => c + 1);
+        setCombo(0);
     }, []);
 
     const handleComplete = useCallback((stats: Stats) => {
@@ -176,6 +180,9 @@ export default function TypingPage(): React.ReactNode {
                 {/* Main Typing Area Stage */}
                 <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
                     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
+                        {/* Phase 3: Combo Meter */}
+                        <ComboMeter combo={combo} />
+
                         <TypingArea
                             key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
                             content={activeLesson.content}
@@ -186,6 +193,7 @@ export default function TypingPage(): React.ReactNode {
                             onStatsUpdate={setLiveStats}
                             onKeyStatsUpdate={setLiveKeyStats}
                             onActiveKeyChange={setActiveKey}
+                            onComboUpdate={setCombo}
                             fontFamily={settings.fontFamily}
                             fontSize={settings.fontSize}
                             soundEnabled={settings.soundEnabled}

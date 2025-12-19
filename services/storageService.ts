@@ -25,13 +25,25 @@ export const getProfiles = (): UserProfile[] => {
         const data = localStorage.getItem(KEYS.PROFILES);
         const profiles = data ? JSON.parse(data) : [];
         if (profiles.length === 0) {
-            const def: UserProfile = { id: 'default', name: 'Guest', createdAt: new Date().toISOString() };
+            const def: UserProfile = {
+                id: 'default',
+                name: 'Guest',
+                xp: 0,
+                level: 'Recruit',
+                createdAt: new Date().toISOString()
+            };
             localStorage.setItem(KEYS.PROFILES, JSON.stringify([def]));
             return [def];
         }
         return profiles;
     } catch {
-        return [{ id: 'default', name: 'Guest', createdAt: new Date().toISOString() }];
+        return [{
+            id: 'default',
+            name: 'Guest',
+            xp: 0,
+            level: 'Recruit',
+            createdAt: new Date().toISOString()
+        }];
     }
 };
 
@@ -40,6 +52,8 @@ export const createProfile = (name: string): UserProfile => {
     const newProfile: UserProfile = {
         id: Date.now().toString(),
         name,
+        xp: 0,
+        level: 'Recruit',
         createdAt: new Date().toISOString()
     };
     profiles.push(newProfile);

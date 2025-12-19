@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import FuturisticBackground from './FuturisticBackground';
 
 interface AppShellProps {
     header?: React.ReactNode;
@@ -26,11 +27,9 @@ export const AppShell: React.FC<AppShellProps> = ({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className={`grid grid-rows-[auto_1fr] h-screen w-full bg-[#030305] text-white/90 selection:bg-brand/30 relative overflow-hidden ${className}`}>
-            {/* Background Layers */}
-            <div className="bg-animate" />
-            <div className="bg-glow top-0 left-0 bg-brand/20 opacity-10" />
-            <div className="bg-glow bottom-0 right-0 bg-purple-500/10 opacity-5" style={{ animationDelay: '-5s' }} />
+        <div className={`grid grid-rows-[auto_1fr] h-screen w-full bg-deep-charcoal text-white/90 selection:bg-cyber-cyan/30 relative overflow-hidden ${className}`}>
+            {/* Phase 1: Sci-Fi Animated Background */}
+            <FuturisticBackground />
 
             {/* Header: Full Width */}
             {header && (

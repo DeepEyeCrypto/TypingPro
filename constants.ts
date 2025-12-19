@@ -38,7 +38,13 @@ export const SECTIONS = [
   { title: "Advanced Practice", range: "16+", active: false }
 ];
 
-// Granular Lesson Progression
+export const XP_LEVELS = [
+  { title: 'Recruit', minXp: 0 },
+  { title: 'Pilot', minXp: 500 },
+  { title: 'Commander', minXp: 2000 },
+  { title: 'Legend', minXp: 5000 },
+];
+
 export const LESSONS: Lesson[] = [
   // --- Stage 1: Home Row Anchors ---
   {

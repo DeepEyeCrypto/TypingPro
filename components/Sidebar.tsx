@@ -16,8 +16,8 @@ const Sidebar: React.FC = () => {
                 {SECTIONS.map((section, idx) => (
                     <div key={idx} className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">{section.title}</h4>
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-white/40">
+                            <h4 className="text-[10px] font-sci-fi font-black text-cyber-cyan/40 uppercase tracking-[0.2em]">{section.title}</h4>
+                            <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full glass-panel border-cyber-cyan/10 text-cyber-cyan/60">
                                 {section.range}
                             </span>
                         </div>
@@ -36,25 +36,25 @@ const Sidebar: React.FC = () => {
                                             disabled={!isUnlocked}
                                             onClick={() => setActiveLessonId(lesson.id)}
                                             className={`
-                                                w-full flex items-center gap-3 p-3 rounded-2xl transition-all border
+                                                w-full flex items-center gap-3 p-3 rounded-xl transition-all border font-sci-fi
                                                 ${isActive
-                                                    ? 'bg-brand/10 border-brand/20 text-brand shadow-lg'
+                                                    ? 'glass-panel border-cyber-cyan/40 text-cyber-cyan shadow-cyan-glow scale-[1.02] z-10'
                                                     : !isUnlocked
                                                         ? 'opacity-20 grayscale cursor-not-allowed border-transparent'
-                                                        : 'hover:bg-white/5 text-white/60 border-transparent hover:border-white/5'
+                                                        : 'glass-card border-transparent hover:border-white/10 text-white/50 hover:text-white/80'
                                                 }
                                             `}
                                         >
                                             <div className="flex-shrink-0">
                                                 {isCompleted ? (
-                                                    <CheckCircle size={16} className="text-brand" />
+                                                    <CheckCircle size={16} className="text-cyber-cyan" />
                                                 ) : !isUnlocked ? (
                                                     <Lock size={16} />
                                                 ) : (
-                                                    <PlayCircle size={16} />
+                                                    <PlayCircle size={16} className={isActive ? "animate-pulse" : ""} />
                                                 )}
                                             </div>
-                                            <span className="text-xs font-bold truncate">{lesson.title}</span>
+                                            <span className="text-xs font-bold truncate tracking-tight">{lesson.title}</span>
                                         </button>
                                     );
                                 })}

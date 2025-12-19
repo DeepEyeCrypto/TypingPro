@@ -89,6 +89,12 @@
     /* #374151 (gray-700) */
     --border-hover: 75 85 99;
     /* #4b5563 (gray-600) */
+
+    /* Cyberpunk Tokens */
+    --neon-cyan: #00f2ff;
+    --neon-violet: #bc13fe;
+    --glass-bg: rgba(13, 13, 13, 0.4);
+    --glass-border: rgba(0, 242, 255, 0.2);
   }
 
   /* App Shell Reset */
@@ -97,15 +103,21 @@
   #root {
     @apply h-full w-full m-0 p-0 overflow-hidden bg-[#030305] text-white/90;
     overscroll-behavior: none;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'JetBrains Mono', 'Inter', system-ui, -apple-system, sans-serif;
     font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1.125rem);
     /* Fluid Body */
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-sci-fi tracking-tighter uppercase;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
   }
 
   h1 {
     font-size: clamp(1.5rem, 5vw, 3rem);
     font-weight: 900;
-    letter-spacing: -0.025em;
   }
 
   h2 {
@@ -126,41 +138,31 @@
     z-index: -1;
   }
 
-  .bg-glow {
-    position: absolute;
-    width: 60vw;
-    height: 60vw;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.15;
-    pointer-events: none;
-    z-index: 0;
-    animation: pulse-glow 15s ease-in-out infinite alternate;
+  .cyber-title {
+    @apply animate-neon-pulse;
+    color: var(--neon-cyan);
   }
 
-  @keyframes pulse-glow {
-    0% {
-      transform: translate(-10%, -10%) scale(1);
-    }
-
-    100% {
-      transform: translate(10%, 10%) scale(1.1);
-    }
+  .cyber-title:hover {
+    @apply animate-glitch;
   }
 }
 
 /* Glassmorphism Utilities - Responsive Depth */
 @layer components {
   .glass-panel {
-    @apply bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-glass;
-    @apply md:bg-white/[0.03] md:backdrop-blur-2xl;
-    @apply lg:bg-white/[0.02] lg:backdrop-blur-[24px];
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
   .glass-card {
-    @apply bg-white/[0.03] backdrop-blur-lg border border-white/5 rounded-3xl transition-all duration-500 hover:bg-white/[0.06] hover:border-white/15;
-    @apply md:backdrop-blur-xl;
-    @apply lg:backdrop-blur-2xl;
+    background: rgba(13, 13, 13, 0.25);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(188, 19, 254, 0.15);
+    @apply rounded-3xl transition-all duration-500 hover:border-cyber-cyan/40 hover:shadow-cyan-glow;
   }
 
   .glass-input {

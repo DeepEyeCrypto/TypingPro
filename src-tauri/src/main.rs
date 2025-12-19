@@ -117,7 +117,11 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
     // 7. Get User Info
     let user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo";
-    let http_client = reqwest::Client::new();
+    let http_client = reqwest::Client::builder()
+        .user_agent("TypingPro-App")
+        .build()
+        .map_err(|e| e.to_string())?;
+    
     let res = http_client.get(user_info_url)
         .header("Authorization", format!("Bearer {}", access_token))
         .send()
@@ -125,9 +129,33 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
         .map_err(|e| e.to_string())?;
         
     let user_data: serde_json::Value = res.json().await.map_err(|e| e.to_string())?;
+    log_to_file(&format!("Fetched User Data: {}", user_data));
 
     // 8. Respond to Browser
-    let response = "HTTP/1.1 200 OK\r\n\r\n<html><body style='font-family:sans-serif;text-align:center;padding:50px;'><h1>Login Successful</h1><p>You can close this window and return to TypingPro.</p><script>window.close()</script></body></html>";
+    let response_body = r#"
+        <html>
+            <head>
+                <style>
+                    body { font-family: 'JetBrains Mono', monospace; background: #0d0d0d; color: #00f2ff; text-align: center; padding: 100px; }
+                    .card { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 20px; padding: 40px; display: inline-block; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+                    h1 { text-transform: uppercase; letter-spacing: 2px; }
+                    p { color: rgba(255, 255, 255, 0.6); }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h1>Authentication Secured</h1>
+                    <p>Profile synced successfully. You can close this window.</p>
+                </div>
+                <script>setTimeout(() => window.close(), 3000)</script>
+            </body>
+        </html>
+    "#;
+    let response = format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n{}",
+        response_body.len(),
+        response_body
+    );
     stream.write_all(response.as_bytes()).map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
