@@ -210,9 +210,9 @@ export default function TypingPage(): React.ReactNode {
                                 />
                             </div>
 
-                            {/* Optional Hands Overlay (Large screens only) */}
+                            {/* Optional Hands Overlay (Large screens only) - Positioned on top of VirtualKeyboard */}
                             {settings.showHands && (
-                                <div className="hidden md:block absolute inset-0 pointer-events-none opacity-40 hover:opacity-60 transition-opacity">
+                                <div className="absolute inset-x-0 top-0 h-full pointer-events-none z-20 opacity-80 transition-opacity">
                                     <KeyboardHandsOverlay
                                         currentChar={activeKey}
                                     />

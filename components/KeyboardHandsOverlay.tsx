@@ -147,9 +147,7 @@ const KeyboardHandsOverlay: React.FC<KeyboardHandsOverlayProps> = ({ currentChar
                     </filter>
                 </defs>
 
-                {/* --- KEYBOARD BASE --- */}
-                <rect x="60" y="80" width={KEYBOARD_WIDTH - 100} height={320} rx="16" ry="16"
-                    className="fill-[#f5f5f5] dark:fill-gray-900 stroke-[#cccccc] dark:stroke-gray-700 stroke-2" />
+                {/* REMOVED: Redundant Keyboard Base to fix overlap */}
 
                 {/* --- KEYBOARD KEYS --- */}
                 <g>
