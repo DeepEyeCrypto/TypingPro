@@ -247,11 +247,11 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
   const getTextSizeClass = () => {
     switch (fontSize) {
-      case 'small': return "text-2xl md:text-3xl lg:text-4xl";
-      case 'medium': return "text-3xl md:text-5xl lg:text-6xl";
-      case 'large': return "text-4xl md:text-6xl lg:text-7xl"; // Adjusted for better desktop feel
-      case 'xl': return "text-5xl md:text-7xl lg:text-8xl";
-      default: return "text-4xl md:text-6xl lg:text-7xl";
+      case 'small': return "text-xl md:text-2xl lg:text-3xl xl:text-4xl";
+      case 'medium': return "text-2xl md:text-4xl lg:text-5xl xl:text-6xl";
+      case 'large': return "text-3xl md:text-5xl lg:text-6xl xl:text-7xl";
+      case 'xl': return "text-4xl md:text-6xl lg:text-7xl xl:text-8xl";
+      default: return "text-3xl md:text-5xl lg:text-6xl xl:text-7xl";
     }
   };
 
@@ -302,7 +302,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       <div
         ref={containerRef}
         style={{ fontFamily: fontFamily }}
-        className={`w-full max-w-7xl px-12 flex flex-wrap content-center justify-center leading-normal tracking-tight select-none ${shake ? 'animate-shake' : ''}`}
+        className={`w-full h-full max-w-[95vw] mx-auto px-4 md:px-8 lg:px-12 flex flex-wrap content-center justify-center leading-relaxed tracking-tight select-none transition-all duration-500 ${shake ? 'animate-shake' : ''}`}
       >
         {renderedText}
       </div>

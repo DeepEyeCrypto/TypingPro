@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
+import VirtualKeyboard from '../components/VirtualKeyboard';
+import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
 import LessonVideoPlayer from '../components/LessonVideoPlayer';
 import { StatsCard } from '../components/stats/StatsCard';
 import { GoalsPanel } from '../components/stats/GoalsPanel';
@@ -38,6 +40,7 @@ export default function TypingPage(): React.ReactNode {
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
     const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
     const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({});
+    const [activeKey, setActiveKey] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
 
     // --- Handlers ---
@@ -169,8 +172,8 @@ export default function TypingPage(): React.ReactNode {
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col lg:flex-row min-h-0">
-                {/* Main Typing Area */}
+            <div className="flex-1 flex flex-col min-h-0">
+                {/* Main Typing Area Stage */}
                 <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
                     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
                         <TypingArea
@@ -182,6 +185,7 @@ export default function TypingPage(): React.ReactNode {
                             onRestart={handleRetry}
                             onStatsUpdate={setLiveStats}
                             onKeyStatsUpdate={setLiveKeyStats}
+                            onActiveKeyChange={setActiveKey}
                             fontFamily={settings.fontFamily}
                             fontSize={settings.fontSize}
                             soundEnabled={settings.soundEnabled}
@@ -189,6 +193,32 @@ export default function TypingPage(): React.ReactNode {
                             stopOnError={settings.stopOnError}
                             trainingMode={settings.trainingMode}
                         />
+                    </div>
+
+                    {/* Footer: Multi-Size Responsive Keyboard Section */}
+                    <div className="w-full flex-shrink-0 bg-black/20 backdrop-blur-3xl border-t border-white/5 py-8 md:py-12 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+
+                        <div className="max-w-[1400px] mx-auto px-6 relative z-10 transition-all duration-700">
+                            {/* Standard Keyboard */}
+                            <div className="w-full transition-transform duration-500 origin-bottom">
+                                <VirtualKeyboard
+                                    activeKey={activeKey}
+                                    pressedKeys={pressedKeys}
+                                    layout={settings.keyboardLayout}
+                                    heatmapStats={liveKeyStats}
+                                />
+                            </div>
+
+                            {/* Optional Hands Overlay (Large screens only) */}
+                            {settings.showHands && (
+                                <div className="hidden md:block absolute inset-0 pointer-events-none opacity-40 hover:opacity-60 transition-opacity">
+                                    <KeyboardHandsOverlay
+                                        currentChar={activeKey}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

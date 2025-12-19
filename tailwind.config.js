@@ -46,6 +46,10 @@ export default {
                 'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'shake': 'shake 0.3s cubic-bezier(.36,.07,.19,.97) both',
             },
+            boxShadow: {
+                'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.5)',
+            },
             keyframes: {
                 shake: {
                     '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },

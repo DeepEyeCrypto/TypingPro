@@ -52,10 +52,10 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   };
 
   const styleResult = (isTarget: boolean, isPressed: boolean, heat: number) => {
-    let baseClass = "rounded-lg flex flex-col items-center justify-center text-sm md:text-base font-semibold transition-all duration-75 select-none border h-full relative overflow-hidden";
+    let baseClass = "rounded-[clamp(0.25rem,1vw,0.75rem)] flex flex-col items-center justify-center text-[clamp(0.6rem,1.2vw,1rem)] font-black transition-all duration-75 select-none border h-full relative overflow-hidden";
 
     // Default Glass Style
-    let colorClass = "bg-white/5 text-white/70 border-white/10 shadow-lg backdrop-blur-md";
+    let colorClass = "bg-white/5 text-white/50 border-white/5 shadow-lg backdrop-blur-md";
 
     // Heatmap Background (Red tint)
     let heatStyle: React.CSSProperties = {};
@@ -68,11 +68,11 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     }
 
     if (isTarget) {
-      colorClass = "bg-brand/20 text-brand border-brand/40 ring-2 ring-brand/50 z-10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)]";
+      colorClass = "bg-brand/20 text-brand border-brand/40 ring-2 ring-brand/50 z-10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)] text-white";
     }
 
     if (isPressed) {
-      baseClass += " transform scale-95 translate-y-0.5 shadow-none ring-0";
+      baseClass += " transform scale-95 translate-y-1 shadow-none ring-0";
       colorClass = isTarget
         ? "bg-green-500 text-white border-green-400 shadow-inner"
         : "bg-brand text-white border-brand shadow-inner";
@@ -82,30 +82,29 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   };
 
   return (
-    <div className="w-full flex justify-center py-6 overflow-hidden">
-      <div className="inline-flex flex-col gap-2 p-5 glass-panel rounded-[2rem] border border-white/10 shadow-2xl origin-top transition-transform duration-500 
-        scale-[0.55] sm:scale-[0.7] md:scale-75 lg:scale-90 xl:scale-100 2xl:scale-110">
+    <div className="w-full flex justify-center py-4 md:py-8 transition-all duration-700">
+      <div className="w-full max-w-[95%] lg:max-w-[1000px] xl:max-w-[1200px] 2xl:max-w-[1400px] aspect-[3/1] flex flex-col gap-[clamp(2px,0.5vw,10px)] p-[clamp(8px,2vw,32px)] glass-panel rounded-[clamp(1rem,3vw,2.5rem)] border border-white/5 shadow-3xl">
         {KEYBOARD_ROWS.map((row, rowIdx) => (
-          <div key={rowIdx} className="flex gap-2 h-10 md:h-12 lg:h-14">
+          <div key={rowIdx} className="flex gap-[clamp(2px,0.5vw,10px)] flex-1 min-h-0">
             {row.map((keyObj, keyIdx) => {
               const { className, label, subLabel, style } = getKeyStyle(keyObj);
               return (
                 <div
                   key={`${rowIdx}-${keyIdx}`}
-                  className={`${className} border-white/5 hover:border-white/20`}
+                  className={`${className} border-white/5 hover:border-white/10`}
                   style={{ ...style, flexGrow: keyObj.width || 1, flexBasis: 0, minWidth: 0 }}
                 >
                   <div className="flex flex-col items-center leading-none pointer-events-none">
                     {(!keyObj.label && subLabel && subLabel !== label) && (
-                      <span className="text-[10px] opacity-30 mb-1 font-bold">{subLabel}</span>
+                      <span className="text-[clamp(6px,0.8vw,10px)] opacity-20 mb-0.5 font-bold">{subLabel}</span>
                     )}
-                    <span className="truncate font-black tracking-tighter opacity-80">{label}</span>
+                    <span className="truncate font-black tracking-tighter opacity-70 uppercase">{label}</span>
                   </div>
                   {keyObj.homing && (
-                    <div className="absolute bottom-1.5 w-4 h-0.5 bg-white/20 rounded-full" />
+                    <div className="absolute bottom-[10%] w-[15%] h-[4%] bg-white/20 rounded-full" />
                   )}
                   {style.backgroundColor && (
-                    <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse" />
+                    <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse" />
                   )}
                 </div>
               );

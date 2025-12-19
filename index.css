@@ -97,8 +97,25 @@
   #root {
     @apply h-full w-full m-0 p-0 overflow-hidden bg-[#030305] text-white/90;
     overscroll-behavior: none;
-    font-size: 16px;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1.125rem);
+    /* Fluid Body */
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    font-size: clamp(1.25rem, 4vw, 2.25rem);
+    font-weight: 800;
+  }
+
+  h3 {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 700;
   }
 
   /* Animated Background Layer */
@@ -130,23 +147,20 @@
       transform: translate(10%, 10%) scale(1.1);
     }
   }
-
-  /* Fluid Typography */
-  @media (max-width: 768px) {
-    html {
-      font-size: 14px;
-    }
-  }
 }
 
-/* Glassmorphism Utilities */
+/* Glassmorphism Utilities - Responsive Depth */
 @layer components {
   .glass-panel {
-    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-glass;
+    @apply md:bg-white/[0.03] md:backdrop-blur-2xl;
+    @apply lg:bg-white/[0.02] lg:backdrop-blur-[24px];
   }
 
   .glass-card {
-    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-3xl transition-all duration-500 hover:bg-white/[0.05] hover:border-white/10;
+    @apply bg-white/[0.03] backdrop-blur-lg border border-white/5 rounded-3xl transition-all duration-500 hover:bg-white/[0.06] hover:border-white/15;
+    @apply md:backdrop-blur-xl;
+    @apply lg:backdrop-blur-2xl;
   }
 
   .glass-input {
@@ -155,6 +169,15 @@
 
   .glow-text {
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  /* Responsive Spacing Utilities */
+  .app-container {
+    @apply p-4 md:p-6 lg:p-10 xl:p-12;
+  }
+
+  .app-gap {
+    @apply gap-4 md:gap-6 lg:gap-8 xl:gap-10;
   }
 }
 

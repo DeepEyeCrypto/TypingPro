@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.0.73"
+    "version": "0.0.79"
   },
   "tauri": {
     "allowlist": {
