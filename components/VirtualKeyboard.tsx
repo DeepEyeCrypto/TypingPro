@@ -7,20 +7,34 @@ interface VirtualKeyboardProps {
   pressedKeys: Set<string>;
   layout: KeyboardLayoutType;
   heatmapStats?: Record<string, KeyStats>;
+  expectedFinger?: string | null; // New prop
 }
+
+const FINGER_COLORS: Record<string, string> = {
+  'left-pinky': 'rgba(236, 72, 153, 0.4)', // Pink
+  'left-ring': 'rgba(168, 85, 247, 0.4)',  // Purple
+  'left-middle': 'rgba(99, 102, 241, 0.4)', // Indigo
+  'left-index': 'rgba(59, 130, 246, 0.4)',  // Blue
+  'right-index': 'rgba(16, 185, 129, 0.4)', // Green
+  'right-middle': 'rgba(245, 158, 11, 0.4)', // Amber
+  'right-ring': 'rgba(249, 115, 22, 0.4)',  // Orange
+  'right-pinky': 'rgba(239, 68, 68, 0.4)',  // Red
+  'thumb': 'rgba(107, 114, 128, 0.4)'       // Gray
+};
 
 /**
  * VirtualKeyboard - Clean Rewrite
  * Features:
  * - Premium Liquid Glass styling
  * - Heatmap integration for missed keys
- * - High-performance rendering with React.memo
+ * - Finger-specific highlighting for learning
  */
 const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   activeKey,
   pressedKeys,
   layout,
-  heatmapStats
+  heatmapStats,
+  expectedFinger
 }) => {
 
   const getKeyStyle = (keyObj: VirtualKey) => {
@@ -28,8 +42,11 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     const label = keyObj.label || mapping.default.toUpperCase();
     const subLabel = keyObj.label ? '' : mapping.shift;
 
-    const producesActiveKey = activeKey && (mapping.default === activeKey || mapping.shift === activeKey);
+    const isTarget = activeKey && (mapping.default === activeKey || mapping.shift === activeKey);
     const isPressed = pressedKeys.has(mapping.default) || pressedKeys.has(mapping.shift) || (keyObj.label && pressedKeys.has(keyObj.label));
+
+    // Finger Highlight Logic
+    const isFingerTarget = expectedFinger && keyObj.finger === expectedFinger;
 
     // Heatmap Logic
     let heatIntensity = 0;
@@ -37,7 +54,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
       const char = mapping.default.toLowerCase();
       const stat = heatmapStats[char];
       if (stat && stat.errorCount > 0) {
-        heatIntensity = Math.min(stat.errorCount / 5, 1); // Cap at 5 errors for max intensity
+        heatIntensity = Math.min(stat.errorCount / 5, 1);
       }
     }
 
@@ -45,21 +62,27 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     if (keyObj.code === 'Space') {
       const spacePressed = pressedKeys.has(' ');
       const spaceTarget = activeKey === ' ';
-      return { ...styleResult(spaceTarget, spacePressed, 0), label: '', subLabel: '' };
+      const spaceFingerTarget = expectedFinger === 'thumb' || expectedFinger === 'right-thumb' || expectedFinger === 'left-thumb';
+      return { ...styleResult(spaceTarget, spacePressed, 0, spaceFingerTarget, 'thumb'), label: '', subLabel: '' };
     }
 
-    return { ...styleResult(!!producesActiveKey, isPressed, heatIntensity), label, subLabel };
+    return { ...styleResult(!!isTarget, isPressed, heatIntensity, !!isFingerTarget, keyObj.finger || ''), label, subLabel };
   };
 
-  const styleResult = (isTarget: boolean, isPressed: boolean, heat: number) => {
+  const styleResult = (isTarget: boolean, isPressed: boolean, heat: number, isFingerTarget: boolean, finger: string) => {
     let baseClass = "rounded-[clamp(0.25rem,1vw,0.75rem)] flex flex-col items-center justify-center text-[clamp(0.6rem,1.2vw,1rem)] font-black transition-all duration-75 select-none border h-full relative overflow-hidden";
-
-    // Default Glass Style
     let colorClass = "bg-white/5 text-white/50 border-white/5 shadow-lg backdrop-blur-md";
-
-    // Heatmap Background (Red tint)
     let heatStyle: React.CSSProperties = {};
-    if (heat > 0 && !isTarget && !isPressed) {
+
+    // Finger Highlight (Ghost Glow)
+    if (isFingerTarget && !isPressed) {
+      const color = FINGER_COLORS[finger] || 'rgba(255,255,255,0.1)';
+      heatStyle.backgroundColor = color;
+      heatStyle.borderColor = color.replace('0.4', '0.6');
+      baseClass += " ring-1 ring-white/10";
+    }
+
+    if (heat > 0 && !isTarget && !isPressed && !isFingerTarget) {
       heatStyle = {
         backgroundColor: `rgba(239, 68, 68, ${heat * 0.4})`,
         borderColor: `rgba(239, 68, 68, ${heat * 0.6})`,
@@ -68,7 +91,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     }
 
     if (isTarget) {
-      colorClass = "bg-brand/20 text-brand border-brand/40 ring-2 ring-brand/50 z-10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)] text-white";
+      colorClass = "bg-brand/20 text-brand border-brand/40 ring-2 ring-brand z-10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.3)] text-white";
     }
 
     if (isPressed) {
@@ -76,6 +99,12 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
       colorClass = isTarget
         ? "bg-green-500 text-white border-green-400 shadow-inner"
         : "bg-brand text-white border-brand shadow-inner";
+    }
+
+    // Homing key indicator
+    const isHoming = finger.includes('index') && (isFingerTarget || isTarget);
+    if (isHoming) {
+      baseClass += " z-20";
     }
 
     return { className: `${baseClass} ${colorClass}`, style: heatStyle };

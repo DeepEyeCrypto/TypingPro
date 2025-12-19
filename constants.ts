@@ -46,128 +46,131 @@ export const XP_LEVELS = [
 ];
 
 export const LESSONS: Lesson[] = [
-  // --- Stage 1: Home Row Anchors ---
+  // --- Stage 1: Home Row Foundation (Muscle Memory Anchors) ---
   {
     id: 1,
-    title: "Basics: F & J",
-    description: "Your home base. Place index fingers on F and J.",
+    title: "Anchor Point: F & J",
+    description: "The most important keys. Feel the bumps with your index fingers.",
     keys: ['f', 'j', ' '],
     newKeys: ['f', 'j'],
-    content: "fff jjj fj fj jf jf ff jj fff jjj fjf jfj fff jjj f j f j",
+    content: "fff jjj fj fj jf jf ff jj fff jjj fjf jfj f j f j ff jj",
     videoUrl: "https://videos2.edclub.com/hls/196638853/3c53ad84-d876-4af8-ad8a-4140ab7bf929/index-1.m3u8"
   },
   {
     id: 2,
-    title: "Home Row: D & K",
-    description: "Middle fingers. Keep index fingers on F and J.",
-    keys: ['f', 'j', 'd', 'k', ' '],
+    title: "Inner Stretch: D & K",
+    description: "Middle fingers. Maintain the index finger anchors.",
+    keys: ['d', 'k', 'f', 'j', ' '],
     newKeys: ['d', 'k'],
-    content: "ddd kkk dk dk kd kd df jk df jk ddd kkk dkd kdk dfjk"
+    content: "ddd kkk dk dk kd kd df jk df jk ddd kkk dkd kdk dk dk"
   },
   {
     id: 3,
-    title: "Home Row: S & L",
-    description: "Ring fingers. Maintain home row position.",
-    keys: ['f', 'j', 'd', 'k', 's', 'l', ' '],
+    title: "Ring Stability: S & L",
+    description: "Ring fingers. These are often the weakest; keep them steady.",
+    keys: ['s', 'l', 'd', 'k', 'f', 'j', ' '],
     newKeys: ['s', 'l'],
-    content: "sss lll sl sl ls ls sdf jkl sdf jkl sss lll sls lsl"
+    content: "sss lll sl sl ls ls sdf jkl sdf jkl sss lll sls lsl sl sl"
   },
   {
     id: 4,
-    title: "Home Row: A & ;",
-    description: "Pinky fingers. The full home row.",
-    keys: ['f', 'j', 'd', 'k', 's', 'l', 'a', ';', ' '],
+    title: "Pinky Power: A & ;",
+    description: "The edges of the home row. Use your pinkies.",
+    keys: ['a', ';', 's', 'l', 'd', 'k', 'f', 'j', ' '],
     newKeys: ['a', ';'],
-    content: "aaa ;;; a; a; ;a ;a asdf jkl; asdf jkl; aaa ;;; ada ;k;"
+    content: "aaa ;;; a; a; ;a ;a asdf jkl; asdf jkl; aaa ;;; ada ;k; a; ;a"
   },
   {
     id: 5,
-    title: "Center Keys: G & H",
-    description: "Reach index fingers inward, then return.",
-    keys: ['f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
+    title: "Home Row Mastery",
+    description: "The full home row. Speed up now while maintaining form.",
+    keys: ['a', 's', 'd', 'f', 'j', 'k', 'l', ';', 'g', 'h', ' '],
     newKeys: ['g', 'h'],
-    content: "fg jh fg jh ggg hhh fgh jhg fgh jhg ggg hhh glad has"
+    content: "asdf jkl; asdf jkl; gh gh fg jh hg jf salad asks dash flask"
   },
-  // --- Stage 2: Top Row Words ---
+  // --- Stage 2: Top Row Integration (Precise Reaches) ---
   {
     id: 6,
-    title: "Top Row: E & I",
-    description: "Reach up with middle fingers.",
-    keys: ['e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['e', 'i'],
-    content: "ded kik ded kik eee iii de ki de ki like see like see"
+    title: "Index Reach: R & U",
+    description: "Index fingers reach UP one row. Return to home immediately.",
+    keys: ['r', 'u', ' '],
+    newKeys: ['r', 'u'],
+    content: "fr ju fr ju rrr uuu fur jug rug fur rug jug fur ju fr r u"
   },
   {
     id: 7,
-    title: "Top Row: R & U",
-    description: "Reach up with index fingers.",
-    keys: ['r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['r', 'u'],
-    content: "fr ju fr ju rrr uuu rug fur rug fur red use red use"
+    title: "Middle Reach: E & I",
+    description: "Middle fingers reach UP. Keep your index fingers on F and J.",
+    keys: ['e', 'i', ' '],
+    newKeys: ['e', 'i'],
+    content: "de ki de ki eee iii die kid led lid side risk fire ride e i"
   },
   {
     id: 8,
-    title: "Top Row: T & Y",
-    description: "Stretch index fingers up and center.",
-    keys: ['t', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['t', 'y'],
-    content: "ft jy ft jy ttt yyy try yet try yet the they the they"
+    title: "Ring Reach: W & O",
+    description: "Ring fingers reach UP. This requires palm lift.",
+    keys: ['w', 'o', ' '],
+    newKeys: ['w', 'o'],
+    content: "sw lo sw lo www ooo low owl work word slow wool flow w o"
   },
   {
     id: 9,
-    title: "Top Row: W & O",
-    description: "Ring fingers reaching up.",
-    keys: ['w', 'o', 't', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['w', 'o'],
-    content: "sw lo sw lo www ooo wow owl wow owl slow flow slow flow"
+    title: "Pinky Reach: Q & P",
+    description: "Pinky fingers reach to the upper corners.",
+    keys: ['q', 'p', ' '],
+    newKeys: ['q', 'p'],
+    content: "aq ;p aq ;p qqq ppp up pulp quit past pure quiet page q p"
   },
   {
     id: 10,
-    title: "Top Row: Q & P",
-    description: "Pinky reach to the corners.",
-    keys: ['q', 'p', 'w', 'o', 't', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['q', 'p'],
-    content: "aq ;p aq ;p qqq ppp quit past quit past quiet party"
+    title: "Upper Row Fluency",
+    description: "Mixing top and home rows. Focus on the vertical movement.",
+    keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', ' '],
+    newKeys: ['t', 'y'],
+    content: "type your word tree root power quiet water tower party you"
   },
-  // --- Stage 3: Bottom Row & Common Words ---
+  // --- Stage 3: High Frequency & Technique ---
   {
     id: 11,
-    title: "Bottom Row: V & M",
-    description: "Index fingers reaching down.",
-    keys: ['v', 'm', 'q', 'p', 'w', 'o', 't', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['v', 'm'],
-    content: "fv jm fv jm vvv mmm van man van man move very move very"
+    title: "Common: THE, AND, THAT",
+    description: "Short bursts of the most common English words.",
+    keys: [' '],
+    content: "the and that with have this from they will would there their"
   },
   {
     id: 12,
-    title: "Bottom Row: C & ,",
-    description: "Middle fingers down.",
-    keys: ['c', ',', 'v', 'm', 'q', 'p', 'w', 'o', 't', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['c', ','],
-    content: "dc k, dc k, ccc ,,, car, cat, come, call, rice, ice,"
+    title: "Bottom Reach: V & M",
+    description: "Index fingers reach DOWN. Tuck them in tightly.",
+    keys: ['v', 'm', ' '],
+    newKeys: ['v', 'm'],
+    content: "fv jm fv jm vvv mmm move view main game volume move main v m"
   },
   {
     id: 13,
-    title: "Bottom Row: X & .",
-    description: "Ring fingers down.",
-    keys: ['x', '.', 'c', ',', 'v', 'm', 'q', 'p', 'w', 'o', 't', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['x', '.'],
-    content: "sx l. sx l. xxx ... six. fix. mix. fox. end. next."
+    title: "High-Frequency I",
+    description: "The most common words in English. (Burst Mode)",
+    keys: ["t", "h", "e", "a", "n", "d", "i"],
+    content: "the and the and the and the and",
+    newKeys: ["the", "and"],
+    type: "burst"
   },
   {
     id: 14,
-    title: "Bottom Row: Z & /",
-    description: "Pinky fingers down.",
-    keys: ['z', '/', 'x', '.', 'c', ',', 'v', 'm', 'q', 'p', 'w', 'o', 't', 'y', 'r', 'u', 'e', 'i', 'f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'g', 'h', ' '],
-    newKeys: ['z', '/'],
-    content: "az ;/ az ;/ zzz /// zoo/ zip/ zap/ size/ quiz/ buzz/"
+    title: "High-Frequency II",
+    description: "Focusing on transitions. (Burst Mode)",
+    keys: ["o", "f", "t", "o", "i", "n", "u"],
+    content: "of to in of to in of to in",
+    newKeys: ["of", "to", "in"],
+    type: "burst"
   },
   {
     id: 15,
-    title: "Beginner Mastery",
-    description: "A mix of all letters learned so far.",
-    keys: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '.', ',', ';', '/', ' '],
-    content: "the quick brown fox jumps over the lazy dog. practice makes perfect. type with speed and accuracy."
+    title: "Speed Mastery Final",
+    description: "Full row integration at speed. (Burst Mode)",
+    keys: ["a-z"],
+    content: "the quick brown fox jumps over the lazy dog",
+    newKeys: ["all"],
+    type: "burst"
   }
 ];
 

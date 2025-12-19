@@ -8,6 +8,7 @@ export interface Lesson {
   isAiGenerated?: boolean;
   newKeys?: string[]; // Keys specifically introduced in this lesson
   videoUrl?: string; // Optional HLS tutorial video
+  type?: 'standard' | 'burst'; // Speed drills
 }
 
 export interface KeyStats {

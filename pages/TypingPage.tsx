@@ -42,6 +42,7 @@ export default function TypingPage(): React.ReactNode {
     const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
     const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({});
     const [activeKey, setActiveKey] = useState<string | null>(null);
+    const [expectedFinger, setExpectedFinger] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
     const [combo, setCombo] = useState(0);
 
@@ -193,6 +194,7 @@ export default function TypingPage(): React.ReactNode {
                             onStatsUpdate={setLiveStats}
                             onKeyStatsUpdate={setLiveKeyStats}
                             onActiveKeyChange={setActiveKey}
+                            onFingerChange={setExpectedFinger}
                             onComboUpdate={setCombo}
                             fontFamily={settings.fontFamily}
                             fontSize={settings.fontSize}
@@ -200,6 +202,7 @@ export default function TypingPage(): React.ReactNode {
                             cursorStyle={settings.cursorStyle}
                             stopOnError={settings.stopOnError}
                             trainingMode={settings.trainingMode}
+                            lessonType={activeLesson.type}
                         />
                     </div>
 
@@ -215,10 +218,11 @@ export default function TypingPage(): React.ReactNode {
                                     pressedKeys={pressedKeys}
                                     layout={settings.keyboardLayout}
                                     heatmapStats={liveKeyStats}
+                                    expectedFinger={expectedFinger}
                                 />
                             </div>
 
-                            {/* Optional Hands Overlay (Large screens only) - Positioned on top of VirtualKeyboard */}
+                            {/* Optional Hands Overlay (Large screens only) */}
                             {settings.showHands && (
                                 <div className="absolute inset-x-0 top-0 h-full pointer-events-none z-20 opacity-80 transition-opacity">
                                     <KeyboardHandsOverlay
@@ -250,56 +254,60 @@ export default function TypingPage(): React.ReactNode {
             </div>
 
             {/* Modals & Overlays */}
-            {modalStats && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#0a0a0f]/80 backdrop-blur-lg animate-in fade-in duration-300">
-                    <div className="glass-panel p-8 sm:p-12 rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] max-w-lg w-full text-center">
-                        <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto flex items-center justify-center mb-8 shadow-2xl ${modalStats.completed ? 'bg-brand' : 'bg-red-500'}`}>
-                            <span className="text-3xl sm:text-4xl">{modalStats.completed ? '🏆' : '💪'}</span>
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">{modalStats.completed ? 'Mastered!' : 'Keep Going!'}</h2>
-                        <p className="text-white/40 mb-8 font-medium">Your persistence is the key to speed.</p>
+            {
+                modalStats && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#0a0a0f]/80 backdrop-blur-lg animate-in fade-in duration-300">
+                        <div className="glass-panel p-8 sm:p-12 rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] max-w-lg w-full text-center">
+                            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto flex items-center justify-center mb-8 shadow-2xl ${modalStats.completed ? 'bg-brand' : 'bg-red-500'}`}>
+                                <span className="text-3xl sm:text-4xl">{modalStats.completed ? '🏆' : '💪'}</span>
+                            </div>
+                            <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">{modalStats.completed ? 'Mastered!' : 'Keep Going!'}</h2>
+                            <p className="text-white/40 mb-8 font-medium">Your persistence is the key to speed.</p>
 
-                        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-10 text-center">
-                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="text-xl sm:text-2xl font-black text-white">{modalStats.wpm}</div>
-                                <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">WPM</div>
+                            <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-10 text-center">
+                                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <div className="text-xl sm:text-2xl font-black text-white">{modalStats.wpm}</div>
+                                    <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">WPM</div>
+                                </div>
+                                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <div className="text-xl sm:text-2xl font-black text-white">{modalStats.accuracy}%</div>
+                                    <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Accuracy</div>
+                                </div>
+                                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
+                                    <div className="text-xl sm:text-2xl font-black text-white">{modalStats.errors}</div>
+                                    <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Errors</div>
+                                </div>
                             </div>
-                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="text-xl sm:text-2xl font-black text-white">{modalStats.accuracy}%</div>
-                                <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Accuracy</div>
-                            </div>
-                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                <div className="text-xl sm:text-2xl font-black text-white">{modalStats.errors}</div>
-                                <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Errors</div>
-                            </div>
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <button
-                                onClick={handleRetry}
-                                className="flex-1 py-4 glass-card text-white font-bold flex items-center justify-center gap-2"
-                            >
-                                <RotateCcw size={18} /> Retry
-                            </button>
-                            <button
-                                onClick={handleNext}
-                                disabled={!modalStats.completed && !isCodeMode}
-                                className={`flex-1 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${modalStats.completed || isCodeMode ? 'bg-brand hover:scale-105 text-white' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
-                            >
-                                Next <ChevronRight size={18} />
-                            </button>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button
+                                    onClick={handleRetry}
+                                    className="flex-1 py-4 glass-card text-white font-bold flex items-center justify-center gap-2"
+                                >
+                                    <RotateCcw size={18} /> Retry
+                                </button>
+                                <button
+                                    onClick={handleNext}
+                                    disabled={!modalStats.completed && !isCodeMode}
+                                    className={`flex-1 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${modalStats.completed || isCodeMode ? 'bg-brand hover:scale-105 text-white' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                                >
+                                    Next <ChevronRight size={18} />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {videoVisible && activeLesson.videoUrl && (
-                <LessonVideoPlayer
-                    hlsUrl={activeLesson.videoUrl}
-                    onClose={() => setVideoVisible(false)}
-                />
-            )}
-        </div>
+            {
+                videoVisible && activeLesson.videoUrl && (
+                    <LessonVideoPlayer
+                        hlsUrl={activeLesson.videoUrl}
+                        onClose={() => setVideoVisible(false)}
+                    />
+                )
+            }
+        </div >
     );
 }
 
