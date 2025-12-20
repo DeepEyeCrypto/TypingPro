@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { SECTIONS, LESSONS } from '../constants';
 import { Lock, PlayCircle, CheckCircle } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 
 /**
  * Sidebar - Context Integrated
- * Rewritten for Clean Slate
+ * Rewritten for Clean Slate with Liquid Glass v2 Support
  */
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC = memo(() => {
     const { activeLessonId, lessonProgress, setActiveLessonId } = useApp();
 
     return (
-        <aside className="w-full h-full flex flex-col p-6 overflow-y-auto bg-transparent">
+        <aside className="w-full h-full flex flex-col p-6 overflow-y-auto bg-transparent scrollbar-hide">
             <div className="space-y-8">
                 {SECTIONS.map((section, idx) => (
                     <div key={idx} className="space-y-4">
@@ -62,6 +62,6 @@ const Sidebar: React.FC = () => {
             </div>
         </aside>
     );
-};
+});
 
 export default Sidebar;

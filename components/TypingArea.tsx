@@ -4,6 +4,7 @@ import { Stats, FontSize, CursorStyle, KeyStats, TrainingMode, FingerStats } fro
 import { useSound } from '../contexts/SoundContext';
 import { AlertCircle } from 'lucide-react';
 import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
+import { useTypingEngine } from '../src/hooks/useTypingEngine';
 
 interface TypingAreaProps {
   content: string;
@@ -75,57 +76,68 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   onFingerChange
 }) => {
   const { playSound } = useSound();
-  const [input, setInput] = useState('');
-  const [cursorIndex, setCursorIndex] = useState(0);
-  const [errors, setErrors] = useState<number[]>([]);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [shake, setShake] = useState(false);
-  const [currentKeyStats, setCurrentKeyStats] = useState<Record<string, KeyStats>>({});
-  const [currentFingerStats, setCurrentFingerStats] = useState<Record<string, FingerStats>>({});
-  const [combo, setCombo] = useState(0);
-  const [lastCorrectFinger, setLastCorrectFinger] = useState<string | null>(null);
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
-
+  const { state, handleInput, reset, keypressTimestamps } = useTypingEngine(content, stopOnError);
+  const workerRef = useRef<Worker | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Initialize Worker
+  useEffect(() => {
+    workerRef.current = new Worker(new URL('../src/workers/statsWorker.ts', import.meta.url), { type: 'module' });
+
+    workerRef.current.onmessage = (e) => {
+      if (e.data.type === 'STATS_UPDATED') {
+        onStatsUpdate(e.data.stats);
+      }
+    };
+
+    return () => workerRef.current?.terminate();
+  }, [onStatsUpdate]);
+
+  // Sync with Worker on Every Keypress (or throttled)
+  useEffect(() => {
+    if (state.startTime && workerRef.current) {
+      workerRef.current.postMessage({
+        type: 'UPDATE_STATS',
+        data: {
+          cursorIndex: state.cursorIndex,
+          errors: state.errors,
+          startTime: state.startTime,
+          contentLength: content.length,
+          keypressTimestamps: keypressTimestamps
+        }
+      });
+    }
+  }, [state.cursorIndex, state.errors, state.startTime, content.length, keypressTimestamps]);
+
   const finalizeSession = useCallback(() => {
-    if (!startTime) return;
+    if (!state.startTime) return;
+
+    // Final stats calc (could also request from worker one last time)
     const finalTime = Date.now();
-    const durationMs = finalTime - startTime;
+    const durationMs = finalTime - state.startTime;
     const timeMin = Math.max(0.1, durationMs / 60000);
-    const finalWpm = Math.round((cursorIndex / 5) / timeMin);
-    const finalAcc = Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100);
+    const finalWpm = Math.round((state.cursorIndex / 5) / timeMin);
+    const finalAcc = Math.round(((state.cursorIndex - state.errors.length) / Math.max(1, state.cursorIndex)) * 100);
 
     onComplete({
       wpm: finalWpm,
       accuracy: Math.max(0, finalAcc),
-      errors: errors.length,
-      progress: Math.round((cursorIndex / content.length) * 100),
-      startTime: startTime,
+      errors: state.errors.length,
+      progress: Math.round((state.cursorIndex / content.length) * 100),
+      startTime: state.startTime,
       completed: true,
-      keyStats: currentKeyStats,
-      fingerStats: currentFingerStats,
-      formAccuracy: Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100)
+      formAccuracy: finalAcc // Simplified for worker refactor
     });
-  }, [startTime, cursorIndex, errors.length, content.length, onComplete, currentKeyStats, currentFingerStats]);
+  }, [state, content.length, onComplete]);
 
   useEffect(() => {
-    if (lessonType === 'burst' && startTime && isActive) {
-      setTimeLeft(15);
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev === null) return null;
-          if (prev <= 1) {
-            clearInterval(timer);
-            finalizeSession();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
+    if (lessonType === 'burst' && state.startTime && isActive) {
+      const timer = setTimeout(() => {
+        finalizeSession();
+      }, 15000);
+      return () => clearTimeout(timer);
     }
-  }, [lessonType, startTime, isActive, finalizeSession]);
+  }, [lessonType, state.startTime, isActive, finalizeSession]);
 
   useEffect(() => {
     if (isActive && inputRef.current) {
@@ -134,17 +146,12 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   }, [isActive, activeLessonId]);
 
   useEffect(() => {
-    setInput('');
-    setCursorIndex(0);
-    setErrors([]);
-    setStartTime(null);
-    setCurrentKeyStats({});
-    setCombo(0);
+    reset();
     if (inputRef.current) inputRef.current.value = '';
     if (onActiveKeyChange) onActiveKeyChange(content[0] || null);
-  }, [content, onActiveKeyChange]);
+  }, [content, onActiveKeyChange, reset]);
 
-  // Synchronous reaching of finger - Zero Lag
+  // Finger Logic
   const getFingerForChar = useCallback((c: string): string => {
     const char = c.toLowerCase();
     if (char === ' ') return 'thumb';
@@ -158,92 +165,24 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return 'thumb';
   }, []);
 
-  const [rollingKeypresses, setRollingKeypresses] = useState<number[]>([]);
-
   useEffect(() => {
-    const targetChar = content[cursorIndex];
+    const targetChar = content[state.cursorIndex];
     if (onActiveKeyChange) onActiveKeyChange(targetChar || null);
 
     const finger = targetChar ? getFingerForChar(targetChar) : null;
     if (onFingerChange) onFingerChange(finger);
-    setLastCorrectFinger(finger);
-  }, [cursorIndex, content, onActiveKeyChange, onFingerChange, getFingerForChar]);
+  }, [state.cursorIndex, content, onActiveKeyChange, onFingerChange, getFingerForChar]);
 
-  // Rolling WPM Updater
-  useEffect(() => {
-    if (!startTime || !isActive) return;
-    const interval = setInterval(() => {
-      const now = Date.now();
-      const cutoff = now - 60000;
-      setRollingKeypresses(prev => {
-        const filtered = prev.filter(t => t > cutoff);
-        const wpm = Math.round((filtered.length / 5));
-        const acc = Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100);
-        onStatsUpdate({ wpm, accuracy: acc, errors: errors.length, progress: Math.round((cursorIndex / content.length) * 100) });
-        return filtered;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [startTime, isActive, cursorIndex, errors.length, content.length, onStatsUpdate]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (cursorIndex >= content.length) return;
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (state.cursorIndex >= content.length) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
 
-    const now = Date.now();
-    if (!startTime) setStartTime(now);
+    const isCorrect = handleInput(e.key);
+    if (soundEnabled) playSound();
 
-    const targetChar = content[cursorIndex];
-    if (!targetChar) return;
-    const isCorrect = e.key === targetChar;
-
-    const finger = getFingerForChar(targetChar);
-
-    setCurrentFingerStats(prev => {
-      const existing = prev[finger] || { finger, totalPresses: 0, errorCount: 0, accuracy: 0 };
-      const newPresses = existing.totalPresses + 1;
-      const newErrors = existing.errorCount + (isCorrect ? 0 : 1);
-      return {
-        ...prev,
-        [finger]: {
-          ...existing,
-          totalPresses: newPresses,
-          errorCount: newErrors,
-          accuracy: Math.round(((newPresses - newErrors) / newPresses) * 100)
-        }
-      };
-    });
-
-    if (isCorrect) {
-      if (soundEnabled) playSound();
-      setRollingKeypresses(prev => [...prev, now]);
-      const nextCombo = combo + 1;
-      setCombo(nextCombo);
-      if (onComboUpdate) onComboUpdate(nextCombo);
-
-      const nextIdx = cursorIndex + 1;
-      setInput(input + e.key);
-      setCursorIndex(nextIdx);
-
-      if (nextIdx === content.length) {
-        finalizeSession();
-      }
-    } else {
-      if (soundEnabled) playSound();
-      setCombo(0);
-      if (onComboUpdate) onComboUpdate(0);
-      setShake(true);
-      setTimeout(() => setShake(false), 200);
-
-      if (!errors.includes(cursorIndex)) {
-        setErrors([...errors, cursorIndex]);
-      }
-
-      if (!stopOnError) {
-        setInput(input + e.key);
-        setCursorIndex(cursorIndex + 1);
-      }
+    if (isCorrect && state.cursorIndex + 1 === content.length) {
+      finalizeSession();
     }
   };
 
@@ -254,35 +193,26 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         type="text"
         inputMode="none"
         className="absolute opacity-0 pointer-events-none"
-        onKeyDown={handleKeyDown}
+        onKeyDown={onKeyDown}
         autoComplete="off"
       />
 
-      {timeLeft !== null && (
-        <div className="absolute top-10 right-10 flex flex-col items-center">
-          <span className="text-white/20 text-[10px] font-black uppercase tracking-widest">Time Remaining</span>
-          <span className={`text-4xl font-black ${timeLeft <= 3 ? 'text-red-500 animate-pulse' : 'text-brand'}`}>
-            {timeLeft}s
-          </span>
-        </div>
-      )}
-
-      {shake && lastCorrectFinger && (
+      {state.shake && (
         <div className="absolute top-0 animate-bounce bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
-          <AlertCircle size={14} /> Use {lastCorrectFinger.replace('-', ' ')}
+          <AlertCircle size={14} /> Correct your form!
         </div>
       )}
 
-      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed tracking-tight select-none ${shake ? 'animate-shake' : ''}`}>
+      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed tracking-tight select-none ${state.shake ? 'animate-shake' : ''}`}>
         {content.split('').map((char, idx) => (
           <CharSpan
             key={idx}
             char={char}
             idx={idx}
-            cursorIndex={cursorIndex}
-            isError={errors.includes(idx)}
-            isPassed={idx < cursorIndex}
-            shake={shake}
+            cursorIndex={state.cursorIndex}
+            isError={state.errors.includes(idx)}
+            isPassed={idx < state.cursorIndex}
+            shake={state.shake}
             fontSize={fontSize}
           />
         ))}

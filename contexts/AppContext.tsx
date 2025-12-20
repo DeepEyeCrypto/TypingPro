@@ -71,8 +71,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         stopOnError: false,
         trainingMode: 'accuracy',
         fontColor: '#FFFF00', // Bright Yellow
-        showHands: true
+        showHands: true,
+        performanceMode: false
     });
+
+    // Apply performance mode class to body
+    useEffect(() => {
+        if (settings.performanceMode) {
+            document.body.classList.add('perf-mode');
+        } else {
+            document.body.classList.remove('perf-mode');
+        }
+    }, [settings.performanceMode]);
 
     const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});
     const [history, setHistory] = useState<HistoryEntry[]>([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext'; // Update imports
-import { Loader2, Type, Search, X, Sun, Moon, Laptop, Keyboard, Volume2, Monitor, AlertCircle, ScanLine, Download } from 'lucide-react';
+import { Loader2, Type, Search, X, Sun, Moon, Laptop, Keyboard, Volume2, Monitor, AlertCircle, ScanLine, Download, Activity } from 'lucide-react';
 import { FANCY_FONTS } from '../constants';
 import { ThemeMode, FontSize, CursorStyle, KeyboardLayoutType } from '../types';
 
@@ -57,8 +57,8 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                                     key={mode}
                                     onClick={() => updateUserSetting('theme', mode)}
                                     className={`py-2 text-sm font-medium rounded-lg border transition-all ${settings.theme === mode
-                                            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
-                                            : 'bg-transparent border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
+                                        : 'bg-transparent border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -141,6 +141,23 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                                 className={`w-11 h-6 rounded-full p-1 transition-colors ${settings.stopOnError ? 'bg-red-500' : 'bg-gray-300 dark:bg-gray-600'}`}
                             >
                                 <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform ${settings.stopOnError ? 'translate-x-5' : 'translate-x-0'}`} />
+                            </button>
+                        </div>
+
+                        {/* Performance Mode */}
+                        <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <div className="flex items-center gap-3">
+                                <Activity className={`w-5 h-5 ${settings.performanceMode ? 'text-brand' : 'text-gray-400'}`} />
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">Performance Mode</h3>
+                                    <p className="text-xs text-gray-500">Disables blurs and heavy animations for low-end devices</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => updateUserSetting('performanceMode', !settings.performanceMode)}
+                                className={`w-11 h-6 rounded-full p-1 transition-colors ${settings.performanceMode ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-600'}`}
+                            >
+                                <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform ${settings.performanceMode ? 'translate-x-5' : 'translate-x-0'}`} />
                             </button>
                         </div>
                     </div>

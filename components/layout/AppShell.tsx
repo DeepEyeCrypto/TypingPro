@@ -28,7 +28,7 @@ export const AppShell: React.FC<AppShellProps> = ({
             <FuturisticBackground />
 
             {header && (
-                <header className="z-[60] bg-black/40 backdrop-blur-md border-b border-white/5 h-16 md:h-20 flex items-center px-4 md:px-6 shrink-0">
+                <header className="z-[60] glass-panel border-b border-white/5 h-16 md:h-20 flex items-center px-4 md:px-6 shrink-0 rounded-none">
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="lg:hidden p-2 text-white/40 hover:text-white transition-colors mr-4"

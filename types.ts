@@ -104,6 +104,7 @@ export interface UserSettings {
   wpmGoal?: number;
   accuracyGoal?: number;
   showHands: boolean;
+  performanceMode: boolean;
 }
 
 export interface UserProfile {

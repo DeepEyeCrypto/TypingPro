@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.88",
+  "version": "0.0.89",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "@tauri-apps/api": "^1.6.0",
     "firebase": "^12.6.0",
     "hls.js": "^1.6.15",
+    "howler": "^2.2.4",
     "lucide-react": "^0.556.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.6.0",
+    "@types/howler": "^2.2.12",
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

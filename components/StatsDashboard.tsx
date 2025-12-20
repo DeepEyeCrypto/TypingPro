@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { HistoryEntry } from '../types';
 import { X, TrendingUp, Activity, Target, Clock, Calendar } from 'lucide-react';
 import { LESSONS } from '../constants';
@@ -14,7 +14,7 @@ interface StatsDashboardProps {
 type TimeRange = 'week' | 'month' | 'all';
 type Metric = 'wpm' | 'accuracy';
 
-const StatsDashboard: React.FC<StatsDashboardProps> = ({ history, onClose }) => {
+const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }) => {
     const { fingerStats } = useApp();
     const [timeRange, setTimeRange] = useState<TimeRange>('all');
     const [metric, setMetric] = useState<Metric>('wpm');
@@ -90,7 +90,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ history, onClose }) => 
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-[#F5F5F7] dark:bg-[#0B1120] w-full max-w-5xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-white/20 dark:border-gray-800">
+            <div className="glass-panel w-full max-w-5xl rounded-[2.5rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-white/5">
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-8 py-6 bg-white dark:bg-[#111827] border-b border-gray-200 dark:border-gray-800">
@@ -106,8 +106,8 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ history, onClose }) => 
                                     key={range}
                                     onClick={() => setTimeRange(range)}
                                     className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${timeRange === range
-                                            ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                                            : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+                                        ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
                                         }`}
                                 >
                                     {range === 'all' ? 'All Time' : range === 'month' ? '30 Days' : '7 Days'}
@@ -128,44 +128,44 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ history, onClose }) => 
 
                     {/* KPI Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-white dark:bg-[#111827] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+                        <div className="glass-card p-6 relative overflow-hidden group">
                             <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <Target className="w-24 h-24" />
                             </div>
-                            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-2">
+                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
                                 <Activity className="w-4 h-4 text-blue-500" /> Avg Speed
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.avgWpm} <span className="text-sm font-normal text-gray-400">WPM</span></div>
+                            <div className="text-3xl font-bold text-white">{stats.avgWpm} <span className="text-sm font-normal text-white/20">WPM</span></div>
                         </div>
 
-                        <div className="bg-white dark:bg-[#111827] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+                        <div className="glass-card p-6 relative overflow-hidden group">
                             <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <TrendingUp className="w-24 h-24" />
                             </div>
-                            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-2">
+                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
                                 <TrendingUp className="w-4 h-4 text-green-500" /> Top Speed
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.bestWpm} <span className="text-sm font-normal text-gray-400">WPM</span></div>
+                            <div className="text-3xl font-bold text-white">{stats.bestWpm} <span className="text-sm font-normal text-white/20">WPM</span></div>
                         </div>
 
-                        <div className="bg-white dark:bg-[#111827] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+                        <div className="glass-card p-6 relative overflow-hidden group">
                             <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <Target className="w-24 h-24" />
                             </div>
-                            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-2">
+                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
                                 <Target className="w-4 h-4 text-orange-500" /> Accuracy
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.avgAcc}%</div>
+                            <div className="text-3xl font-bold text-white">{stats.avgAcc}%</div>
                         </div>
 
-                        <div className="bg-white dark:bg-[#111827] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm relative overflow-hidden group">
+                        <div className="glass-card p-6 relative overflow-hidden group">
                             <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <Clock className="w-24 h-24" />
                             </div>
-                            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 flex items-center gap-2">
+                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-purple-500" /> Practice Time
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalTime} <span className="text-sm font-normal text-gray-400">mins</span></div>
+                            <div className="text-3xl font-bold text-white">{stats.totalTime} <span className="text-sm font-normal text-white/20">mins</span></div>
                         </div>
                     </div>
 
@@ -282,6 +282,6 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ history, onClose }) => 
             </div>
         </div>
     );
-};
+});
 
 export default StatsDashboard;

@@ -223,7 +223,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     stopOnError: false,
     trainingMode: 'accuracy',
     fontColor: 'white',
-    showHands: true
+    showHands: true,
+    performanceMode: false
 };
 
 export const getSettings = (profileId: string): UserSettings => {
