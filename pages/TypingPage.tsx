@@ -5,10 +5,12 @@ import VirtualKeyboard from '../components/VirtualKeyboard';
 import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
 import LessonVideoPlayer from '../components/LessonVideoPlayer';
 import { useApp } from '../contexts/AppContext';
-import { LESSONS } from '../constants';
+import { HERO_CURRICULUM } from '../constants/curriculum';
 import { CODE_SNIPPETS } from '../constants/codeSnippets';
 import { RotateCcw, ChevronRight, X } from 'lucide-react';
 import { KeyStats, Lesson, Stats } from '../types';
+import InstructionalOverlay from '../components/curriculum/InstructionalOverlay';
+import { AnimatePresence } from 'framer-motion';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,9 +26,10 @@ export default function TypingPage(): React.ReactNode {
 
     // --- Core State ---
     const [currentLessonId, setCurrentLessonId] = useState<number>(1);
-    const [activeLesson, setActiveLesson] = useState<Lesson>(LESSONS[0]);
+    const [activeLesson, setActiveLesson] = useState<Lesson>(HERO_CURRICULUM[0]);
     const [retryCount, setRetryCount] = useState<number>(0);
     const [videoVisible, setVideoVisible] = useState<boolean>(false);
+    const [showOverlay, setShowOverlay] = useState<boolean>(true);
 
     // --- Live Progress State ---
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
@@ -51,7 +54,7 @@ export default function TypingPage(): React.ReactNode {
                 description: `Master ${snippet.language} syntax`
             };
         } else {
-            lesson = LESSONS.find(l => l.id === id) || LESSONS[0];
+            lesson = HERO_CURRICULUM.find(l => l.id === id) || HERO_CURRICULUM[0];
         }
 
         if (lesson) {
@@ -62,8 +65,14 @@ export default function TypingPage(): React.ReactNode {
             setRetryCount(0);
             setModalStats(null);
             setCombo(0);
+            setShowOverlay(true); // Always show overlay for a new lesson
         }
     }, [setActiveLessonId]);
+
+    useEffect(() => {
+        // Sync with global activeLessonId if it changes from sidebar
+        // (Simplified logic: we'll assume sidebar and local stay in sync via context)
+    }, [currentLessonId]);
 
     useEffect(() => {
         initializeLesson(currentLessonId, isCodeMode);
@@ -74,19 +83,23 @@ export default function TypingPage(): React.ReactNode {
         setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
         setRetryCount(c => c + 1);
         setCombo(0);
+        setShowOverlay(false); // Don't show overlay on manual retry
     }, []);
 
     const handleComplete = useCallback((stats: Stats) => {
         recordLessonComplete(activeLesson.id, stats);
         recordKeyStats(liveKeyStats);
-        const passed = stats.accuracy >= (settings.trainingMode === 'accuracy' ? 98 : 90);
+
+        const minAcc = activeLesson.passingCriteria?.accuracy || 98;
+        const passed = stats.accuracy >= minAcc;
         setModalStats({ ...stats, completed: passed });
-    }, [activeLesson.id, recordLessonComplete, recordKeyStats, liveKeyStats, settings.trainingMode]);
+    }, [activeLesson, recordLessonComplete, recordKeyStats, liveKeyStats]);
 
     const handleNext = useCallback(() => {
-        const nextId = currentLessonId + 1;
-        if (!isCodeMode && nextId > LESSONS.length) return;
-        initializeLesson(nextId, isCodeMode);
+        const nextLesson = HERO_CURRICULUM.find(l => l.id > currentLessonId);
+        if (nextLesson) {
+            initializeLesson(nextLesson.id, isCodeMode);
+        }
     }, [currentLessonId, isCodeMode, initializeLesson]);
 
     useEffect(() => {
@@ -139,29 +152,35 @@ export default function TypingPage(): React.ReactNode {
 
     return (
         <div className="flex-1 flex flex-col h-full w-full relative overflow-hidden">
+            <AnimatePresence>
+                {showOverlay && !modalStats && (
+                    <InstructionalOverlay
+                        lesson={activeLesson}
+                        onStart={() => setShowOverlay(false)}
+                    />
+                )}
+            </AnimatePresence>
+
             <div className="flex-1 flex flex-col items-center focus-container overflow-y-auto pt-16 scrollbar-hide">
-                {/* 1. Stats Pills (Top Center) */}
                 <StatsPills />
 
-                {/* 2. Title & Lesson Info */}
                 <div className="text-center mb-8 animate-ios-slide" style={{ animationDelay: '100ms' }}>
                     <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">{activeLesson.title}</h2>
                     <p className="text-sm font-medium text-slate-400 dark:text-white/30 max-w-md mx-auto">{activeLesson.description}</p>
                 </div>
 
-                {/* 3. Main Typing Area - Glassmorphic Container */}
                 <div className="w-full glass-card-modern border-white/20 dark:border-white/10 shadow-2xl animate-ios-slide" style={{ animationDelay: '200ms' }}>
                     <TypingArea
                         key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
                         content={activeLesson.content}
                         activeLessonId={activeLesson.id}
-                        isActive={!modalStats}
+                        isActive={!modalStats && !showOverlay}
                         onComplete={handleComplete}
                         onRestart={handleRetry}
                         onStatsUpdate={(s) => {
                             setLiveStats(s);
                             if (s.wpm > 0) {
-                                setIsSidebarCollapsed(true); // Auto-collapse sidebar during typing for focus
+                                setIsSidebarCollapsed(true);
                                 if (setIsSidebarOpen) setIsSidebarOpen(false);
                             }
                         }}
@@ -175,10 +194,10 @@ export default function TypingPage(): React.ReactNode {
                         stopOnError={settings.stopOnError}
                         trainingMode={settings.trainingMode}
                         lessonType={activeLesson.type}
+                        isMasterMode={activeLesson.isMasterMode}
                     />
                 </div>
 
-                {/* Retry Prompt */}
                 <div className="mt-8 flex justify-center animate-ios-slide" style={{ animationDelay: '300ms' }}>
                     <button
                         onClick={handleRetry}
@@ -188,7 +207,6 @@ export default function TypingPage(): React.ReactNode {
                     </button>
                 </div>
 
-                {/* Keyboard Section (Below focus area) */}
                 <div className="w-full max-w-[1200px] mt-16 pb-12 animate-ios-slide" style={{ animationDelay: '400ms' }}>
                     <div className="w-full opacity-40 hover:opacity-100 transition-opacity duration-700">
                         <VirtualKeyboard

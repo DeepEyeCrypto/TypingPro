@@ -23,6 +23,7 @@ interface TypingAreaProps {
   stopOnError: boolean;
   trainingMode: TrainingMode;
   lessonType?: 'standard' | 'burst';
+  isMasterMode?: boolean;
   newKeys?: string[];
   fontColor?: string;
   onComboUpdate?: (combo: number) => void;
@@ -38,8 +39,10 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   onActiveKeyChange,
   onStatsUpdate,
   fontSize,
+  cursorStyle,
   stopOnError,
   lessonType,
+  isMasterMode,
   onComboUpdate,
   onFingerChange
 }) => {
@@ -137,6 +140,23 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       formAccuracy: finalAcc
     });
   }, [engineRefs, content.length, onComplete]);
+
+  // Master Mode Logic: Restart on any error
+  useEffect(() => {
+    if (isMasterMode && engineRefs.errors.current.length > 0) {
+      onRestart();
+    }
+  }, [engineRefs.errors.current.length, isMasterMode, onRestart]);
+
+  // Burst Mode Logic: 15-second limit
+  useEffect(() => {
+    if (lessonType === 'burst' && engineRefs.startTime.current && isActive) {
+      const timer = setTimeout(() => {
+        finalizeSession();
+      }, 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [lessonType, isActive, engineRefs.startTime.current, finalizeSession]);
 
   useEffect(() => {
     if (isComplete) {

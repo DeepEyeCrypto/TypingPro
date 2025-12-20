@@ -32,16 +32,10 @@ export const FANCY_FONTS = [
 ];
 
 export const SECTIONS = [
-  { title: "Foundation: Home Row Anchors (1-5)", range: "1 - 5", active: true },
-  { title: "Expansion: Top Row Integration (6-10)", range: "6 - 10", active: false },
-  { title: "Mastery: Bottom Row + Symbols (11-15)", range: "11 - 15", active: false },
-  { title: "Fluency: Common Words (16-20)", range: "16 - 20", active: false },
-  { title: "Speed Building: Mixed Passages (21-30)", range: "21 - 30", active: false },
-  { title: "Pro: Home Row Refinement (31-40)", range: "31 - 40", active: false },
-  { title: "Pro: Vertical Reach Mastery (41-55)", range: "41 - 55", active: false },
-  { title: "Pro: N-Grams & Speed Boosters (56-65)", range: "56 - 65", active: false },
-  { title: "Pro: Numerical & Symbol Precision (66-75)", range: "66 - 75", active: false },
-  { title: "Elite: The 150+ WPM Path (76-85)", range: "76 - 85", active: false }
+  { title: "Phase 1: Foundation (1-10)", range: "1-10", active: true },
+  { title: "Phase 2: Reach & Mechanics (11-30)", range: "11-30", active: false },
+  { title: "Phase 3: Speed Explosion (31-70)", range: "31-70", active: false },
+  { title: "Phase 4: Elite Mastery (71-100)", range: "71-100", active: false }
 ];
 
 export const XP_LEVELS = [

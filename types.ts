@@ -14,6 +14,13 @@ export interface Lesson {
   type?: 'standard' | 'burst'; // Speed drills
   targetAccuracy?: number; // Proposed 98-99%
   fingerMap?: Record<string, string>; // Maps chars to fingers for specifically this lesson's drills
+  tips?: string[]; // Pedagogical guidance for beginners
+  passingCriteria?: {
+    accuracy: number;
+    wpm: number;
+  };
+  phase?: 1 | 2 | 3 | 4;
+  isMasterMode?: boolean; // If true, restart on any mistake
 }
 
 export interface KeyStats {

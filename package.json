@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.0.96",
+  "version": "0.0.97",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -21,6 +21,7 @@
     "@google/genai": "^1.31.0",
     "@tauri-apps/api": "^1.6.0",
     "firebase": "^12.6.0",
+    "framer-motion": "^12.23.26",
     "hls.js": "^1.6.15",
     "howler": "^2.2.4",
     "lucide-react": "^0.556.0",

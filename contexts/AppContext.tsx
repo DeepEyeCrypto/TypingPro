@@ -14,6 +14,7 @@ import { setVolume } from '../services/audioService';
 import { BADGES, FANCY_FONTS, XP_LEVELS } from '../constants';
 
 import { authService, AuthUser } from '../services/authService';
+import { HERO_CURRICULUM } from '../constants/curriculum';
 
 interface AppContextType {
     // State
@@ -286,8 +287,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const recordLessonComplete = (lessonId: number, stats: Stats): boolean => {
-        // Logic from App.tsx handleComplete
-        const passedCriteria = stats.accuracy >= (settings.trainingMode === 'accuracy' ? 98 : 90) && stats.wpm >= 15; // Adjusted criteria
+        const lesson = HERO_CURRICULUM.find(l => l.id === lessonId);
+        if (!lesson) return false;
+
+        // Use lesson-specific passing criteria or a sensible default
+        const minAccuracy = lesson.passingCriteria?.accuracy || 98;
+        const minWpm = lesson.passingCriteria?.wpm || 15;
+        const passedCriteria = stats.accuracy >= minAccuracy && stats.wpm >= minWpm;
 
         const updatedProgress = updateLessonProgress(currentProfile.id, lessonId, {
             wpm: stats.wpm,
@@ -297,15 +303,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         let unlockedNext = false;
         if (passedCriteria) {
-            // Logic to find next ID strictly by numerical order might fail if gaps exist, 
-            // but we'll assume constants.ts IDs are sequential for now.
-            // Actually, with new granular lessons, IDs are 1..N.
-            const nextId = lessonId + 1;
-            unlockLesson(currentProfile.id, nextId);
-            if (updatedProgress[nextId]) { // Only if it exists
-                updatedProgress[nextId] = { ...updatedProgress[nextId], unlocked: true };
+            // Find next lesson in the curriculum
+            const nextLesson = HERO_CURRICULUM.find(l => l.id > lessonId);
+            if (nextLesson) {
+                unlockLesson(currentProfile.id, nextLesson.id);
+                if (updatedProgress[nextLesson.id]) {
+                    updatedProgress[nextLesson.id] = { ...updatedProgress[nextLesson.id], unlocked: true };
+                }
+                unlockedNext = true;
             }
-            unlockedNext = true;
+
+            // Phase Completion Logic
+            if (lesson.phase) {
+                const phaseLessons = HERO_CURRICULUM.filter(l => l.phase === lesson.phase);
+                const isPhaseComplete = phaseLessons.every(l => updatedProgress[l.id]?.completed);
+                if (isPhaseComplete) {
+                    console.log(`🎉 Phase ${lesson.phase} Complete! Great job!`);
+                    // We can trigger a special badge or toast here in the future
+                }
+            }
         }
 
         setLessonProgress({ ...updatedProgress });
@@ -321,96 +337,39 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             durationSeconds: (Date.now() - (stats.startTime || 0)) / 1000
         };
 
-        // --- Adaptive Intelligence: Pace Adjustment ---
-        if (stats.accuracy < 98) {
-            console.log("Adaptive Intelligence: Accuracy below 98%. Recommending focus on form over speed.");
-            // We could set a global 'paceHint' or 'slowDown' state here if needed
-        }
-
         saveHistory(currentProfile.id, entry);
         const newHistory = [entry, ...history];
         setHistory(newHistory);
 
-        // --- Session Velocity ---
-        const lastSession = history[0];
-        if (lastSession) {
-            const velocity = entry.wpm - lastSession.wpm;
-            if (velocity > 0) {
-                console.log(`Session Velocity: +${velocity} WPM improvement!`);
-            }
-        }
-
-        // --- Phase 4: Scientific Mastery (XP & Adaptive Leveling) ---
+        // Update Profile XP
         if (passedCriteria) {
-            const gainedXp = Math.round((stats.wpm * stats.accuracy) / 10);
-
-            // Mastery Unlock: 3 consecutive 99%+ accuracy unlocks next tier immediately
-            const recentHistory = [entry, ...history].slice(0, 3);
-            const isMasteryAchieved = recentHistory.length >= 3 && recentHistory.every(h => h.accuracy >= 99);
-
-            if (isMasteryAchieved) {
-                // Unlock the next Tier (Start of next stage)
-                // Stages: 1-5, 6-10, 11-15, 16-20, 21-25, 26-30
-                const currentStageEnd = Math.ceil(lessonId / 5) * 5;
-                const nextStageStart = currentStageEnd + 1;
-                if (nextStageStart <= 85) {
-                    unlockLesson(currentProfile.id, nextStageStart);
-                    // Note: updatedProgress already has the next lesson unlocked normally
-                }
-            }
-
+            const gainedXp = Math.round((stats.wpm * stats.accuracy) / 10) + (lesson.phase || 0) * 50;
             const newXp = currentProfile.xp + gainedXp;
             const newLevel = getLevelFromXp(newXp);
 
             const updatedProfile = { ...currentProfile, xp: newXp, level: newLevel };
             setCurrentProfile(updatedProfile);
 
-            // Save to profiles list
             const updatedProfiles = profiles.map(p => p.id === updatedProfile.id ? updatedProfile : p);
             setProfiles(updatedProfiles);
             localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
         }
 
-        // --- Finger Analytics Update ---
-        if (stats.fingerStats) {
-            const updatedFingerStats = updateFingerStats(currentProfile.id, stats.fingerStats);
-            // Finger Independence Score calculation
-            const total = Object.values(updatedFingerStats).reduce((a, b: FingerStats) => a + b.totalPresses, 0);
-            if (total > 0) {
-                const targetUsage = total / 8;
-                const fingers = ['left-pinky', 'left-ring', 'left-middle', 'left-index', 'right-index', 'right-middle', 'right-ring', 'right-pinky'];
-                let variance = 0;
-                fingers.forEach(f => {
-                    const fingerStat = updatedFingerStats[f] as FingerStats | undefined;
-                    const usage = fingerStat?.totalPresses || 0;
-                    variance += Math.pow(usage - targetUsage, 2);
-                });
-                const stdDev = Math.sqrt(variance / 8);
-                const independenceScore = Math.max(0, 100 - (stdDev / (total / 4)) * 100);
-                console.log(`Finger Independence Score: ${independenceScore.toFixed(1)}%`);
-            }
-        }
-
-        // Update Daily Goals
+        // Daily Goals update...
         const newGoals = dailyGoals.map(g => {
             if (g.isCompleted) return g;
             let val = g.currentValue;
             if (g.type === 'lessons' && passedCriteria) val += 1;
             if (g.type === 'time') val += entry.durationSeconds;
-            // wpm/accuracy goals usually "achieve X once"
-
-            return {
-                ...g,
-                currentValue: val,
-                isCompleted: val >= g.targetValue
-            };
+            return { ...g, currentValue: val, isCompleted: val >= g.targetValue };
         });
+
         if (JSON.stringify(newGoals) !== JSON.stringify(dailyGoals)) {
             setDailyGoals(newGoals);
             saveDailyGoals(currentProfile.id, newGoals);
         }
 
-        // Badge Logic
+        // Badge logic...
         BADGES.forEach(badge => {
             if (!earnedBadges.some(eb => eb.badgeId === badge.id)) {
                 if (badge.condition(newHistory, updatedProgress)) {
