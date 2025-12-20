@@ -345,7 +345,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 // Stages: 1-5, 6-10, 11-15, 16-20, 21-25, 26-30
                 const currentStageEnd = Math.ceil(lessonId / 5) * 5;
                 const nextStageStart = currentStageEnd + 1;
-                if (nextStageStart <= 30) {
+                if (nextStageStart <= 85) {
                     unlockLesson(currentProfile.id, nextStageStart);
                     // Note: updatedProgress already has the next lesson unlocked normally
                 }

@@ -52,7 +52,21 @@ const Sidebar: React.FC = memo(() => {
                                                     <PlayCircle size={14} className={isActive ? "animate-pulse" : ""} />
                                                 )}
                                             </div>
-                                            <span className="text-[11px] font-medium truncate tracking-tight">{lesson.title}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2 overflow-hidden">
+                                                    <span className="text-[11px] font-medium truncate tracking-tight">{lesson.title}</span>
+                                                    {lesson.difficulty && (
+                                                        <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-white/5 border border-white/5 text-white/30 shrink-0">
+                                                            Lvl {lesson.difficulty}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {isActive && lesson.target_wpm && (
+                                                    <div className="text-[8px] text-cyber-cyan/60 font-mono mt-0.5">
+                                                        Target: {lesson.target_wpm} WPM
+                                                    </div>
+                                                )}
+                                            </div>
                                         </button>
                                     );
                                 })}

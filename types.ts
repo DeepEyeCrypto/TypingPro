@@ -5,6 +5,9 @@ export interface Lesson {
   description: string;
   keys: string[]; // Keys introduced/focused in this lesson
   content: string; // The practice text
+  module?: string;
+  difficulty?: number;
+  target_wpm?: number;
   isAiGenerated?: boolean;
   newKeys?: string[]; // Keys specifically introduced in this lesson
   videoUrl?: string; // Optional HLS tutorial video

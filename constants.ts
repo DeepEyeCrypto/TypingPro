@@ -32,12 +32,16 @@ export const FANCY_FONTS = [
 ];
 
 export const SECTIONS = [
-  { title: "Foundation (1-5): Home Row Anchors", range: "1 - 5", active: true },
-  { title: "Expansion (6-10): Top Row Integration", range: "6 - 10", active: false },
-  { title: "Mastery (11-15): Bottom Row + Symbols", range: "11 - 15", active: false },
-  { title: "Fluency (16-20): Common Words", range: "16 - 20", active: false },
-  { title: "Speed Building (21-25): Mixed Passages", range: "21 - 25", active: false },
-  { title: "Competitive (26-30): Timed Sprints", range: "26 - 30", active: false }
+  { title: "Foundation: Home Row Anchors (1-5)", range: "1 - 5", active: true },
+  { title: "Expansion: Top Row Integration (6-10)", range: "6 - 10", active: false },
+  { title: "Mastery: Bottom Row + Symbols (11-15)", range: "11 - 15", active: false },
+  { title: "Fluency: Common Words (16-20)", range: "16 - 20", active: false },
+  { title: "Speed Building: Mixed Passages (21-30)", range: "21 - 30", active: false },
+  { title: "Pro: Home Row Refinement (31-40)", range: "31 - 40", active: false },
+  { title: "Pro: Vertical Reach Mastery (41-55)", range: "41 - 55", active: false },
+  { title: "Pro: N-Grams & Speed Boosters (56-65)", range: "56 - 65", active: false },
+  { title: "Pro: Numerical & Symbol Precision (66-75)", range: "66 - 75", active: false },
+  { title: "Elite: The 150+ WPM Path (76-85)", range: "76 - 85", active: false }
 ];
 
 export const XP_LEVELS = [
@@ -315,6 +319,566 @@ export const LESSONS: Lesson[] = [
     keys: [' '],
     content: "you have achieved complete mastery of the keyboard and finger movement",
     targetAccuracy: 90
+  },
+
+  // --- Pro: Home Row Refinement (31-40) ---
+  {
+    id: 31,
+    title: "Home Row Rhythms",
+    module: "Home Row Refinement",
+    description: "Complex home row patterns for rhythmic consistency.",
+    keys: ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'],
+    content: "asdf jkl; fdsa ;lkj asdf jkl; fdsa ;lkj asdf jkl; fdsa ;lkj",
+    difficulty: 3,
+    target_wpm: 40
+  },
+  {
+    id: 32,
+    title: "The 'G' and 'H' Reach",
+    module: "Home Row Refinement",
+    description: "Focusing on center key speed and accuracy.",
+    keys: ['g', 'h'],
+    content: "fghj ghgh hghg fghj ghgh hghg fghj ghgh hghg fghj ghgh hghg",
+    difficulty: 3,
+    target_wpm: 45
+  },
+  {
+    id: 33,
+    title: "Home Row Common Words",
+    module: "Home Row Refinement",
+    description: "Real words using only the home row.",
+    keys: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'],
+    content: "as had glass fall salad flask glad slag asks dash salad flask",
+    difficulty: 4,
+    target_wpm: 50
+  },
+  {
+    id: 34,
+    title: "Symmetry Practice",
+    module: "Home Row Refinement",
+    description: "Alternating hands for balanced muscle memory.",
+    keys: ['a', ';', 's', 'l', 'd', 'k', 'f', 'j'],
+    content: "a; sl dk fj a; sl dk fj a; sl dk fj a; sl dk fj a; sl dk fj",
+    difficulty: 4,
+    target_wpm: 55
+  },
+  {
+    id: 35,
+    title: "Left Hand Home Row Focus",
+    module: "Home Row Refinement",
+    description: "Drilling the left hand patterns.",
+    keys: ['a', 's', 'd', 'f', 'g'],
+    content: "asdfg gfdsa asdfg gfdsa asdfg gfdsa asdfg gfdsa asdfg gfdsa",
+    difficulty: 3,
+    target_wpm: 45
+  },
+  {
+    id: 36,
+    title: "Right Hand Home Row Focus",
+    module: "Home Row Refinement",
+    description: "Drilling the right hand patterns.",
+    keys: ['h', 'j', 'k', 'l', ';'],
+    content: "hjkl; ;lkjh hjkl; ;lkjh hjkl; ;lkjh hjkl; ;lkjh hjkl; ;lkjh",
+    difficulty: 3,
+    target_wpm: 45
+  },
+  {
+    id: 37,
+    title: "Home Row Endurance",
+    module: "Home Row Refinement",
+    description: "Longer home row practice to build stamina.",
+    keys: ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'],
+    content: "asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl; asdf jkl;",
+    difficulty: 4,
+    target_wpm: 60
+  },
+  {
+    id: 38,
+    title: "Home Row Speed Drill",
+    module: "Home Row Refinement",
+    description: "Rapid fire home row characters.",
+    keys: ['f', 'j', 'd', 'k'],
+    content: "fj dk fj dk fj dk fj dk fj dk fj dk fj dk fj dk fj dk fj dk",
+    difficulty: 5,
+    target_wpm: 70
+  },
+  {
+    id: 39,
+    title: "Home Row Accuracy Focus",
+    module: "Home Row Refinement",
+    description: "Zero error tolerance drill.",
+    keys: ['a', 's', 'l', ';'],
+    content: "asl; l;as asl; l;as asl; l;as asl; l;as asl; l;as asl; l;as",
+    difficulty: 5,
+    target_wpm: 50
+  },
+  {
+    id: 40,
+    title: "Home Row Review",
+    module: "Home Row Refinement",
+    description: "Mixed home row patterns for final refinement.",
+    keys: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'],
+    content: "asdf gh jkl; asdf gh jkl; asdf gh jkl; asdf gh jkl; asdf gh jkl;",
+    difficulty: 5,
+    target_wpm: 65
+  },
+
+  // --- Pro: Vertical Reach Mastery (41-55) ---
+  {
+    id: 41,
+    title: "Top Row Jump",
+    module: "Vertical Reach Mastery",
+    description: "Mastering the stretch to the top row.",
+    keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+    content: "qwert poiuy qwert poiuy qwert poiuy qwert poiuy qwert poiuy",
+    difficulty: 4,
+    target_wpm: 50
+  },
+  {
+    id: 42,
+    title: "Bottom Row Descent",
+    module: "Vertical Reach Mastery",
+    description: "Mastering the tuck to the bottom row.",
+    keys: ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.'],
+    content: "zxcv bmn,. zxcv bmn,. zxcv bmn,. zxcv bmn,. zxcv bmn,.",
+    difficulty: 4,
+    target_wpm: 50
+  },
+  {
+    id: 43,
+    title: "Diagonal Moves: Left Hand",
+    module: "Vertical Reach Mastery",
+    description: "Focusing on left hand vertical reaches.",
+    keys: ['f', 'r', 'd', 'e', 's', 'w', 'a', 'q'],
+    content: "fr de sw aq fr de sw aq fr de sw aq fr de sw aq fr de sw aq",
+    difficulty: 5,
+    target_wpm: 55
+  },
+  {
+    id: 44,
+    title: "Diagonal Moves: Right Hand",
+    module: "Vertical Reach Mastery",
+    description: "Focusing on right hand vertical reaches.",
+    keys: ['j', 'u', 'k', 'i', 'l', 'o', ';', 'p'],
+    content: "ju ki lo ;p ju ki lo ;p ju ki lo ;p ju ki lo ;p ju ki lo ;p",
+    difficulty: 5,
+    target_wpm: 55
+  },
+  {
+    id: 45,
+    title: "Shift Key Mastery",
+    module: "Vertical Reach Mastery",
+    description: "Practicing capitals with opposite Shift key.",
+    keys: ['Shift'],
+    content: "Alpha Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliet",
+    difficulty: 6,
+    target_wpm: 40
+  },
+  {
+    id: 46,
+    title: "Vertical Stretch: Index",
+    module: "Vertical Reach Mastery",
+    description: "Index finger vertical columns.",
+    keys: ['f', 'r', 'v', 'j', 'u', 'm'],
+    content: "frv jum frv jum frv jum frv jum frv jum frv jum frv jum",
+    difficulty: 5,
+    target_wpm: 60
+  },
+  {
+    id: 47,
+    title: "Vertical Stretch: Middle",
+    module: "Vertical Reach Mastery",
+    description: "Middle finger vertical columns.",
+    keys: ['d', 'e', 'c', 'k', 'i', ','],
+    content: "dec ki, dec ki, dec ki, dec ki, dec ki, dec ki, dec ki,",
+    difficulty: 5,
+    target_wpm: 60
+  },
+  {
+    id: 48,
+    title: "Vertical Stretch: Ring",
+    module: "Vertical Reach Mastery",
+    description: "Ring finger vertical columns.",
+    keys: ['s', 'w', 'x', 'l', 'o', '.'],
+    content: "swx lo. swx lo. swx lo. swx lo. swx lo. swx lo. swx lo.",
+    difficulty: 5,
+    target_wpm: 60
+  },
+  {
+    id: 49,
+    title: "Vertical Stretch: Pinky",
+    module: "Vertical Reach Mastery",
+    description: "Pinky finger vertical columns.",
+    keys: ['a', 'q', 'z', ';', 'p', '/'],
+    content: "aqz ;p/ aqz ;p/ aqz ;p/ aqz ;p/ aqz ;p/ aqz ;p/ aqz ;p/",
+    difficulty: 5,
+    target_wpm: 60
+  },
+  {
+    id: 50,
+    title: "Top Row Common Words",
+    module: "Vertical Reach Mastery",
+    description: "Words primarily uses top row keys.",
+    keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+    content: "power tower root quiet party you toy top tree water power quiet",
+    difficulty: 6,
+    target_wpm: 65
+  },
+  {
+    id: 51,
+    title: "Bottom Row Common Words",
+    module: "Vertical Reach Mastery",
+    description: "Words primarily uses bottom row keys.",
+    keys: ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+    content: "bank name back next down move zero cave zone maze bank next",
+    difficulty: 6,
+    target_wpm: 60
+  },
+  {
+    id: 52,
+    title: "Mixed Vertical Mastery",
+    module: "Vertical Reach Mastery",
+    description: "Words that require crossing multiple rows.",
+    keys: [],
+    content: "keyboard computer practice speed accuracy master vertical reach",
+    difficulty: 7,
+    target_wpm: 70
+  },
+  {
+    id: 53,
+    title: "Caps Lock & Shift Logic",
+    module: "Vertical Reach Mastery",
+    description: "Switching between all caps and mixed case.",
+    keys: [],
+    content: "HTML and CSS are WEAVE of WEB. JavaScript is the BRAIN.",
+    difficulty: 6,
+    target_wpm: 50
+  },
+  {
+    id: 54,
+    title: "Sentence Structure: Vertical",
+    module: "Vertical Reach Mastery",
+    description: "Full sentences with vertical complexity.",
+    keys: [],
+    content: "The quick brown fox jumps over the lazy dog in the bright sun.",
+    difficulty: 7,
+    target_wpm: 75
+  },
+  {
+    id: 55,
+    title: "Vertical Speed Challenge",
+    module: "Vertical Reach Mastery",
+    description: "High speed vertical movements.",
+    keys: [],
+    content: "jump move reach stretch climb crawl fly high low up down left right",
+    difficulty: 8,
+    target_wpm: 90
+  },
+
+  // --- Pro: N-Grams & Speed Boosters (56-65) ---
+  {
+    id: 56,
+    title: "The 'TH' and 'HE' Connection",
+    module: "N-Grams & Speed Boosters",
+    description: "Mastering the most common English digraphs.",
+    keys: ['t', 'h', 'e'],
+    content: "the then them that than they hearth health theme theory",
+    difficulty: 5,
+    target_wpm: 80
+  },
+  {
+    id: 57,
+    title: "The 'ING' and 'ION' Suffixes",
+    module: "N-Grams & Speed Boosters",
+    description: "Common ending patterns for rapid typing.",
+    keys: ['i', 'n', 'g', 'o'],
+    content: "running jumping action nation motion portion fiction function",
+    difficulty: 6,
+    target_wpm: 85
+  },
+  {
+    id: 58,
+    title: "Common Trigrams",
+    module: "N-Grams & Speed Boosters",
+    description: "Three-letter combos that appear everywhere.",
+    keys: [],
+    content: "the and for was his are with they have this from had but not",
+    difficulty: 6,
+    target_wpm: 90
+  },
+  {
+    id: 59,
+    title: "Double Letter Drills",
+    module: "N-Grams & Speed Boosters",
+    description: "Fast taps for recurring characters.",
+    keys: [],
+    content: "speed bottle glass balloon common summer butter cabbage apple",
+    difficulty: 6,
+    target_wpm: 85
+  },
+  {
+    id: 60,
+    title: "Prefix Power",
+    module: "N-Grams & Speed Boosters",
+    description: "Common starting patterns.",
+    keys: [],
+    content: "predict connect dismiss prepare consist display preview control",
+    difficulty: 7,
+    target_wpm: 90
+  },
+  {
+    id: 61,
+    title: "Common Bigram Flow",
+    module: "N-Grams & Speed Boosters",
+    description: "ER, RE, ON, AN patterns.",
+    keys: [],
+    content: "ever over under baker paper after water father mother brother",
+    difficulty: 6,
+    target_wpm: 95
+  },
+  {
+    id: 62,
+    title: "Word Endings: ELY",
+    module: "N-Grams & Speed Boosters",
+    description: "ELY, MENT, NESS patterns.",
+    keys: [],
+    content: "nicely safely movement payment happiness kindness greatness",
+    difficulty: 7,
+    target_wpm: 90
+  },
+  {
+    id: 63,
+    title: "Compound Words",
+    module: "N-Grams & Speed Boosters",
+    description: "Longer words made of shorter ones.",
+    keys: [],
+    content: "notebook keyboard playground waterfall sunglasses butterfly",
+    difficulty: 7,
+    target_wpm: 80
+  },
+  {
+    id: 64,
+    title: "High-Frequency Bi-grams",
+    module: "N-Grams & Speed Boosters",
+    description: "Most common 2-letter pairs.",
+    keys: [],
+    content: "th he in er an re on at en ed nd ti or as it is et to of and",
+    difficulty: 7,
+    target_wpm: 100
+  },
+  {
+    id: 65,
+    title: "N-Gram Medley",
+    module: "N-Grams & Speed Boosters",
+    description: "Mixed patterns for maximal speed boost.",
+    keys: [],
+    content: "the quick brown fox jumps over the lazy dog and runs away fast",
+    difficulty: 8,
+    target_wpm: 110
+  },
+
+  // --- Pro: Numerical & Symbol Precision (66-75) ---
+  {
+    id: 66,
+    title: "Number Row Basics: Left",
+    module: "Numerical & Symbol Precision",
+    description: "Numbers 1 to 5.",
+    keys: ['1', '2', '3', '4', '5'],
+    content: "1 2 3 4 5 12 23 34 45 54 43 32 21 135 242 531 112 334 551",
+    difficulty: 6,
+    target_wpm: 40
+  },
+  {
+    id: 67,
+    title: "Number Row Basics: Right",
+    module: "Numerical & Symbol Precision",
+    description: "Numbers 6 to 0.",
+    keys: ['6', '7', '8', '9', '0'],
+    content: "6 7 8 9 0 67 78 89 90 09 98 87 76 680 791 086 667 889 006",
+    difficulty: 6,
+    target_wpm: 40
+  },
+  {
+    id: 68,
+    title: "Symbols & Socials",
+    module: "Numerical & Symbol Precision",
+    description: "Common social media and tech symbols.",
+    keys: ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+    content: "! @ # $ % ^ & * ( ) !@ #$ %^ &* () @user #typing $price %sale",
+    difficulty: 7,
+    target_wpm: 35
+  },
+  {
+    id: 69,
+    title: "Programming Syntax: Brackets",
+    module: "Numerical & Symbol Precision",
+    description: "Mastering opening and closing brackets.",
+    keys: ['{', '}', '[', ']', '(', ')', '<', '>'],
+    content: "{ } [ ] ( ) < > {body} [index] (args) <html> {data} [list] (call)",
+    difficulty: 8,
+    target_wpm: 40
+  },
+  {
+    id: 70,
+    title: "Programming Syntax: Punctuation",
+    module: "Numerical & Symbol Precision",
+    description: "Slashes, bars, semicolons.",
+    keys: ['/', '\\', '|', ';', ':', '"', "'"],
+    content: "/ \\ | ; : \" ' path/to/file | grep ; end: \"quoted\" 'single'",
+    difficulty: 8,
+    target_wpm: 40
+  },
+  {
+    id: 71,
+    title: "Math Operations",
+    module: "Numerical & Symbol Precision",
+    description: "Operators and math symbols.",
+    keys: ['+', '-', '*', '/', '=', '%'],
+    content: "+ - * / = % 1+1=2 10*5=50 100/2=50 5% bias x=y+z a-b*c/d",
+    difficulty: 7,
+    target_wpm: 45
+  },
+  {
+    id: 72,
+    title: "CamelCase & snake_case",
+    module: "Numerical & Symbol Precision",
+    description: "Standard programming naming conventions.",
+    keys: [],
+    content: "myVariableName user_profile_data API_RESPONSE getStatus update_db",
+    difficulty: 8,
+    target_wpm: 55
+  },
+  {
+    id: 73,
+    title: "Data Entry Speed",
+    module: "Numerical & Symbol Precision",
+    description: "Mixing numbers and decimals.",
+    keys: [],
+    content: "10.50 99.99 1024.12 404.0 3.14159 2.718 1.414 100.001 0.05",
+    difficulty: 7,
+    target_wpm: 50
+  },
+  {
+    id: 74,
+    title: "Shell Commands Mastery",
+    module: "Numerical & Symbol Precision",
+    description: "Typing terminal commands accurately.",
+    keys: [],
+    content: "ls -la; cd /var/www; rm -rf temp; mkdir -p data/logs; sudo su",
+    difficulty: 8,
+    target_wpm: 50
+  },
+  {
+    id: 75,
+    title: "Full Symbol Integration",
+    module: "Numerical & Symbol Precision",
+    description: "Mixed text, numbers, and symbols.",
+    keys: [],
+    content: "Price: $19.99! (Limited 50% Off) @Store #Sale - Order now!",
+    difficulty: 8,
+    target_wpm: 45
+  },
+
+  // --- Elite: The 150+ WPM Path (76-85) ---
+  {
+    id: 76,
+    title: "Top 100 English Words (Part 1)",
+    module: "The 150+ WPM Path",
+    description: "High-frequency endurance training.",
+    keys: [],
+    content: "the of and a to in is you that it he was for on are as with his",
+    difficulty: 7,
+    target_wpm: 100
+  },
+  {
+    id: 77,
+    title: "Top 100 English Words (Part 2)",
+    module: "The 150+ WPM Path",
+    description: "Building more high-frequency muscle memory.",
+    keys: [],
+    content: "they I at be this have from or one had by word but not what all",
+    difficulty: 7,
+    target_wpm: 110
+  },
+  {
+    id: 78,
+    title: "Sentence Flow mastery",
+    module: "The 150+ WPM Path",
+    description: "Complexity with punctuation and flow.",
+    keys: [],
+    content: "He said, \"Wait!\" but it was too late. The boat, sadly, had left.",
+    difficulty: 8,
+    target_wpm: 90
+  },
+  {
+    id: 79,
+    title: "The 'Big Reach' Challenge",
+    module: "The 150+ WPM Path",
+    description: "Complex multisyllabic words with big reaches.",
+    keys: [],
+    content: "unbelievable extraordinary communication responsibility infrastructure",
+    difficulty: 9,
+    target_wpm: 80
+  },
+  {
+    id: 80,
+    title: "Multisyllabic Endurance",
+    module: "The 150+ WPM Path",
+    description: "Sustained long-word patterns.",
+    keys: [],
+    content: "establishment international organization professional application",
+    difficulty: 9,
+    target_wpm: 85
+  },
+  {
+    id: 81,
+    title: "Philosophical Prose",
+    module: "The 150+ WPM Path",
+    description: "Complex thoughts with high vocabulary.",
+    keys: [],
+    content: "To be, or not to be, that is the question. All that glitters is not gold.",
+    difficulty: 8,
+    target_wpm: 100
+  },
+  {
+    id: 82,
+    title: "Technical Documentation",
+    module: "The 150+ WPM Path",
+    description: "Prose mixed with technical context.",
+    keys: [],
+    content: "The API endpoint returns a 200 OK status with a JSON payload of {}.",
+    difficulty: 9,
+    target_wpm: 80
+  },
+  {
+    id: 83,
+    title: "120 WPM Sprint",
+    module: "The 150+ WPM Path",
+    description: "Pushing the limits of high speed typing.",
+    keys: [],
+    content: "speed and accuracy are the keys to becoming a master typist today",
+    difficulty: 10,
+    target_wpm: 120
+  },
+  {
+    id: 84,
+    title: "150 WPM Goal Lesson",
+    module: "The 150+ WPM Path",
+    description: "The ultimate speed milestone.",
+    keys: [],
+    content: "the ultimate goal of a pro typist is to achieve one hundred fifty wpm",
+    difficulty: 10,
+    target_wpm: 150
+  },
+  {
+    id: 85,
+    title: "The Grand Finale",
+    module: "The 150+ WPM Path",
+    description: "A long, complex paragraph to test all your skills.",
+    keys: [],
+    content: "Once upon a time in a digital world far away, there was a programmer who typed at the speed of light. Every keystroke was perfect, every line of code was elegant, and the application was a masterpiece of performance and beauty. You are that programmer.",
+    difficulty: 10,
+    target_wpm: 130
   }
 ];
 
@@ -447,3 +1011,22 @@ export const BADGES: Badge[] = [
     condition: (h, p) => Object.values(p).filter(l => l.unlocked).length >= LESSONS.length
   }
 ];
+
+export const generateInfinitePractice = (moduleName?: string): Lesson => {
+  const pool = moduleName
+    ? LESSONS.filter(l => l.module === moduleName)
+    : LESSONS.filter(l => l.id > 20);
+
+  const baseLesson = pool[Math.floor(Math.random() * pool.length)] || LESSONS[0];
+  const words = baseLesson.content.split(' ');
+  const scrambled = [...words].sort(() => Math.random() - 0.5).join(' ');
+
+  return {
+    ...baseLesson,
+    id: 999,
+    title: `Infinite: ${moduleName || 'Mixed Mastery'}`,
+    description: "A dynamically generated practice set to push your limits.",
+    content: scrambled,
+    isAiGenerated: true
+  };
+};
