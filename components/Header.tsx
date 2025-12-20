@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   PanelLeft, ChevronLeft, ChevronRight, User, Settings,
   BarChart2, Award, History, Moon, Sun, LogIn, LogOut,
-  Type, Code, PlayCircle, BarChart3
+  Type, Code, PlayCircle, BarChart3, Apple, Monitor
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
@@ -20,7 +20,9 @@ const Header: React.FC = () => {
     lessonProgress,
     isCodeMode,
     setIsCodeMode,
-    setActiveModal
+    setActiveModal,
+    settings,
+    updateUserSetting
   } = useApp();
 
   const activeLesson = LESSONS.find(l => l.id === activeLessonId) || LESSONS[0];
@@ -72,6 +74,26 @@ const Header: React.FC = () => {
           className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-semibold transition-all duration-500 ${isCodeMode ? 'bg-white/15 text-white shadow-sm' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
         >
           <span>Code</span>
+        </button>
+
+        <div className="w-px h-6 bg-white/5 mx-1" />
+
+        {/* Windows / Mac OS Layout Switcher */}
+        <button
+          onClick={() => updateUserSetting('osLayout', 'win')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-500 ${settings.osLayout === 'win' ? 'bg-white/15 text-white shadow-sm' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
+          title="Windows Layout"
+        >
+          <Monitor size={14} className={settings.osLayout === 'win' ? 'text-sky-400' : ''} />
+          <span className="hidden sm:inline">Win</span>
+        </button>
+        <button
+          onClick={() => updateUserSetting('osLayout', 'mac')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-500 ${settings.osLayout === 'mac' ? 'bg-white/15 text-white shadow-sm' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
+          title="Mac Layout"
+        >
+          <Apple size={14} className={settings.osLayout === 'mac' ? 'text-sky-400' : ''} />
+          <span className="hidden sm:inline">Mac</span>
         </button>
 
         <div className="w-px h-6 bg-white/5 mx-1" />

@@ -7,7 +7,7 @@ import LessonVideoPlayer from '../components/LessonVideoPlayer';
 import { useApp } from '../contexts/AppContext';
 import { HERO_CURRICULUM } from '../constants/curriculum';
 import { CODE_SNIPPETS } from '../constants/codeSnippets';
-import { RotateCcw, ChevronRight, X } from 'lucide-react';
+import { RotateCcw, ChevronRight, Monitor } from 'lucide-react';
 import { KeyStats, Lesson, Stats } from '../types';
 import InstructionalOverlay from '../components/curriculum/InstructionalOverlay';
 import { AnimatePresence } from 'framer-motion';
@@ -152,6 +152,15 @@ export default function TypingPage(): React.ReactNode {
 
     return (
         <div className="flex-1 flex flex-col h-full w-full relative overflow-hidden">
+            {/* Mobile/Tablet Warning Overlay */}
+            <div className="md:hidden fixed inset-0 z-[500] bg-slate-900/90 backdrop-blur-3xl flex flex-col items-center justify-center p-8 text-center">
+                <div className="w-20 h-20 rounded-3xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400 mb-6 animate-pulse">
+                    <Monitor size={40} />
+                </div>
+                <h3 className="text-2xl font-black text-white mb-2">Physical Keyboard Required</h3>
+                <p className="text-white/40 max-w-xs mx-auto">TypingPro is designed for desktop excellence. Please use a physical keyboard for the best learning experience.</p>
+            </div>
+
             <AnimatePresence>
                 {showOverlay && !modalStats && (
                     <InstructionalOverlay
@@ -161,7 +170,7 @@ export default function TypingPage(): React.ReactNode {
                 )}
             </AnimatePresence>
 
-            <div className="flex-1 flex flex-col items-center focus-container overflow-y-auto pt-16 scrollbar-hide">
+            <div className="flex-1 flex flex-col items-center justify-center focus-container overflow-y-auto pt-8 pb-8 scrollbar-hide min-h-0">
                 <StatsPills />
 
                 <div className="text-center mb-8 animate-ios-slide" style={{ animationDelay: '100ms' }}>
@@ -215,6 +224,7 @@ export default function TypingPage(): React.ReactNode {
                             layout={settings.keyboardLayout}
                             heatmapStats={liveKeyStats}
                             expectedFinger={expectedFinger}
+                            osLayout={settings.osLayout}
                         />
                     </div>
                 </div>

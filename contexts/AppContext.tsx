@@ -68,6 +68,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [settings, setSettings] = useState<UserSettings>({
         theme: 'system',
         keyboardLayout: 'qwerty',
+        osLayout: (navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0) ? 'mac' : 'win',
         soundEnabled: true,
         volume: 0.5,
         showKeyboard: true,

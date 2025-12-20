@@ -94,6 +94,7 @@ export interface LessonProgress {
 // --- New Types for Advanced Features ---
 
 export type KeyboardLayoutType = 'qwerty' | 'dvorak' | 'colemak';
+export type OSLayoutType = 'win' | 'mac';
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type FontSize = 'small' | 'medium' | 'large' | 'xl';
 export type CursorStyle = 'block' | 'line' | 'underline' | 'box';
@@ -102,6 +103,7 @@ export type TrainingMode = 'speed' | 'accuracy';
 export interface UserSettings {
   theme: ThemeMode;
   keyboardLayout: KeyboardLayoutType;
+  osLayout: OSLayoutType;
   soundEnabled: boolean;
   volume: number; // 0.0 to 1.0
   showKeyboard: boolean;

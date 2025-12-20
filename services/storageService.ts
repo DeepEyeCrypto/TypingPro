@@ -214,6 +214,7 @@ export const saveDailyGoals = (profileId: string, goals: DailyGoal[]) => {
 const DEFAULT_SETTINGS: UserSettings = {
     theme: 'system',
     keyboardLayout: 'qwerty',
+    osLayout: (typeof navigator !== 'undefined' && (navigator.platform.toUpperCase().indexOf('MAC') >= 0 || navigator.userAgent.toUpperCase().indexOf('MAC') >= 0)) ? 'mac' : 'win',
     soundEnabled: true,
     volume: 0.5,
     showKeyboard: true,

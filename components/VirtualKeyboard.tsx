@@ -8,6 +8,7 @@ interface VirtualKeyboardProps {
   layout: KeyboardLayoutType;
   heatmapStats?: Record<string, KeyStats>;
   expectedFinger?: string | null;
+  osLayout?: 'win' | 'mac';
 }
 
 const FINGER_COLORS: Record<string, string> = {
@@ -27,9 +28,24 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   pressedKeys,
   layout,
   heatmapStats,
-  expectedFinger
+  expectedFinger,
+  osLayout = 'win'
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // OS Specific Label Mapping
+  const getOSLabel = (code: string, defaultLabel: string) => {
+    if (osLayout === 'mac') {
+      if (code === 'ControlLeft' || code === 'ControlRight') return 'control ⌃';
+      if (code === 'AltLeft' || code === 'AltRight') return 'option ⌥';
+      if (code === 'MetaLeft' || code === 'MetaRight') return 'command ⌘';
+    } else {
+      if (code === 'ControlLeft' || code === 'ControlRight') return 'Ctrl';
+      if (code === 'AltLeft' || code === 'AltRight') return 'Alt';
+      if (code === 'MetaLeft' || code === 'MetaRight') return 'Win';
+    }
+    return defaultLabel;
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -37,7 +53,6 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Detect theme (simple check for dark mode on the body)
     const isDark = document.documentElement.classList.contains('dark');
 
     const virtualWidth = 3200;
@@ -77,11 +92,12 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
           const isPressed = pressedKeys.has(mapping.default) || pressedKeys.has(mapping.shift) || (keyObj.label && pressedKeys.has(keyObj.label)) || (keyObj.code === 'Space' && pressedKeys.has(' '));
           const isFingerTarget = !!(expectedFinger && (keyObj.finger === expectedFinger || (keyObj.code === 'Space' && expectedFinger === 'thumb')));
 
-          // Draw Key background
-          ctx.beginPath();
-          ctx.roundRect(rectX, rectY, rectW, rectH, 18);
+          // Mac has more rounded keys
+          const borderRadius = osLayout === 'mac' ? 24 : 16;
 
-          // iOS 18 Style: Soft translucent keys
+          ctx.beginPath();
+          ctx.roundRect(rectX, rectY, rectW, rectH, borderRadius);
+
           let fillStyle = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
           let strokeStyle = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
           let textColor = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)';
@@ -90,15 +106,23 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
             fillStyle = FINGER_COLORS[keyObj.finger || ''] || fillStyle;
             strokeStyle = 'transparent';
           } else if (isActive) {
-            fillStyle = isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)';
-            strokeStyle = isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(14, 165, 233, 0.3)';
-            textColor = isDark ? '#38bdf8' : '#0284c7';
+            // Layout specific glow
+            const accentColor = osLayout === 'mac' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(56, 189, 248, 0.15)';
+            const accentStroke = osLayout === 'mac' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(56, 189, 248, 0.4)';
+
+            fillStyle = isDark ? accentColor : 'rgba(14, 165, 233, 0.1)';
+            strokeStyle = isDark ? accentStroke : 'rgba(14, 165, 233, 0.3)';
+            textColor = isDark ? (osLayout === 'mac' ? '#fff' : '#38bdf8') : '#0284c7';
+
+            // Add soft glow
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = accentStroke;
           }
 
           if (isPressed) {
-            fillStyle = isActive ? '#0ea5e9' : (isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)');
+            fillStyle = isActive ? (osLayout === 'mac' ? 'rgba(255,255,255,0.4)' : '#0ea5e9') : (isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)');
             textColor = '#fff';
-            ctx.translate(0, 4); // Subtle press
+            ctx.translate(0, 4);
           }
 
           ctx.fillStyle = fillStyle;
@@ -109,13 +133,17 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
             ctx.stroke();
           }
 
-          // Draw Labels - System Font Stack
+          // Reset shadow
+          ctx.shadowBlur = 0;
+
+          // Draw Labels
           ctx.fillStyle = textColor;
-          ctx.font = '700 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+          const fontSize = keyObj.code.length > 5 ? 36 : 48; // Smaller font for long labels
+          ctx.font = `700 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          const label = keyObj.label || mapping.default.toUpperCase();
+          const label = getOSLabel(keyObj.code, keyObj.label || mapping.default.toUpperCase());
           ctx.fillText(label, rectX + rectW / 2, rectY + rectH / 2);
 
           if (isPressed) ctx.translate(0, -4);
@@ -130,11 +158,11 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     resize();
 
     return () => window.removeEventListener('resize', resize);
-  }, [activeKey, pressedKeys, layout, heatmapStats, expectedFinger]);
+  }, [activeKey, pressedKeys, layout, heatmapStats, expectedFinger, osLayout]);
 
   return (
-    <div className="w-full flex justify-center py-6 contain-content">
-      <div className="w-full max-w-[1100px] aspect-[3.2/1] bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-[40px] p-6 shadow-xl overflow-hidden">
+    <div className="w-full flex justify-center py-6 contain-content select-none">
+      <div className="w-full lg:w-[95%] xl:w-[1100px] aspect-[3.2/1] bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-[40px] p-4 md:p-6 shadow-xl overflow-hidden transition-all duration-300">
         <canvas ref={canvasRef} className="w-full h-full block" />
       </div>
     </div>
