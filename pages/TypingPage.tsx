@@ -193,12 +193,10 @@ export default function TypingPage(): React.ReactNode {
                             onRestart={handleRetry}
                             onStatsUpdate={(s) => {
                                 setLiveStats(s);
-                                // Zen Mode: Collapse sidebar if typing has started and WPM > 0
                                 if (s.wpm > 0 && setIsSidebarOpen) {
-                                    setIsSidebarOpen(true); // Note: setIsSidebarOpen in context is actually setIsSidebarCollapsed
+                                    setIsSidebarOpen(true);
                                 }
                             }}
-                            onKeyStatsUpdate={setLiveKeyStats}
                             onActiveKeyChange={setActiveKey}
                             onFingerChange={setExpectedFinger}
                             onComboUpdate={setCombo}

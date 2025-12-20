@@ -9,6 +9,8 @@ import Sidebar from './components/Sidebar';
 import TypingPage from './pages/TypingPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
+import { PerformanceOverlay } from './components/PerformanceOverlay';
+
 /**
  * TypingPro Core Entry
  * Rewritten for Clean Slate - v0.0.68+
@@ -28,6 +30,7 @@ export default function App(): React.ReactNode {
                                     <Route path="/" element={<TypingPage />} />
                                     <Route path="*" element={<Navigate to="/" replace />} />
                                 </Routes>
+                                <PerformanceOverlay />
                             </AppShell>
                         </ThemeProvider>
                     </SoundProvider>

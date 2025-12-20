@@ -135,18 +135,16 @@
     font-weight: 700;
   }
 
-  /* Liquid Glass v2 Variables */
+  /* Liquid Glass v3 - Ultra High Performance */
   :root {
-    --glass-blur: 12px;
-    --glass-opacity: 0.4;
-    --glass-border-opacity: 0.2;
+    --glass-opacity: 0.15;
+    --glass-border-opacity: 0.1;
   }
 
-  /* Performance Mode Overrides */
+  /* Performance Mode Overrides - Even more aggressive */
   body.perf-mode {
-    --glass-blur: 0px;
-    --glass-opacity: 0.8;
-    --glass-border-opacity: 0.1;
+    --glass-opacity: 0.1;
+    --glass-border-opacity: 0.05;
   }
 
   /* Animated Background Layer - Lightweight CSS version */

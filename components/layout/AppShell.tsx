@@ -64,7 +64,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                         {/* Mobile Side Drawer */}
                         {isMobileMenuOpen && (
                             <div className="fixed inset-0 z-[100] lg:hidden">
-                                <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsMobileMenuOpen(false)} />
+                                <div className="absolute inset-0 bg-black/95" onClick={() => setIsMobileMenuOpen(false)} />
                                 <aside className="absolute left-0 top-0 bottom-0 w-[280px] bg-[#050508] border-r border-white/10 shadow-3xl animate-in slide-in-from-left duration-500">
                                     <div className="flex justify-between items-center p-6 border-b border-white/5">
                                         <span className="font-black text-xl tracking-tighter">TYPINGPRO</span>

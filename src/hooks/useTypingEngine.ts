@@ -1,90 +1,107 @@
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { PerformanceMonitor } from '../utils/performanceMonitor';
 
 interface TypingEngineState {
-    input: string;
     cursorIndex: number;
     errors: number[];
     startTime: number | null;
-    shake: boolean;
     combo: number;
 }
 
 export const useTypingEngine = (content: string, stopOnError: boolean) => {
-    const [state, setState] = useState<TypingEngineState>({
-        input: '',
-        cursorIndex: 0,
-        errors: [],
-        startTime: null,
-        shake: false,
-        combo: 0
-    });
-
+    // High-frequency data stored in refs to bypass React render cycle
+    const cursorIndexRef = useRef(0);
+    const errorsRef = useRef<number[]>([]);
+    const comboRef = useRef(0);
+    const startTimeRef = useRef<number | null>(null);
     const keypressTimestamps = useRef<number[]>([]);
-    const lastState = useRef(state);
-    lastState.current = state;
 
-    const handleInput = useCallback((key: string) => {
+    // Minimal state for non-critical UI updates (e.g. lesson complete, shake effect)
+    const [shake, setShake] = useState(false);
+    const [isComplete, setIsComplete] = useState(false);
+
+    const handleInput = useCallback((key: string, onUpdate: (data: {
+        index: number;
+        isCorrect: boolean;
+        cursorIndex: number;
+        combo: number;
+    }) => void) => {
         PerformanceMonitor.startMeasure('typing-engine-input');
 
         const now = Date.now();
-        const { cursorIndex, startTime } = lastState.current;
-
-        if (cursorIndex >= content.length) {
+        if (cursorIndexRef.current >= content.length) {
             PerformanceMonitor.endMeasure('typing-engine-input');
-            return;
+            return false;
         }
 
-        const targetChar = content[cursorIndex];
+        const targetChar = content[cursorIndexRef.current];
         const isCorrect = key === targetChar;
-        const newStartTime = startTime || now;
+
+        if (!startTimeRef.current) {
+            startTimeRef.current = now;
+        }
+
+        const currentIndex = cursorIndexRef.current;
 
         if (isCorrect) {
             keypressTimestamps.current.push(now);
-            setState(prev => ({
-                ...prev,
-                input: prev.input + key,
-                cursorIndex: prev.cursorIndex + 1,
-                startTime: newStartTime,
-                combo: prev.combo + 1,
-                shake: false
-            }));
+            cursorIndexRef.current += 1;
+            comboRef.current += 1;
+            setShake(false);
         } else {
-            setState(prev => ({
-                ...prev,
-                combo: 0,
-                shake: true,
-                startTime: newStartTime,
-                errors: prev.errors.includes(prev.cursorIndex) ? prev.errors : [...prev.errors, prev.cursorIndex],
-                input: stopOnError ? prev.input : prev.input + key,
-                cursorIndex: stopOnError ? prev.cursorIndex : prev.cursorIndex + 1
-            }));
-
-            // Auto-reset shake with a faster timeout or deferred
-            setTimeout(() => setState(prev => ({ ...prev, shake: false })), 150);
+            comboRef.current = 0;
+            if (!errorsRef.current.includes(currentIndex)) {
+                errorsRef.current.push(currentIndex);
+            }
+            if (!stopOnError) {
+                cursorIndexRef.current += 1;
+            }
+            setShake(true);
+            // Non-critical: auto-reset shake
+            setTimeout(() => setShake(false), 150);
         }
+
+        // Check completion
+        if (cursorIndexRef.current >= content.length) {
+            setIsComplete(true);
+        }
+
+        // Immediate callback for Direct DOM manipulation
+        onUpdate({
+            index: currentIndex,
+            isCorrect,
+            cursorIndex: cursorIndexRef.current,
+            combo: comboRef.current
+        });
 
         PerformanceMonitor.endMeasure('typing-engine-input');
         return isCorrect;
     }, [content, stopOnError]);
 
     const reset = useCallback(() => {
-        setState({
-            input: '',
-            cursorIndex: 0,
-            errors: [],
-            startTime: null,
-            shake: false,
-            combo: 0
-        });
+        cursorIndexRef.current = 0;
+        errorsRef.current = [];
+        comboRef.current = 0;
+        startTimeRef.current = null;
         keypressTimestamps.current = [];
+        setShake(false);
+        setIsComplete(false);
     }, []);
 
     return {
-        state,
+        // High-frequency values (read-only for component)
+        engineRefs: {
+            cursorIndex: cursorIndexRef,
+            errors: errorsRef,
+            combo: comboRef,
+            startTime: startTimeRef,
+            keypressTimestamps
+        },
+        // Minimal React state
+        shake,
+        isComplete,
         handleInput,
-        reset,
-        keypressTimestamps: keypressTimestamps.current
+        reset
     };
 };

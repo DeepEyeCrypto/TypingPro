@@ -33,8 +33,8 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
     );
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-xl rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative border border-white/20 dark:border-gray-700 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-[#1F2937] rounded-2xl shadow-2xl max-w-2xl w-full p-8 relative border border-white/20 dark:border-gray-700 flex flex-col max-h-[90vh]">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Settings</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">

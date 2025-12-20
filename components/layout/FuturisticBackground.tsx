@@ -53,9 +53,7 @@ const FuturisticBackground: React.FC = () => {
                 context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 context.fill();
 
-                // Add a subtle glow
-                context.shadowBlur = 10;
-                context.shadowColor = this.color;
+                // Removed shadowBlur for performance
             }
         }
 
@@ -111,7 +109,6 @@ const FuturisticBackground: React.FC = () => {
         <canvas
             ref={canvasRef}
             className="fixed inset-0 pointer-events-none z-[-1] bg-[#030305]"
-            style={{ filter: 'blur(1px)' }}
         />
     );
 };

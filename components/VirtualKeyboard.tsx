@@ -1,6 +1,6 @@
-import React, { useMemo, memo } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
-import { KeyboardLayoutType, VirtualKey, KeyStats } from '../types';
+import { KeyboardLayoutType, KeyStats } from '../types';
 
 interface VirtualKeyboardProps {
   activeKey: string | null;
@@ -22,74 +22,6 @@ const FINGER_COLORS: Record<string, string> = {
   'thumb': 'rgba(107, 114, 128, 0.4)'
 };
 
-/**
- * Optimized Key Component
- * Minimal re-renders through strict prop checking.
- */
-const Key = memo(({
-  keyObj,
-  layout,
-  isActive,
-  isPressed,
-  isFingerTarget,
-  heatIntensity
-}: {
-  keyObj: VirtualKey,
-  layout: KeyboardLayoutType,
-  isActive: boolean,
-  isPressed: boolean,
-  isFingerTarget: boolean,
-  heatIntensity: number
-}) => {
-  const mapping = LAYOUTS[layout][keyObj.code] || { default: '', shift: '' };
-  const label = keyObj.label || mapping.default.toUpperCase();
-  const subLabel = keyObj.label ? '' : mapping.shift;
-
-  // Render logic optimized for speed
-  let baseClass = "rounded-xl flex flex-col items-center justify-center text-[clamp(0.6rem,1.2vw,1rem)] font-black select-none border h-full relative overflow-hidden will-change-transform contain-content transition-all duration-75";
-  let colorClass = "bg-white/5 text-white/50 border-white/5 shadow-sm";
-  let style: React.CSSProperties = { gridColumn: `span ${Math.round((keyObj.width || 1) * 2)}` };
-
-  if (isFingerTarget && !isPressed) {
-    const color = FINGER_COLORS[keyObj.finger || ''] || 'rgba(255,255,255,0.1)';
-    style.backgroundColor = color;
-    style.borderColor = color.replace('0.4', '0.6');
-  } else if (heatIntensity > 0 && !isActive && !isPressed) {
-    style.backgroundColor = `rgba(239, 68, 68, ${heatIntensity * 0.4})`;
-    style.borderColor = `rgba(239, 68, 68, ${heatIntensity * 0.6})`;
-    colorClass = "text-white";
-  }
-
-  if (isActive) {
-    colorClass = "bg-brand/20 text-brand border-brand/40 ring-1 ring-brand z-10 shadow-cyan-glow text-white";
-  }
-
-  if (isPressed) {
-    baseClass += " transform scale-95 translate-y-0.5";
-    colorClass = isActive ? "bg-green-500 text-white border-green-400" : "bg-brand text-white border-brand";
-  }
-
-  return (
-    <div className={`${baseClass} ${colorClass}`} style={style}>
-      <div className="flex flex-col items-center leading-none pointer-events-none z-10">
-        {(!keyObj.label && subLabel && subLabel !== label) && (
-          <span className="text-[clamp(6px,0.8vw,10px)] opacity-20 mb-0.5 font-bold uppercase">{subLabel}</span>
-        )}
-        <span className="truncate font-black tracking-tighter opacity-70 uppercase">{label}</span>
-      </div>
-
-      {keyObj.finger && (
-        <div
-          className={`absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${isFingerTarget ? 'scale-150 animate-pulse' : 'opacity-40'}`}
-          style={{ backgroundColor: FINGER_COLORS[keyObj.finger]?.replace('0.4', '1') }}
-        />
-      )}
-
-      {keyObj.homing && <div className="absolute bottom-[18%] w-[30%] h-[3px] bg-white/20 rounded-full" />}
-    </div>
-  );
-});
-
 const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   activeKey,
   pressedKeys,
@@ -97,40 +29,109 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   heatmapStats,
   expectedFinger
 }) => {
-  const allKeys = useMemo(() => KEYBOARD_ROWS.flat(), []);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  return (
-    <div className="w-full flex justify-center py-4 md:py-6">
-      <div
-        className="w-full max-w-[1100px] grid grid-cols-[repeat(30,1fr)] grid-rows-4 gap-1.5 p-6 glass-panel rounded-3xl"
-        style={{ aspectRatio: '3.2 / 1' }}
-      >
-        {allKeys.map((keyObj, idx) => {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Use a fixed virtual coordinate system for the keyboard (ratio 3.2 / 1)
+    const virtualWidth = 3200;
+    const virtualHeight = 1000;
+    const gap = 15;
+    const padding = 60;
+
+    // Auto-resize canvas to match its display size
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = parent.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = (rect.width / 3.2) * dpr;
+      ctx.scale(canvas.width / virtualWidth, canvas.height / virtualHeight);
+      draw();
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, virtualWidth, virtualHeight);
+
+      let currentY = padding;
+      const rowHeight = (virtualHeight - (padding * 2) - (gap * 3)) / 4;
+      const colWidth = (virtualWidth - (padding * 2)) / 30;
+
+      KEYBOARD_ROWS.forEach((row, rowIndex) => {
+        let currentX = padding;
+        row.forEach((keyObj) => {
+          const width = (keyObj.width || 1) * colWidth * 2;
+          const rectX = currentX;
+          const rectY = currentY;
+          const rectW = width - gap;
+          const rectH = rowHeight - gap;
+
           const mapping = LAYOUTS[layout][keyObj.code] || { default: '', shift: '' };
-
-          // Pre-calculate target/pressed/heat outside specific key component for shallow prop checks
           const isActive = !!(activeKey && (mapping.default === activeKey || mapping.shift === activeKey || (keyObj.code === 'Space' && activeKey === ' ')));
           const isPressed = pressedKeys.has(mapping.default) || pressedKeys.has(mapping.shift) || (keyObj.label && pressedKeys.has(keyObj.label)) || (keyObj.code === 'Space' && pressedKeys.has(' '));
           const isFingerTarget = !!(expectedFinger && (keyObj.finger === expectedFinger || (keyObj.code === 'Space' && expectedFinger === 'thumb')));
 
-          let heatIntensity = 0;
-          if (heatmapStats) {
-            const stat = heatmapStats[mapping.default.toLowerCase()];
-            if (stat && stat.errorCount > 0) heatIntensity = Math.min(stat.errorCount / 5, 1);
+          // Draw Key background
+          ctx.beginPath();
+          ctx.roundRect(rectX, rectY, rectW, rectH, 15);
+
+          let fillStyle = 'rgba(255, 255, 255, 0.05)';
+          let strokeStyle = 'rgba(255, 255, 255, 0.05)';
+          let textColor = 'rgba(255, 255, 255, 0.5)';
+
+          if (isFingerTarget && !isPressed) {
+            fillStyle = FINGER_COLORS[keyObj.finger || ''] || 'rgba(255,255,255,0.1)';
+            strokeStyle = fillStyle.replace('0.4', '0.6');
+          } else if (isActive) {
+            fillStyle = 'rgba(59, 130, 246, 0.2)';
+            strokeStyle = 'rgba(59, 130, 246, 0.6)';
+            textColor = '#fff';
           }
 
-          return (
-            <Key
-              key={`${idx}-${keyObj.code}`}
-              keyObj={keyObj}
-              layout={layout}
-              isActive={isActive}
-              isPressed={isPressed}
-              isFingerTarget={isFingerTarget}
-              heatIntensity={heatIntensity}
-            />
-          );
-        })}
+          if (isPressed) {
+            fillStyle = isActive ? 'rgba(34, 197, 94, 0.8)' : 'rgba(59, 130, 246, 0.8)';
+            textColor = '#fff';
+            ctx.translate(0, 5); // Press effect
+          }
+
+          ctx.fillStyle = fillStyle;
+          ctx.fill();
+          ctx.strokeStyle = strokeStyle;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Draw Labels
+          ctx.fillStyle = textColor;
+          ctx.font = 'bold 45px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          const label = keyObj.label || mapping.default.toUpperCase();
+          ctx.fillText(label, rectX + rectW / 2, rectY + rectH / 2);
+
+          if (isPressed) ctx.translate(0, -5); // Reset press effect
+
+          currentX += width;
+        });
+        currentY += rowHeight;
+      });
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    return () => window.removeEventListener('resize', resize);
+  }, [activeKey, pressedKeys, layout, heatmapStats, expectedFinger]);
+
+  return (
+    <div className="w-full flex justify-center py-4 md:py-6 contain-content">
+      <div className="w-full max-w-[1100px] aspect-[3.2/1] bg-[#0d0d0d66] border border-[#00f2ff33] rounded-3xl p-2 overflow-hidden">
+        <canvas ref={canvasRef} className="w-full h-full block" />
       </div>
     </div>
   );
