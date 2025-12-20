@@ -38,12 +38,7 @@ export const SECTIONS = [
   { title: "Phase 4: Elite Mastery (71-100)", range: "71-100", active: false }
 ];
 
-export const XP_LEVELS = [
-  { title: 'Recruit', minXp: 0 },
-  { title: 'Pilot', minXp: 1000 },
-  { title: 'Commander', minXp: 5000 },
-  { title: 'Legend', minXp: 15000 },
-];
+export const XP_RANK_DIVISOR = 100; // Formula: Level = sqrt(XP / divisor) + 1
 
 export const LESSONS: Lesson[] = [
   // --- Level 1: Foundation (Home Row Anchors) ---
@@ -968,42 +963,65 @@ export const LAYOUTS: Record<KeyboardLayoutType, Record<string, { default: strin
   }
 };
 
+export const XP_LEVELS = [
+  // --- Act 1: Apprentice (1-5) ---
+  { title: 'Type Recruit', minLevel: 1 },
+  { title: 'Keyboard Cadet', minLevel: 3 },
+  { title: 'Shift Apprentice', minLevel: 5 },
+
+  // --- Act 2: Warrior (6-10) ---
+  { title: 'Format Fighter', minLevel: 6 },
+  { title: 'Syntax Soldier', minLevel: 8 },
+  { title: 'Keyboard Warrior', minLevel: 10 },
+
+  // --- Act 3: Master (11-20) ---
+  { title: 'Code Pilot', minLevel: 11 },
+  { title: 'Logic Master', minLevel: 15 },
+  { title: 'Buffer Buster', minLevel: 20 },
+
+  // --- Act 4: Legend (21-50) ---
+  { title: 'Script Sovereign', minLevel: 30 },
+  { title: 'Data Dynamo', minLevel: 40 },
+  { title: 'Type Legend', minLevel: 50 },
+
+  // --- Act 5: God (50+) ---
+  { title: 'Master of Flow', minLevel: 75 },
+  { title: 'Monarch of Keys', minLevel: 90 },
+  { title: 'Keyboard God', minLevel: 100 },
+];
+
 export const BADGES: Badge[] = [
-  {
-    id: 'beginner',
-    title: 'First Steps',
-    description: 'Complete your first lesson.',
-    icon: 'Footprints',
-    condition: (h, p) => h.length >= 1
-  },
-  {
-    id: 'speedster',
-    title: 'Speed Demon',
-    description: 'Achieve 60+ WPM in a lesson.',
-    icon: 'Zap',
-    condition: (h, p) => h.some(e => e.wpm >= 60)
-  },
-  {
-    id: 'perfect',
-    title: 'Perfectionist',
-    description: 'Complete a lesson with 100% accuracy.',
-    icon: 'Target',
-    condition: (h, p) => h.some(e => e.accuracy === 100 && e.errors === 0)
-  },
-  {
-    id: 'dedicated',
-    title: 'Dedicated',
-    description: 'Complete 10 lessons.',
-    icon: 'Award',
-    condition: (h, p) => h.length >= 10
-  },
-  {
-    id: 'master',
-    title: 'Type Master',
-    description: 'Unlock all basic lessons.',
-    icon: 'Crown',
-    condition: (h, p) => Object.values(p).filter(l => l.unlocked).length >= LESSONS.length
-  }
+  // --- Speed Milestones ---
+  { id: 'speed_40', title: 'Swift', description: 'Reach 40 WPM.', icon: 'Zap', condition: (h) => h.some(e => e.wpm >= 40) },
+  { id: 'speed_60', title: 'Speedster', description: 'Reach 60 WPM.', icon: 'Zap', condition: (h) => h.some(e => e.wpm >= 60) },
+  { id: 'speed_80', title: 'Turbo', description: 'Reach 80 WPM.', icon: 'Zap', condition: (h) => h.some(e => e.wpm >= 80) },
+  { id: 'speed_100', title: 'Centurion', description: 'Reach 100 WPM.', icon: 'Zap', condition: (h) => h.some(e => e.wpm >= 100) },
+  { id: 'speed_120', title: 'Supersonic', description: 'Reach 120 WPM.', icon: 'Zap', condition: (h) => h.some(e => e.wpm >= 120) },
+  { id: 'speed_150', title: 'Light Speed', description: 'Reach 150 WPM.', icon: 'Zap', condition: (h) => h.some(e => e.wpm >= 150) },
+
+  // --- Accuracy Milestones ---
+  { id: 'acc_perfect_1', title: 'Bullseye', description: 'First 100% accuracy lesson.', icon: 'Target', condition: (h) => h.some(e => e.accuracy === 100) },
+  { id: 'acc_perfect_10', title: 'Sniper', description: '10 perfect lessons.', icon: 'Target', condition: (h) => h.filter(e => e.accuracy === 100).length >= 10 },
+  { id: 'acc_perfect_50', title: 'Deadeye', description: '50 perfect lessons.', icon: 'Target', condition: (h) => h.filter(e => e.accuracy === 100).length >= 50 },
+  { id: 'acc_perfect_100', title: 'Oracle', description: '100 perfect lessons.', icon: 'Target', condition: (h) => h.filter(e => e.accuracy === 100).length >= 100 },
+
+  // --- Volume/Consistency Milestones ---
+  { id: 'vol_10', title: 'Novice', description: 'Complete 10 lessons.', icon: 'Award', condition: (h) => h.length >= 10 },
+  { id: 'vol_50', title: 'Practitioner', description: 'Complete 50 lessons.', icon: 'Award', condition: (h) => h.length >= 50 },
+  { id: 'vol_100', title: 'Scholar', description: 'Complete 100 lessons.', icon: 'Award', condition: (h) => h.length >= 100 },
+  { id: 'vol_500', title: 'Marathoner', description: 'Complete 500 lessons.', icon: 'Award', condition: (h) => h.length >= 500 },
+  { id: 'vol_1000', title: 'Legend', description: 'Complete 1,000 lessons.', icon: 'Award', condition: (h) => h.length >= 1000 },
+
+  // --- Combo Milestones ---
+  { id: 'combo_50', title: 'Fired Up', description: 'Get a 50+ combo.', icon: 'Flame', condition: (h) => h.some(e => (e as any).bestCombo >= 50) },
+  { id: 'combo_100', title: 'On Fire', description: 'Get a 100+ combo.', icon: 'Flame', condition: (h) => h.some(e => (e as any).bestCombo >= 100) },
+  { id: 'combo_250', title: 'Inferno', description: 'Get a 250+ combo.', icon: 'Flame', condition: (h) => h.some(e => (e as any).bestCombo >= 250) },
+
+  // --- Special ---
+  { id: 'early_bird', title: 'Morning Dew', description: 'Practice before 8 AM.', icon: 'Sun', condition: (h) => h.some(e => new Date(e.date).getHours() < 8) },
+  { id: 'night_owl', title: 'Moonlight', description: 'Practice after 11 PM.', icon: 'Moon', condition: (h) => h.some(e => new Date(e.date).getHours() >= 23) },
+  { id: 'streak_7', title: 'Weekly Habit', description: 'Maintain a 7-day streak.', icon: 'Calendar', condition: (h, p, s) => (s || 0) >= 7 },
+  { id: 'streak_30', title: 'Monthly Devotion', description: 'Maintain a 30-day streak.', icon: 'Calendar', condition: (h, p, s) => (s || 0) >= 30 }
 ];
 
 export const generateInfinitePractice = (moduleName?: string): Lesson => {

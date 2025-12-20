@@ -36,12 +36,25 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
         // Progress
         const progress = Math.round((cursorIndex / contentLength) * 100);
 
+        // Combo Calculation
+        let currentCombo = 0;
+        let bestCombo = 0;
+        keystrokeLog.forEach(k => {
+            if (!k.isError) {
+                currentCombo++;
+                if (currentCombo > bestCombo) bestCombo = currentCombo;
+            } else {
+                currentCombo = 0;
+            }
+        });
+
         self.postMessage({
             type: 'STATS_UPDATED',
             stats: {
                 wpm: rollingWpm,
                 totalWpm: wpm,
                 accuracy,
+                bestCombo,
                 errors: errors.length,
                 progress,
                 wpmTimeline,

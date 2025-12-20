@@ -37,15 +37,18 @@ export interface FingerStats {
   accuracy: number;
 }
 
-export type GoalType = 'wpm' | 'accuracy' | 'lessons' | 'time' | 'form';
+export type QuestType = 'speed' | 'accuracy' | 'endurance' | 'lessons';
 
-export interface DailyGoal {
+export interface DailyQuest {
   id: string;
+  title: string;
   description: string;
   targetValue: number;
   currentValue: number;
   isCompleted: boolean;
-  type: GoalType;
+  type: QuestType;
+  xpReward: number;
+  icon: string; // Lucide icon name
 }
 
 export interface KeystrokeEvent {
@@ -70,6 +73,7 @@ export interface Stats {
   wpmTimeline?: { timestamp: number; wpm: number }[]; // For real-time graphing
   keystrokeLog?: KeystrokeEvent[]; // For session replay and forensics
   handEfficiency?: { left: number; right: number }; // Speed/accuracy ratio per hand
+  bestCombo?: number;
 }
 
 export enum GameState {
@@ -96,6 +100,7 @@ export interface HistoryEntry {
   wpmTimeline?: { timestamp: number; wpm: number }[];
   keystrokeLog?: KeystrokeEvent[];
   handEfficiency?: { left: number; right: number };
+  bestCombo?: number;
 }
 
 export interface LessonProgress {
@@ -139,7 +144,9 @@ export interface UserProfile {
   name: string;
   avatar?: string;
   xp: number;
-  level: string;
+  level: number;
+  streakCount: number;
+  lastLoginDate?: string; // ISO string
   createdAt: string;
 }
 
@@ -148,7 +155,7 @@ export interface Badge {
   title: string;
   description: string;
   icon: string; // Lucide icon name
-  condition: (history: HistoryEntry[], progress: Record<number, LessonProgress>) => boolean;
+  condition: (history: HistoryEntry[], progress: Record<number, LessonProgress>, streak?: number) => boolean;
 }
 
 export interface EarnedBadge {

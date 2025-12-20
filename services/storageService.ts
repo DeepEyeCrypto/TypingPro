@@ -1,5 +1,5 @@
 
-import { HistoryEntry, LessonProgress, UserSettings, UserProfile, EarnedBadge, KeyStats, DailyGoal, FingerStats } from "../types";
+import { HistoryEntry, LessonProgress, UserSettings, UserProfile, EarnedBadge, KeyStats, DailyQuest, FingerStats } from "../types";
 import { LESSONS } from "../constants";
 
 const DEFAULT_PROFILE_ID = 'default';
@@ -15,7 +15,7 @@ const KEYS = {
     BADGES: 'typing_badges_v1',
     KEY_STATS: 'typing_key_stats_v1',
     FINGER_STATS: 'typing_finger_stats_v1',
-    DAILY_GOALS: 'typing_daily_goals_v1'
+    DAILY_QUESTS: 'typing_daily_quests_v1'
 };
 
 // --- Profiles ---
@@ -29,7 +29,8 @@ export const getProfiles = (): UserProfile[] => {
                 id: 'default',
                 name: 'Guest',
                 xp: 0,
-                level: 'Recruit',
+                level: 1,
+                streakCount: 1,
                 createdAt: new Date().toISOString()
             };
             localStorage.setItem(KEYS.PROFILES, JSON.stringify([def]));
@@ -41,7 +42,8 @@ export const getProfiles = (): UserProfile[] => {
             id: 'default',
             name: 'Guest',
             xp: 0,
-            level: 'Recruit',
+            level: 1,
+            streakCount: 1,
             createdAt: new Date().toISOString()
         }];
     }
@@ -53,7 +55,8 @@ export const createProfile = (name: string): UserProfile => {
         id: Date.now().toString(),
         name,
         xp: 0,
-        level: 'Recruit',
+        level: 1,
+        streakCount: 1,
         createdAt: new Date().toISOString()
     };
     profiles.push(newProfile);
@@ -193,19 +196,19 @@ export const updateFingerStats = (profileId: string, sessionFingerStats: Record<
     return current;
 };
 
-// --- Daily Goals ---
+// --- Quests ---
 
-export const getDailyGoals = (profileId: string): DailyGoal[] => {
+export const getDailyQuests = (profileId: string) => {
     try {
-        const data = localStorage.getItem(getKey(KEYS.DAILY_GOALS, profileId));
-        return data ? JSON.parse(data) : [];
+        const data = localStorage.getItem(getKey(KEYS.DAILY_QUESTS, profileId));
+        return data ? JSON.parse(data) : null;
     } catch {
-        return [];
+        return null;
     }
 };
 
-export const saveDailyGoals = (profileId: string, goals: DailyGoal[]) => {
-    localStorage.setItem(getKey(KEYS.DAILY_GOALS, profileId), JSON.stringify(goals));
+export const saveDailyQuests = (profileId: string, questData: any) => {
+    localStorage.setItem(getKey(KEYS.DAILY_QUESTS, profileId), JSON.stringify(questData));
 };
 
 

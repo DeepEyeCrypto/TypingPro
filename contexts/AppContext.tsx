@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
     UserProfile, UserSettings, LessonProgress, HistoryEntry, EarnedBadge,
-    ThemeMode, KeyboardLayoutType, Stats, KeyStats, DailyGoal
+    ThemeMode, KeyboardLayoutType, Stats, KeyStats, DailyQuest
 } from '../types';
 import {
     getProfiles, createProfile, getSettings, saveSettings,
     getLessonProgress, getHistory, getEarnedBadges,
     updateLessonProgress, saveHistory, saveEarnedBadge, unlockLesson, clearHistory,
-    getKeyStats, updateKeyStats, getDailyGoals, saveDailyGoals, updateFingerStats, getFingerStats
+    getKeyStats, updateKeyStats, updateFingerStats, getFingerStats
 } from '../services/storageService';
 import { FingerStats } from '../types';
 import { setVolume } from '../services/audioService';
@@ -46,6 +46,7 @@ interface AppContextType {
     refreshUserData: () => void;
     recordKeyStats: (sessionStats: Record<string, KeyStats>) => void;
     getWeaknessDrill: () => { content: string, title: string } | null;
+    dailyQuests: DailyQuest[];
 
     // Auth
     login: () => Promise<void>;
@@ -61,8 +62,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         id: 'default',
         name: 'Guest',
         xp: 0,
-        level: 'Recruit',
-        createdAt: ''
+        level: 1,
+        streakCount: 1,
+        lastLoginDate: new Date().toISOString(),
+        createdAt: new Date().toISOString()
     });
     const [user, setUser] = useState<AuthUser | null>(null);
     const [settings, setSettings] = useState<UserSettings>({
@@ -96,7 +99,109 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [earnedBadges, setEarnedBadges] = useState<EarnedBadge[]>([]);
     const [keyStats, setKeyStats] = useState<Record<string, KeyStats>>({});
     const [fingerStats, setFingerStats] = useState<Record<string, FingerStats>>({});
-    const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
+    const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
+
+    // --- Helper for Quest Generation ---
+    const initializeDailyQuests = (profileId: string) => {
+        const today = new Date().toISOString().split('T')[0];
+        const storedQuestsJson = localStorage.getItem(`quests_${profileId}`);
+        const storedQuests = storedQuestsJson ? JSON.parse(storedQuestsJson) : null;
+
+        if (storedQuests && storedQuests.date === today) {
+            setDailyQuests(storedQuests.quests);
+            return;
+        }
+
+        // Generate new quests for the day
+        const newQuests: DailyQuest[] = [
+            {
+                id: 'q-speed',
+                title: 'Speed Demon',
+                description: 'Reach 45 WPM in any lesson',
+                type: 'speed',
+                targetValue: 45,
+                currentValue: 0,
+                isCompleted: false,
+                xpReward: 150,
+                icon: 'Zap'
+            },
+            {
+                id: 'q-accuracy',
+                title: 'Perfect Precision',
+                description: 'Achieve 98% Accuracy',
+                type: 'accuracy',
+                targetValue: 98,
+                currentValue: 0,
+                isCompleted: false,
+                xpReward: 150,
+                icon: 'Target'
+            },
+            {
+                id: 'q-lessons',
+                title: 'The Grind',
+                description: 'Complete 3 Lessons',
+                type: 'lessons',
+                targetValue: 3,
+                currentValue: 0,
+                isCompleted: false,
+                xpReward: 200,
+                icon: 'BookOpen'
+            }
+        ];
+
+        const questData = { date: today, quests: newQuests };
+        localStorage.setItem(`quests_${profileId}`, JSON.stringify(questData));
+        setDailyQuests(newQuests);
+    };
+
+    const updateQuestProgress = (stats: Stats) => {
+        const today = new Date().toISOString().split('T')[0];
+        let changed = false;
+
+        const updatedQuests = dailyQuests.map(q => {
+            if (q.isCompleted) return q;
+
+            let newValue = q.currentValue;
+            if (q.type === 'speed') newValue = Math.max(q.currentValue, stats.wpm);
+            if (q.type === 'accuracy') newValue = Math.max(q.currentValue, stats.accuracy);
+            if (q.type === 'lessons') newValue = q.currentValue + 1;
+
+            const isNowCompleted = newValue >= q.targetValue;
+            if (isNowCompleted || newValue !== q.currentValue) {
+                changed = true;
+                if (isNowCompleted && !q.isCompleted) {
+                    addXp(q.xpReward); // Award bonus XP
+                }
+                return { ...q, currentValue: newValue, isCompleted: isNowCompleted };
+            }
+            return q;
+        });
+
+        if (JSON.stringify(updatedQuests) !== JSON.stringify(dailyQuests)) {
+            setDailyQuests(updatedQuests);
+            localStorage.setItem(`quests_${currentProfile.id}`, JSON.stringify({ date: today, quests: updatedQuests }));
+        }
+    };
+
+    const addXp = (amount: number) => {
+        const newXp = currentProfile.xp + amount;
+        const newLevel = getLevelFromXp(newXp);
+        const oldLevel = currentProfile.level;
+
+        const updatedProfile = { ...currentProfile, xp: newXp, level: newLevel };
+
+        // Update currentProfile state
+        setCurrentProfile(updatedProfile);
+
+        // Update profiles array in state and localStorage
+        const updatedProfiles = profiles.map(p => p.id === updatedProfile.id ? updatedProfile : p);
+        setProfiles(updatedProfiles);
+        localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
+
+        if (newLevel > oldLevel) {
+            console.log(`🎉 LEVEL UP! You reached Level ${newLevel}: ${getRankTitle(newLevel)}`);
+        }
+    };
     const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
     const [activeLessonId, setActiveLessonId] = useState(1);
     const [activeModal, setActiveModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles'>('none');
@@ -115,7 +220,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const loaded = getProfiles();
         setProfiles(loaded);
         if (loaded.length > 0) {
-            setCurrentProfile(loaded[0]);
+            const profile = loaded[0];
+            setCurrentProfile(profile);
+            checkStreak(profile);
+
+            setFingerStats(getFingerStats(profile.id));
+            initializeDailyQuests(profile.id);
+
+            const hist = getHistory(profile.id);
+            const prog = getLessonProgress(profile.id);
+            runRetroactiveBadgeCheck(hist, prog);
         }
 
         // Check Auth
@@ -141,14 +255,30 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 name: authUser.name || 'Google User',
                 avatar: authUser.picture,
                 xp: 0,
-                level: 'Recruit',
+                level: 1,
+                streakCount: 1,
+                lastLoginDate: new Date().toISOString(),
                 createdAt: new Date().toISOString()
             };
             const updatedProfiles = [...getProfiles(), newProfile];
             localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
             setProfiles(updatedProfiles);
             setCurrentProfile(newProfile);
+            checkStreak(newProfile);
+            runRetroactiveBadgeCheck([], {});
         }
+    };
+
+    const runRetroactiveBadgeCheck = (hist: HistoryEntry[], prog: Record<number, LessonProgress>) => {
+        const earned = getEarnedBadges(currentProfile.id);
+        BADGES.forEach(badge => {
+            if (!earned.some(eb => eb.badgeId === badge.id)) {
+                if (badge.condition(hist, prog, currentProfile.streakCount)) {
+                    saveEarnedBadge(currentProfile.id, badge.id);
+                    setEarnedBadges(prev => [...prev, { badgeId: badge.id, earnedAt: new Date().toISOString() }]);
+                }
+            }
+        });
     };
 
     const login = async () => {
@@ -170,28 +300,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const prefs = getSettings(profileId);
         const badges = getEarnedBadges(profileId);
         const keys = getKeyStats(profileId);
-        const goals = getDailyGoals(profileId);
 
         setLessonProgress(prog);
         setHistory(hist);
         setSettings(prefs);
         setEarnedBadges(badges);
         setKeyStats(keys);
-        setDailyGoals(goals.length > 0 ? goals : initDailyGoals(profileId)); // usage of initDailyGoals here implies we need it
+        initializeDailyQuests(profileId); // Ensure quests are initialized/loaded
         setVolume(prefs.volume);
     };
-
-    // Helper to init goals if empty
-    const initDailyGoals = (profileId: string) => {
-        // Simple default goals
-        const defaults: DailyGoal[] = [
-            { id: 'g1', description: 'Complete 3 Lessons', targetValue: 3, currentValue: 0, isCompleted: false, type: 'lessons' },
-            { id: 'g2', description: 'Type for 5 minutes', targetValue: 300, currentValue: 0, isCompleted: false, type: 'time' },
-            { id: 'g3', description: 'Maintain 98% Form', targetValue: 1, currentValue: 0, isCompleted: false, type: 'form' }
-        ];
-        saveDailyGoals(profileId, defaults);
-        return defaults;
-    }
 
     useEffect(() => {
         if (currentProfile.id) {
@@ -234,13 +351,59 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const switchProfile = (p: UserProfile) => setCurrentProfile(p);
 
     const getLevelFromXp = (xp: number) => {
-        const sorted = [...XP_LEVELS].sort((a, b) => b.minXp - a.minXp);
-        return sorted.find(l => xp >= l.minXp)?.title || 'Recruit';
+        const level = Math.floor(Math.sqrt(xp / 100)) + 1;
+        return level;
+    };
+
+    const getRankTitle = (level: number) => {
+        const sorted = [...XP_LEVELS].sort((a, b) => b.minLevel - a.minLevel);
+        return sorted.find(l => level >= l.minLevel)?.title || 'Type Recruit';
+    };
+
+    const checkStreak = (profile: UserProfile) => {
+        if (!profile.lastLoginDate) {
+            updateProfileData(profile.id, { lastLoginDate: new Date().toISOString(), streakCount: 1 });
+            return;
+        }
+
+        const last = new Date(profile.lastLoginDate);
+        const now = new Date();
+        const diffTime = now.getTime() - last.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+            // Consecutive day
+            const newStreak = profile.streakCount + 1;
+            updateProfileData(profile.id, { lastLoginDate: now.toISOString(), streakCount: newStreak });
+            setCurrentProfile(prev => ({ ...prev, streakCount: newStreak, lastLoginDate: now.toISOString() }));
+        } else if (diffDays > 1) {
+            // Streak broken
+            updateProfileData(profile.id, { lastLoginDate: now.toISOString(), streakCount: 1 });
+            setCurrentProfile(prev => ({ ...prev, streakCount: 1, lastLoginDate: now.toISOString() }));
+        } else if (diffDays === 0 && now.getDate() !== last.getDate()) {
+            // Wrapped around midnight (e.g. 11:30 PM to 00:30 AM)
+            const newStreak = profile.streakCount + 1;
+            updateProfileData(profile.id, { lastLoginDate: now.toISOString(), streakCount: newStreak });
+            setCurrentProfile(prev => ({ ...prev, streakCount: newStreak, lastLoginDate: now.toISOString() }));
+        }
+    };
+
+    const updateProfileData = (id: string, data: Partial<UserProfile>) => {
+        const all = getProfiles();
+        const updated = all.map(p => p.id === id ? { ...p, ...data } : p);
+        localStorage.setItem('typingpro_profiles', JSON.stringify(updated));
+        setProfiles(updated);
     };
 
     const createNewProfile = (name: string) => {
         const p = createProfile(name);
-        const fullProfile: UserProfile = { ...p, xp: 0, level: 'Recruit' };
+        const fullProfile: UserProfile = {
+            ...p,
+            xp: 0,
+            level: 1,
+            streakCount: 1,
+            lastLoginDate: new Date().toISOString()
+        };
         setProfiles(prev => [...prev, fullProfile]);
         setCurrentProfile(fullProfile);
     };
@@ -291,11 +454,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const lesson = HERO_CURRICULUM.find(l => l.id === lessonId);
         if (!lesson) return false;
 
-        // Use lesson-specific passing criteria or a sensible default
+        // Determine if lesson passed based on criteria
         const minAccuracy = lesson.passingCriteria?.accuracy || 98;
         const minWpm = lesson.passingCriteria?.wpm || 15;
         const passedCriteria = stats.accuracy >= minAccuracy && stats.wpm >= minWpm;
 
+        // Update lesson progress
         const updatedProgress = updateLessonProgress(currentProfile.id, lessonId, {
             wpm: stats.wpm,
             accuracy: stats.accuracy,
@@ -304,7 +468,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         let unlockedNext = false;
         if (passedCriteria) {
-            // Find next lesson in the curriculum
+            // Unlock next lesson if available
             const nextLesson = HERO_CURRICULUM.find(l => l.id > lessonId);
             if (nextLesson) {
                 unlockLesson(currentProfile.id, nextLesson.id);
@@ -314,20 +478,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 unlockedNext = true;
             }
 
-            // Phase Completion Logic
+            // Check for phase completion
             if (lesson.phase) {
                 const phaseLessons = HERO_CURRICULUM.filter(l => l.phase === lesson.phase);
                 const isPhaseComplete = phaseLessons.every(l => updatedProgress[l.id]?.completed);
                 if (isPhaseComplete) {
                     console.log(`🎉 Phase ${lesson.phase} Complete! Great job!`);
-                    // We can trigger a special badge or toast here in the future
+                    // Future: Trigger special badge or toast
                 }
             }
         }
 
         setLessonProgress({ ...updatedProgress });
 
-        // History
+        // Record history entry
         const entry: HistoryEntry = {
             id: Date.now().toString(),
             date: new Date().toISOString(),
@@ -345,38 +509,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const newHistory = [entry, ...history];
         setHistory(newHistory);
 
-        // Update Profile XP
-        if (passedCriteria) {
-            const gainedXp = Math.round((stats.wpm * stats.accuracy) / 10) + (lesson.phase || 0) * 50;
-            const newXp = currentProfile.xp + gainedXp;
-            const newLevel = getLevelFromXp(newXp);
+        // Update Daily Quest progress
+        updateQuestProgress(stats);
 
-            const updatedProfile = { ...currentProfile, xp: newXp, level: newLevel };
-            setCurrentProfile(updatedProfile);
+        // Calculate and add XP
+        let xpGained = 25; // Base XP
+        if (stats.accuracy === 100) xpGained += 50;
+        if (stats.wpm > 50) xpGained += 25;
 
-            const updatedProfiles = profiles.map(p => p.id === updatedProfile.id ? updatedProfile : p);
-            setProfiles(updatedProfiles);
-            localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
-        }
+        // Apply Streak Multiplier (5% per streak day, max 2x)
+        const streakMultiplier = Math.min(2, 1 + (currentProfile.streakCount * 0.05));
+        xpGained = Math.round(xpGained * streakMultiplier);
 
-        // Daily Goals update...
-        const newGoals = dailyGoals.map(g => {
-            if (g.isCompleted) return g;
-            let val = g.currentValue;
-            if (g.type === 'lessons' && passedCriteria) val += 1;
-            if (g.type === 'time') val += entry.durationSeconds;
-            return { ...g, currentValue: val, isCompleted: val >= g.targetValue };
-        });
+        addXp(xpGained);
 
-        if (JSON.stringify(newGoals) !== JSON.stringify(dailyGoals)) {
-            setDailyGoals(newGoals);
-            saveDailyGoals(currentProfile.id, newGoals);
-        }
-
-        // Badge logic...
+        // Check for and award badges
         BADGES.forEach(badge => {
             if (!earnedBadges.some(eb => eb.badgeId === badge.id)) {
-                if (badge.condition(newHistory, updatedProgress)) {
+                if (badge.condition(newHistory, updatedProgress, currentProfile.streakCount)) {
                     saveEarnedBadge(currentProfile.id, badge.id);
                     setEarnedBadges(prev => [...prev, { badgeId: badge.id, earnedAt: new Date().toISOString() }]);
                 }
@@ -400,7 +550,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         user,
         keyStats,
         fingerStats,
-        dailyGoals,
+        dailyQuests,
         activeModal,
         isCodeMode,
         isSidebarCollapsed,
@@ -420,7 +570,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         logout
     }), [
         profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme,
-        activeLessonId, user, keyStats, fingerStats, dailyGoals, getWeaknessDrill,
+        activeLessonId, user, keyStats, fingerStats, dailyQuests, getWeaknessDrill,
         activeModal, isCodeMode, isSidebarCollapsed
     ]);
 
