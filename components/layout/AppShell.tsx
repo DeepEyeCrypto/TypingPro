@@ -46,19 +46,20 @@ export const AppShell: React.FC<AppShellProps> = ({
                 {sidebar && (
                     <>
                         <aside
-                            className={`hidden lg:flex flex-col h-full bg-black/20 border-r border-white/5 transition-all duration-500 ease-in-out relative ${isSidebarCollapsed ? 'w-0 opacity-0 -translate-x-full' : 'w-[260px] opacity-100 translate-x-0'}`}
+                            className={`hidden lg:flex flex-col h-full bg-black/40 backdrop-blur-3xl border-r border-white/5 transition-all duration-300 ease-in-out relative overflow-hidden ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-[300px] opacity-100'}`}
                         >
-                            <div className="flex-1 overflow-y-auto scrollbar-hide w-[260px]">
+                            <div className="flex-1 overflow-y-auto scrollbar-hide w-[300px]">
                                 {sidebar}
                             </div>
                         </aside>
 
-                        {/* Sidebar Toggle Button (Desktop) */}
+                        {/* Floating Trigger (Only visible when collapsed) */}
                         <button
-                            onClick={() => onToggleSidebar?.(!isSidebarCollapsed)}
-                            className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-[70] p-1.5 bg-brand/80 text-white rounded-r-xl shadow-lg hover:bg-brand transition-all duration-300 ${isSidebarCollapsed ? 'translate-x-0 opacity-100' : 'translate-x-[260px] opacity-40 hover:opacity-100'}`}
+                            onClick={() => onToggleSidebar?.(false)}
+                            className={`hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 z-[70] p-3 bg-cyber-cyan text-deep-charcoal rounded-r-2xl shadow-cyan-glow hover:bg-cyan-400 transition-all duration-500 transform ${isSidebarCollapsed ? 'translate-x-0 scale-100' : '-translate-x-full scale-50'}`}
+                            title="Show Sidebar"
                         >
-                            {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+                            <ChevronRight size={20} className="animate-pulse" />
                         </button>
 
                         {/* Mobile Side Drawer */}

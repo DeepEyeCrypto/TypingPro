@@ -28,10 +28,15 @@ interface AppContextType {
     user: AuthUser | null;
     keyStats: Record<string, KeyStats>;
     fingerStats: Record<string, FingerStats>;
-    dailyGoals: DailyGoal[];
+    activeModal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles';
+    isCodeMode: boolean;
+    isSidebarCollapsed: boolean;
 
     // Actions
     setActiveLessonId: (id: number) => void;
+    setActiveModal: (modal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles') => void;
+    setIsCodeMode: (val: boolean) => void;
+    setIsSidebarCollapsed: (val: boolean) => void;
     switchProfile: (profile: UserProfile) => void;
     createNewProfile: (name: string) => void;
     updateUserSetting: <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => void;
@@ -92,6 +97,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
     const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
     const [activeLessonId, setActiveLessonId] = useState(1);
+    const [activeModal, setActiveModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles'>('none');
+    const [isCodeMode, setIsCodeMode] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     // --- Initial Load ---
     useEffect(() => {
@@ -430,7 +438,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         keyStats,
         fingerStats,
         dailyGoals,
+        activeModal,
+        isCodeMode,
+        isSidebarCollapsed,
         setActiveLessonId,
+        setActiveModal,
+        setIsCodeMode,
+        setIsSidebarCollapsed,
         switchProfile,
         createNewProfile,
         updateUserSetting,
@@ -443,7 +457,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         logout
     }), [
         profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme,
-        activeLessonId, user, keyStats, fingerStats, dailyGoals, getWeaknessDrill
+        activeLessonId, user, keyStats, fingerStats, dailyGoals, getWeaknessDrill,
+        activeModal, isCodeMode, isSidebarCollapsed
     ]);
 
     return (

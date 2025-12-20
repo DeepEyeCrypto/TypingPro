@@ -24,13 +24,12 @@ interface MainLayoutContext {
 export default function TypingPage(): React.ReactNode {
     const {
         currentProfile, settings, lessonProgress, recordLessonComplete,
-        setActiveLessonId, recordKeyStats
+        setActiveLessonId, recordKeyStats, isCodeMode, setIsCodeMode, setActiveModal
     } = useApp();
 
     const { setIsSidebarOpen } = useOutletContext<MainLayoutContext>() || {};
 
     // --- Core State ---
-    const [isCodeMode, setIsCodeMode] = useState<boolean>(false);
     const [currentLessonId, setCurrentLessonId] = useState<number>(1);
     const [activeLesson, setActiveLesson] = useState<Lesson>(LESSONS[0]);
     const [retryCount, setRetryCount] = useState<number>(0);
@@ -112,11 +111,16 @@ export default function TypingPage(): React.ReactNode {
                 return next;
             });
         };
+        const handleTutorialToggle = () => setVideoVisible(v => !v);
+
         window.addEventListener('keydown', handleDown);
         window.addEventListener('keyup', handleUp);
+        window.addEventListener('toggle-tutorial', handleTutorialToggle);
+
         return () => {
             window.removeEventListener('keydown', handleDown);
             window.removeEventListener('keyup', handleUp);
+            window.removeEventListener('toggle-tutorial', handleTutorialToggle);
         };
     }, [handleRetry]);
 
@@ -141,42 +145,6 @@ export default function TypingPage(): React.ReactNode {
 
     return (
         <div className="flex-1 flex flex-col h-full relative overflow-hidden">
-            {/* Context-aware Controls (Mobile Top Bar) */}
-            <div className="p-4 flex items-center justify-between xl:absolute xl:top-6 xl:left-8 z-50 w-full xl:w-auto gap-4">
-                <div className="flex p-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
-                    <button
-                        onClick={() => setIsCodeMode(false)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${!isCodeMode ? 'bg-brand text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
-                    >
-                        <Type size={16} /> <span className="hidden sm:inline">Text</span>
-                    </button>
-                    <button
-                        onClick={() => setIsCodeMode(true)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${isCodeMode ? 'bg-purple-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
-                    >
-                        <Code size={16} /> <span className="hidden sm:inline">Code</span>
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    {activeLesson.videoUrl && (
-                        <button
-                            onClick={() => setVideoVisible(true)}
-                            className="px-4 py-2 glass-card rounded-xl text-xs font-bold text-white/60 hover:text-white transition-all sm:inline-flex hidden"
-                        >
-                            Watch Tutorial
-                        </button>
-                    )}
-                    <button
-                        onClick={() => setShowMobileStats(!showMobileStats)}
-                        className="2xl:hidden p-2 glass-card rounded-xl text-white/60"
-                        title="Toggle Stats"
-                    >
-                        <BarChart3 size={20} />
-                    </button>
-                </div>
-            </div>
-
             <div className="flex-1 flex flex-col min-h-0">
                 {/* Main Typing Area Stage */}
                 <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">

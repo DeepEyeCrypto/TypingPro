@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   PanelLeft, ChevronLeft, ChevronRight, User, Settings,
-  BarChart2, Award, History, Moon, Sun, LogIn, LogOut
+  BarChart2, Award, History, Moon, Sun, LogIn, LogOut,
+  Type, Code, PlayCircle, BarChart3
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApp } from '../contexts/AppContext';
@@ -16,8 +17,13 @@ const Header: React.FC = () => {
   const {
     currentProfile,
     activeLessonId,
-    lessonProgress
+    lessonProgress,
+    isCodeMode,
+    setIsCodeMode,
+    setActiveModal
   } = useApp();
+
+  const activeLesson = LESSONS.find(l => l.id === activeLessonId) || LESSONS[0];
 
   const { theme, toggleTheme, resolvedTheme } = useTheme();
   const [version, setVersion] = useState<string>('');
@@ -44,6 +50,47 @@ const Header: React.FC = () => {
           <span className="cyber-title font-black text-2xl tracking-tighter">TypingPro</span>
         </div>
         <span className="text-[10px] font-mono font-bold text-cyber-cyan/40 uppercase tracking-widest mt-1">SYS_v{version}</span>
+      </div>
+
+      {/* Central Navigation/Mode Switcher */}
+      <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-1 gap-1">
+        <button
+          onClick={() => setIsCodeMode(false)}
+          className={`flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-black transition-all duration-300 ${!isCodeMode ? 'bg-cyber-cyan text-deep-charcoal shadow-cyan-glow' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+        >
+          <Type size={16} /> <span>TEXT</span>
+        </button>
+        <button
+          onClick={() => setIsCodeMode(true)}
+          className={`flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-black transition-all duration-300 ${isCodeMode ? 'bg-cyber-violet text-white shadow-violet-glow' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+        >
+          <Code size={16} /> <span>CODE</span>
+        </button>
+
+        <div className="w-[1px] h-6 bg-white/10 mx-2" />
+
+        <button
+          onClick={() => setActiveModal('dashboard')}
+          className="p-2.5 text-white/40 hover:text-cyber-cyan transition-all rounded-xl hover:bg-white/5"
+          title="Performance Dashboard"
+        >
+          <BarChart3 size={20} />
+        </button>
+
+        {activeLesson.videoUrl && (
+          <button
+            className="flex items-center gap-2 px-4 py-2 text-xs font-black text-white/40 hover:text-white transition-all rounded-xl hover:bg-white/5"
+            onClick={() => {
+              // This button will trigger the video player. 
+              // Since videoVisible is in TypingPage, we might need to globalize it too 
+              // or use a custom event. Let's globalize it for simplicity.
+              window.dispatchEvent(new CustomEvent('toggle-tutorial'));
+            }}
+          >
+            <PlayCircle size={18} />
+            <span className="hidden xl:inline">TUTORIAL</span>
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-6">

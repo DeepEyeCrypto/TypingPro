@@ -15,7 +15,7 @@ export default function MainLayout() {
     const {
         currentProfile, settings, systemTheme, lessonProgress, history, earnedBadges, activeLessonId,
         setActiveLessonId, updateUserSetting, switchProfile, clearUserHistory, profiles, createNewProfile, user,
-        login, logout
+        login, logout, isSidebarCollapsed, setIsSidebarCollapsed, activeModal, setActiveModal
     } = useApp();
 
     const handleLogin = async () => {
@@ -30,9 +30,6 @@ export default function MainLayout() {
     const handleLogout = async () => {
         await logout();
     };
-
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    const [modal, setModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles'>('none');
 
     // Toggle Theme Helper
     const handleThemeToggle = () => {
@@ -60,16 +57,16 @@ export default function MainLayout() {
             <Outlet context={{ setIsSidebarOpen: setIsSidebarCollapsed }} />
 
             {/* Modals */}
-            {modal === 'history' && <HistoryModal history={history} onClose={() => setModal('none')} onClear={clearUserHistory} />}
-            {modal === 'achievements' && <AchievementsModal earnedBadges={earnedBadges} onClose={() => setModal('none')} />}
-            {modal === 'dashboard' && <StatsDashboard history={history} onClose={() => setModal('none')} />}
-            {modal === 'settings' && <SettingsModal onClose={() => setModal('none')} />}
-            {modal === 'profiles' && <UserProfilesModal
+            {activeModal === 'history' && <HistoryModal history={history} onClose={() => setActiveModal('none')} onClear={clearUserHistory} />}
+            {activeModal === 'achievements' && <AchievementsModal earnedBadges={earnedBadges} onClose={() => setActiveModal('none')} />}
+            {activeModal === 'dashboard' && <StatsDashboard history={history} onClose={() => setActiveModal('none')} />}
+            {activeModal === 'settings' && <SettingsModal onClose={() => setActiveModal('none')} />}
+            {activeModal === 'profiles' && <UserProfilesModal
                 profiles={profiles}
                 currentProfile={currentProfile}
-                onSelect={(p) => { switchProfile(p); setModal('none'); }}
+                onSelect={(p) => { switchProfile(p); setActiveModal('none'); }}
                 onCreate={(name) => createNewProfile(name)}
-                onClose={() => setModal('none')}
+                onClose={() => setActiveModal('none')}
             />}
         </AppShell>
     );

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { SECTIONS, LESSONS } from '../constants';
-import { Lock, PlayCircle, CheckCircle } from 'lucide-react';
+import { Lock, PlayCircle, CheckCircle, ChevronLeft } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 
 /**
@@ -8,10 +8,22 @@ import { useApp } from '../contexts/AppContext';
  * Rewritten for Clean Slate with Liquid Glass v2 Support
  */
 const Sidebar: React.FC = memo(() => {
-    const { activeLessonId, lessonProgress, setActiveLessonId } = useApp();
+    const { activeLessonId, lessonProgress, setActiveLessonId, setIsSidebarCollapsed } = useApp();
 
     return (
-        <aside className="w-full h-full flex flex-col p-6 overflow-y-auto bg-transparent scrollbar-hide">
+        <aside className="w-full h-full flex flex-col p-4 pr-2 overflow-y-auto bg-transparent scrollbar-hide select-none transition-all duration-300">
+            {/* 1. Header with Hide Button */}
+            <div className="flex items-center justify-between mb-6 px-2">
+                <span className="text-[10px] font-mono font-black text-white/20 uppercase tracking-[0.3em]">Curriculum</span>
+                <button
+                    onClick={() => setIsSidebarCollapsed(true)}
+                    className="p-1.5 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-cyber-cyan hover:border-cyber-cyan/30 transition-all group"
+                    title="Hide Sidebar"
+                >
+                    <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+            </div>
+
             <div className="space-y-8">
                 {SECTIONS.map((section, idx) => (
                     <div key={idx} className="space-y-4">
