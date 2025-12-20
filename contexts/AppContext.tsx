@@ -335,7 +335,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             wpm: stats.wpm,
             accuracy: stats.accuracy,
             errors: stats.errors,
-            durationSeconds: (Date.now() - (stats.startTime || 0)) / 1000
+            durationSeconds: (Date.now() - (stats.startTime || 0)) / 1000,
+            wpmTimeline: stats.wpmTimeline,
+            keystrokeLog: stats.keystrokeLog,
+            handEfficiency: stats.handEfficiency
         };
 
         saveHistory(currentProfile.id, entry);

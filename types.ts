@@ -48,6 +48,15 @@ export interface DailyGoal {
   type: GoalType;
 }
 
+export interface KeystrokeEvent {
+  char: string;
+  code: string;
+  timestamp: number;
+  latency: number; // ms since last character
+  isError: boolean;
+  expectedChar: string;
+}
+
 export interface Stats {
   wpm: number;
   accuracy: number;
@@ -58,6 +67,9 @@ export interface Stats {
   keyStats?: Record<string, KeyStats>;
   fingerStats?: Record<string, FingerStats>;
   formAccuracy?: number; // Percentage of correct finger usage
+  wpmTimeline?: { timestamp: number; wpm: number }[]; // For real-time graphing
+  keystrokeLog?: KeystrokeEvent[]; // For session replay and forensics
+  handEfficiency?: { left: number; right: number }; // Speed/accuracy ratio per hand
 }
 
 export enum GameState {
@@ -81,6 +93,9 @@ export interface HistoryEntry {
   accuracy: number;
   errors: number;
   durationSeconds: number;
+  wpmTimeline?: { timestamp: number; wpm: number }[];
+  keystrokeLog?: KeystrokeEvent[];
+  handEfficiency?: { left: number; right: number };
 }
 
 export interface LessonProgress {

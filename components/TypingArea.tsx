@@ -114,7 +114,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
           errors: engineRefs.errors.current,
           startTime: engineRefs.startTime.current,
           contentLength: content.length,
-          keypressTimestamps: engineRefs.keypressTimestamps.current
+          keystrokeLog: engineRefs.keystrokeLog.current,
+          wpmTimeline: engineRefs.wpmTimeline.current
         }
       });
     }
@@ -130,6 +131,14 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     const finalWpm = Math.round((cursorIndex / 5) / timeMin);
     const finalAcc = Math.round(((cursorIndex - errors) / Math.max(1, cursorIndex)) * 100);
 
+    // Calculate Hand Efficiency (placeholder logic - can be refined with actual finger map)
+    const leftKeys = engineRefs.keystrokeLog.current.filter(k => k.char.match(/[qwertzasdfghxcv]/i));
+    const rightKeys = engineRefs.keystrokeLog.current.filter(k => k.char.match(/[yuiophjklbnm]/i));
+    const handEfficiency = {
+      left: Math.round((leftKeys.filter(k => !k.isError).length / Math.max(1, leftKeys.length)) * 100),
+      right: Math.round((rightKeys.filter(k => !k.isError).length / Math.max(1, rightKeys.length)) * 100)
+    };
+
     onComplete({
       wpm: finalWpm,
       accuracy: Math.max(0, finalAcc),
@@ -137,7 +146,10 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       progress: Math.round((cursorIndex / content.length) * 100),
       startTime: engineRefs.startTime.current,
       completed: true,
-      formAccuracy: finalAcc
+      formAccuracy: finalAcc,
+      keystrokeLog: engineRefs.keystrokeLog.current,
+      wpmTimeline: engineRefs.wpmTimeline.current,
+      handEfficiency
     });
   }, [engineRefs, content.length, onComplete]);
 

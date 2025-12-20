@@ -7,12 +7,13 @@ interface VirtualKeyboardProps {
   pressedKeys: Set<string>;
   layout: KeyboardLayoutType;
   heatmapStats?: Record<string, KeyStats>;
+  heatmapData?: Record<string, { color: string }>; // New granular heatmap
   expectedFinger?: string | null;
   osLayout?: 'win' | 'mac';
 }
 
 const FINGER_COLORS: Record<string, string> = {
-  'left-pinky': 'rgba(236, 72, 153, 0.4)',
+  'left-pinky': 'rgba(236, 72, 113, 0.4)',
   'left-ring': 'rgba(168, 85, 247, 0.4)',
   'left-middle': 'rgba(99, 102, 241, 0.4)',
   'left-index': 'rgba(59, 130, 246, 0.4)',
@@ -28,6 +29,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   pressedKeys,
   layout,
   heatmapStats,
+  heatmapData,
   expectedFinger,
   osLayout = 'win'
 }) => {
@@ -88,11 +90,14 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
           const rectH = rowHeight - gap;
 
           const mapping = LAYOUTS[layout][keyObj.code] || { default: '', shift: '' };
+          const char = mapping.default.toLowerCase();
           const isActive = !!(activeKey && (mapping.default === activeKey || mapping.shift === activeKey || (keyObj.code === 'Space' && activeKey === ' ')));
           const isPressed = pressedKeys.has(mapping.default) || pressedKeys.has(mapping.shift) || (keyObj.label && pressedKeys.has(keyObj.label)) || (keyObj.code === 'Space' && pressedKeys.has(' '));
           const isFingerTarget = !!(expectedFinger && (keyObj.finger === expectedFinger || (keyObj.code === 'Space' && expectedFinger === 'thumb')));
 
-          // Mac has more rounded keys
+          // Heatmap logic
+          const heatmapInfo = heatmapData?.[char];
+
           const borderRadius = osLayout === 'mac' ? 24 : 16;
 
           ctx.beginPath();
@@ -102,11 +107,14 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
           let strokeStyle = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
           let textColor = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)';
 
-          if (isFingerTarget && !isPressed) {
+          if (heatmapInfo && !isActive && !isPressed) {
+            fillStyle = heatmapInfo.color;
+            strokeStyle = 'rgba(255,255,255,0.05)';
+            textColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)';
+          } else if (isFingerTarget && !isPressed) {
             fillStyle = FINGER_COLORS[keyObj.finger || ''] || fillStyle;
             strokeStyle = 'transparent';
           } else if (isActive) {
-            // Layout specific glow
             const accentColor = osLayout === 'mac' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(56, 189, 248, 0.15)';
             const accentStroke = osLayout === 'mac' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(56, 189, 248, 0.4)';
 
@@ -114,7 +122,6 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
             strokeStyle = isDark ? accentStroke : 'rgba(14, 165, 233, 0.3)';
             textColor = isDark ? (osLayout === 'mac' ? '#fff' : '#38bdf8') : '#0284c7';
 
-            // Add soft glow
             ctx.shadowBlur = 15;
             ctx.shadowColor = accentStroke;
           }
@@ -133,12 +140,10 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
             ctx.stroke();
           }
 
-          // Reset shadow
           ctx.shadowBlur = 0;
 
-          // Draw Labels
           ctx.fillStyle = textColor;
-          const fontSize = keyObj.code.length > 5 ? 36 : 48; // Smaller font for long labels
+          const fontSize = keyObj.code.length > 5 ? 36 : 48;
           ctx.font = `700 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -158,7 +163,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
     resize();
 
     return () => window.removeEventListener('resize', resize);
-  }, [activeKey, pressedKeys, layout, heatmapStats, expectedFinger, osLayout]);
+  }, [activeKey, pressedKeys, layout, heatmapStats, heatmapData, expectedFinger, osLayout]);
 
   return (
     <div className="w-full flex justify-center py-6 contain-content select-none">

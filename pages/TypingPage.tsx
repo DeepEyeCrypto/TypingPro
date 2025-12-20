@@ -11,6 +11,7 @@ import { RotateCcw, ChevronRight, Monitor } from 'lucide-react';
 import { KeyStats, Lesson, Stats } from '../types';
 import InstructionalOverlay from '../components/curriculum/InstructionalOverlay';
 import { AnimatePresence } from 'framer-motion';
+import PerformanceGraph from '../components/analytics/PerformanceGraph';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,7 +34,13 @@ export default function TypingPage(): React.ReactNode {
 
     // --- Live Progress State ---
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
-    const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
+    const [liveStats, setLiveStats] = useState<{
+        wpm: number;
+        accuracy: number;
+        errors: number;
+        progress: number;
+        wpmTimeline: { timestamp: number; wpm: number }[];
+    }>({ wpm: 0, accuracy: 100, errors: 0, progress: 0, wpmTimeline: [] });
     const [liveKeyStats] = useState<Record<string, KeyStats>>({});
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [expectedFinger, setExpectedFinger] = useState<string | null>(null);
@@ -61,7 +68,7 @@ export default function TypingPage(): React.ReactNode {
             setActiveLesson(lesson);
             setCurrentLessonId(id);
             setActiveLessonId(id);
-            setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
+            setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0, wpmTimeline: [] });
             setRetryCount(0);
             setModalStats(null);
             setCombo(0);
@@ -80,7 +87,7 @@ export default function TypingPage(): React.ReactNode {
 
     const handleRetry = useCallback(() => {
         setModalStats(null);
-        setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
+        setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0, wpmTimeline: [] });
         setRetryCount(c => c + 1);
         setCombo(0);
         setShowOverlay(false); // Don't show overlay on manual retry
@@ -187,7 +194,7 @@ export default function TypingPage(): React.ReactNode {
                         onComplete={handleComplete}
                         onRestart={handleRetry}
                         onStatsUpdate={(s) => {
-                            setLiveStats(s);
+                            setLiveStats(s as any); // Casting since s is slightly different from worker but contains needed fields
                             if (s.wpm > 0) {
                                 setIsSidebarCollapsed(true);
                                 if (setIsSidebarOpen) setIsSidebarOpen(false);
@@ -216,7 +223,11 @@ export default function TypingPage(): React.ReactNode {
                     </button>
                 </div>
 
-                <div className="w-full max-w-[1200px] mt-16 pb-12 animate-ios-slide" style={{ animationDelay: '400ms' }}>
+                <div className="w-full max-w-[1000px] mt-8 animate-ios-slide" style={{ animationDelay: '350ms' }}>
+                    <PerformanceGraph data={liveStats.wpmTimeline} height={120} isLive={true} />
+                </div>
+
+                <div className="w-full max-w-[1200px] mt-10 pb-12 animate-ios-slide" style={{ animationDelay: '400ms' }}>
                     <div className="w-full opacity-40 hover:opacity-100 transition-opacity duration-700">
                         <VirtualKeyboard
                             activeKey={activeKey}

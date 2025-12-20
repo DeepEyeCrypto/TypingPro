@@ -1,13 +1,6 @@
-
 import { useRef, useCallback, useState } from 'react';
 import { PerformanceMonitor } from '../utils/performanceMonitor';
-
-interface TypingEngineState {
-    cursorIndex: number;
-    errors: number[];
-    startTime: number | null;
-    combo: number;
-}
+import { KeystrokeEvent } from '../../types';
 
 export const useTypingEngine = (content: string, stopOnError: boolean) => {
     // High-frequency data stored in refs to bypass React render cycle
@@ -15,9 +8,10 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
     const errorsRef = useRef<number[]>([]);
     const comboRef = useRef(0);
     const startTimeRef = useRef<number | null>(null);
-    const keypressTimestamps = useRef<number[]>([]);
+    const keystrokeLog = useRef<KeystrokeEvent[]>([]);
+    const wpmTimeline = useRef<{ timestamp: number; wpm: number }[]>([]);
 
-    // Minimal state for non-critical UI updates (e.g. lesson complete, shake effect)
+    // Minimal state for non-critical UI updates
     const [shake, setShake] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
 
@@ -42,10 +36,23 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
             startTimeRef.current = now;
         }
 
+        const prevTimestamp = keystrokeLog.current.length > 0
+            ? keystrokeLog.current[keystrokeLog.current.length - 1].timestamp
+            : startTimeRef.current;
+
+        const event: KeystrokeEvent = {
+            char: key,
+            code: '', // Can be improved if needed, but char is primary
+            timestamp: now,
+            latency: now - prevTimestamp,
+            isError: !isCorrect,
+            expectedChar: targetChar
+        };
+        keystrokeLog.current.push(event);
+
         const currentIndex = cursorIndexRef.current;
 
         if (isCorrect) {
-            keypressTimestamps.current.push(now);
             cursorIndexRef.current += 1;
             comboRef.current += 1;
             setShake(false);
@@ -58,13 +65,19 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
                 cursorIndexRef.current += 1;
             }
             setShake(true);
-            // Non-critical: auto-reset shake
             setTimeout(() => setShake(false), 150);
         }
 
         // Check completion
         if (cursorIndexRef.current >= content.length) {
             setIsComplete(true);
+        }
+
+        // Periodic WPM Timeline Check (e.g. every 5 characters or 1s)
+        if (cursorIndexRef.current % 5 === 0) {
+            const timeMin = (now - startTimeRef.current) / 60000;
+            const currentWpm = Math.round((cursorIndexRef.current / 5) / Math.max(0.01, timeMin));
+            wpmTimeline.current.push({ timestamp: now, wpm: currentWpm });
         }
 
         // Immediate callback for Direct DOM manipulation
@@ -84,21 +97,21 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
         errorsRef.current = [];
         comboRef.current = 0;
         startTimeRef.current = null;
-        keypressTimestamps.current = [];
+        keystrokeLog.current = [];
+        wpmTimeline.current = [];
         setShake(false);
         setIsComplete(false);
     }, []);
 
     return {
-        // High-frequency values (read-only for component)
         engineRefs: {
             cursorIndex: cursorIndexRef,
             errors: errorsRef,
             combo: comboRef,
             startTime: startTimeRef,
-            keypressTimestamps
+            keystrokeLog,
+            wpmTimeline
         },
-        // Minimal React state
         shake,
         isComplete,
         handleInput,

@@ -1,7 +1,4 @@
-
-/**
- * statsWorker.ts - High-performance off-thread stats calculation
- */
+import { KeystrokeEvent } from '../../types';
 
 export interface StatsEvent {
     type: 'UPDATE_STATS';
@@ -10,13 +7,14 @@ export interface StatsEvent {
         errors: number[];
         startTime: number | null;
         contentLength: number;
-        keypressTimestamps: number[];
+        keystrokeLog: KeystrokeEvent[];
+        wpmTimeline: { timestamp: number; wpm: number }[];
     };
 }
 
 self.onmessage = (e: MessageEvent<StatsEvent>) => {
     if (e.data.type === 'UPDATE_STATS') {
-        const { cursorIndex, errors, startTime, contentLength, keypressTimestamps } = e.data.data;
+        const { cursorIndex, errors, startTime, contentLength, keystrokeLog, wpmTimeline } = e.data.data;
 
         if (!startTime) return;
 
@@ -27,10 +25,10 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
         // Overall WPM
         const wpm = Math.round((cursorIndex / 5) / timeMin);
 
-        // Rolling WPM (last 60s)
-        const cutoff = now - 60000;
-        const filteredKeypresses = keypressTimestamps.filter(t => t > cutoff);
-        const rollingWpm = Math.round(filteredKeypresses.length / 5);
+        // Rolling WPM (last 10s for more sensitivity in graphs)
+        const cutoff = now - 10000;
+        const recentKeystrokes = keystrokeLog.filter(k => k.timestamp > cutoff && !k.isError);
+        const rollingWpm = Math.round((recentKeystrokes.length / 5) * 6); // Normalize to 60s
 
         // Accuracy
         const accuracy = Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100);
@@ -41,11 +39,13 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
         self.postMessage({
             type: 'STATS_UPDATED',
             stats: {
-                wpm: rollingWpm, // Use rolling for live display? or hybrid?
+                wpm: rollingWpm,
                 totalWpm: wpm,
                 accuracy,
                 errors: errors.length,
-                progress
+                progress,
+                wpmTimeline,
+                keystrokeLog
             }
         });
     }
