@@ -172,20 +172,20 @@
 @layer components {
   .glass-panel {
     background: rgba(13, 13, 13, var(--glass-opacity));
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid rgba(0, 242, 255, var(--glass-border-opacity));
-    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.3);
-    will-change: transform, opacity;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+    will-change: transform;
     transform: translateZ(0);
+    contain: content;
   }
 
   .glass-card {
     background: rgba(13, 13, 13, calc(var(--glass-opacity) + 0.2));
     border: 1px solid rgba(188, 19, 254, 0.15);
-    @apply rounded-[2rem] transition-all duration-300;
-    will-change: transform, border-color, box-shadow;
+    @apply rounded-[2rem] transition-all duration-200;
+    will-change: transform;
     transform: translateZ(0);
+    contain: content;
   }
 
   .glass-card:hover {

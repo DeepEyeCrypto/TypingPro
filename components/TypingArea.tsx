@@ -5,6 +5,7 @@ import { useSound } from '../contexts/SoundContext';
 import { AlertCircle } from 'lucide-react';
 import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
 import { useTypingEngine } from '../src/hooks/useTypingEngine';
+import { PerformanceMonitor } from '../src/utils/performanceMonitor';
 
 interface TypingAreaProps {
   content: string;
@@ -30,21 +31,25 @@ interface TypingAreaProps {
 
 const IDLE_THRESHOLD = 5000;
 
-// Optimized character component
-const CharSpan = memo(({ char, idx, cursorIndex, isError, isPassed, shake, fontSize }: {
+/**
+ * Optimized character component
+ * Minimal styles, GPU hints, and memoization.
+ */
+const CharSpan = memo(({ char, idx, cursorIndex, isError, isPassed, fontSize }: {
   char: string,
   idx: number,
   cursorIndex: number,
   isError: boolean,
   isPassed: boolean,
-  shake: boolean,
   fontSize: FontSize
 }) => {
-  let className = `inline text-center transition-all duration-75 px-[0.5px] ${getTextSizeClass(fontSize)} `;
+  const isCurrent = idx === cursorIndex;
 
-  if (idx === cursorIndex) {
-    className += "bg-brand/80 text-white rounded-lg shadow-[0_0_20px_rgba(var(--brand-rgb),0.5)] glow-text scale-110 relative z-10 mx-1";
-    if (shake) className += " animate-pulse bg-red-500 shadow-red-500/50";
+  // Static style string to prevent re-parsing
+  let className = `inline text-center transition-opacity duration-75 px-[0.5px] will-change-transform ${getTextSizeClass(fontSize)} `;
+
+  if (isCurrent) {
+    className += "bg-brand/80 text-white rounded-lg shadow-sm relative z-10 mx-1 scale-105";
   } else if (isPassed) {
     className += isError ? "text-red-500/80" : "text-white/20";
   } else {
@@ -93,7 +98,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => workerRef.current?.terminate();
   }, [onStatsUpdate]);
 
-  // Sync with Worker on Every Keypress (or throttled)
+  // Sync with Worker
   useEffect(() => {
     if (state.startTime && workerRef.current) {
       workerRef.current.postMessage({
@@ -112,7 +117,6 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const finalizeSession = useCallback(() => {
     if (!state.startTime) return;
 
-    // Final stats calc (could also request from worker one last time)
     const finalTime = Date.now();
     const durationMs = finalTime - state.startTime;
     const timeMin = Math.max(0.1, durationMs / 60000);
@@ -126,15 +130,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       progress: Math.round((state.cursorIndex / content.length) * 100),
       startTime: state.startTime,
       completed: true,
-      formAccuracy: finalAcc // Simplified for worker refactor
+      formAccuracy: finalAcc
     });
   }, [state, content.length, onComplete]);
 
   useEffect(() => {
     if (lessonType === 'burst' && state.startTime && isActive) {
-      const timer = setTimeout(() => {
-        finalizeSession();
-      }, 15000);
+      const timer = setTimeout(() => finalizeSession(), 15000);
       return () => clearTimeout(timer);
     }
   }, [lessonType, state.startTime, isActive, finalizeSession]);
@@ -155,28 +157,32 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const getFingerForChar = useCallback((c: string): string => {
     const char = c.toLowerCase();
     if (char === ' ') return 'thumb';
-    for (const row of KEYBOARD_ROWS) {
-      const key = row.find(k => {
-        const mappings = LAYOUTS['qwerty'][k.code];
-        return mappings && (mappings.default === char || mappings.shift === char);
-      });
-      if (key) return key.finger || 'thumb';
-    }
-    return 'thumb';
+    const rowIdx = KEYBOARD_ROWS.findIndex(row =>
+      row.some(k => {
+        const m = LAYOUTS['qwerty'][k.code];
+        return m && (m.default === char || m.shift === char);
+      })
+    );
+    if (rowIdx === -1) return 'thumb';
+    const key = KEYBOARD_ROWS[rowIdx].find(k => {
+      const m = LAYOUTS['qwerty'][k.code];
+      return m && (m.default === char || m.shift === char);
+    });
+    return key?.finger || 'thumb';
   }, []);
 
   useEffect(() => {
     const targetChar = content[state.cursorIndex];
     if (onActiveKeyChange) onActiveKeyChange(targetChar || null);
-
-    const finger = targetChar ? getFingerForChar(targetChar) : null;
-    if (onFingerChange) onFingerChange(finger);
+    if (onFingerChange && targetChar) onFingerChange(getFingerForChar(targetChar));
   }, [state.cursorIndex, content, onActiveKeyChange, onFingerChange, getFingerForChar]);
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
+  const onKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (state.cursorIndex >= content.length) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
+
+    PerformanceMonitor.startMeasure('keystroke-response');
 
     const isCorrect = handleInput(e.key);
     if (soundEnabled) playSound();
@@ -184,10 +190,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (isCorrect && state.cursorIndex + 1 === content.length) {
       finalizeSession();
     }
-  };
+
+    // Measure time until the end of this tick (approximate React render)
+    requestAnimationFrame(() => PerformanceMonitor.endMeasure('keystroke-response'));
+  }, [state.cursorIndex, content.length, handleInput, soundEnabled, playSound, finalizeSession]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative py-10" onClick={() => inputRef.current?.focus()}>
+    <div className="w-full h-full flex flex-col items-center justify-center relative py-10 contain-layout" onClick={() => inputRef.current?.focus()}>
       <input
         ref={inputRef}
         type="text"
@@ -198,12 +207,12 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       />
 
       {state.shake && (
-        <div className="absolute top-0 animate-bounce bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 z-50 will-change-transform">
           <AlertCircle size={14} /> Correct your form!
         </div>
       )}
 
-      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed tracking-tight select-none ${state.shake ? 'animate-shake' : ''}`}>
+      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed tracking-tight select-none will-change-transform ${state.shake ? 'animate-shake' : ''}`}>
         {content.split('').map((char, idx) => (
           <CharSpan
             key={idx}
@@ -212,7 +221,6 @@ const TypingArea: React.FC<TypingAreaProps> = ({
             cursorIndex={state.cursorIndex}
             isError={state.errors.includes(idx)}
             isPassed={idx < state.cursorIndex}
-            shake={state.shake}
             fontSize={fontSize}
           />
         ))}

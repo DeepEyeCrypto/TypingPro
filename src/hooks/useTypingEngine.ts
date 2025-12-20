@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { PerformanceMonitor } from '../utils/performanceMonitor';
 
 interface TypingEngineState {
     input: string;
@@ -25,10 +26,15 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
     lastState.current = state;
 
     const handleInput = useCallback((key: string) => {
-        const now = Date.now();
-        const { cursorIndex, input, errors, startTime, combo } = lastState.current;
+        PerformanceMonitor.startMeasure('typing-engine-input');
 
-        if (cursorIndex >= content.length) return;
+        const now = Date.now();
+        const { cursorIndex, startTime } = lastState.current;
+
+        if (cursorIndex >= content.length) {
+            PerformanceMonitor.endMeasure('typing-engine-input');
+            return;
+        }
 
         const targetChar = content[cursorIndex];
         const isCorrect = key === targetChar;
@@ -55,10 +61,11 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
                 cursorIndex: stopOnError ? prev.cursorIndex : prev.cursorIndex + 1
             }));
 
-            // Auto-reset shake
-            setTimeout(() => setState(prev => ({ ...prev, shake: false })), 200);
+            // Auto-reset shake with a faster timeout or deferred
+            setTimeout(() => setState(prev => ({ ...prev, shake: false })), 150);
         }
 
+        PerformanceMonitor.endMeasure('typing-engine-input');
         return isCorrect;
     }, [content, stopOnError]);
 
