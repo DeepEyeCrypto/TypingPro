@@ -24,21 +24,13 @@ export const AppShell: React.FC<AppShellProps> = ({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className={`flex flex-col h-screen w-full bg-deep-charcoal text-white/90 selection:bg-cyber-cyan/30 relative overflow-hidden ${className}`}>
+        <div className={`flex flex-col h-screen w-full bg-[#f0f4f8] dark:bg-[#0a0e27] text-slate-900 dark:text-white/90 selection:bg-sky-500/30 relative overflow-hidden transition-colors duration-700 ${className}`}>
             <FuturisticBackground />
 
             {header && (
-                <header className="z-[60] glass-panel border-b border-white/5 h-16 md:h-20 flex items-center px-4 md:px-6 shrink-0 rounded-none">
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="lg:hidden p-2 text-white/40 hover:text-white transition-colors mr-4"
-                    >
-                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                    <div className="flex-1">
-                        {header}
-                    </div>
-                </header>
+                <div className="z-[60] shrink-0">
+                    {header}
+                </div>
             )}
 
             <div className="flex flex-1 overflow-hidden relative">
@@ -46,9 +38,9 @@ export const AppShell: React.FC<AppShellProps> = ({
                 {sidebar && (
                     <>
                         <aside
-                            className={`hidden lg:flex flex-col h-full bg-black/40 backdrop-blur-3xl border-r border-white/5 transition-all duration-300 ease-in-out relative overflow-hidden ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-[300px] opacity-100'}`}
+                            className={`hidden lg:flex flex-col h-full bg-white/40 dark:bg-black/20 backdrop-blur-3xl border-r border-black/5 dark:border-white/5 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) relative overflow-hidden ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-[320px] opacity-100'}`}
                         >
-                            <div className="flex-1 overflow-y-auto scrollbar-hide w-[300px]">
+                            <div className="flex-1 overflow-y-auto scrollbar-hide w-[320px]">
                                 {sidebar}
                             </div>
                         </aside>
@@ -56,27 +48,11 @@ export const AppShell: React.FC<AppShellProps> = ({
                         {/* Floating Trigger (Only visible when collapsed) */}
                         <button
                             onClick={() => onToggleSidebar?.(false)}
-                            className={`hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 z-[70] p-3 bg-cyber-cyan text-deep-charcoal rounded-r-2xl shadow-cyan-glow hover:bg-cyan-400 transition-all duration-500 transform ${isSidebarCollapsed ? 'translate-x-0 scale-100' : '-translate-x-full scale-50'}`}
+                            className={`hidden lg:flex fixed left-6 top-1/2 -translate-y-1/2 z-[70] p-4 bg-white dark:bg-sky-500 text-sky-600 dark:text-white rounded-[24px] shadow-2xl hover:scale-110 active:scale-95 transition-all duration-500 transform ${isSidebarCollapsed ? 'translate-x-0 scale-100' : '-translate-x-32 scale-50'}`}
                             title="Show Sidebar"
                         >
-                            <ChevronRight size={20} className="animate-pulse" />
+                            <ChevronRight size={24} />
                         </button>
-
-                        {/* Mobile Side Drawer */}
-                        {isMobileMenuOpen && (
-                            <div className="fixed inset-0 z-[100] lg:hidden">
-                                <div className="absolute inset-0 bg-black/95" onClick={() => setIsMobileMenuOpen(false)} />
-                                <aside className="absolute left-0 top-0 bottom-0 w-[280px] bg-[#050508] border-r border-white/10 shadow-3xl animate-in slide-in-from-left duration-500">
-                                    <div className="flex justify-between items-center p-6 border-b border-white/5">
-                                        <span className="font-black text-xl tracking-tighter">TYPINGPRO</span>
-                                        <button onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white transition-colors"><X /></button>
-                                    </div>
-                                    <div className="h-[calc(100%-80px)] overflow-y-auto p-2">
-                                        {sidebar}
-                                    </div>
-                                </aside>
-                            </div>
-                        )}
                     </>
                 )}
 
@@ -89,13 +65,29 @@ export const AppShell: React.FC<AppShellProps> = ({
                     </div>
                 </main>
 
-                {/* 3. Right Panel */}
+                {/* 3. Right Panel (Stats etc.) */}
                 {rightPanel && (
-                    <aside className="hidden 2xl:block w-[300px] h-full bg-black/10 border-l border-white/5 overflow-y-auto scrollbar-hide">
+                    <aside className="hidden 2xl:block w-[320px] h-full bg-black/5 border-l border-black/5 dark:border-white/5 overflow-y-auto scrollbar-hide">
                         {rightPanel}
                     </aside>
                 )}
             </div>
+
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-[100] lg:hidden">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+                    <aside className="absolute left-4 top-4 bottom-4 w-[300px] glass-card-modern shadow-3xl animate-ios-slide p-0 overflow-hidden border-white/20">
+                        <div className="flex justify-between items-center p-6 border-b border-white/10">
+                            <span className="font-bold text-xl tracking-tight">TypingPro</span>
+                            <button onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white transition-colors"><X /></button>
+                        </div>
+                        <div className="h-[calc(100%-80px)] overflow-y-auto p-4">
+                            {sidebar}
+                        </div>
+                    </aside>
+                </div>
+            )}
         </div>
     );
 };

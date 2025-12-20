@@ -89,34 +89,34 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200">
-            <div className="glass-panel w-full max-w-5xl rounded-[2.5rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden border border-white/5">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 dark:bg-black/40 backdrop-blur-xl p-4 animate-in fade-in duration-300">
+            <div className="glass-card-modern w-full max-w-5xl shadow-[0_32px_128px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh] overflow-hidden border-white/40 dark:border-white/10 p-0">
 
                 {/* Header */}
-                <div className="flex items-center justify-between px-8 py-6 bg-white dark:bg-[#111827] border-b border-gray-200 dark:border-gray-800">
+                <div className="flex items-center justify-between px-10 py-8 bg-white/30 dark:bg-white/5 border-b border-black/5 dark:border-white/5">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Stats Dashboard</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Deep dive into your typing performance</p>
+                        <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Performance</h2>
+                        <p className="text-sm font-medium text-slate-400 dark:text-white/30">Your journey towards typing mastery</p>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
+                        <div className="glass-segmented shadow-sm">
                             {(['all', 'month', 'week'] as TimeRange[]).map((range) => (
                                 <button
                                     key={range}
                                     onClick={() => setTimeRange(range)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${timeRange === range
-                                        ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+                                    className={`px-4 py-1.5 text-xs font-bold rounded-xl transition-all ${timeRange === range
+                                        ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                                        : 'text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50'
                                         }`}
                                 >
-                                    {range === 'all' ? 'All Time' : range === 'month' ? '30 Days' : '7 Days'}
+                                    {range === 'all' ? 'All' : range === 'month' ? '30D' : '7D'}
                                 </button>
                             ))}
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-500 transition-colors"
+                            className="p-2.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl text-slate-400 dark:text-white/20 transition-all active:scale-95"
                         >
                             <X className="w-6 h-6" />
                         </button>
@@ -124,149 +124,128 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
                 </div>
 
                 {/* Scrollable Content */}
-                <div className="flex-1 overflow-y-auto p-8 scrollbar-thin">
+                <div className="flex-1 overflow-y-auto p-10 scrollbar-hide">
 
                     {/* KPI Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div className="glass-card p-6 relative overflow-hidden group">
-                            <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <Target className="w-24 h-24" />
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                        <div className="bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                            <div className="text-[10px] font-black text-slate-400 dark:text-white/20 mb-1 uppercase tracking-widest flex items-center gap-2">
+                                <Activity className="w-3.5 h-3.5 text-sky-500" /> Avg Speed
                             </div>
-                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
-                                <Activity className="w-4 h-4 text-blue-500" /> Avg Speed
-                            </div>
-                            <div className="text-3xl font-bold text-white">{stats.avgWpm} <span className="text-sm font-normal text-white/20">WPM</span></div>
+                            <div className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">{stats.avgWpm} <span className="text-sm font-medium text-slate-400 dark:text-white/20">WPM</span></div>
                         </div>
 
-                        <div className="glass-card p-6 relative overflow-hidden group">
-                            <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <TrendingUp className="w-24 h-24" />
+                        <div className="bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                            <div className="text-[10px] font-black text-slate-400 dark:text-white/20 mb-1 uppercase tracking-widest flex items-center gap-2">
+                                <TrendingUp className="w-3.5 h-3.5 text-emerald-500" /> Peak
                             </div>
-                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-green-500" /> Top Speed
-                            </div>
-                            <div className="text-3xl font-bold text-white">{stats.bestWpm} <span className="text-sm font-normal text-white/20">WPM</span></div>
+                            <div className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">{stats.bestWpm} <span className="text-sm font-medium text-slate-400 dark:text-white/20">WPM</span></div>
                         </div>
 
-                        <div className="glass-card p-6 relative overflow-hidden group">
-                            <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <Target className="w-24 h-24" />
+                        <div className="bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                            <div className="text-[10px] font-black text-slate-400 dark:text-white/20 mb-1 uppercase tracking-widest flex items-center gap-2">
+                                <Target className="w-3.5 h-3.5 text-rose-500" /> Accuracy
                             </div>
-                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
-                                <Target className="w-4 h-4 text-orange-500" /> Accuracy
-                            </div>
-                            <div className="text-3xl font-bold text-white">{stats.avgAcc}%</div>
+                            <div className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">{stats.avgAcc}%</div>
                         </div>
 
-                        <div className="glass-card p-6 relative overflow-hidden group">
-                            <div className="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <Clock className="w-24 h-24" />
+                        <div className="bg-white/40 dark:bg-white/5 border border-black/5 dark:border-white/10 p-6 rounded-3xl relative overflow-hidden group">
+                            <div className="text-[10px] font-black text-slate-400 dark:text-white/20 mb-1 uppercase tracking-widest flex items-center gap-2">
+                                <Clock className="w-3.5 h-3.5 text-amber-500" /> Dedication
                             </div>
-                            <div className="text-sm font-medium text-white/40 mb-1 flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-purple-500" /> Practice Time
-                            </div>
-                            <div className="text-3xl font-bold text-white">{stats.totalTime} <span className="text-sm font-normal text-white/20">mins</span></div>
+                            <div className="text-4xl font-black text-slate-800 dark:text-white tracking-tight">{stats.totalTime} <span className="text-sm font-medium text-slate-400 dark:text-white/20">MINS</span></div>
                         </div>
                     </div>
 
                     {/* Scientific Analytics Row */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                         <div className="lg:col-span-1">
                             <HeatmapAnalyzer fingerStats={fingerStats} />
                         </div>
-                        <div className="lg:col-span-2 bg-white dark:bg-[#111827] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Performance Trend</h3>
-                                <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+                        <div className="lg:col-span-2 bg-white/40 dark:bg-white/5 p-8 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">Velocity Trend</h3>
+                                <div className="glass-segmented shadow-sm">
                                     <button
                                         onClick={() => setMetric('wpm')}
-                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${metric === 'wpm' ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-gray-500'}`}
+                                        className={`px-4 py-1.5 text-[10px] font-bold rounded-xl transition-all ${metric === 'wpm' ? 'bg-white dark:bg-white/10 text-sky-500 shadow-sm' : 'text-slate-400 dark:text-white/20'}`}
                                     >WPM</button>
                                     <button
                                         onClick={() => setMetric('accuracy')}
-                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${metric === 'accuracy' ? 'bg-white dark:bg-gray-700 shadow-sm text-green-600 dark:text-green-400' : 'text-gray-500'}`}
-                                    >Accuracy</button>
+                                        className={`px-4 py-1.5 text-[10px] font-bold rounded-xl transition-all ${metric === 'accuracy' ? 'bg-white dark:bg-white/10 text-emerald-500 shadow-sm' : 'text-slate-400 dark:text-white/20'}`}
+                                    >ACC</button>
                                 </div>
                             </div>
 
                             <div className="h-[250px] w-full flex items-end gap-2 relative">
                                 {filteredHistory.length < 2 ? (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-xl">
-                                        Not enough data for trend
+                                    <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-white/10 text-sm border-2 border-dashed border-black/5 dark:border-white/5 rounded-3xl">
+                                        Gathering data coordinates...
                                     </div>
                                 ) : (
                                     <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 250">
-                                        <line x1="0" y1="0" x2="1000" y2="0" stroke="currentColor" className="text-gray-100 dark:text-gray-800" strokeWidth="1" />
-                                        <line x1="0" y1="125" x2="1000" y2="125" stroke="currentColor" className="text-gray-100 dark:text-gray-800" strokeWidth="1" />
-                                        <line x1="0" y1="250" x2="1000" y2="250" stroke="currentColor" className="text-gray-100 dark:text-gray-800" strokeWidth="1" />
-
                                         <polyline
                                             points={getPoints(filteredHistory.map(h => metric === 'wpm' ? h.wpm : h.accuracy), 250, 1000)}
                                             fill="none"
-                                            stroke={metric === 'wpm' ? '#3B82F6' : '#10B981'}
-                                            strokeWidth="3"
+                                            stroke={metric === 'wpm' ? '#0ea5e9' : '#10b981'}
+                                            strokeWidth="4"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
-                                            className="drop-shadow-sm"
                                         />
                                     </svg>
                                 )}
                             </div>
-                            <div className="flex justify-between mt-2 text-xs text-gray-400 font-medium">
-                                <span>{filteredHistory.length > 0 ? new Date(filteredHistory[0].date).toLocaleDateString() : ''}</span>
-                                <span>{filteredHistory.length > 0 ? new Date(filteredHistory[filteredHistory.length - 1].date).toLocaleDateString() : ''}</span>
-                            </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Lesson Breakdown */}
-                        <div className="bg-white dark:bg-[#111827] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Lesson Breakdown</h3>
-                            <div className="flex-1 flex flex-col gap-3 overflow-y-auto max-h-[250px] pr-2 scrollbar-thin">
+                        <div className="bg-white/40 dark:bg-white/5 p-8 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm flex flex-col">
+                            <h3 className="text-xl font-black text-slate-800 dark:text-white mb-6">Milestones</h3>
+                            <div className="flex-1 flex flex-col gap-4 overflow-y-auto max-h-[300px] pr-2 scrollbar-hide">
                                 {lessonPerformance.map(lp => (
                                     <div key={lp.id} className="group">
-                                        <div className="flex justify-between text-xs mb-1">
-                                            <span className="font-semibold text-gray-700 dark:text-gray-300">Lesson {lp.id}</span>
-                                            <span className="text-gray-500">{lp.avgWpm} wpm</span>
+                                        <div className="flex justify-between text-[10px] mb-2 font-black uppercase tracking-widest">
+                                            <span className="text-slate-400 dark:text-white/30">Lesson {lp.id}</span>
+                                            <span className="text-sky-500">{lp.avgWpm} WPM</span>
                                         </div>
-                                        <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                        <div className="h-2 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-blue-500 dark:bg-blue-600 rounded-full transition-all group-hover:bg-blue-400"
+                                                className="h-full bg-sky-500/50 rounded-full transition-all group-hover:bg-sky-500"
                                                 style={{ width: `${Math.min(100, (lp.avgWpm / (stats.bestWpm || 100)) * 100)}%` }}
                                             ></div>
                                         </div>
                                     </div>
                                 ))}
                                 {lessonPerformance.length === 0 && (
-                                    <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">No lesson data</div>
+                                    <div className="flex-1 flex items-center justify-center text-slate-400 dark:text-white/10 text-sm italic">No records found</div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Recent Session List (Compact) */}
-                        <div className="lg:col-span-2 bg-white dark:bg-[#111827] rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 font-bold text-gray-900 dark:text-white">
-                                Recent Sessions
+                        {/* Recent Session List (iOS Style Table) */}
+                        <div className="lg:col-span-2 bg-white/40 dark:bg-white/5 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm overflow-hidden flex flex-col">
+                            <div className="px-8 py-6 border-b border-black/5 dark:border-white/5 font-black text-slate-800 dark:text-white uppercase tracking-widest text-xs">
+                                Recent Activity
                             </div>
-                            <div className="max-h-[300px] overflow-y-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400">
+                            <div className="flex-1 overflow-y-auto max-h-[350px] scrollbar-hide">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="text-slate-400 dark:text-white/20 uppercase tracking-widest">
                                         <tr>
-                                            <th className="px-6 py-3 font-medium">Date</th>
-                                            <th className="px-6 py-3 font-medium">Lesson</th>
-                                            <th className="px-6 py-3 font-medium">WPM</th>
-                                            <th className="px-6 py-3 font-medium">Accuracy</th>
+                                            <th className="px-8 py-4 font-bold">Date</th>
+                                            <th className="px-8 py-4 font-bold">Session</th>
+                                            <th className="px-8 py-4 font-bold">Speed</th>
+                                            <th className="px-8 py-4 font-bold">Correctness</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    <tbody className="divide-y divide-black/5 dark:divide-white/5">
                                         {[...filteredHistory].reverse().slice(0, 10).map(entry => (
-                                            <tr key={entry.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30">
-                                                <td className="px-6 py-3 text-gray-600 dark:text-gray-400">{new Date(entry.date).toLocaleDateString()}</td>
-                                                <td className="px-6 py-3 text-gray-900 dark:text-white font-medium">Lesson {entry.lessonId}</td>
-                                                <td className="px-6 py-3 font-mono text-gray-700 dark:text-gray-300">{entry.wpm}</td>
-                                                <td className="px-6 py-3">
-                                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${entry.accuracy >= 95 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
+                                            <tr key={entry.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+                                                <td className="px-8 py-4 text-slate-500 dark:text-white/40 font-medium">{new Date(entry.date).toLocaleDateString()}</td>
+                                                <td className="px-8 py-4 text-slate-800 dark:text-white font-bold">{LESSONS.find(l => l.id === entry.lessonId)?.title || `Lesson ${entry.lessonId}`}</td>
+                                                <td className="px-8 py-4 font-black text-sky-500">{entry.wpm}</td>
+                                                <td className="px-8 py-4">
+                                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-black tracking-tight ${entry.accuracy >= 95 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
                                                         {entry.accuracy}%
                                                     </span>
                                                 </td>

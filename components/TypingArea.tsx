@@ -88,21 +88,21 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     // Update the character that was just typed
     const typedSpan = charRefs.current[index];
     if (typedSpan) {
-      typedSpan.className = `inline text-center px-[0.5px] transition-none ${getTextSizeClass(fontSize)} ${isCorrect ? 'text-white/20' : 'text-red-500/80'}`;
+      typedSpan.className = `inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} ${isCorrect ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`;
     }
 
     // Update the new cursor position
     const nextSpan = charRefs.current[cursorIndex];
     if (nextSpan) {
-      nextSpan.className = `inline text-center px-[0.5px] transition-none ${getTextSizeClass(fontSize)} bg-brand/80 text-white rounded-lg shadow-sm relative z-10 mx-1 scale-105`;
+      nextSpan.className = `inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} bg-sky-500 text-white rounded-xl shadow-lg relative z-10 mx-[2px] scale-110`;
     }
 
-    // Non-critical updates can be debounced or moved to worker
+    // Non-critical updates
     if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
     if (onFingerChange && content[cursorIndex]) onFingerChange(getFingerForChar(content[cursorIndex]));
     if (onComboUpdate) onComboUpdate(combo);
 
-    // Sync with worker for heavy stats
+    // Sync with worker
     if (workerRef.current && engineRefs.startTime.current) {
       workerRef.current.postMessage({
         type: 'UPDATE_STATS',
@@ -156,7 +156,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     // Reset visual spans
     charRefs.current.forEach((span, idx) => {
       if (span) {
-        span.className = `inline text-center px-[0.5px] transition-none ${getTextSizeClass(fontSize)} ${idx === 0 ? 'bg-brand/80 text-white rounded-lg shadow-sm relative z-10 mx-1 scale-105' : 'text-white/40'}`;
+        span.className = `inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} ${idx === 0 ? 'bg-sky-500 text-white rounded-xl shadow-lg relative z-10 mx-[2px] scale-110' : 'text-slate-400 dark:text-white/20'}`;
       }
     });
     if (onActiveKeyChange) onActiveKeyChange(content[0] || null);
@@ -179,14 +179,14 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     <span
       key={idx}
       ref={el => { charRefs.current[idx] = el; }}
-      className={`inline text-center px-[0.5px] transition-none ${getTextSizeClass(fontSize)} ${idx === 0 ? 'bg-brand/80 text-white rounded-lg shadow-sm relative z-10 mx-1 scale-105' : 'text-white/40'}`}
+      className={`inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} ${idx === 0 ? 'bg-sky-500 text-white rounded-xl shadow-lg relative z-10 mx-[2px] scale-110' : 'text-slate-400 dark:text-white/20'}`}
     >
       {char === ' ' ? '\u00A0' : char}
     </span>
   )), [content, fontSize]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative py-10 contain-layout" onClick={() => inputRef.current?.focus()}>
+    <div className="w-full h-full flex flex-col items-center justify-center relative py-12 contain-layout" onClick={() => inputRef.current?.focus()}>
       <input
         ref={inputRef}
         type="text"
@@ -197,12 +197,12 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       />
 
       {shake && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 z-50 will-change-transform">
-          <AlertCircle size={14} /> Correct your form!
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-6 py-2.5 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 z-50 animate-ios-slide">
+          <AlertCircle size={16} /> Correct your posture!
         </div>
       )}
 
-      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed tracking-tight select-none will-change-transform ${shake ? 'animate-shake' : ''}`}>
+      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed select-none will-change-transform ${shake ? 'animate-shake' : ''}`}>
         {chars}
       </div>
     </div>

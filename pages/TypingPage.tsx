@@ -1,30 +1,23 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import TypingArea from '../components/TypingArea';
 import VirtualKeyboard from '../components/VirtualKeyboard';
 import KeyboardHandsOverlay from '../components/KeyboardHandsOverlay';
-import ComboMeter from '../components/typing/ComboMeter';
 import LessonVideoPlayer from '../components/LessonVideoPlayer';
-import { StatsCard } from '../components/stats/StatsCard';
-import { GoalsPanel } from '../components/stats/GoalsPanel';
 import { useApp } from '../contexts/AppContext';
 import { LESSONS } from '../constants';
 import { CODE_SNIPPETS } from '../constants/codeSnippets';
-import { Code, Type, RotateCcw, ChevronRight, BarChart3 } from 'lucide-react';
-import { Stats, KeyStats, Lesson } from '../types';
+import { RotateCcw, ChevronRight, X } from 'lucide-react';
+import { KeyStats, Lesson, Stats } from '../types';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-/**
- * TypingPage - Liquid Overhaul
- * Integrated with Adaptive Grid System
- */
 export default function TypingPage(): React.ReactNode {
     const {
-        currentProfile, settings, lessonProgress, recordLessonComplete,
-        setActiveLessonId, recordKeyStats, isCodeMode, setIsCodeMode, setActiveModal
+        settings, recordLessonComplete,
+        setActiveLessonId, recordKeyStats, isCodeMode, setIsSidebarCollapsed
     } = useApp();
 
     const { setIsSidebarOpen } = useOutletContext<MainLayoutContext>() || {};
@@ -34,12 +27,11 @@ export default function TypingPage(): React.ReactNode {
     const [activeLesson, setActiveLesson] = useState<Lesson>(LESSONS[0]);
     const [retryCount, setRetryCount] = useState<number>(0);
     const [videoVisible, setVideoVisible] = useState<boolean>(false);
-    const [showMobileStats, setShowMobileStats] = useState(false);
 
     // --- Live Progress State ---
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
     const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
-    const [liveKeyStats, setLiveKeyStats] = useState<Record<string, KeyStats>>({});
+    const [liveKeyStats] = useState<Record<string, KeyStats>>({});
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [expectedFinger, setExpectedFinger] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
@@ -55,7 +47,6 @@ export default function TypingPage(): React.ReactNode {
                 id,
                 title: `Code: ${snippet.language}`,
                 content: snippet.content,
-                newKeys: [],
                 keys: [],
                 description: `Master ${snippet.language} syntax`
             };
@@ -68,7 +59,6 @@ export default function TypingPage(): React.ReactNode {
             setCurrentLessonId(id);
             setActiveLessonId(id);
             setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0 });
-            setLiveKeyStats({});
             setRetryCount(0);
             setModalStats(null);
             setCombo(0);
@@ -124,166 +114,144 @@ export default function TypingPage(): React.ReactNode {
         };
     }, [handleRetry]);
 
-    const StatsSidebar = () => (
-        <div className="flex flex-col gap-8 p-10 h-full overflow-y-auto">
-            <GoalsPanel
-                wpmGoal={settings.wpmGoal}
-                accuracyGoal={settings.accuracyGoal}
-                dailyProgress={75}
-            />
-
-            <div className="space-y-6">
-                <h3 className="text-xs font-black text-white/30 uppercase tracking-[0.2em]">Live Performance</h3>
-                <div className="grid grid-cols-1 gap-4">
-                    <StatsCard label="WPM" value={liveStats.wpm} icon="wpm" />
-                    <StatsCard label="Accuracy" value={`${liveStats.accuracy}%`} icon="accuracy" />
-                    <StatsCard label="Progress" value={`${liveStats.progress}%`} icon="progress" />
-                </div>
+    const StatsPills = () => (
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-10 animate-ios-slide">
+            <div className="px-6 py-3 rounded-[20px] bg-white dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm flex flex-col items-center min-w-[100px]">
+                <span className="text-xl font-black text-slate-800 dark:text-white">{liveStats.wpm}</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">WPM</span>
             </div>
+            <div className="px-6 py-3 rounded-[20px] bg-white dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm flex flex-col items-center min-w-[100px]">
+                <span className="text-xl font-black text-slate-800 dark:text-white">{liveStats.accuracy}%</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Accuracy</span>
+            </div>
+            <div className="px-6 py-3 rounded-[20px] bg-white dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm flex flex-col items-center min-w-[100px]">
+                <span className="text-xl font-black text-slate-800 dark:text-white">{liveStats.progress}%</span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Progress</span>
+            </div>
+            {combo > 5 && (
+                <div className="px-6 py-3 rounded-[20px] bg-sky-500/10 backdrop-blur-xl border border-sky-500/20 shadow-sm flex flex-col items-center min-w-[100px] animate-bounce">
+                    <span className="text-xl font-black text-sky-500">{combo}</span>
+                    <span className="text-[10px] font-bold text-sky-500/40 uppercase tracking-widest">COMBO</span>
+                </div>
+            )}
         </div>
     );
 
     return (
-        <div className="flex-1 flex flex-col h-full relative overflow-hidden">
-            <div className="flex-1 flex flex-col min-h-0">
-                {/* Main Typing Area Stage */}
-                <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-                    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 overflow-y-auto">
-                        {/* Phase 3: Combo Meter */}
-                        <ComboMeter combo={combo} />
+        <div className="flex-1 flex flex-col h-full w-full relative overflow-hidden">
+            <div className="flex-1 flex flex-col items-center focus-container overflow-y-auto pt-16 scrollbar-hide">
+                {/* 1. Stats Pills (Top Center) */}
+                <StatsPills />
 
-                        <TypingArea
-                            key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
-                            content={activeLesson.content}
-                            activeLessonId={activeLesson.id}
-                            isActive={!modalStats}
-                            onComplete={handleComplete}
-                            onRestart={handleRetry}
-                            onStatsUpdate={(s) => {
-                                setLiveStats(s);
-                                if (s.wpm > 0 && setIsSidebarOpen) {
-                                    setIsSidebarOpen(true);
-                                }
-                            }}
-                            onActiveKeyChange={setActiveKey}
-                            onFingerChange={setExpectedFinger}
-                            onComboUpdate={setCombo}
-                            fontFamily={settings.fontFamily}
-                            fontSize={settings.fontSize}
-                            soundEnabled={settings.soundEnabled}
-                            cursorStyle={settings.cursorStyle}
-                            stopOnError={settings.stopOnError}
-                            trainingMode={settings.trainingMode}
-                            lessonType={activeLesson.type}
-                        />
-                    </div>
-
-                    {/* Footer: Multi-Size Responsive Keyboard Section */}
-                    <div className="w-full flex-shrink-0 bg-black/20 backdrop-blur-3xl border-t border-white/5 py-8 md:py-12 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-
-                        <div className="max-w-[1400px] mx-auto px-6 relative z-10 transition-all duration-700">
-                            {/* Standard Keyboard */}
-                            <div className="w-full transition-transform duration-500 origin-bottom">
-                                <VirtualKeyboard
-                                    activeKey={activeKey}
-                                    pressedKeys={pressedKeys}
-                                    layout={settings.keyboardLayout}
-                                    heatmapStats={liveKeyStats}
-                                    expectedFinger={expectedFinger}
-                                />
-                            </div>
-
-                            {/* Optional Hands Overlay (Large screens only) */}
-                            {settings.showHands && (
-                                <div className="absolute inset-x-0 top-0 h-full pointer-events-none z-20 opacity-80 transition-opacity">
-                                    <KeyboardHandsOverlay
-                                        currentChar={activeKey}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                {/* 2. Title & Lesson Info */}
+                <div className="text-center mb-8 animate-ios-slide" style={{ animationDelay: '100ms' }}>
+                    <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">{activeLesson.title}</h2>
+                    <p className="text-sm font-medium text-slate-400 dark:text-white/30 max-w-md mx-auto">{activeLesson.description}</p>
                 </div>
 
-                {/* Right Panel (Desktop only - 2xl breakpoint) */}
-                <aside className="hidden 2xl:block w-96 border-l border-white/5 bg-white/2 backdrop-blur-3xl h-full overflow-y-auto">
-                    <StatsSidebar />
-                </aside>
+                {/* 3. Main Typing Area - Glassmorphic Container */}
+                <div className="w-full glass-card-modern border-white/20 dark:border-white/10 shadow-2xl animate-ios-slide" style={{ animationDelay: '200ms' }}>
+                    <TypingArea
+                        key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
+                        content={activeLesson.content}
+                        activeLessonId={activeLesson.id}
+                        isActive={!modalStats}
+                        onComplete={handleComplete}
+                        onRestart={handleRetry}
+                        onStatsUpdate={(s) => {
+                            setLiveStats(s);
+                            if (s.wpm > 0) {
+                                setIsSidebarCollapsed(true); // Auto-collapse sidebar during typing for focus
+                                if (setIsSidebarOpen) setIsSidebarOpen(false);
+                            }
+                        }}
+                        onActiveKeyChange={setActiveKey}
+                        onFingerChange={setExpectedFinger}
+                        onComboUpdate={setCombo}
+                        fontFamily={settings.fontFamily}
+                        fontSize={settings.fontSize}
+                        soundEnabled={settings.soundEnabled}
+                        cursorStyle={settings.cursorStyle}
+                        stopOnError={settings.stopOnError}
+                        trainingMode={settings.trainingMode}
+                        lessonType={activeLesson.type}
+                    />
+                </div>
 
-                {/* Mobile/Tablet Stats Drawer */}
-                {showMobileStats && (
-                    <div className="fixed inset-0 z-[100] 2xl:hidden">
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowMobileStats(false)} />
-                        <div className="absolute right-0 top-0 bottom-0 w-80 bg-[#0d0d12] border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300">
-                            <div className="flex justify-start p-4 border-b border-white/5">
-                                <button onClick={() => setShowMobileStats(false)} className="text-white/40"><X /></button>
-                            </div>
-                            <StatsSidebar />
-                        </div>
+                {/* Retry Prompt */}
+                <div className="mt-8 flex justify-center animate-ios-slide" style={{ animationDelay: '300ms' }}>
+                    <button
+                        onClick={handleRetry}
+                        className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-white/30 dark:bg-white/5 border border-white/10 text-slate-500 dark:text-white/40 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-white/50 dark:hover:bg-white/10 transition-all font-bold text-sm"
+                    >
+                        <RotateCcw size={16} /> <span>RETRY LESSON [ALT + R]</span>
+                    </button>
+                </div>
+
+                {/* Keyboard Section (Below focus area) */}
+                <div className="w-full max-w-[1200px] mt-16 pb-12 animate-ios-slide" style={{ animationDelay: '400ms' }}>
+                    <div className="w-full opacity-40 hover:opacity-100 transition-opacity duration-700">
+                        <VirtualKeyboard
+                            activeKey={activeKey}
+                            pressedKeys={pressedKeys}
+                            layout={settings.keyboardLayout}
+                            heatmapStats={liveKeyStats}
+                            expectedFinger={expectedFinger}
+                        />
                     </div>
-                )}
+                </div>
             </div>
 
             {/* Modals & Overlays */}
-            {
-                modalStats && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#0a0a0f]/80 backdrop-blur-lg animate-in fade-in duration-300">
-                        <div className="glass-panel p-8 sm:p-12 rounded-[2.5rem] shadow-[0_0_100px_rgba(0,0,0,0.5)] max-w-lg w-full text-center">
-                            <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto flex items-center justify-center mb-8 shadow-2xl ${modalStats.completed ? 'bg-brand' : 'bg-red-500'}`}>
-                                <span className="text-3xl sm:text-4xl">{modalStats.completed ? '🏆' : '💪'}</span>
-                            </div>
-                            <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">{modalStats.completed ? 'Mastered!' : 'Keep Going!'}</h2>
-                            <p className="text-white/40 mb-8 font-medium">Your persistence is the key to speed.</p>
+            {modalStats && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-black/40 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="glass-card-modern p-10 sm:p-14 max-w-lg w-full text-center shadow-3xl border-white/40 dark:border-white/10">
+                        <div className={`w-24 h-24 rounded-3xl mx-auto flex items-center justify-center mb-8 shadow-2xl ${modalStats.completed ? 'bg-sky-500 text-white' : 'bg-red-500 text-white'}`}>
+                            <span className="text-4xl">{modalStats.completed ? '🏆' : '💪'}</span>
+                        </div>
+                        <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">{modalStats.completed ? 'Mastered!' : 'Keep Going!'}</h2>
+                        <p className="text-slate-400 dark:text-white/30 mb-10 font-medium">Your persistence is the key to speed.</p>
 
-                            <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-10 text-center">
-                                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                    <div className="text-xl sm:text-2xl font-black text-white">{modalStats.wpm}</div>
-                                    <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">WPM</div>
-                                </div>
-                                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                    <div className="text-xl sm:text-2xl font-black text-white">{modalStats.accuracy}%</div>
-                                    <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Accuracy</div>
-                                </div>
-                                <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                    <div className="text-xl sm:text-2xl font-black text-white">{modalStats.errors}</div>
-                                    <div className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Errors</div>
-                                </div>
+                        <div className="grid grid-cols-3 gap-4 mb-12">
+                            <div className="p-4 bg-white/50 dark:bg-white/5 rounded-2xl border border-white/10">
+                                <div className="text-2xl font-black text-slate-800 dark:text-white">{modalStats.wpm}</div>
+                                <div className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/30 font-bold mt-1">WPM</div>
                             </div>
-
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <button
-                                    onClick={handleRetry}
-                                    className="flex-1 py-4 glass-card text-white font-bold flex items-center justify-center gap-2"
-                                >
-                                    <RotateCcw size={18} /> Retry
-                                </button>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={!modalStats.completed && !isCodeMode}
-                                    className={`flex-1 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${modalStats.completed || isCodeMode ? 'bg-brand hover:scale-105 text-white' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
-                                >
-                                    Next <ChevronRight size={18} />
-                                </button>
+                            <div className="p-4 bg-white/50 dark:bg-white/5 rounded-2xl border border-white/10">
+                                <div className="text-2xl font-black text-slate-800 dark:text-white">{modalStats.accuracy}%</div>
+                                <div className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/30 font-bold mt-1">Acc</div>
+                            </div>
+                            <div className="p-4 bg-white/50 dark:bg-white/5 rounded-2xl border border-white/10">
+                                <div className="text-2xl font-black text-slate-800 dark:text-white">{modalStats.errors}</div>
+                                <div className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-white/30 font-bold mt-1">Errors</div>
                             </div>
                         </div>
-                    </div>
-                )
-            }
 
-            {
-                videoVisible && activeLesson.videoUrl && (
-                    <LessonVideoPlayer
-                        hlsUrl={activeLesson.videoUrl}
-                        onClose={() => setVideoVisible(false)}
-                    />
-                )
-            }
-        </div >
+                        <div className="flex gap-4">
+                            <button
+                                onClick={handleRetry}
+                                className="flex-1 py-4 px-6 rounded-2xl bg-white/50 dark:bg-white/5 border border-white/10 text-slate-600 dark:text-white/60 font-bold flex items-center justify-center gap-2 hover:bg-white/70 dark:hover:bg-white/10 transition-all"
+                            >
+                                <RotateCcw size={18} /> Retry
+                            </button>
+                            <button
+                                onClick={handleNext}
+                                disabled={!modalStats.completed && !isCodeMode}
+                                className={`flex-1 py-4 px-6 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${modalStats.completed || isCodeMode ? 'bg-sky-500 text-white hover:scale-105 hover:bg-sky-400' : 'bg-white/10 text-white/20 cursor-not-allowed'}`}
+                            >
+                                Next <ChevronRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {videoVisible && activeLesson.videoUrl && (
+                <LessonVideoPlayer
+                    hlsUrl={activeLesson.videoUrl}
+                    onClose={() => setVideoVisible(false)}
+                />
+            )}
+        </div>
     );
 }
-
-// Helper X component for closing the stats drawer
-const X = ({ className }: { className?: string }) => (
-    <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-);

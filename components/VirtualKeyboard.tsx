@@ -34,20 +34,21 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Use a fixed virtual coordinate system for the keyboard (ratio 3.2 / 1)
+    // Detect theme (simple check for dark mode on the body)
+    const isDark = document.documentElement.classList.contains('dark');
+
     const virtualWidth = 3200;
     const virtualHeight = 1000;
     const gap = 15;
     const padding = 60;
 
-    // Auto-resize canvas to match its display size
     const resize = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = window.devicePixelRatio || 2;
       const rect = parent.getBoundingClientRect();
       canvas.width = rect.width * dpr;
       canvas.height = (rect.width / 3.2) * dpr;
@@ -62,7 +63,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
       const rowHeight = (virtualHeight - (padding * 2) - (gap * 3)) / 4;
       const colWidth = (virtualWidth - (padding * 2)) / 30;
 
-      KEYBOARD_ROWS.forEach((row, rowIndex) => {
+      KEYBOARD_ROWS.forEach((row) => {
         let currentX = padding;
         row.forEach((keyObj) => {
           const width = (keyObj.width || 1) * colWidth * 2;
@@ -78,43 +79,46 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
 
           // Draw Key background
           ctx.beginPath();
-          ctx.roundRect(rectX, rectY, rectW, rectH, 15);
+          ctx.roundRect(rectX, rectY, rectW, rectH, 18);
 
-          let fillStyle = 'rgba(255, 255, 255, 0.05)';
-          let strokeStyle = 'rgba(255, 255, 255, 0.05)';
-          let textColor = 'rgba(255, 255, 255, 0.5)';
+          // iOS 18 Style: Soft translucent keys
+          let fillStyle = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
+          let strokeStyle = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+          let textColor = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)';
 
           if (isFingerTarget && !isPressed) {
-            fillStyle = FINGER_COLORS[keyObj.finger || ''] || 'rgba(255,255,255,0.1)';
-            strokeStyle = fillStyle.replace('0.4', '0.6');
+            fillStyle = FINGER_COLORS[keyObj.finger || ''] || fillStyle;
+            strokeStyle = 'transparent';
           } else if (isActive) {
-            fillStyle = 'rgba(59, 130, 246, 0.2)';
-            strokeStyle = 'rgba(59, 130, 246, 0.6)';
-            textColor = '#fff';
+            fillStyle = isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(14, 165, 233, 0.1)';
+            strokeStyle = isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(14, 165, 233, 0.3)';
+            textColor = isDark ? '#38bdf8' : '#0284c7';
           }
 
           if (isPressed) {
-            fillStyle = isActive ? 'rgba(34, 197, 94, 0.8)' : 'rgba(59, 130, 246, 0.8)';
+            fillStyle = isActive ? '#0ea5e9' : (isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)');
             textColor = '#fff';
-            ctx.translate(0, 5); // Press effect
+            ctx.translate(0, 4); // Subtle press
           }
 
           ctx.fillStyle = fillStyle;
           ctx.fill();
-          ctx.strokeStyle = strokeStyle;
-          ctx.lineWidth = 2;
-          ctx.stroke();
+          if (strokeStyle !== 'transparent') {
+            ctx.strokeStyle = strokeStyle;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
 
-          // Draw Labels
+          // Draw Labels - System Font Stack
           ctx.fillStyle = textColor;
-          ctx.font = 'bold 45px "JetBrains Mono", monospace';
+          ctx.font = '700 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
           const label = keyObj.label || mapping.default.toUpperCase();
           ctx.fillText(label, rectX + rectW / 2, rectY + rectH / 2);
 
-          if (isPressed) ctx.translate(0, -5); // Reset press effect
+          if (isPressed) ctx.translate(0, -4);
 
           currentX += width;
         });
@@ -129,8 +133,8 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
   }, [activeKey, pressedKeys, layout, heatmapStats, expectedFinger]);
 
   return (
-    <div className="w-full flex justify-center py-4 md:py-6 contain-content">
-      <div className="w-full max-w-[1100px] aspect-[3.2/1] bg-[#0d0d0d66] border border-[#00f2ff33] rounded-3xl p-2 overflow-hidden">
+    <div className="w-full flex justify-center py-6 contain-content">
+      <div className="w-full max-w-[1100px] aspect-[3.2/1] bg-white/20 dark:bg-black/20 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-[40px] p-6 shadow-xl overflow-hidden">
         <canvas ref={canvasRef} className="w-full h-full block" />
       </div>
     </div>

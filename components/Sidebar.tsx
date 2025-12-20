@@ -41,42 +41,38 @@ const Sidebar: React.FC = memo(() => {
                                     const isActive = lesson.id === activeLessonId;
                                     const isUnlocked = progress?.unlocked || lesson.id === 1;
                                     const isCompleted = progress?.completed;
+                                    const isLocked = !isUnlocked;
 
                                     return (
                                         <button
                                             key={lesson.id}
-                                            disabled={!isUnlocked}
                                             onClick={() => setActiveLessonId(lesson.id)}
-                                            className={`
-                                                w-full flex items-center gap-2.5 p-2 rounded-lg transition-all border font-sci-fi
-                                                ${isActive
-                                                    ? 'bg-cyber-cyan/10 border-cyber-cyan/30 text-cyber-cyan shadow-cyan-glow z-10'
-                                                    : !isUnlocked
-                                                        ? 'opacity-10 grayscale cursor-not-allowed border-transparent'
-                                                        : 'hover:bg-white/5 border-transparent text-white/40 hover:text-white/70'
-                                                }
-                                            `}
+                                            className={`w-full group relative flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 ${isActive
+                                                ? 'bg-white dark:bg-white/10 shadow-sm border-white/20'
+                                                : isLocked
+                                                    ? 'opacity-30 grayscale cursor-not-allowed'
+                                                    : 'hover:bg-white/40 dark:hover:bg-white/5 border-transparent hover:border-black/5 dark:hover:border-white/5 hover:-translate-y-0.5'
+                                                } border`}
+                                            disabled={isLocked}
                                         >
-                                            <div className="flex-shrink-0">
-                                                {isCompleted ? (
-                                                    <CheckCircle size={14} className="text-cyber-cyan" />
-                                                ) : (
-                                                    <PlayCircle size={14} className={isActive ? "animate-pulse" : ""} />
-                                                )}
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${isActive
+                                                ? 'bg-sky-500 text-white'
+                                                : isCompleted
+                                                    ? 'bg-emerald-500/10 text-emerald-500'
+                                                    : 'bg-black/5 dark:bg-white/5 text-slate-400 dark:text-white/20'
+                                                }`}>
+                                                <span className="text-[10px] font-bold">{lesson.id}</span>
                                             </div>
-                                            <div className="flex-1 min-w-0">
+
+                                            <div className="flex-1 min-w-0 text-left">
                                                 <div className="flex items-center justify-between gap-2 overflow-hidden">
-                                                    <span className="text-[11px] font-medium truncate tracking-tight">{lesson.title}</span>
+                                                    <span className={`text-xs font-semibold truncate tracking-tight transition-colors ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-white/40 group-hover:text-slate-900 dark:group-hover:text-white/70'}`}>{lesson.title}</span>
                                                     {lesson.difficulty && (
-                                                        <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-white/5 border border-white/5 text-white/30 shrink-0">
-                                                            Lvl {lesson.difficulty}
-                                                        </span>
+                                                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-slate-400 dark:text-white/20 shrink-0 uppercase tracking-tighter">Lvl {lesson.difficulty}</span>
                                                     )}
                                                 </div>
                                                 {isActive && lesson.target_wpm && (
-                                                    <div className="text-[8px] text-cyber-cyan/60 font-mono mt-0.5">
-                                                        Target: {lesson.target_wpm} WPM
-                                                    </div>
+                                                    <div className="text-[8px] text-sky-500 font-bold uppercase tracking-widest mt-0.5">Target: {lesson.target_wpm} WPM</div>
                                                 )}
                                             </div>
                                         </button>
