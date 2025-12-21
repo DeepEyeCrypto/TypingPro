@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useCallback, memo, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Stats, FontSize, CursorStyle, TrainingMode, PracticeMode } from '../types';
 import { useSound } from '../contexts/SoundContext';
 import { useTypingEngine } from '../src/hooks/useTypingEngine';
 import { useApp } from '../contexts/AppContext';
+import styles from './TypingArea.module.css';
 
 interface TypingAreaProps {
   content: string;
@@ -43,9 +44,10 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, timeLeft } = useTypingEngine(content, stopOnError, practiceMode, duration);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const workerRef = useRef<Worker | null>(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0, height: 32 });
 
   // Initialize Worker for stats
   useEffect(() => {
@@ -58,20 +60,33 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => workerRef.current?.terminate();
   }, [onStatsUpdate, timeLeft]);
 
-  // Update Caret Position
-  useEffect(() => {
-    const activeChar = charRefs.current[engineRefs.cursorIndex.current];
-    if (activeChar) {
+  // Precision Caret Positioning logic
+  const updateCaret = useCallback(() => {
+    const index = engineRefs.cursorIndex.current;
+    const charEl = charRefs.current[index];
+    const containerEl = containerRef.current;
+
+    if (charEl && containerEl) {
+      const charRect = charEl.getBoundingClientRect();
+      const containerRect = containerEl.getBoundingClientRect();
+
       setCursorPos({
-        x: activeChar.offsetLeft,
-        y: activeChar.offsetTop
+        x: charRect.left - containerRect.left,
+        y: charRect.top - containerRect.top,
+        height: charRect.height
       });
     }
-  }, [engineRefs.cursorIndex.current]);
+  }, [engineRefs.cursorIndex]);
+
+  useEffect(() => {
+    updateCaret();
+    // Also update on window resize to keep pixel-perfect alignment
+    window.addEventListener('resize', updateCaret);
+    return () => window.removeEventListener('resize', updateCaret);
+  }, [updateCaret, fontSize]);
 
   const updateVisuals = useCallback((data: { index: number; isCorrect: boolean; cursorIndex: number }) => {
-    const { index, isCorrect, cursorIndex } = data;
-
+    const { cursorIndex } = data;
     if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
 
     if (workerRef.current && engineRefs.startTime.current) {
@@ -101,6 +116,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   }, [content, reset]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (activeModal !== 'none') return;
     if (engineRefs.cursorIndex.current >= content.length) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
@@ -113,9 +129,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     }
 
     if (soundEnabled) playSound();
-  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex, isAccuracyMasterActive, isMasterMode, onRestart]);
+  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex, isAccuracyMasterActive, isMasterMode, onRestart, activeModal]);
 
-  // Split content into words for Monkeytype-style rendering
   const words = useMemo(() => {
     let currentIdx = 0;
     return content.split(' ').map((word, wordIdx, array) => {
@@ -138,7 +153,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
   return (
     <div
-      className="w-full h-full flex flex-col items-center justify-center relative cursor-text outline-none"
+      className={styles.container}
+      ref={containerRef}
       onClick={() => {
         if (activeModal === 'none') inputRef.current?.focus();
       }}
@@ -153,43 +169,47 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         autoFocus
       />
 
-      <div
-        className={`w-full max-w-4xl flex flex-wrap justify-center font-mono leading-relaxed select-none relative ${shake ? 'animate-shake' : ''}`}
-        style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace" }}
-      >
-        {/* The Smooth Caret */}
-        <motion.div
-          className="absolute w-[2px] bg-[var(--accent)] z-50 rounded-full"
-          animate={{
-            x: cursorPos.x,
-            y: cursorPos.y,
-            height: fontSize === 'xl' ? 44 : 32
-          }}
-          transition={{ type: "spring", stiffness: 500, damping: 40, mass: 0.5 }}
-          style={{
-            boxShadow: '0 0 15px var(--accent)',
-            marginTop: '4px'
-          }}
-        />
+      {/* Sub-pixel accurate caret */}
+      <motion.div
+        className={styles.caret}
+        animate={{
+          x: cursorPos.x,
+          y: cursorPos.y,
+          height: cursorPos.height
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 40,
+          mass: 0.5
+        }}
+        style={{
+          boxShadow: '0 0 15px var(--accent)'
+        }}
+      />
 
+      <div className={`${styles.textWrapper} ${getTextSizeClass()} ${shake ? 'animate-shake' : ''}`}>
         {words.map((w, wIdx) => {
-          const isWordCompleted = w.chars[w.chars.length - 1].idx < engineRefs.cursorIndex.current;
           const isCurrentWord = w.chars.some(c => c.idx === engineRefs.cursorIndex.current) || w.spaceIdx === engineRefs.cursorIndex.current;
 
           return (
-            <div key={wIdx} className="flex items-center">
+            <div key={wIdx} className={styles.word}>
               {w.chars.map(({ char, idx }) => {
                 const isTyped = idx < engineRefs.cursorIndex.current;
                 const isError = engineRefs.errors.current.includes(idx);
+
+                let stateClass = styles.untyped;
+                if (isTyped) {
+                  stateClass = isError ? styles.error : styles.correct;
+                } else if (isCurrentWord) {
+                  stateClass = styles.current;
+                }
 
                 return (
                   <span
                     key={idx}
                     ref={el => { charRefs.current[idx] = el; }}
-                    className={`inline transition-colors duration-200 ${getTextSizeClass()} ${isTyped
-                      ? (isError ? "text-[var(--error)]" : "text-[var(--main)]")
-                      : (isCurrentWord ? "text-[var(--main)] opacity-50" : "text-[var(--sub)] opacity-30")
-                      }`}
+                    className={`${styles.char} ${stateClass}`}
                   >
                     {char}
                   </span>
@@ -200,9 +220,9 @@ const TypingArea: React.FC<TypingAreaProps> = ({
               {w.spaceIdx !== -1 && (
                 <span
                   ref={el => { charRefs.current[w.spaceIdx] = el; }}
-                  className={`inline transition-colors duration-200 ${getTextSizeClass()} ${w.spaceIdx < engineRefs.cursorIndex.current
-                    ? (engineRefs.errors.current.includes(w.spaceIdx) ? "bg-[var(--error)]/20" : "")
-                    : "opacity-30"
+                  className={`${styles.char} ${w.spaceIdx < engineRefs.cursorIndex.current
+                    ? (engineRefs.errors.current.includes(w.spaceIdx) ? styles.errorBackground : styles.correct)
+                    : (isCurrentWord ? styles.current : styles.untyped)
                     }`}
                 >
                   &nbsp;
