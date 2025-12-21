@@ -11,6 +11,7 @@ import InstructionalOverlay from '../components/curriculum/InstructionalOverlay'
 import { AnimatePresence } from 'framer-motion';
 import LessonDisplay from '../components/LessonDisplay';
 import HandGuide from '../components/HandGuide';
+import { AIInsightCard } from '../components/gamification/AIInsightCard';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,7 +20,8 @@ interface MainLayoutContext {
 export default function TypingPage(): React.ReactNode {
     const {
         settings, recordLessonComplete,
-        setActiveLessonId, isCodeMode, setIsSidebarCollapsed
+        setActiveLessonId, isCodeMode, setIsSidebarCollapsed,
+        getWeaknessDrill
     } = useApp();
 
     const { setIsSidebarOpen } = useOutletContext<MainLayoutContext>() || {};
@@ -43,6 +45,23 @@ export default function TypingPage(): React.ReactNode {
 
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
+
+    const handleStartRemedial = useCallback(() => {
+        const drill = getWeaknessDrill();
+        if (drill) {
+            setActiveLesson({
+                id: -999, // Special ID for remedial
+                title: drill.title,
+                content: drill.content,
+                keys: [],
+                description: "Focused practice for your AI-identified weaknesses."
+            });
+            setShowOverlay(false);
+            setModalStats(null);
+            setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [] });
+            setRetryCount(c => c + 1);
+        }
+    }, [getWeaknessDrill]);
 
     const initializeLesson = useCallback((id: number, codeMode: boolean) => {
         let lesson: Lesson | undefined;
@@ -197,10 +216,11 @@ export default function TypingPage(): React.ReactNode {
 
             {/* Modal */}
             {modalStats && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xl animate-in fade-in duration-500">
-                    <div className="bg-white dark:bg-slate-900 p-10 rounded-[32px] max-w-sm w-full text-center shadow-2xl border border-white/20">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xl animate-in fade-in duration-500 overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-900 p-10 rounded-[32px] max-w-xl w-full text-center shadow-2xl border border-white/20 my-8">
                         <div className="text-4xl mb-4">{modalStats.completed ? '🏆' : '💪'}</div>
                         <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">{modalStats.completed ? 'Mastered!' : 'Keep Practicing!'}</h2>
+
                         <div className="flex justify-center gap-6 my-6">
                             <div>
                                 <div className="text-2xl font-black text-sky-500">{modalStats.wpm}</div>
@@ -210,8 +230,20 @@ export default function TypingPage(): React.ReactNode {
                                 <div className="text-2xl font-black text-emerald-500">{modalStats.accuracy}%</div>
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ACC</div>
                             </div>
+                            <div>
+                                <div className="text-2xl font-black text-rose-500">{modalStats.errors}</div>
+                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ERRORS</div>
+                            </div>
                         </div>
-                        <div className="flex gap-4">
+
+                        {modalStats.aiInsights && (
+                            <AIInsightCard
+                                insights={modalStats.aiInsights}
+                                onStartDrill={handleStartRemedial}
+                            />
+                        )}
+
+                        <div className="flex gap-4 mt-8">
                             <button onClick={handleRetry} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 rounded-2xl font-bold text-slate-600 dark:text-white/60">Retry</button>
                             {modalStats.completed && (
                                 <button onClick={handleNext} className="flex-1 py-4 bg-sky-500 text-white rounded-2xl font-bold shadow-lg shadow-sky-500/20">Continue</button>

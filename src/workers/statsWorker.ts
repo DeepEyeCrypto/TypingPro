@@ -48,6 +48,43 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
             }
         });
 
+        // Bigram & Hold-time Analysis
+        const charStats: Record<string, { holdTimes: number[], latencies: number[] }> = {};
+        const bigramStats: Record<string, number[]> = {};
+
+        keystrokeLog.forEach((k, i) => {
+            if (!charStats[k.char]) charStats[k.char] = { holdTimes: [], latencies: [] };
+            if (k.holdTime !== undefined) charStats[k.char].holdTimes.push(k.holdTime);
+            charStats[k.char].latencies.push(k.latency);
+
+            // Bigram tracking (ignore errors for speed analysis)
+            if (i > 0 && !k.isError && !keystrokeLog[i - 1].isError) {
+                const pair = (keystrokeLog[i - 1].char + k.char).toLowerCase();
+                if (!bigramStats[pair]) bigramStats[pair] = [];
+                bigramStats[pair].push(k.latency);
+            }
+        });
+
+        // Identify "Enemy Keys" (High hesitation)
+        const enemyKeys = Object.entries(charStats)
+            .map(([char, s]) => ({
+                char,
+                avgHold: s.holdTimes.length > 0 ? s.holdTimes.reduce((a, b) => a + b, 0) / s.holdTimes.length : 0
+            }))
+            .filter(k => k.avgHold > 150) // Threshold for hesitation
+            .sort((a, b) => b.avgHold - a.avgHold)
+            .slice(0, 3);
+
+        // Identify "Bigram Bottlenecks" (Slow transitions)
+        const bottlenecks = Object.entries(bigramStats)
+            .map(([pair, latencies]) => ({
+                pair,
+                avgLat: latencies.reduce((a, b) => a + b, 0) / latencies.length
+            }))
+            .filter(b => b.avgLat > 300) // Threshold for slow transitions
+            .sort((a, b) => b.avgLat - a.avgLat)
+            .slice(0, 3);
+
         self.postMessage({
             type: 'STATS_UPDATED',
             stats: {
@@ -58,7 +95,11 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
                 errors: errors.length,
                 progress,
                 wpmTimeline,
-                keystrokeLog
+                keystrokeLog,
+                aiInsights: {
+                    enemyKeys,
+                    bottlenecks
+                }
             }
         });
     }

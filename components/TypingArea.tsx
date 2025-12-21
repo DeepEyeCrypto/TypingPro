@@ -47,7 +47,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   onFingerChange
 }) => {
   const { playSound } = useSound();
-  const { engineRefs, handleInput, reset, shake, isComplete } = useTypingEngine(content, stopOnError);
+  const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, isComplete } = useTypingEngine(content, stopOnError);
 
   const workerRef = useRef<Worker | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -153,9 +153,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (engineRefs.cursorIndex.current >= content.length) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
-    handleInput(e.key, updateVisuals);
+    handleKeyDown(e.key, updateVisuals);
     if (soundEnabled) playSound();
-  }, [content.length, handleInput, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex]);
+  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex]);
+
+  const onKeyUp = useCallback((e: React.KeyboardEvent) => {
+    handleKeyUp(e.key);
+  }, [handleKeyUp]);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative py-20 px-12" onClick={() => inputRef.current?.focus()}>
@@ -164,6 +168,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         type="text"
         className="absolute opacity-0 pointer-events-none"
         onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
         autoComplete="off"
       />
 

@@ -423,31 +423,35 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const getWeaknessDrill = (): { content: string, title: string } | null => {
-        const sortedFingers = Object.values(fingerStats).sort((a, b) => a.accuracy - b.accuracy);
-        if (sortedFingers.length === 0) return null;
+        if (history.length === 0) return null;
 
-        const weakest = sortedFingers[0];
-        if (weakest.accuracy >= 98 || weakest.totalPresses < 10) return null;
+        // Use the most recent session's insights
+        const lastSession = history[0];
+        if (!lastSession.aiInsights) return null;
 
-        const weakestFinger = weakest.finger;
-        const mappings: Record<string, string> = {
-            'left-pinky': 'q a z',
-            'left-ring': 'w s x',
-            'left-middle': 'e d c',
-            'left-index': 'r f v t g b',
-            'right-index': 'y h n u j m',
-            'right-middle': 'i k ,',
-            'right-ring': 'o l .',
-            'right-pinky': 'p ; /'
-        };
+        const { enemyKeys, bottlenecks } = lastSession.aiInsights;
 
-        const chars = mappings[weakestFinger] || 'f j';
-        const content = Array(8).fill(chars).join(' ');
+        // Prioritize Bigram Bottlenecks (more effective for flow)
+        if (bottlenecks && bottlenecks.length > 0) {
+            const worst = bottlenecks[0].pair;
+            const drillContent = Array(12).fill(worst).join(' ');
+            return {
+                content: drillContent,
+                title: `AI Remedial: ${worst.toUpperCase()} Transition Drill`
+            };
+        }
 
-        return {
-            content,
-            title: `Bonus Drill: ${weakestFinger.replace('-', ' ').toUpperCase()} Reinforcement`
-        };
+        // Fallback to single enemy keys
+        if (enemyKeys && enemyKeys.length > 0) {
+            const worst = enemyKeys[0].char;
+            const drillContent = Array(12).fill(worst).join(' ');
+            return {
+                content: drillContent,
+                title: `AI Remedial: ${worst.toUpperCase()} Hesitation Drill`
+            };
+        }
+
+        return null;
     };
 
     const recordLessonComplete = (lessonId: number, stats: Stats): boolean => {
@@ -502,7 +506,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             durationSeconds: (Date.now() - (stats.startTime || 0)) / 1000,
             wpmTimeline: stats.wpmTimeline,
             keystrokeLog: stats.keystrokeLog,
-            handEfficiency: stats.handEfficiency
+            handEfficiency: stats.handEfficiency,
+            aiInsights: stats.aiInsights
         };
 
         saveHistory(currentProfile.id, entry);

@@ -11,11 +11,14 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
     const keystrokeLog = useRef<KeystrokeEvent[]>([]);
     const wpmTimeline = useRef<{ timestamp: number; wpm: number }[]>([]);
 
+    // Hold-time forensics
+    const lastKeyDownRef = useRef<{ key: string, time: number } | null>(null);
+
     // Minimal state for non-critical UI updates
     const [shake, setShake] = useState(false);
     const [isComplete, setIsComplete] = useState(false);
 
-    const handleInput = useCallback((key: string, onUpdate: (data: {
+    const handleKeyDown = useCallback((key: string, onUpdate: (data: {
         index: number;
         isCorrect: boolean;
         cursorIndex: number;
@@ -42,13 +45,15 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
 
         const event: KeystrokeEvent = {
             char: key,
-            code: '', // Can be improved if needed, but char is primary
+            code: '',
             timestamp: now,
             latency: now - prevTimestamp,
             isError: !isCorrect,
             expectedChar: targetChar
+            // holdTime will be added on keyUp
         };
         keystrokeLog.current.push(event);
+        lastKeyDownRef.current = { key, time: now };
 
         const currentIndex = cursorIndexRef.current;
 
@@ -73,7 +78,7 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
             setIsComplete(true);
         }
 
-        // Periodic WPM Timeline Check (e.g. every 5 characters or 1s)
+        // Periodic WPM Timeline Check
         if (cursorIndexRef.current % 5 === 0) {
             const timeMin = (now - startTimeRef.current) / 60000;
             const currentWpm = Math.round((cursorIndexRef.current / 5) / Math.max(0.01, timeMin));
@@ -92,6 +97,25 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
         return isCorrect;
     }, [content, stopOnError]);
 
+    const handleKeyUp = useCallback((key: string) => {
+        if (!lastKeyDownRef.current || lastKeyDownRef.current.key !== key) return;
+
+        const now = Date.now();
+        const holdDuration = now - lastKeyDownRef.current.time;
+
+        // Find the last event for this key and attach holdTime
+        // We look from the end of the log
+        for (let i = keystrokeLog.current.length - 1; i >= 0; i--) {
+            const entry = keystrokeLog.current[i];
+            if (entry.char === key && entry.holdTime === undefined) {
+                entry.holdTime = holdDuration;
+                break;
+            }
+        }
+
+        lastKeyDownRef.current = null;
+    }, []);
+
     const reset = useCallback(() => {
         cursorIndexRef.current = 0;
         errorsRef.current = [];
@@ -99,6 +123,7 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
         startTimeRef.current = null;
         keystrokeLog.current = [];
         wpmTimeline.current = [];
+        lastKeyDownRef.current = null;
         setShake(false);
         setIsComplete(false);
     }, []);
@@ -114,7 +139,8 @@ export const useTypingEngine = (content: string, stopOnError: boolean) => {
         },
         shake,
         isComplete,
-        handleInput,
+        handleKeyDown,
+        handleKeyUp,
         reset
     };
 };

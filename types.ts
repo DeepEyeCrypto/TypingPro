@@ -35,6 +35,13 @@ export interface FingerStats {
   totalPresses: number;
   errorCount: number;
   accuracy: number;
+  avgHoldTime?: number;
+}
+
+export interface BigramStats {
+  pair: string; // e.g. "th", "er"
+  avgLatency: number;
+  count: number;
 }
 
 export type QuestType = 'speed' | 'accuracy' | 'endurance' | 'lessons';
@@ -55,7 +62,8 @@ export interface KeystrokeEvent {
   char: string;
   code: string;
   timestamp: number;
-  latency: number; // ms since last character
+  latency: number; // ms since last character down
+  holdTime?: number; // ms between keyDown and keyUp
   isError: boolean;
   expectedChar: string;
 }
@@ -74,6 +82,10 @@ export interface Stats {
   keystrokeLog?: KeystrokeEvent[]; // For session replay and forensics
   handEfficiency?: { left: number; right: number }; // Speed/accuracy ratio per hand
   bestCombo?: number;
+  aiInsights?: {
+    enemyKeys: { char: string; avgHold: number }[];
+    bottlenecks: { pair: string; avgLat: number }[];
+  };
 }
 
 export enum GameState {
@@ -101,6 +113,10 @@ export interface HistoryEntry {
   keystrokeLog?: KeystrokeEvent[];
   handEfficiency?: { left: number; right: number };
   bestCombo?: number;
+  aiInsights?: {
+    enemyKeys: { char: string; avgHold: number }[];
+    bottlenecks: { pair: string; avgLat: number }[];
+  };
 }
 
 export interface LessonProgress {
