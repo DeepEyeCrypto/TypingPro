@@ -1,15 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import {
     UserProfile, UserSettings, LessonProgress, HistoryEntry, EarnedBadge,
-    ThemeMode, KeyboardLayoutType, Stats, KeyStats, DailyQuest
+    ThemeMode, KeyboardLayoutType, Stats, KeyStats, DailyQuest, FingerStats,
+    DailyActivity
 } from '../types';
 import {
     getProfiles, createProfile, getSettings, saveSettings,
     getLessonProgress, getHistory, getEarnedBadges,
     updateLessonProgress, saveHistory, saveEarnedBadge, unlockLesson, clearHistory,
-    getKeyStats, updateKeyStats, updateFingerStats, getFingerStats
+    getKeyStats, updateKeyStats, updateFingerStats, getFingerStats,
+    getDailyActivity, updateDailyActivity
 } from '../services/storageService';
-import { FingerStats } from '../types';
 import { setVolume } from '../services/audioService';
 import { BADGES, FANCY_FONTS, XP_LEVELS } from '../constants';
 
@@ -32,6 +33,7 @@ interface AppContextType {
     activeModal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles';
     isCodeMode: boolean;
     isSidebarCollapsed: boolean;
+    dailyActivity: Record<string, DailyActivity>;
 
     // Actions
     setActiveLessonId: (id: number) => void;
@@ -100,6 +102,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [keyStats, setKeyStats] = useState<Record<string, KeyStats>>({});
     const [fingerStats, setFingerStats] = useState<Record<string, FingerStats>>({});
     const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
+    const [dailyActivity, setDailyActivity] = useState<Record<string, DailyActivity>>({});
 
     // --- Helper for Quest Generation ---
     const initializeDailyQuests = (profileId: string) => {
@@ -300,13 +303,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const prefs = getSettings(profileId);
         const badges = getEarnedBadges(profileId);
         const keys = getKeyStats(profileId);
+        const activity = getDailyActivity(profileId);
 
         setLessonProgress(prog);
         setHistory(hist);
         setSettings(prefs);
         setEarnedBadges(badges);
         setKeyStats(keys);
-        initializeDailyQuests(profileId); // Ensure quests are initialized/loaded
+        setDailyActivity(activity);
+        initializeDailyQuests(profileId);
         setVolume(prefs.volume);
     };
 
@@ -500,7 +505,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             id: Date.now().toString(),
             date: new Date().toISOString(),
             lessonId,
-            wpm: stats.wpm,
+            wpm: stats.totalWpm || stats.wpm,
+            netWpm: stats.netWpm,
+            grossWpm: stats.grossWpm,
+            cpm: stats.cpm,
             accuracy: stats.accuracy,
             errors: stats.errors,
             durationSeconds: (Date.now() - (stats.startTime || 0)) / 1000,
@@ -516,6 +524,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         // Update Daily Quest progress
         updateQuestProgress(stats);
+
+        // Update Daily Activity intensity
+        const updatedActivity = updateDailyActivity(currentProfile.id, {
+            words: Math.round(stats.keystrokeLog?.length / 5) || 0,
+            duration: (Date.now() - (stats.startTime || 0)) / 1000,
+            wpm: stats.totalWpm || stats.wpm
+        });
+        setDailyActivity(updatedActivity);
 
         // Calculate and add XP
         let xpGained = 25; // Base XP
@@ -559,6 +575,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         activeModal,
         isCodeMode,
         isSidebarCollapsed,
+        dailyActivity,
         setActiveLessonId,
         setActiveModal,
         setIsCodeMode,
@@ -576,7 +593,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }), [
         profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme,
         activeLessonId, user, keyStats, fingerStats, dailyQuests, getWeaknessDrill,
-        activeModal, isCodeMode, isSidebarCollapsed
+        activeModal, isCodeMode, isSidebarCollapsed, dailyActivity
     ]);
 
     return (

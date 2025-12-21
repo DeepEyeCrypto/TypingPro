@@ -70,6 +70,10 @@ export interface KeystrokeEvent {
 
 export interface Stats {
   wpm: number;
+  totalWpm?: number;
+  netWpm?: number;
+  grossWpm?: number;
+  cpm?: number;
   accuracy: number;
   errors: number;
   progress: number; // 0-100
@@ -106,6 +110,9 @@ export interface HistoryEntry {
   date: string;
   lessonId: number;
   wpm: number;
+  netWpm?: number;
+  grossWpm?: number;
+  cpm?: number;
   accuracy: number;
   errors: number;
   durationSeconds: number;
@@ -164,6 +171,14 @@ export interface UserProfile {
   streakCount: number;
   lastLoginDate?: string; // ISO string
   createdAt: string;
+}
+
+export interface DailyActivity {
+  date: string; // ISO yyyy-mm-dd
+  totalWords: number;
+  totalDuration: number; // seconds
+  lessonsCompleted: number;
+  avgWpm: number;
 }
 
 export interface Badge {

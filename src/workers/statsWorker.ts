@@ -16,13 +16,17 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
     if (e.data.type === 'UPDATE_STATS') {
         const { cursorIndex, errors, startTime, contentLength, keystrokeLog, wpmTimeline } = e.data.data;
 
-        if (!startTime) return;
-
         const now = Date.now();
         const durationMs = now - startTime;
         const timeMin = Math.max(0.01, durationMs / 60000);
 
-        // Overall WPM
+        // Professional Metrics
+        const totalEntries = keystrokeLog.length;
+        const grossWpm = Math.round((totalEntries / 5) / timeMin);
+        const netWpm = Math.round(((totalEntries - errors.length) / 5) / timeMin);
+        const cpm = Math.round(totalEntries / timeMin);
+
+        // Overall WPM (Standard displayed speed)
         const wpm = Math.round((cursorIndex / 5) / timeMin);
 
         // Rolling WPM (last 10s for more sensitivity in graphs)
@@ -90,6 +94,9 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
             stats: {
                 wpm: rollingWpm,
                 totalWpm: wpm,
+                netWpm,
+                grossWpm,
+                cpm,
                 accuracy,
                 bestCombo,
                 errors: errors.length,

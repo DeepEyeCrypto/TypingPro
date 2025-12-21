@@ -1,5 +1,5 @@
 
-import { HistoryEntry, LessonProgress, UserSettings, UserProfile, EarnedBadge, KeyStats, DailyQuest, FingerStats } from "../types";
+import { HistoryEntry, LessonProgress, UserSettings, UserProfile, EarnedBadge, KeyStats, DailyQuest, FingerStats, DailyActivity } from "../types";
 import { LESSONS } from "../constants";
 
 const DEFAULT_PROFILE_ID = 'default';
@@ -15,7 +15,8 @@ const KEYS = {
     BADGES: 'typing_badges_v1',
     KEY_STATS: 'typing_key_stats_v1',
     FINGER_STATS: 'typing_finger_stats_v1',
-    DAILY_QUESTS: 'typing_daily_quests_v1'
+    DAILY_QUESTS: 'typing_daily_quests_v1',
+    ACTIVITY: 'typing_activity_v1'
 };
 
 // --- Profiles ---
@@ -209,6 +210,36 @@ export const getDailyQuests = (profileId: string) => {
 
 export const saveDailyQuests = (profileId: string, questData: any) => {
     localStorage.setItem(getKey(KEYS.DAILY_QUESTS, profileId), JSON.stringify(questData));
+};
+
+// --- Activity ---
+
+export const getDailyActivity = (profileId: string): Record<string, DailyActivity> => {
+    try {
+        const data = localStorage.getItem(getKey(KEYS.ACTIVITY, profileId));
+        return data ? JSON.parse(data) : {};
+    } catch {
+        return {};
+    }
+};
+
+export const updateDailyActivity = (profileId: string, stats: { words: number, duration: number, wpm: number }): Record<string, DailyActivity> => {
+    const activity = getDailyActivity(profileId);
+    const date = new Date().toISOString().split('T')[0];
+
+    if (!activity[date]) {
+        activity[date] = { date, totalWords: 0, totalDuration: 0, lessonsCompleted: 0, avgWpm: 0 };
+    }
+
+    const day = activity[date];
+    const prevCount = day.lessonsCompleted;
+    day.totalWords += stats.words;
+    day.totalDuration += stats.duration;
+    day.lessonsCompleted += 1;
+    day.avgWpm = Math.round(((day.avgWpm * prevCount) + stats.wpm) / day.lessonsCompleted);
+
+    localStorage.setItem(getKey(KEYS.ACTIVITY, profileId), JSON.stringify(activity));
+    return activity;
 };
 
 

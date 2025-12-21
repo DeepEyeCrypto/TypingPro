@@ -1,12 +1,13 @@
 import React, { useState, useMemo, memo } from 'react';
 import { HistoryEntry } from '../types';
-import { X, TrendingUp, Activity, Target, Clock, Calendar, BarChart3, Fingerprint, AlertCircle, Award } from 'lucide-react';
+import { X, TrendingUp, Activity, Target, Clock, Calendar, BarChart3, Fingerprint, AlertCircle, Award, Zap } from 'lucide-react';
 import { LESSONS, BADGES } from '../constants';
 import { useApp } from '../contexts/AppContext';
-import PerformanceGraph from './analytics/PerformanceGraph';
+import LevelProgress from './gamification/LevelProgress';
+import { PerformanceCharts } from './analytics/PerformanceCharts';
+import { ActivityHeatmap } from './analytics/ActivityHeatmap';
 import { useHeatmap } from './analytics/HeatmapOverlay';
 import VirtualKeyboard from './VirtualKeyboard';
-import LevelProgress from './gamification/LevelProgress';
 import * as LucideIcons from 'lucide-react';
 
 interface StatsDashboardProps {
@@ -17,9 +18,10 @@ interface StatsDashboardProps {
 type TimeRange = 'week' | 'month' | 'all';
 
 const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }) => {
-    const { settings, currentProfile, earnedBadges, lessonProgress, dailyQuests } = useApp();
+    const { settings, currentProfile, earnedBadges, lessonProgress, dailyQuests, dailyActivity } = useApp();
     const [activeTab, setActiveTab] = useState<'performance' | 'achievements'>('performance');
     const [timeRange, setTimeRange] = useState<TimeRange>('all');
+    const [chartType, setChartType] = useState<'wpm' | 'netWpm' | 'accuracy'>('wpm');
     const heatmapData = useHeatmap(history);
 
     // --- Data Processing ---
@@ -41,15 +43,19 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
     }, [history, timeRange]);
 
     const stats = useMemo(() => {
-        if (filteredHistory.length === 0) return { avgWpm: 0, bestWpm: 0, avgAcc: 0, totalTime: 0 };
+        if (filteredHistory.length === 0) return { avgWpm: 0, bestWpm: 0, avgAcc: 0, totalTime: 0, avgNetWpm: 0, avgCpm: 0 };
 
         const totalWpm = filteredHistory.reduce((acc, curr) => acc + curr.wpm, 0);
+        const totalNetWpm = filteredHistory.reduce((acc, curr) => acc + (curr.netWpm || 0), 0);
+        const totalCpm = filteredHistory.reduce((acc, curr) => acc + (curr.cpm || 0), 0);
         const totalAcc = filteredHistory.reduce((acc, curr) => acc + curr.accuracy, 0);
         const maxWpm = filteredHistory.reduce((acc, curr) => Math.max(acc, curr.wpm), 0);
         const totalDuration = filteredHistory.reduce((acc, curr) => acc + curr.durationSeconds, 0);
 
         return {
             avgWpm: Math.round(totalWpm / filteredHistory.length),
+            avgNetWpm: Math.round(totalNetWpm / filteredHistory.length),
+            avgCpm: Math.round(totalCpm / filteredHistory.length),
             bestWpm: maxWpm,
             avgAcc: Math.round(totalAcc / filteredHistory.length),
             totalTime: Math.round(totalDuration / 60) // minutes
@@ -66,13 +72,6 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
         return Object.entries(errors)
             .sort(([, a], [, b]) => b - a)
             .slice(0, 5);
-    }, [filteredHistory]);
-
-    const historicalWpmData = useMemo(() => {
-        return filteredHistory.map(h => ({
-            timestamp: new Date(h.date).getTime(),
-            wpm: h.wpm
-        }));
     }, [filteredHistory]);
 
     return (
@@ -141,15 +140,14 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
                     />
 
                     {activeTab === 'performance' ? (
-                        <>
-
+                        <div className="space-y-8">
                             {/* KPI Cards */}
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                 {[
-                                    { label: 'Avg Speed', val: `${stats.avgWpm} WPM`, icon: Activity, color: 'text-sky-500' },
-                                    { label: 'Personal Best', val: `${stats.bestWpm} WPM`, icon: TrendingUp, color: 'text-emerald-500' },
+                                    { label: 'Avg Gross', val: `${stats.avgWpm} WPM`, icon: Activity, color: 'text-sky-500' },
+                                    { label: 'Avg Net', val: `${stats.avgNetWpm} WPM`, icon: Zap, color: 'text-violet-500' },
                                     { label: 'Accuracy', val: `${stats.avgAcc}%`, icon: Target, color: 'text-rose-500' },
-                                    { label: 'Total Practice', val: `${stats.totalTime}m`, icon: Clock, color: 'text-amber-500' },
+                                    { label: 'Avg CPM', val: `${stats.avgCpm}`, icon: Fingerprint, color: 'text-amber-500' },
                                 ].map((kpi, idx) => (
                                     <div key={idx} className="glass-card p-6 rounded-[32px] border border-white/10 relative overflow-hidden group">
                                         <div className="text-[10px] font-black text-slate-400 dark:text-white/20 mb-2 uppercase tracking-widest flex items-center gap-2">
@@ -215,39 +213,51 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
                                 </div>
                             </div>
 
-                            {/* Performance Trends */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <div className="lg:col-span-2">
-                                    <PerformanceGraph data={historicalWpmData} height={300} />
+                            {/* Weekly Consistency & Progress */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <ActivityHeatmap activity={dailyActivity} />
+                                <div className="space-y-4">
+                                    <div className="flex gap-4 mb-4">
+                                        {(['wpm', 'netWpm', 'accuracy'] as const).map(t => (
+                                            <button
+                                                key={t}
+                                                onClick={() => setChartType(t)}
+                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${chartType === t ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+                                            >
+                                                {t === 'wpm' ? 'Gross WPM' : t === 'netWpm' ? 'Net WPM' : 'Accuracy'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <PerformanceCharts history={filteredHistory} type={chartType} />
                                 </div>
+                            </div>
 
-                                {/* Error Forensics */}
-                                <div className="glass-card p-8 rounded-[40px] border border-white/10 flex flex-col">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <AlertCircle className="text-rose-500 w-5 h-5" />
-                                        <h3 className="text-lg font-black text-slate-800 dark:text-white tracking-tight">Error Forensics</h3>
-                                    </div>
-                                    <div className="space-y-4 flex-1">
-                                        {enemyKeys.length > 0 ? enemyKeys.map(([char, count]) => (
-                                            <div key={char} className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-white/5 group hover:border-rose-500/30 transition-all">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center font-black text-rose-500 text-lg border border-rose-500/20">
-                                                        {char === ' ' ? '␣' : char}
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tighter">Enemy Key</p>
-                                                        <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase">Mistyped {count} times</p>
-                                                    </div>
+                            {/* Error Forensics */}
+                            <div className="glass-card p-8 rounded-[40px] border border-white/10 flex flex-col">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <AlertCircle className="text-rose-500 w-5 h-5" />
+                                    <h3 className="text-lg font-black text-slate-800 dark:text-white tracking-tight">Error Forensics</h3>
+                                </div>
+                                <div className="space-y-4 flex-1">
+                                    {enemyKeys.length > 0 ? enemyKeys.map(([char, count]) => (
+                                        <div key={char} className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-white/5 group hover:border-rose-500/30 transition-all">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center font-black text-rose-500 text-lg border border-rose-500/20">
+                                                    {char === ' ' ? '␣' : char}
                                                 </div>
-                                                <div className="text-rose-500 font-black text-xs">{(count / filteredHistory.length).toFixed(1)}/session</div>
+                                                <div>
+                                                    <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tighter">Enemy Key</p>
+                                                    <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase">Mistyped {count} times</p>
+                                                </div>
                                             </div>
-                                        )) : (
-                                            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-30">
-                                                <Target className="w-12 h-12 mb-4" />
-                                                <p className="text-sm font-bold uppercase tracking-widest">No flaws detected yet</p>
-                                            </div>
-                                        )}
-                                    </div>
+                                            <div className="text-rose-500 font-black text-xs">{(count / filteredHistory.length).toFixed(1)}/session</div>
+                                        </div>
+                                    )) : (
+                                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-30">
+                                            <Target className="w-12 h-12 mb-4" />
+                                            <p className="text-sm font-bold uppercase tracking-widest">No flaws detected yet</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -332,7 +342,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
                                     </table>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4 duration-500">
                             {BADGES.map(badge => {
@@ -366,7 +376,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = memo(({ history, onClose }
                     )}
                 </div>
             </div>
-        </div >
+        </div>
     );
 });
 
