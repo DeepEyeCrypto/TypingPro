@@ -13,7 +13,10 @@ import LessonDisplay from '../components/LessonDisplay';
 import HandGuide from '../components/HandGuide';
 import { AIInsightCard } from '../components/gamification/AIInsightCard';
 import { Metronome } from '../components/training/Metronome';
-import { Target, Activity, Music, Zap } from 'lucide-react';
+import { Target, Activity, Music, Zap, Clock, Type as TypeIcon } from 'lucide-react';
+import { ModeSelector } from '../components/training/ModeSelector';
+import { PracticeEngine } from '../src/engines/PracticeEngine';
+import { PracticeMode, ModeConfig } from '../types';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,6 +40,14 @@ export default function TypingPage(): React.ReactNode {
     const [retryCount, setRetryCount] = useState<number>(0);
     const [showOverlay, setShowOverlay] = useState<boolean>(true);
 
+    const [modeConfig, setModeConfig] = useState<ModeConfig>({
+        mode: 'curriculum',
+        duration: 60,
+        wordCount: 50,
+        wordPool: 'top200'
+    });
+    const [customTextInput, setCustomTextInput] = useState("");
+
     // --- Live Progress State ---
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
     const [liveStats, setLiveStats] = useState<{
@@ -46,7 +57,8 @@ export default function TypingPage(): React.ReactNode {
         progress: number;
         cursorIndex: number;
         errorIndices: number[];
-    }>({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [] });
+        timeLeft?: number;
+    }>({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [], timeLeft: 60 });
 
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
@@ -96,8 +108,25 @@ export default function TypingPage(): React.ReactNode {
     }, [setActiveLessonId]);
 
     useEffect(() => {
-        initializeLesson(currentLessonId, isCodeMode);
-    }, [isCodeMode, initializeLesson, currentLessonId]);
+        if (modeConfig.mode === 'curriculum') {
+            initializeLesson(currentLessonId, isCodeMode);
+        } else {
+            // Generate content for other modes
+            const content = PracticeEngine.generateContent(modeConfig, HERO_CURRICULUM);
+            if (content) {
+                setActiveLesson({
+                    id: -1,
+                    title: modeConfig.mode.charAt(0).toUpperCase() + modeConfig.mode.slice(1),
+                    content,
+                    description: `Training: ${modeConfig.mode} mode`,
+                    keys: []
+                });
+                setLiveStats({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [] });
+                setRetryCount(c => c + 1);
+                setShowOverlay(false);
+            }
+        }
+    }, [modeConfig, isCodeMode, initializeLesson, currentLessonId]);
 
     const handleRetry = useCallback(() => {
         setModalStats(null);
@@ -145,10 +174,43 @@ export default function TypingPage(): React.ReactNode {
             </AnimatePresence>
 
             <div className="w-full max-w-[1000px] flex flex-col items-center px-6">
-                {/* 1. Subtle Training Indicators (Only visible when active) */}
-                <div className="h-10 flex items-center justify-center mb-2">
-                    <Metronome />
+                {/* 1. Mode Selector & Training UI */}
+                <div className="w-full flex flex-col items-center gap-6 mb-12">
+                    <ModeSelector config={modeConfig} onChange={setModeConfig} />
+
+                    <div className="flex items-center gap-12">
+                        <Metronome />
+
+                        {/* Timer / Progress Indicator */}
+                        {modeConfig.mode === 'time' && (
+                            <div className="flex flex-col items-center">
+                                <span className="text-4xl font-black text-sky-500 tabular-nums">
+                                    {Math.floor((liveStats.timeLeft || 0) / 60)}:{(liveStats.timeLeft || 0) % 60 < 10 ? `0${(liveStats.timeLeft || 0) % 60}` : (liveStats.timeLeft || 0) % 60}
+                                </span>
+                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">Time Remaining</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
+
+                {/* Custom Text Input Modal Overlay (Simple) */}
+                {modeConfig.mode === 'custom' && !modeConfig.customText && (
+                    <div className="w-full max-w-2xl bg-white/5 backdrop-blur-3xl border border-white/10 p-8 rounded-[32px] mb-8 animate-in zoom-in-95 duration-500">
+                        <h3 className="text-lg font-black text-white mb-4 uppercase tracking-widest">Custom Practice</h3>
+                        <textarea
+                            value={customTextInput}
+                            onChange={(e) => setCustomTextInput(e.target.value)}
+                            placeholder="Paste your text here..."
+                            className="w-full h-40 bg-black/20 border border-white/5 rounded-2xl p-4 text-white placeholder:text-white/10 focus:border-sky-500/50 outline-none transition-all resize-none mb-4"
+                        />
+                        <button
+                            onClick={() => setModeConfig({ ...modeConfig, customText: customTextInput })}
+                            className="w-full py-4 bg-sky-500 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-sky-400 transition-all shadow-xl shadow-sky-500/20"
+                        >
+                            Start Custom Session
+                        </button>
+                    </div>
+                )}
 
                 {/* 2. Character Boxes */}
                 <div className="w-full z-20">
@@ -162,10 +224,10 @@ export default function TypingPage(): React.ReactNode {
                 {/* Engine (Hidden) */}
                 <div className="hidden">
                     <TypingArea
-                        key={`${activeLesson.id}-${retryCount}`}
+                        key={`${activeLesson.id}-${retryCount}-${modeConfig.mode}`}
                         content={activeLesson.content}
                         activeLessonId={activeLesson.id}
-                        isActive={!modalStats && !showOverlay}
+                        isActive={!modalStats && !showOverlay && (modeConfig.mode !== 'custom' || !!modeConfig.customText)}
                         onComplete={handleComplete}
                         onRestart={handleRetry}
                         onStatsUpdate={(s) => setLiveStats(prev => ({
@@ -181,6 +243,8 @@ export default function TypingPage(): React.ReactNode {
                         stopOnError={settings.stopOnError}
                         trainingMode={settings.trainingMode}
                         isMasterMode={activeLesson.isMasterMode}
+                        practiceMode={modeConfig.mode}
+                        duration={modeConfig.duration}
                     />
                 </div>
 

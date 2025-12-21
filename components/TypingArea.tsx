@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useCallback, memo, useMemo } from 'react';
-import { Stats, FontSize, CursorStyle, TrainingMode } from '../types';
+import { Stats, FontSize, CursorStyle, TrainingMode, PracticeMode } from '../types';
 import { useSound } from '../contexts/SoundContext';
 import { AlertCircle } from 'lucide-react';
 import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
@@ -16,7 +16,7 @@ interface TypingAreaProps {
   isActive: boolean;
   soundEnabled: boolean;
   onActiveKeyChange?: (key: string | null) => void;
-  onStatsUpdate: (stats: { wpm: number; accuracy: number; errors: number; progress: number }) => void;
+  onStatsUpdate: (stats: { wpm: number; accuracy: number; errors: number; progress: number; timeLeft?: number }) => void;
   onFingerChange?: (finger: string | null) => void;
   fontFamily: string;
   fontSize: FontSize;
@@ -28,6 +28,8 @@ interface TypingAreaProps {
   newKeys?: string[];
   fontColor?: string;
   onComboUpdate?: (combo: number) => void;
+  practiceMode?: PracticeMode;
+  duration?: number;
 }
 
 const TypingArea: React.FC<TypingAreaProps> = ({
@@ -45,11 +47,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   lessonType,
   isMasterMode,
   onComboUpdate,
-  onFingerChange
+  onFingerChange,
+  practiceMode = 'curriculum',
+  duration = 60
 }) => {
   const { playSound } = useSound();
   const { isAccuracyMasterActive } = useApp();
-  const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, isComplete } = useTypingEngine(content, stopOnError);
+  const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, isComplete, timeLeft } = useTypingEngine(content, stopOnError, practiceMode, duration);
 
   const workerRef = useRef<Worker | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -60,7 +64,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     workerRef.current = new Worker(new URL('../src/workers/statsWorker.ts', import.meta.url), { type: 'module' });
     workerRef.current.onmessage = (e) => {
       if (e.data.type === 'STATS_UPDATED') {
-        onStatsUpdate(e.data.stats);
+        onStatsUpdate({ ...e.data.stats, timeLeft });
       }
     };
     return () => workerRef.current?.terminate();
@@ -134,7 +138,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
   useEffect(() => {
     if (isActive && inputRef.current) inputRef.current.focus({ preventScroll: true });
-  }, [isActive, activeLessonId]);
+  }, [isActive, activeLessonId, practiceMode]);
 
   useEffect(() => {
     reset();

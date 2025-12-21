@@ -1,4 +1,15 @@
 
+export type PracticeMode = 'curriculum' | 'time' | 'words' | 'custom' | 'code' | 'smart';
+
+export interface ModeConfig {
+  mode: PracticeMode;
+  duration?: 15 | 30 | 60 | 120; // seconds for 'time' mode
+  wordCount?: 10 | 25 | 50 | 100 | 250; // for 'words' mode
+  language?: string; // for 'code' mode
+  customText?: string;
+  wordPool?: 'top200' | 'top1k' | 'top10k';
+}
+
 export interface Lesson {
   id: number;
   title: string;
@@ -28,6 +39,8 @@ export interface KeyStats {
   totalPresses: number;
   errorCount: number;
   accuracy: number; // 0-100
+  avgLatency?: number; // ms
+  lastPressed?: string; // ISO
 }
 
 export interface FingerStats {
@@ -76,6 +89,7 @@ export interface Stats {
   cpm?: number;
   accuracy: number;
   errors: number;
+  consistency?: number; // 0-100%
   progress: number; // 0-100
   startTime: number | null;
   completed: boolean;
@@ -115,6 +129,7 @@ export interface HistoryEntry {
   cpm?: number;
   accuracy: number;
   errors: number;
+  consistency?: number;
   durationSeconds: number;
   wpmTimeline?: { timestamp: number; wpm: number }[];
   keystrokeLog?: KeystrokeEvent[];
