@@ -32,10 +32,12 @@ export const FANCY_FONTS = [
 ];
 
 export const SECTIONS = [
-  { title: "Phase 1: Foundation (1-10)", range: "1-10", active: true },
-  { title: "Phase 2: Reach & Mechanics (11-30)", range: "11-30", active: false },
-  { title: "Phase 3: Speed Explosion (31-70)", range: "31-70", active: false },
-  { title: "Phase 4: Elite Mastery (71-100)", range: "71-100", active: false }
+  { title: "Phase 1: Foundation (1-20)", range: "1-20", active: true },
+  { title: "Phase 2: Expansion (21-40)", range: "21-40", active: false },
+  { title: "Phase 3: Momentum (41-60)", range: "41-60", active: false },
+  { title: "Phase 4: Proficiency (61-80)", range: "61-80", active: false },
+  { title: "Phase 5: Mastery (81-100)", range: "81-100", active: false },
+  { title: "Phase 6: Elite (101-110)", range: "101-110", active: false }
 ];
 
 export const XP_RANK_DIVISOR = 100; // Formula: Level = sqrt(XP / divisor) + 1

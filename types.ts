@@ -19,7 +19,7 @@ export interface Lesson {
     accuracy: number;
     wpm: number;
   };
-  phase?: 1 | 2 | 3 | 4;
+  phase?: 1 | 2 | 3 | 4 | 5 | 6;
   isMasterMode?: boolean; // If true, restart on any mistake
 }
 

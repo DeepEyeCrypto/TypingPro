@@ -5,6 +5,7 @@ import { useSound } from '../contexts/SoundContext';
 import { AlertCircle } from 'lucide-react';
 import { KEYBOARD_ROWS, LAYOUTS } from '../constants';
 import { useTypingEngine } from '../src/hooks/useTypingEngine';
+import { useApp } from '../contexts/AppContext';
 import { PerformanceMonitor } from '../src/utils/performanceMonitor';
 
 interface TypingAreaProps {
@@ -47,6 +48,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   onFingerChange
 }) => {
   const { playSound } = useSound();
+  const { isAccuracyMasterActive } = useApp();
   const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, isComplete } = useTypingEngine(content, stopOnError);
 
   const workerRef = useRef<Worker | null>(null);
@@ -153,9 +155,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (engineRefs.cursorIndex.current >= content.length) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
-    handleKeyDown(e.key, updateVisuals);
+    const isCorrect = handleKeyDown(e.key, updateVisuals);
+    if (!isCorrect && (isAccuracyMasterActive || isMasterMode)) {
+      onRestart();
+      return;
+    }
     if (soundEnabled) playSound();
-  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex]);
+  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex, isAccuracyMasterActive, isMasterMode, onRestart]);
 
   const onKeyUp = useCallback((e: React.KeyboardEvent) => {
     handleKeyUp(e.key);

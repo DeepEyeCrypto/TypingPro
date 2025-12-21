@@ -34,12 +34,18 @@ interface AppContextType {
     isCodeMode: boolean;
     isSidebarCollapsed: boolean;
     dailyActivity: Record<string, DailyActivity>;
+    isAccuracyMasterActive: boolean;
+    isMetronomeActive: boolean;
+    metronomeBpm: number;
 
     // Actions
     setActiveLessonId: (id: number) => void;
     setActiveModal: (modal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles') => void;
     setIsCodeMode: (val: boolean) => void;
     setIsSidebarCollapsed: (val: boolean) => void;
+    setIsAccuracyMasterActive: (val: boolean) => void;
+    setIsMetronomeActive: (val: boolean) => void;
+    setMetronomeBpm: (val: number) => void;
     switchProfile: (profile: UserProfile) => void;
     createNewProfile: (name: string) => void;
     updateUserSetting: <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => void;
@@ -103,6 +109,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [fingerStats, setFingerStats] = useState<Record<string, FingerStats>>({});
     const [dailyQuests, setDailyQuests] = useState<DailyQuest[]>([]);
     const [dailyActivity, setDailyActivity] = useState<Record<string, DailyActivity>>({});
+    const [isAccuracyMasterActive, setIsAccuracyMasterActive] = useState(false);
+    const [isMetronomeActive, setIsMetronomeActive] = useState(false);
+    const [metronomeBpm, setMetronomeBpm] = useState(60);
 
     // --- Helper for Quest Generation ---
     const initializeDailyQuests = (profileId: string) => {
@@ -576,10 +585,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         isCodeMode,
         isSidebarCollapsed,
         dailyActivity,
+        isAccuracyMasterActive,
+        isMetronomeActive,
+        metronomeBpm,
         setActiveLessonId,
         setActiveModal,
         setIsCodeMode,
         setIsSidebarCollapsed,
+        setIsAccuracyMasterActive,
+        setIsMetronomeActive,
+        setMetronomeBpm,
         switchProfile,
         createNewProfile,
         updateUserSetting,
@@ -593,7 +608,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }), [
         profiles, currentProfile, settings, lessonProgress, history, earnedBadges, systemTheme,
         activeLessonId, user, keyStats, fingerStats, dailyQuests, getWeaknessDrill,
-        activeModal, isCodeMode, isSidebarCollapsed, dailyActivity
+        activeModal, isCodeMode, isSidebarCollapsed, dailyActivity,
+        isAccuracyMasterActive, isMetronomeActive, metronomeBpm
     ]);
 
     return (
