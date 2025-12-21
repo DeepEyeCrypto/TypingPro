@@ -145,57 +145,8 @@ export default function TypingPage(): React.ReactNode {
             </AnimatePresence>
 
             <div className="w-full max-w-[1000px] flex flex-col items-center px-6">
-                {/* 1. Header & Training Controls */}
-                <div className={`w-full flex flex-col items-center gap-6 mb-8 transition-all duration-700 ${liveStats.cursorIndex > 0 ? 'opacity-20 translate-y-[-10px]' : 'opacity-100'}`}>
-
-                    <div className="flex flex-col items-center">
-                        <div className="flex items-center gap-3 mb-1">
-                            <span className="px-3 py-1 rounded-full bg-sky-500/10 text-sky-500 text-[10px] font-black uppercase tracking-widest border border-sky-500/20">
-                                Phase {activeLesson.phase || 1}
-                            </span>
-                            <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{activeLesson.title}</h1>
-                        </div>
-                        <p className="text-sm font-bold text-slate-400 dark:text-white/30 uppercase tracking-[0.3em]">{activeLesson.description}</p>
-                    </div>
-
-                    {/* Mastery Tools Bar */}
-                    <div className="flex items-center gap-4 p-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[28px] shadow-2xl">
-                        <button
-                            onClick={() => setIsAccuracyMasterActive(!isAccuracyMasterActive)}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-[20px] transition-all font-black text-[10px] uppercase tracking-widest ${isAccuracyMasterActive ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30' : 'bg-white/5 text-slate-400 hover:text-white'}`}
-                        >
-                            <Target size={14} />
-                            <span>Accuracy Master</span>
-                        </button>
-
-                        <div className="w-px h-6 bg-white/10" />
-
-                        <div className="flex items-center gap-4 px-2">
-                            <button
-                                onClick={() => setIsMetronomeActive(!isMetronomeActive)}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-[20px] transition-all font-black text-[10px] uppercase tracking-widest ${isMetronomeActive ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'bg-white/5 text-slate-400 hover:text-white'}`}
-                            >
-                                <Music size={14} />
-                                <span>Metronome</span>
-                            </button>
-
-                            {isMetronomeActive && (
-                                <div className="flex items-center gap-3 pr-4">
-                                    <input
-                                        type="range"
-                                        min="60"
-                                        max="240"
-                                        step="10"
-                                        value={metronomeBpm}
-                                        onChange={(e) => setMetronomeBpm(parseInt(e.target.value))}
-                                        className="w-24 accent-sky-500 opacity-60 hover:opacity-100 transition-opacity"
-                                    />
-                                    <span className="text-[10px] font-black text-sky-500 tabular-nums">{metronomeBpm} BPM</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
+                {/* 1. Subtle Training Indicators (Only visible when active) */}
+                <div className="h-10 flex items-center justify-center mb-2">
                     <Metronome />
                 </div>
 
