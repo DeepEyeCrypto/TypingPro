@@ -11,10 +11,6 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { PerformanceOverlay } from './components/PerformanceOverlay';
 
-/**
- * TypingPro Core Entry
- * Rewritten for Clean Slate - v0.0.68+
- */
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { isSidebarCollapsed, setIsSidebarCollapsed } = useApp();
     return (
@@ -24,7 +20,9 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             isSidebarCollapsed={isSidebarCollapsed}
             onToggleSidebar={setIsSidebarCollapsed}
         >
-            {children}
+            <div className="w-full max-w-[1000px] mx-auto h-full flex flex-col">
+                {children}
+            </div>
             <PerformanceOverlay />
         </AppShell>
     );

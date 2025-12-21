@@ -103,9 +103,17 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
           ctx.beginPath();
           ctx.roundRect(rectX, rectY, rectW, rectH, borderRadius);
 
-          let fillStyle = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
-          let strokeStyle = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-          let textColor = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)';
+          // NEW: Clean White Aesthetic
+          let fillStyle = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.9)';
+          let strokeStyle = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+          let textColor = isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
+
+          // Shadows for depth (Light Mode only for cleanliness)
+          if (!isDark) {
+            ctx.shadowColor = 'rgba(0,0,0,0.05)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetY = 4;
+          }
 
           if (heatmapInfo && !isActive && !isPressed) {
             fillStyle = heatmapInfo.color;
@@ -115,36 +123,37 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({
             fillStyle = FINGER_COLORS[keyObj.finger || ''] || fillStyle;
             strokeStyle = 'transparent';
           } else if (isActive) {
-            const accentColor = osLayout === 'mac' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(56, 189, 248, 0.15)';
-            const accentStroke = osLayout === 'mac' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(56, 189, 248, 0.4)';
+            // Instructional Blue Glow
+            fillStyle = isDark ? 'rgba(56, 189, 248, 0.15)' : 'rgba(56, 189, 248, 0.1)';
+            strokeStyle = '#38bdf8';
+            textColor = '#0ea5e9';
 
-            fillStyle = isDark ? accentColor : 'rgba(14, 165, 233, 0.1)';
-            strokeStyle = isDark ? accentStroke : 'rgba(14, 165, 233, 0.3)';
-            textColor = isDark ? (osLayout === 'mac' ? '#fff' : '#38bdf8') : '#0284c7';
-
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = accentStroke;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = 'rgba(56, 189, 248, 0.5)';
           }
 
           if (isPressed) {
-            fillStyle = isActive ? (osLayout === 'mac' ? 'rgba(255,255,255,0.4)' : '#0ea5e9') : (isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)');
+            fillStyle = isActive ? '#0ea5e9' : (isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)');
             textColor = '#fff';
             ctx.translate(0, 4);
+            ctx.shadowBlur = 0;
           }
 
           ctx.fillStyle = fillStyle;
           ctx.fill();
+
           if (strokeStyle !== 'transparent') {
             ctx.strokeStyle = strokeStyle;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = isActive ? 3 : 1;
             ctx.stroke();
           }
 
           ctx.shadowBlur = 0;
+          ctx.shadowOffsetY = 0;
 
           ctx.fillStyle = textColor;
           const fontSize = keyObj.code.length > 5 ? 36 : 48;
-          ctx.font = `700 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
+          ctx.font = `700 ${fontSize}px Inter, -apple-system, sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
