@@ -4,152 +4,99 @@
 
 @layer base {
   :root {
-    /* --- LIGHT THEME (iOS 18 Inspired) --- */
-    --bg-primary: 240 244 248;
-    /* #f0f4f8 - Softer blue-gray */
-    --bg-secondary: 255 255 255;
-    --bg-surface: 255 255 255;
-
-    --text-primary: 28 28 30;
-    /* iOS 18 System Black */
-    --text-secondary: 60 60 67;
-    /* iOS 18 Secondary Text */
-    --text-muted: 142 142 147;
-    /* iOS 18 Muted Text */
-
-    --color-brand: 0 180 219;
-    /* Soft Cyan/Teal */
-    --color-brand-hover: 0 160 200;
-
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-
-    --border-color: 229 231 235;
-  }
-
-  .dark {
-    /* --- DARK THEME (Classic Deep Navy) --- */
-    --bg-primary: 10 14 39;
-    /* Deep dark navy */
-    --bg-secondary: 18 18 20;
-    --bg-surface: 28 28 30;
+    /* --- GLASS v3 TOKENS (Premium Architecture) --- */
+    --bg-primary: 15 23 42;
+    /* Rich Navy Dark */
+    --bg-secondary: 2 6 23;
+    /* Deep Slate/Black */
 
     --text-primary: 255 255 255;
-    --text-secondary: 235 235 245 / 0.6;
-    --text-muted: 235 235 245 / 0.3;
+    --text-secondary: 255 255 255 / 0.6;
+    --text-muted: 255 255 255 / 0.3;
 
-    --color-brand: 0 210 255;
-    --glass-bg: rgba(255, 255, 255, 0.08);
+    /* Semantic States */
+    --color-correct: 16 185 129;
+    /* Emerald 500 */
+    --color-incorrect: 239 68 68;
+    /* Rose 500 */
+    --color-active: 56 189 248;
+    /* Sky 400 */
+
+    --glass-blur: 16px;
+    --glass-radius: 24px;
     --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 48px rgba(0, 0, 0, 0.3);
+    /* Hairline effect */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
   }
 
   html,
   body,
   #root {
-    @apply h-full w-full m-0 p-0 overflow-hidden;
-    background-color: rgb(var(--bg-primary));
+    @apply h-screen w-screen m-0 p-0 overflow-hidden select-none;
+    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
     color: rgb(var(--text-primary));
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-main);
     -webkit-font-smoothing: antialiased;
-    scroll-behavior: smooth;
-    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   h1,
   h2,
-  h3 {
-    @apply font-semibold tracking-tight;
-    letter-spacing: -0.022em;
+  h3,
+  h4 {
+    @apply font-black tracking-tight;
+    letter-spacing: -0.04em;
   }
 }
 
 @layer components {
 
-  /* iOS 18 Premium Glass Card */
-  .glass-card-modern {
+  /* Glass v3 Container */
+  .glass-premium {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 24px;
-    padding: 24px;
-    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
-    will-change: transform, box-shadow, background;
+    border-radius: var(--glass-radius);
+    transition: all 0.3s ease-in-out;
   }
 
-  .glass-card-modern:hover {
-    @apply scale-[1.005];
-    background: rgba(255, 255, 255, 0.75);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+  /* Segmented Pill Control */
+  .segmented-pill {
+    @apply flex items-center p-1 bg-white/5 border border-white/10 rounded-2xl gap-1;
   }
 
-  .dark .glass-card-modern:hover {
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 12px 56px rgba(0, 0, 0, 0.4);
+  .segmented-pill-item {
+    @apply flex-1 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300;
   }
 
-  /* Segmented Glass Control (Navbar) */
-  .glass-segmented {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(8px);
-    @apply p-1 rounded-2xl flex items-center gap-1 border border-white/20;
+  .segmented-pill-item-active {
+    @apply bg-white/10 text-white shadow-sm;
   }
 
-  .dark .glass-segmented {
-    background: rgba(255, 255, 255, 0.05);
+  .segmented-pill-item-inactive {
+    @apply text-white/40 hover:text-white/70 hover:bg-white/5;
   }
 
-  /* Interaction Feedbacks */
-  .btn-ios {
-    @apply flex items-center justify-center transition-all active:scale-95 px-6 py-3 rounded-2xl font-semibold;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Status Badge */
+  .status-badge {
+    @apply flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border;
   }
 
-  /* Typing Page Centering */
-  .focus-container {
-    @apply w-full max-w-[900px] mx-auto px-6 py-12;
+  /* Focus dimming utilities */
+  .dim-focus {
+    @apply opacity-30 blur-[1px] grayscale-[0.5] pointer-events-none;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Cyber Title Override for Minimalist Style */
-  .cyber-title {
-    @apply tracking-tight font-black;
-    background: linear-gradient(135deg, rgb(var(--text-primary)) 0%, rgba(var(--text-primary), 0.6) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-
-/* Scrollbar Refinement */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Animations - iOS 18 Style */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  /* Clean Scrollbar (For internal containers only) */
+  .scroll-premium::-webkit-scrollbar {
+    width: 4px;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .scroll-premium::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
   }
-}
-
-.animate-ios-slide {
-  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

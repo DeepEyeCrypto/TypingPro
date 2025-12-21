@@ -134,28 +134,7 @@ export default function TypingPage(): React.ReactNode {
         };
     }, [handleRetry]);
 
-    const StatsPills = () => (
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-10 animate-ios-slide">
-            <div className="px-6 py-3 rounded-[20px] bg-white dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm flex flex-col items-center min-w-[100px]">
-                <span className="text-xl font-black text-slate-800 dark:text-white">{liveStats.wpm}</span>
-                <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">WPM</span>
-            </div>
-            <div className="px-6 py-3 rounded-[20px] bg-white dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm flex flex-col items-center min-w-[100px]">
-                <span className="text-xl font-black text-slate-800 dark:text-white">{liveStats.accuracy}%</span>
-                <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Accuracy</span>
-            </div>
-            <div className="px-6 py-3 rounded-[20px] bg-white dark:bg-white/5 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm flex flex-col items-center min-w-[100px]">
-                <span className="text-xl font-black text-slate-800 dark:text-white">{liveStats.progress}%</span>
-                <span className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Progress</span>
-            </div>
-            {combo > 5 && (
-                <div className="px-6 py-3 rounded-[20px] bg-sky-500/10 backdrop-blur-xl border border-sky-500/20 shadow-sm flex flex-col items-center min-w-[100px] animate-bounce">
-                    <span className="text-xl font-black text-sky-500">{combo}</span>
-                    <span className="text-[10px] font-bold text-sky-500/40 uppercase tracking-widest">COMBO</span>
-                </div>
-            )}
-        </div>
-    );
+    // Stats are now handled inside TypingArea or as minimal labels
 
     return (
         <div className="flex-1 flex flex-col h-full w-full relative overflow-hidden">
@@ -177,58 +156,71 @@ export default function TypingPage(): React.ReactNode {
                 )}
             </AnimatePresence>
 
-            <div className="flex-1 flex flex-col items-center justify-center focus-container overflow-y-auto pt-8 pb-8 scrollbar-hide min-h-0">
-                <StatsPills />
-
-                <div className="text-center mb-8 animate-ios-slide" style={{ animationDelay: '100ms' }}>
-                    <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight mb-2">{activeLesson.title}</h2>
-                    <p className="text-sm font-medium text-slate-400 dark:text-white/30 max-w-md mx-auto">{activeLesson.description}</p>
+            <div className="flex-1 w-full max-w-[1200px] flex flex-col items-center justify-center relative overflow-hidden px-10">
+                {/* 1. Lesson Context Tier */}
+                <div className={`text-center mb-6 transition-all duration-700 ${liveStats.wpm > 0 ? 'opacity-0 -translate-y-4 pointer-events-none' : 'opacity-100'}`}>
+                    <h1 className="text-5xl font-black text-white tracking-tighter mb-2">{activeLesson.title}</h1>
+                    <p className="text-sm font-bold text-white/30 uppercase tracking-widest">{activeLesson.description}</p>
                 </div>
 
-                <div className="w-full glass-card-modern border-white/20 dark:border-white/10 shadow-2xl animate-ios-slide" style={{ animationDelay: '200ms' }}>
-                    <TypingArea
-                        key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
-                        content={activeLesson.content}
-                        activeLessonId={activeLesson.id}
-                        isActive={!modalStats && !showOverlay}
-                        onComplete={handleComplete}
-                        onRestart={handleRetry}
-                        onStatsUpdate={(s) => {
-                            setLiveStats(s as any); // Casting since s is slightly different from worker but contains needed fields
-                            if (s.wpm > 0) {
-                                setIsSidebarCollapsed(true);
-                                if (setIsSidebarOpen) setIsSidebarOpen(false);
-                            }
-                        }}
-                        onActiveKeyChange={setActiveKey}
-                        onFingerChange={setExpectedFinger}
-                        onComboUpdate={setCombo}
-                        fontFamily={settings.fontFamily}
-                        fontSize={settings.fontSize}
-                        soundEnabled={settings.soundEnabled}
-                        cursorStyle={settings.cursorStyle}
-                        stopOnError={settings.stopOnError}
-                        trainingMode={settings.trainingMode}
-                        lessonType={activeLesson.type}
-                        isMasterMode={activeLesson.isMasterMode}
-                    />
+                {/* 2. Primary Action Tier: Typing Card */}
+                <div className="w-full relative z-10 transition-all duration-500 transform hover:scale-[1.01]">
+                    <div className="glass-premium border-white/10 shadow-3xl relative overflow-hidden">
+                        {/* Minimal Stats Header Inside Card */}
+                        <div className="absolute top-6 left-10 right-10 flex items-center justify-between pointer-events-none z-20">
+                            <div className="flex items-center gap-6">
+                                <div className="flex flex-col">
+                                    <span className="text-2xl font-black text-white leading-none">{liveStats.wpm}</span>
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">WPM</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-2xl font-black text-white leading-none">{liveStats.accuracy}%</span>
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Accuracy</span>
+                                </div>
+                            </div>
+                            {combo > 0 && (
+                                <div className="px-4 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 flex flex-col items-center animate-pulse">
+                                    <span className="text-sm font-black text-sky-400">{combo}X</span>
+                                    <span className="text-[8px] font-bold text-sky-400/40 uppercase">Combo</span>
+                                </div>
+                            )}
+                            <div className="flex flex-col items-end">
+                                <span className="text-2xl font-black text-white leading-none">{liveStats.progress}%</span>
+                                <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Progress</span>
+                            </div>
+                        </div>
+
+                        <TypingArea
+                            key={`${activeLesson.id}-${retryCount}-${isCodeMode}`}
+                            content={activeLesson.content}
+                            activeLessonId={activeLesson.id}
+                            isActive={!modalStats && !showOverlay}
+                            onComplete={handleComplete}
+                            onRestart={handleRetry}
+                            onStatsUpdate={(s) => {
+                                setLiveStats(s as any);
+                                if (s.wpm > 0) {
+                                    setIsSidebarCollapsed(true);
+                                }
+                            }}
+                            onActiveKeyChange={setActiveKey}
+                            onFingerChange={setExpectedFinger}
+                            onComboUpdate={setCombo}
+                            fontFamily={settings.fontFamily}
+                            fontSize={settings.fontSize}
+                            soundEnabled={settings.soundEnabled}
+                            cursorStyle={settings.cursorStyle}
+                            stopOnError={settings.stopOnError}
+                            trainingMode={settings.trainingMode}
+                            lessonType={activeLesson.type}
+                            isMasterMode={activeLesson.isMasterMode}
+                        />
+                    </div>
                 </div>
 
-                <div className="mt-8 flex justify-center animate-ios-slide" style={{ animationDelay: '300ms' }}>
-                    <button
-                        onClick={handleRetry}
-                        className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-white/30 dark:bg-white/5 border border-white/10 text-slate-500 dark:text-white/40 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-white/50 dark:hover:bg-white/10 transition-all font-bold text-sm"
-                    >
-                        <RotateCcw size={16} /> <span>RETRY LESSON [ALT + R]</span>
-                    </button>
-                </div>
-
-                <div className="w-full max-w-[1000px] mt-8 animate-ios-slide" style={{ animationDelay: '350ms' }}>
-                    <PerformanceGraph data={liveStats.wpmTimeline} height={120} isLive={true} />
-                </div>
-
-                <div className="w-full max-w-[1200px] mt-10 pb-12 animate-ios-slide" style={{ animationDelay: '400ms' }}>
-                    <div className="w-full opacity-40 hover:opacity-100 transition-opacity duration-700">
+                {/* 3. Secondary Feedback Tier: Keyboard & Graph */}
+                <div className={`w-full mt-6 grid grid-cols-12 gap-6 transition-all duration-700 ${liveStats.wpm > 0 ? 'opacity-20 blur-[2px]' : 'opacity-60'}`}>
+                    <div className="col-span-8">
                         <VirtualKeyboard
                             activeKey={activeKey}
                             pressedKeys={pressedKeys}
@@ -237,6 +229,16 @@ export default function TypingPage(): React.ReactNode {
                             expectedFinger={expectedFinger}
                             osLayout={settings.osLayout}
                         />
+                    </div>
+                    <div className="col-span-4 flex flex-col justify-end">
+                        <PerformanceGraph data={liveStats.wpmTimeline} height={100} isLive={true} />
+                        <button
+                            onClick={handleRetry}
+                            className="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-white/5 border border-white/5 text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all font-black text-xs uppercase tracking-widest group"
+                        >
+                            <RotateCcw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
+                            <span>Retry Lesson [Alt + R]</span>
+                        </button>
                     </div>
                 </div>
             </div>

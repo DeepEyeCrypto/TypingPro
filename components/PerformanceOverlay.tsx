@@ -46,23 +46,22 @@ export const PerformanceOverlay: React.FC = () => {
     }
 
     return (
-        <div className="fixed bottom-4 right-4 z-50 pointer-events-none">
-            <div className="bg-black/80 border border-white/10 rounded-xl p-3 shadow-xl flex flex-col gap-1 min-w-[120px]">
-                <div className="flex justify-between items-center gap-4">
-                    <span className="text-[10px] uppercase tracking-widest text-white/40 font-bold">Performance</span>
-                    <div className={`w-2 h-2 rounded-full ${stats.fps >= 55 ? 'bg-green-500' : 'bg-red-500 shadow-red-500/50 shadow-sm animate-pulse'}`} />
+        <div className="fixed bottom-6 right-6 z-[100] pointer-events-none">
+            <div className="glass-premium px-4 py-2 flex items-center gap-4 bg-white/5 border-white/5 shadow-2xl">
+                <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-black transition-colors ${stats.fps >= 55 ? 'text-emerald-400' : 'text-rose-500'}`}>
+                        {stats.fps}
+                    </span>
+                    <span className="text-[8px] font-bold text-white/20 uppercase tracking-tighter">FPS</span>
                 </div>
-                <div className="flex flex-col">
-                    <div className="flex justify-between items-baseline">
-                        <span className="text-xl font-black text-white">{stats.fps}</span>
-                        <span className="text-[10px] font-bold text-white/30 ml-1">FPS</span>
-                    </div>
-                    <div className="flex justify-between items-baseline">
-                        <span className={`text-sm font-bold ${stats.latency < 16 ? 'text-brand' : 'text-red-400'}`}>
-                            {stats.latency}ms
-                        </span>
-                        <span className="text-[10px] font-bold text-white/30 ml-1">LATENCY</span>
-                    </div>
+
+                <div className="w-px h-3 bg-white/10" />
+
+                <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-black transition-colors ${stats.latency < 16 ? 'text-sky-400' : 'text-rose-500'}`}>
+                        {stats.latency}ms
+                    </span>
+                    <span className="text-[8px] font-bold text-white/20 uppercase tracking-tighter">LATENCY</span>
                 </div>
             </div>
         </div>

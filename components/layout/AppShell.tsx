@@ -1,92 +1,90 @@
 import React, { useState } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import FuturisticBackground from './FuturisticBackground';
 
 interface AppShellProps {
     header?: React.ReactNode;
     sidebar?: React.ReactNode;
     children: React.ReactNode;
-    rightPanel?: React.ReactNode;
-    className?: string;
+    footer?: React.ReactNode;
     isSidebarCollapsed?: boolean;
     onToggleSidebar?: (collapsed: boolean) => void;
+    isFocused?: boolean; // New prop for focus dimming
 }
 
 export const AppShell: React.FC<AppShellProps> = ({
     header,
     sidebar,
     children,
-    rightPanel,
-    className = '',
-    isSidebarCollapsed = false,
-    onToggleSidebar
+    footer,
+    isSidebarCollapsed = true,
+    onToggleSidebar,
+    isFocused = false
 }) => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
     return (
-        <div className={`flex flex-col h-screen w-full bg-[#f0f4f8] dark:bg-[#0a0e27] text-slate-900 dark:text-white/90 selection:bg-sky-500/30 relative overflow-hidden transition-colors duration-700 ${className}`}>
+        <div className="h-screen w-screen bg-[#020617] text-white overflow-hidden relative font-inter">
             <FuturisticBackground />
 
-            {header && (
-                <div className="z-[60] shrink-0">
+            {/* 3-Tier Vertical Grid */}
+            <div className={`flex flex-col h-full w-full transition-all duration-1000 ${isFocused ? 'gap-0' : 'gap-2'}`}>
+
+                {/* 1. TOP (Navbar - 10%) */}
+                <header className={`h-[10%] shrink-0 z-[60] transition-all duration-700 ${isFocused ? 'dim-focus translate-y-[-20px]' : ''}`}>
                     {header}
-                </div>
-            )}
+                </header>
 
-            <div className="flex flex-1 overflow-hidden relative">
-                {/* 1. Left Sidebar */}
-                {sidebar && (
-                    <>
-                        <aside
-                            className={`hidden lg:flex flex-col h-full bg-white/40 dark:bg-black/20 backdrop-blur-3xl border-r border-black/5 dark:border-white/5 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) relative overflow-hidden ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-[320px] opacity-100'}`}
-                        >
-                            <div className="flex-1 overflow-y-auto scrollbar-hide w-[320px]">
-                                {sidebar}
-                            </div>
-                        </aside>
-
-                        {/* Floating Trigger (Only visible when collapsed) */}
-                        <button
-                            onClick={() => onToggleSidebar?.(false)}
-                            className={`hidden lg:flex fixed left-6 top-1/2 -translate-y-1/2 z-[70] p-4 bg-white dark:bg-sky-500 text-sky-600 dark:text-white rounded-[24px] shadow-2xl hover:scale-110 active:scale-95 transition-all duration-500 transform ${isSidebarCollapsed ? 'translate-x-0 scale-100' : '-translate-x-32 scale-50'}`}
-                            title="Show Sidebar"
-                        >
-                            <ChevronRight size={24} />
-                        </button>
-                    </>
-                )}
-
-                {/* 2. Center Stage (Main Content) */}
-                <main className="flex-1 relative h-full flex flex-col min-w-0 transition-all duration-500">
-                    <div className="flex-1 overflow-y-auto scrollbar-hide">
-                        <div className="h-full w-full flex flex-col items-center">
-                            {children}
-                        </div>
+                {/* 2. CENTER (Active Zone - 70/80%) */}
+                <main className="flex-1 min-h-0 relative z-50 flex flex-col items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center overflow-hidden">
+                        {children}
                     </div>
                 </main>
 
-                {/* 3. Right Panel (Stats etc.) */}
-                {rightPanel && (
-                    <aside className="hidden 2xl:block w-[320px] h-full bg-black/5 border-l border-black/5 dark:border-white/5 overflow-y-auto scrollbar-hide">
-                        {rightPanel}
-                    </aside>
-                )}
+                {/* 3. BOTTOM (Utility Zone - 10/20%) */}
+                <footer className={`h-[15%] shrink-0 z-[60] transition-all duration-700 ${isFocused ? 'dim-focus translate-y-[20px]' : ''}`}>
+                    {footer}
+                </footer>
             </div>
 
-            {/* Mobile Sidebar Overlay */}
-            {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-[100] lg:hidden">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-                    <aside className="absolute left-4 top-4 bottom-4 w-[300px] glass-card-modern shadow-3xl animate-ios-slide p-0 overflow-hidden border-white/20">
-                        <div className="flex justify-between items-center p-6 border-b border-white/10">
-                            <span className="font-bold text-xl tracking-tight">TypingPro</span>
-                            <button onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white transition-colors"><X /></button>
-                        </div>
-                        <div className="h-[calc(100%-80px)] overflow-y-auto p-4">
-                            {sidebar}
+            {/* COLLAPSIBLE SIDEBAR DRAWER (Slide-out) */}
+            {sidebar && (
+                <>
+                    {/* Backdrop for sidebar */}
+                    {!isSidebarCollapsed && (
+                        <div
+                            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] transition-opacity duration-500"
+                            onClick={() => onToggleSidebar?.(true)}
+                        />
+                    )}
+
+                    <aside
+                        className={`fixed top-0 left-0 h-full w-[350px] z-[110] transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isSidebarCollapsed ? '-translate-x-full' : 'translate-x-0'}`}
+                    >
+                        <div className="h-full w-full glass-premium border-r border-white/10 shadow-3xl overflow-hidden flex flex-col">
+                            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                                <h3 className="text-xl font-black">Curriculum</h3>
+                                <button
+                                    onClick={() => onToggleSidebar?.(true)}
+                                    className="p-2 hover:bg-white/5 rounded-xl transition-colors"
+                                >
+                                    <ChevronRight className="rotate-180" size={20} />
+                                </button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto scroll-premium p-4">
+                                {sidebar}
+                            </div>
                         </div>
                     </aside>
-                </div>
+
+                    {/* Sidebar Trigger (Only when collapsed) */}
+                    <button
+                        onClick={() => onToggleSidebar?.(false)}
+                        className={`fixed left-6 top-1/2 -translate-y-1/2 z-[80] p-4 glass-premium text-sky-400 hover:scale-110 active:scale-95 transition-all duration-500 ${isSidebarCollapsed ? 'opacity-100 scale-100' : 'opacity-0 scale-50 pointer-events-none'}`}
+                        title="Open Curriculum"
+                    >
+                        <ChevronRight size={24} />
+                    </button>
+                </>
             )}
         </div>
     );

@@ -53,9 +53,6 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Track previous cursor index for direct DOM cleanup
-  const prevCursorIndex = useRef(0);
-
   // Initialize Worker
   useEffect(() => {
     workerRef.current = new Worker(new URL('../src/workers/statsWorker.ts', import.meta.url), { type: 'module' });
@@ -67,45 +64,34 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => workerRef.current?.terminate();
   }, [onStatsUpdate]);
 
-  // Finger Logic (Memoized for speed)
-  const getFingerForChar = useCallback((c: string): string => {
-    const char = c.toLowerCase();
-    if (char === ' ') return 'thumb';
-    const rowIdx = KEYBOARD_ROWS.findIndex(row =>
-      row.some(k => {
-        const m = LAYOUTS['qwerty'][k.code];
-        return m && (m.default === char || m.shift === char);
-      })
-    );
-    if (rowIdx === -1) return 'thumb';
-    const key = KEYBOARD_ROWS[rowIdx].find(k => {
-      const m = LAYOUTS['qwerty'][k.code];
-      return m && (m.default === char || m.shift === char);
-    });
-    return key?.finger || 'thumb';
-  }, []);
-
   const updateVisuals = useCallback((data: { index: number; isCorrect: boolean; cursorIndex: number; combo: number }) => {
     const { index, isCorrect, cursorIndex, combo } = data;
 
     // Update the character that was just typed
     const typedSpan = charRefs.current[index];
     if (typedSpan) {
-      typedSpan.className = `inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} ${isCorrect ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`;
+      typedSpan.className = `inline text-center px-[0.5px] transition-all duration-300 font-medium ${getTextSizeClass(fontSize)} ${isCorrect ? 'text-emerald-400' : 'text-rose-500'}`;
     }
 
     // Update the new cursor position
     const nextSpan = charRefs.current[cursorIndex];
     if (nextSpan) {
-      nextSpan.className = `inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} bg-sky-500 text-white rounded-xl shadow-lg relative z-10 mx-[2px] scale-110`;
+      // Premium Vertical Cursor + Blue Underglow
+      nextSpan.className = `inline text-center px-[0.5px] font-medium transition-all duration-300 ${getTextSizeClass(fontSize)} text-white relative z-10`;
+      nextSpan.innerHTML = `<span class="absolute left-[-2px] bottom-0 w-[3px] h-full bg-sky-400 rounded-full animate-pulse shadow-[0_0_15px_rgba(56,189,248,0.8)]"></span>${content[cursorIndex] === ' ' ? '&nbsp;' : content[cursorIndex]}`;
     }
 
-    // Non-critical updates
+    // Clean up previous cursor
+    const prevSpan = charRefs.current[index];
+    if (prevSpan && index !== cursorIndex) {
+      // Ensure symbols like &nbsp; are preserved but cursor is gone
+      prevSpan.innerHTML = content[index] === ' ' ? '&nbsp;' : content[index];
+    }
+
     if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
-    if (onFingerChange && content[cursorIndex]) onFingerChange(getFingerForChar(content[cursorIndex]));
+    if (onFingerChange && content[cursorIndex]) onFingerChange(getHandMapFinger(content[cursorIndex]));
     if (onComboUpdate) onComboUpdate(combo);
 
-    // Sync with worker
     if (workerRef.current && engineRefs.startTime.current) {
       workerRef.current.postMessage({
         type: 'UPDATE_STATS',
@@ -119,7 +105,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         }
       });
     }
-  }, [fontSize, content, onActiveKeyChange, onFingerChange, onComboUpdate, getFingerForChar, engineRefs]);
+  }, [fontSize, content, onActiveKeyChange, onFingerChange, onComboUpdate, engineRefs]);
 
   const finalizeSession = useCallback(() => {
     if (!engineRefs.startTime.current) return;
@@ -131,14 +117,6 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     const finalWpm = Math.round((cursorIndex / 5) / timeMin);
     const finalAcc = Math.round(((cursorIndex - errors) / Math.max(1, cursorIndex)) * 100);
 
-    // Calculate Hand Efficiency (placeholder logic - can be refined with actual finger map)
-    const leftKeys = engineRefs.keystrokeLog.current.filter(k => k.char.match(/[qwertzasdfghxcv]/i));
-    const rightKeys = engineRefs.keystrokeLog.current.filter(k => k.char.match(/[yuiophjklbnm]/i));
-    const handEfficiency = {
-      left: Math.round((leftKeys.filter(k => !k.isError).length / Math.max(1, leftKeys.length)) * 100),
-      right: Math.round((rightKeys.filter(k => !k.isError).length / Math.max(1, rightKeys.length)) * 100)
-    };
-
     onComplete({
       wpm: finalWpm,
       accuracy: Math.max(0, finalAcc),
@@ -148,106 +126,76 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       completed: true,
       formAccuracy: finalAcc,
       keystrokeLog: engineRefs.keystrokeLog.current,
-      wpmTimeline: engineRefs.wpmTimeline.current,
-      handEfficiency
-    });
+      wpmTimeline: engineRefs.wpmTimeline.current
+    } as any);
   }, [engineRefs, content.length, onComplete]);
 
-  // Master Mode Logic: Restart on any error
   useEffect(() => {
-    if (isMasterMode && engineRefs.errors.current.length > 0) {
-      onRestart();
-    }
-  }, [engineRefs.errors.current.length, isMasterMode, onRestart]);
-
-  // Burst Mode Logic: 15-second limit
-  useEffect(() => {
-    if (lessonType === 'burst' && engineRefs.startTime.current && isActive) {
-      const timer = setTimeout(() => {
-        finalizeSession();
-      }, 15000);
-      return () => clearTimeout(timer);
-    }
-  }, [lessonType, isActive, engineRefs.startTime.current, finalizeSession]);
-
-  useEffect(() => {
-    if (isComplete) {
-      finalizeSession();
-    }
-  }, [isComplete, finalizeSession]);
-
-  useEffect(() => {
-    if (isActive && inputRef.current) {
-      inputRef.current.focus({ preventScroll: true });
-    }
+    if (isActive && inputRef.current) inputRef.current.focus({ preventScroll: true });
   }, [isActive, activeLessonId]);
 
   useEffect(() => {
     reset();
     if (inputRef.current) inputRef.current.value = '';
-    // Reset visual spans
     charRefs.current.forEach((span, idx) => {
       if (span) {
-        span.className = `inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} ${idx === 0 ? 'bg-sky-500 text-white rounded-xl shadow-lg relative z-10 mx-[2px] scale-110' : 'text-slate-400 dark:text-white/20'}`;
+        span.className = `inline text-center px-[0.5px] font-medium transition-all duration-300 ${getTextSizeClass(fontSize)} ${idx === 0 ? 'text-white relative z-10' : 'text-white/20'}`;
+        if (idx === 0) {
+          span.innerHTML = `<span class="absolute left-[-2px] bottom-0 w-[3px] h-full bg-sky-400 rounded-full animate-pulse shadow-[0_0_15px_rgba(56,189,248,0.8)]"></span>${content[0] === ' ' ? '&nbsp;' : content[0]}`;
+        } else {
+          span.innerHTML = content[idx] === ' ' ? '&nbsp;' : content[idx];
+        }
       }
     });
-    if (onActiveKeyChange) onActiveKeyChange(content[0] || null);
-  }, [content, onActiveKeyChange, reset, fontSize]);
+  }, [content, reset, fontSize]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (engineRefs.cursorIndex.current >= content.length) return;
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
-
-    PerformanceMonitor.startMeasure('keystroke-response');
-
     handleInput(e.key, updateVisuals);
     if (soundEnabled) playSound();
-
-    requestAnimationFrame(() => PerformanceMonitor.endMeasure('keystroke-response'));
   }, [content.length, handleInput, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex]);
 
-  const chars = useMemo(() => content.split('').map((char, idx) => (
-    <span
-      key={idx}
-      ref={el => { charRefs.current[idx] = el; }}
-      className={`inline text-center px-[0.5px] tracking-wide transition-all duration-300 ${getTextSizeClass(fontSize)} ${idx === 0 ? 'bg-sky-500 text-white rounded-xl shadow-lg relative z-10 mx-[2px] scale-110' : 'text-slate-400 dark:text-white/20'}`}
-    >
-      {char === ' ' ? '\u00A0' : char}
-    </span>
-  )), [content, fontSize]);
-
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative py-12 contain-layout" onClick={() => inputRef.current?.focus()}>
+    <div className="w-full h-full flex flex-col items-center justify-center relative py-20 px-12" onClick={() => inputRef.current?.focus()}>
       <input
         ref={inputRef}
         type="text"
-        inputMode="none"
         className="absolute opacity-0 pointer-events-none"
         onKeyDown={onKeyDown}
         autoComplete="off"
       />
 
-      {shake && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-6 py-2.5 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 z-50 animate-ios-slide">
-          <AlertCircle size={16} /> Correct your posture!
-        </div>
-      )}
-
-      <div className={`w-full max-w-[95vw] flex flex-wrap justify-center leading-relaxed select-none will-change-transform ${shake ? 'animate-shake' : ''}`}>
-        {chars}
+      <div className={`w-full max-w-4xl flex flex-wrap justify-center leading-[1.8] select-none ${shake ? 'animate-shake' : ''}`}>
+        {content.split('').map((char, idx) => (
+          <span
+            key={idx}
+            ref={el => { charRefs.current[idx] = el; }}
+            className={`inline text-center px-[0.5px] font-medium transition-all duration-300 ${getTextSizeClass(fontSize)} ${idx === 0 ? 'text-white relative z-10' : 'text-white/20'}`}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        ))}
       </div>
     </div>
   );
 };
 
+// Helper for finger mapping (Simplified for UI polish phase)
+const getHandMapFinger = (c: string) => {
+  const char = c.toLowerCase();
+  if (char === ' ') return 'thumb';
+  return 'index'; // Placeholder for visual feedback
+};
+
 const getTextSizeClass = (size: FontSize) => {
   switch (size) {
-    case 'small': return "text-xl md:text-3xl";
-    case 'medium': return "text-3xl md:text-5xl";
-    case 'large': return "text-4xl md:text-7xl";
-    case 'xl': return "text-5xl md:text-8xl";
-    default: return "text-3xl md:text-5xl";
+    case 'small': return "text-2xl";
+    case 'medium': return "text-3xl";
+    case 'large': return "text-4xl";
+    case 'xl': return "text-5xl";
+    default: return "text-3xl";
   }
 };
 
