@@ -35,10 +35,11 @@
   body,
   #root {
     @apply h-screen w-screen m-0 p-0 overflow-hidden select-none;
-    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-    color: rgb(var(--text-primary));
+    background-color: var(--bg);
+    color: var(--main);
     font-family: var(--font-main);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.5s ease, color 0.5s ease;
   }
 
   h1,

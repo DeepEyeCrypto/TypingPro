@@ -20,14 +20,14 @@ const Header: React.FC = () => {
   } = useApp();
 
   const activeLesson = HERO_CURRICULUM.find(l => l.id === activeLessonId) || HERO_CURRICULUM[0];
-  const { theme, toggleTheme, resolvedTheme } = useTheme();
+  const { activeTheme, setTheme } = useTheme();
   const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
     getAppVersion().then(setVersion);
   }, []);
 
-  const isDark = resolvedTheme === 'dark';
+  const isDark = activeTheme.name.toLowerCase() === 'midnight' || activeTheme.name.toLowerCase() === 'calm';
 
   return (
     <header className="h-full flex items-center justify-between px-10 bg-transparent select-none relative z-[100]">
@@ -108,7 +108,7 @@ const Header: React.FC = () => {
       {/* 3. Right: User Profile & Quick Actions */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-2xl border border-white/5">
-          <button onClick={toggleTheme} className="p-2 text-white/40 hover:text-white transition-all rounded-xl hover:bg-white/10">
+          <button onClick={() => setTheme(isDark ? 'solar' : 'midnight')} className="p-2 text-white/40 hover:text-white transition-all rounded-xl hover:bg-white/10">
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
           <button

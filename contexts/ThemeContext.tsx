@@ -1,81 +1,55 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-
-type Theme = 'light' | 'dark' | 'system';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Theme, THEMES } from '../theme/themes';
 
 interface ThemeContextType {
-    theme: Theme;
-    setTheme: (theme: Theme) => void;
-    resolvedTheme: 'light' | 'dark';
-    toggleTheme: () => void;
+    activeTheme: Theme;
+    setTheme: (name: string) => void;
+    availableThemes: string[];
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider = ({
-    children,
-    defaultTheme = 'system',
-    storageKey = 'typingpro-theme'
-}: {
-    children: React.ReactNode;
-    defaultTheme?: Theme;
-    storageKey?: string;
-}) => {
-    const [theme, setThemeState] = useState<Theme>(
-        () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-    );
+export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [themeName, setThemeName] = useState<string>(() => {
+        return localStorage.getItem('typingpro_zen_theme') || 'midnight';
+    });
 
-    const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+    const activeTheme = THEMES[themeName] || THEMES.midnight;
 
     useEffect(() => {
-        const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
+        const root = document.documentElement;
+        root.style.setProperty('--bg', activeTheme.background);
+        root.style.setProperty('--main', activeTheme.main);
+        root.style.setProperty('--sub', activeTheme.sub);
+        root.style.setProperty('--accent', activeTheme.accent);
+        root.style.setProperty('--caret', activeTheme.caret);
+        root.style.setProperty('--error', activeTheme.error);
+        root.style.setProperty('--success', activeTheme.success);
 
-        if (theme === 'system') {
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light';
-            root.classList.add(systemTheme);
-            setResolvedTheme(systemTheme);
-            return;
-        }
+        localStorage.setItem('typingpro_zen_theme', themeName);
+    }, [activeTheme, themeName]);
 
-        root.classList.add(theme);
-        setResolvedTheme(theme);
-    }, [theme]);
-
-    // Listen for system changes if mode is system
     useEffect(() => {
-        if (theme !== 'system') return;
-
-        const media = window.matchMedia('(prefers-color-scheme: dark)');
-        const listener = (e: MediaQueryListEvent) => {
-            const newTheme = e.matches ? 'dark' : 'light';
-            const root = window.document.documentElement;
-            root.classList.remove('light', 'dark');
-            root.classList.add(newTheme);
-            setResolvedTheme(newTheme);
+        const handleKeys = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const availableThemes = Object.keys(THEMES);
+                const nextIdx = (availableThemes.indexOf(themeName) + 1) % availableThemes.length;
+                setThemeName(availableThemes[nextIdx]);
+            }
         };
+        window.addEventListener('keydown', handleKeys);
+        return () => window.removeEventListener('keydown', handleKeys);
+    }, [themeName]);
 
-        media.addEventListener('change', listener);
-        return () => media.removeEventListener('change', listener);
-    }, [theme]);
-
-    const setTheme = (value: Theme) => {
-        localStorage.setItem(storageKey, value);
-        setThemeState(value);
+    const setTheme = (name: string) => {
+        if (THEMES[name]) setThemeName(name);
     };
 
-    const toggleTheme = () => {
-        // If system, lock to the opposite of what resolved is
-        if (theme === 'system') {
-            setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
-        } else {
-            setTheme(theme === 'light' ? 'dark' : 'light');
-        }
-    };
+    const availableThemes = Object.keys(THEMES);
 
     return (
-        <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme, toggleTheme }}>
+        <ThemeContext.Provider value={{ activeTheme, setTheme, availableThemes }}>
             {children}
         </ThemeContext.Provider>
     );
@@ -83,7 +57,6 @@ export const ThemeProvider = ({
 
 export const useTheme = () => {
     const context = useContext(ThemeContext);
-    if (context === undefined)
-        throw new Error('useTheme must be used within a ThemeProvider');
+    if (!context) throw new Error('useTheme must be used within a ThemeProvider');
     return context;
 };

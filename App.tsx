@@ -35,12 +35,10 @@ export default function App(): React.ReactNode {
                 <AppProvider>
                     <SoundProvider>
                         <ThemeProvider>
-                            <LayoutWrapper>
-                                <Routes>
-                                    <Route path="/" element={<TypingPage />} />
-                                    <Route path="*" element={<Navigate to="/" replace />} />
-                                </Routes>
-                            </LayoutWrapper>
+                            <Routes>
+                                <Route path="/" element={<TypingPage />} />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
                         </ThemeProvider>
                     </SoundProvider>
                 </AppProvider>

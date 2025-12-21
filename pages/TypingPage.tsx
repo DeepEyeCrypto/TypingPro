@@ -6,17 +6,15 @@ import { useApp } from '../contexts/AppContext';
 import { HERO_CURRICULUM } from '../constants/curriculum';
 import { CODE_SNIPPETS } from '../constants/codeSnippets';
 import { RotateCcw, ChevronRight } from 'lucide-react';
-import { Lesson, Stats } from '../types';
+import { AnimatePresence, motion } from 'framer-motion';
 import InstructionalOverlay from '../components/curriculum/InstructionalOverlay';
-import { AnimatePresence } from 'framer-motion';
-import LessonDisplay from '../components/LessonDisplay';
-import HandGuide from '../components/HandGuide';
-import { AIInsightCard } from '../components/gamification/AIInsightCard';
-import { Metronome } from '../components/training/Metronome';
 import { Target, Activity, Music, Zap, Clock, Type as TypeIcon } from 'lucide-react';
 import { ModeSelector } from '../components/training/ModeSelector';
 import { PracticeEngine } from '../src/engines/PracticeEngine';
-import { PracticeMode, ModeConfig } from '../types';
+import { Lesson, Stats, PracticeMode, ModeConfig } from '../types';
+import { TypingLayout } from '../components/layout/TypingLayout';
+import { ZenHeader } from '../components/layout/ZenHeader';
+import { ZenStats } from '../components/layout/ZenStats';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -166,161 +164,90 @@ export default function TypingPage(): React.ReactNode {
     }, [handleRetry]);
 
     return (
-        <div className="flex-1 w-full flex flex-col items-center justify-center relative overflow-hidden bg-[#fafafa] dark:bg-[#020617] transition-colors duration-500">
-            <AnimatePresence>
-                {showOverlay && !modalStats && (
-                    <InstructionalOverlay lesson={activeLesson} onStart={() => setShowOverlay(false)} />
-                )}
-            </AnimatePresence>
+        <TypingLayout
+            header={<ZenHeader />}
+            footer={
+                <ZenStats
+                    isTyping={liveStats.cursorIndex > 0 && !modalStats}
+                    isComplete={!!modalStats}
+                    stats={{
+                        wpm: liveStats.wpm,
+                        accuracy: liveStats.accuracy,
+                        errors: liveStats.errors,
+                        timeLeft: liveStats.timeLeft
+                    }}
+                    onRestart={handleRetry}
+                    onNext={modalStats?.completed ? handleNext : undefined}
+                />
+            }
+        >
+            <div className="flex flex-col items-center w-full">
+                {/* 1. Mode Selector (Only if not typing and not complete) */}
+                <AnimatePresence>
+                    {liveStats.cursorIndex === 0 && !modalStats && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="mb-16"
+                        >
+                            <ModeSelector config={modeConfig} onChange={setModeConfig} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-            <div className="w-full max-w-[1000px] flex flex-col items-center px-6">
-                {/* 1. Mode Selector & Training UI */}
-                <div className="w-full flex flex-col items-center gap-6 mb-12">
-                    <ModeSelector config={modeConfig} onChange={setModeConfig} />
-
-                    <div className="flex items-center gap-12">
-                        <Metronome />
-
-                        {/* Timer / Progress Indicator */}
-                        {modeConfig.mode === 'time' && (
-                            <div className="flex flex-col items-center">
-                                <span className="text-4xl font-black text-sky-500 tabular-nums">
-                                    {Math.floor((liveStats.timeLeft || 0) / 60)}:{(liveStats.timeLeft || 0) % 60 < 10 ? `0${(liveStats.timeLeft || 0) % 60}` : (liveStats.timeLeft || 0) % 60}
-                                </span>
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mt-1">Time Remaining</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Custom Text Input Modal Overlay (Simple) */}
-                {modeConfig.mode === 'custom' && !modeConfig.customText && (
-                    <div className="w-full max-w-2xl bg-white/5 backdrop-blur-3xl border border-white/10 p-8 rounded-[32px] mb-8 animate-in zoom-in-95 duration-500">
-                        <h3 className="text-lg font-black text-white mb-4 uppercase tracking-widest">Custom Practice</h3>
+                {/* 2. Custom Text Input (If needed) */}
+                {modeConfig.mode === 'custom' && !modeConfig.customText && !modalStats && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="w-full max-w-2xl bg-white/5 backdrop-blur-3xl border border-white/5 p-8 rounded-[32px] mb-8 animate-in zoom-in-95 duration-500"
+                    >
+                        <h3 className="text-lg font-black text-[var(--main)] mb-4 uppercase tracking-widest opacity-40">Custom Practice</h3>
                         <textarea
                             value={customTextInput}
                             onChange={(e) => setCustomTextInput(e.target.value)}
                             placeholder="Paste your text here..."
-                            className="w-full h-40 bg-black/20 border border-white/5 rounded-2xl p-4 text-white placeholder:text-white/10 focus:border-sky-500/50 outline-none transition-all resize-none mb-4"
+                            className="w-full h-40 bg-black/20 border border-white/5 rounded-2xl p-4 text-[var(--main)] placeholder:text-[var(--sub)] focus:border-[var(--accent)]/50 outline-none transition-all resize-none mb-4"
                         />
                         <button
                             onClick={() => setModeConfig({ ...modeConfig, customText: customTextInput })}
-                            className="w-full py-4 bg-sky-500 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-sky-400 transition-all shadow-xl shadow-sky-500/20"
+                            className="w-full py-4 bg-[var(--accent)] text-[var(--bg)] rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:opacity-90 transition-all shadow-xl shadow-[var(--accent)]/20"
                         >
                             Start Custom Session
                         </button>
-                    </div>
+                    </motion.div>
                 )}
 
-                {/* 2. Character Boxes */}
-                <div className="w-full z-20">
-                    <LessonDisplay
-                        content={activeLesson.content}
-                        cursorIndex={liveStats.cursorIndex}
-                        errors={liveStats.errorIndices}
-                    />
-                </div>
-
-                {/* Engine (Hidden) */}
-                <div className="hidden">
-                    <TypingArea
-                        key={`${activeLesson.id}-${retryCount}-${modeConfig.mode}`}
-                        content={activeLesson.content}
-                        activeLessonId={activeLesson.id}
-                        isActive={!modalStats && !showOverlay && (modeConfig.mode !== 'custom' || !!modeConfig.customText)}
-                        onComplete={handleComplete}
-                        onRestart={handleRetry}
-                        onStatsUpdate={(s) => setLiveStats(prev => ({
-                            ...prev,
-                            ...s,
-                            cursorIndex: Math.floor(s.progress * activeLesson.content.length / 100)
-                        }))}
-                        onActiveKeyChange={setActiveKey}
-                        fontFamily={settings.fontFamily}
-                        fontSize={settings.fontSize}
-                        soundEnabled={settings.soundEnabled}
-                        cursorStyle={settings.cursorStyle}
-                        stopOnError={settings.stopOnError}
-                        trainingMode={settings.trainingMode}
-                        isMasterMode={activeLesson.isMasterMode}
-                        practiceMode={modeConfig.mode}
-                        duration={modeConfig.duration}
-                    />
-                </div>
-
-                {/* 3. Hands & Keyboard */}
-                <div className={`w-full relative flex flex-col items-center transition-all duration-700 ${liveStats.cursorIndex > 0 ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}`}>
-                    <div className="absolute top-[-100px] z-30">
-                        <HandGuide activeKey={activeKey} />
-                    </div>
-
-                    <div className="w-full opacity-60 hover:opacity-100 transition-opacity duration-500">
-                        <VirtualKeyboard
-                            activeKey={activeKey}
-                            pressedKeys={pressedKeys}
-                            layout={settings.keyboardLayout}
-                            osLayout={settings.osLayout}
+                {/* 3. Main Typing deck */}
+                {!modalStats && (
+                    <div className="w-full">
+                        <TypingArea
+                            key={`${activeLesson.id}-${retryCount}-${modeConfig.mode}`}
+                            content={activeLesson.content}
+                            activeLessonId={activeLesson.id}
+                            isActive={!modalStats && (modeConfig.mode !== 'custom' || !!modeConfig.customText)}
+                            onComplete={handleComplete}
+                            onRestart={handleRetry}
+                            onStatsUpdate={(s) => setLiveStats(prev => ({
+                                ...prev,
+                                ...s,
+                                cursorIndex: Math.floor(s.progress * activeLesson.content.length / 100)
+                            }))}
+                            onActiveKeyChange={setActiveKey}
+                            fontFamily={settings.fontFamily}
+                            fontSize={settings.fontSize}
+                            soundEnabled={settings.soundEnabled}
+                            cursorStyle={settings.cursorStyle}
+                            stopOnError={settings.stopOnError}
+                            trainingMode={settings.trainingMode}
+                            isMasterMode={activeLesson.isMasterMode}
+                            practiceMode={modeConfig.mode}
+                            duration={modeConfig.duration}
                         />
                     </div>
-                </div>
-
-                {/* 4. Actions */}
-                <div className="mt-8 flex gap-4">
-                    <button
-                        onClick={handleRetry}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 text-slate-600 dark:text-white/40 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-white dark:hover:bg-white/10 transition-all font-bold text-xs uppercase tracking-widest"
-                    >
-                        <RotateCcw size={14} /> <span>Retry [Alt+R]</span>
-                    </button>
-                    {modalStats?.completed && (
-                        <button
-                            onClick={handleNext}
-                            className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-sky-500 text-white shadow-lg shadow-sky-500/20 hover:bg-sky-400 transition-all font-bold text-xs uppercase tracking-widest"
-                        >
-                            <span>Next Lesson</span> <ChevronRight size={14} />
-                        </button>
-                    )}
-                </div>
+                )}
             </div>
-
-            {/* Modal */}
-            {modalStats && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xl animate-in fade-in duration-500 overflow-y-auto">
-                    <div className="bg-white dark:bg-slate-900 p-10 rounded-[32px] max-w-xl w-full text-center shadow-2xl border border-white/20 my-8">
-                        <div className="text-4xl mb-4">{modalStats.completed ? '🏆' : '💪'}</div>
-                        <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">{modalStats.completed ? 'Mastered!' : 'Keep Practicing!'}</h2>
-
-                        <div className="flex justify-center gap-6 my-6">
-                            <div>
-                                <div className="text-2xl font-black text-sky-500">{modalStats.wpm}</div>
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">WPM</div>
-                            </div>
-                            <div>
-                                <div className="text-2xl font-black text-emerald-500">{modalStats.accuracy}%</div>
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ACC</div>
-                            </div>
-                            <div>
-                                <div className="text-2xl font-black text-rose-500">{modalStats.errors}</div>
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ERRORS</div>
-                            </div>
-                        </div>
-
-                        {modalStats.aiInsights && (
-                            <AIInsightCard
-                                insights={modalStats.aiInsights}
-                                onStartDrill={handleStartRemedial}
-                            />
-                        )}
-
-                        <div className="flex gap-4 mt-8">
-                            <button onClick={handleRetry} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 rounded-2xl font-bold text-slate-600 dark:text-white/60">Retry</button>
-                            {modalStats.completed && (
-                                <button onClick={handleNext} className="flex-1 py-4 bg-sky-500 text-white rounded-2xl font-bold shadow-lg shadow-sky-500/20">Continue</button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+        </TypingLayout>
     );
 }
