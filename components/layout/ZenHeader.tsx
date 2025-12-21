@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Palette, Settings, User, Command, Zap } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useApp } from '../../contexts/AppContext';
+import { AuthModal } from '../auth/AuthModal';
 
 export const ZenHeader: React.FC = () => {
     const { setTheme, availableThemes, activeTheme } = useTheme();
     const [showThemes, setShowThemes] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     return (
         <div className="flex items-center justify-between w-full h-12 relative">
@@ -66,10 +68,16 @@ export const ZenHeader: React.FC = () => {
                 <button className="p-2 hover:text-[var(--accent)] transition-colors text-[var(--sub)]">
                     <Settings size={20} />
                 </button>
-                <button className="p-2 hover:text-[var(--accent)] transition-colors text-[var(--sub)]">
+                <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="p-2 hover:text-[var(--accent)] transition-colors text-[var(--sub)]"
+                >
                     <User size={20} />
                 </button>
             </div>
+
+            {/* Auth Modal Overlay */}
+            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
         </div>
     );
 };
