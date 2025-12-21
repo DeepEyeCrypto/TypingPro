@@ -167,6 +167,132 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     })
 }
 
+#[tauri::command]
+async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
+    use dotenv_codegen::dotenv;
+
+    let github_client_id = dotenv!("GITHUB_CLIENT_ID");
+    let github_client_secret = dotenv!("GITHUB_CLIENT_SECRET");
+
+    let client_id = ClientId::new(github_client_id.to_string());
+    let client_secret = ClientSecret::new(github_client_secret.to_string());
+    
+    let listener = TcpListener::bind("127.0.0.1:0").map_err(|e| e.to_string())?;
+    let port = listener.local_addr().map_err(|e| e.to_string())?.port();
+    
+    let redirect_url = RedirectUrl::new(format!("http://127.0.0.1:{}/callback", port)).map_err(|e| e.to_string())?;
+    
+    let auth_url = AuthUrl::new("https://github.com/login/oauth/authorize".to_string())
+        .map_err(|e| e.to_string())?;
+    let token_url = TokenUrl::new("https://github.com/login/oauth/access_token".to_string())
+        .map_err(|e| e.to_string())?;
+
+    let client = BasicClient::new(
+        client_id,
+        Some(client_secret),
+        auth_url,
+        Some(token_url)
+    )
+    .set_redirect_uri(redirect_url);
+
+    let (auth_url, _csrf_token) = client
+        .authorize_url(CsrfToken::new_random)
+        .add_scope(Scope::new("read:user".to_string()))
+        .add_scope(Scope::new("user:email".to_string()))
+        .url();
+
+    tauri::api::shell::open(&app_handle.shell_scope(), auth_url.as_str(), None)
+        .map_err(|e| e.to_string())?;
+
+    let start_time = std::time::Instant::now();
+    let timeout = std::time::Duration::from_secs(120);
+    
+    listener.set_nonblocking(true).map_err(|e| e.to_string())?;
+
+    let (mut stream, _) = loop {
+        if start_time.elapsed() > timeout {
+            return Err("Login timed out. Please try again.".to_string());
+        }
+        match listener.accept() {
+            Ok(conn) => break conn,
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                std::thread::sleep(std::time::Duration::from_secs(1));
+                continue;
+            }
+            Err(e) => return Err(e.to_string()),
+        }
+    };
+    
+    stream.set_nonblocking(false).map_err(|e| e.to_string())?;
+    
+    let mut reader = BufReader::new(&stream);
+    let mut request_line = String::new();
+    reader.read_line(&mut request_line).map_err(|e| e.to_string())?;
+    
+    let redirect_url = request_line.split_whitespace().nth(1).ok_or("Invalid request")?;
+    let url = Url::parse(&format!("http://localhost{}", redirect_url)).map_err(|e| e.to_string())?;
+    
+    let code_pair = url.query_pairs().find(|(key, _)| key == "code")
+        .ok_or("No code found in redirect")?;
+    let code = oauth2::AuthorizationCode::new(code_pair.1.into_owned());
+
+    let token_result = client
+        .exchange_code(code)
+        .request_async(oauth2::reqwest::async_http_client)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let access_token = token_result.access_token().secret();
+
+    let user_info_url = "https://api.github.com/user";
+    let http_client = reqwest::Client::builder()
+        .user_agent("TypingPro-App")
+        .build()
+        .map_err(|e| e.to_string())?;
+    
+    let res = http_client.get(user_info_url)
+        .header("Authorization", format!("token {}", access_token))
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+        
+    let user_data: serde_json::Value = res.json().await.map_err(|e| e.to_string())?;
+    
+    let response_body = r#"
+        <html>
+            <head>
+                <style>
+                    body { font-family: 'JetBrains Mono', monospace; background: #0d0d0d; color: #00f2ff; text-align: center; padding: 100px; }
+                    .card { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 20px; padding: 40px; display: inline-block; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+                    h1 { text-transform: uppercase; letter-spacing: 2px; }
+                    p { color: rgba(255, 255, 255, 0.6); }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h1>TypingPro: GitHub Secured</h1>
+                    <p>Profile synced. Closing in 3 seconds...</p>
+                </div>
+                <script>setTimeout(() => window.close(), 3000)</script>
+            </body>
+        </html>
+    "#;
+    let response = format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n{}",
+        response_body.len(),
+        response_body
+    );
+    stream.write_all(response.as_bytes()).map_err(|e| e.to_string())?;
+
+    Ok(UserProfile {
+        id: user_data["id"].as_i64().map(|i| i.to_string()).unwrap_or_default(),
+        name: user_data["name"].as_str().unwrap_or(user_data["login"].as_str().unwrap_or("")).to_string(),
+        email: user_data["email"].as_str().unwrap_or("").to_string(),
+        picture: user_data["avatar_url"].as_str().unwrap_or("").to_string(),
+        token: access_token.to_string(),
+    })
+}
+
 fn log_to_file(msg: &str) {
     if let Some(mut path) = tauri::api::path::app_log_dir(&tauri::Config::default()) {
         std::fs::create_dir_all(&path).ok();
@@ -180,7 +306,7 @@ fn log_to_file(msg: &str) {
 fn main() {
   tauri::Builder::default()
     .plugin(tauri_plugin_store::Builder::default().build())
-    .invoke_handler(tauri::generate_handler![login_google])
+    .invoke_handler(tauri::generate_handler![login_google, login_github])
     .setup(|app| {
         // Init Logger
         let _handle = app.handle();

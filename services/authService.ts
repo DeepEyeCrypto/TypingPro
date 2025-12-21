@@ -18,14 +18,27 @@ export const authService = {
      */
     signInWithGoogle: async (): Promise<AuthUser> => {
         try {
-            console.log("Invoking native Google Login...");
             const user = await invoke<AuthUser>('login_google');
-            console.log("Login success, Fetched User:", user.name);
             await store.set('user', user);
             await store.save();
             return user;
         } catch (error) {
-            console.error("Auth Service: Login Failed", error);
+            console.error("Google Auth Failed", error);
+            throw error;
+        }
+    },
+
+    /**
+     * Initiates GitHub Sign-In.
+     */
+    signInWithGithub: async (): Promise<AuthUser> => {
+        try {
+            const user = await invoke<AuthUser>('login_github');
+            await store.set('user', user);
+            await store.save();
+            return user;
+        } catch (error) {
+            console.error("GitHub Auth Failed", error);
             throw error;
         }
     },

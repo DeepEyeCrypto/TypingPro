@@ -57,7 +57,7 @@ interface AppContextType {
     dailyQuests: DailyQuest[];
 
     // Auth
-    login: () => Promise<void>;
+    login: (provider?: 'google' | 'github') => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -293,8 +293,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
-    const login = async () => {
-        const u = await authService.signInWithGoogle();
+    const login = async (provider: 'google' | 'github' = 'google') => {
+        const u = provider === 'google'
+            ? await authService.signInWithGoogle()
+            : await authService.signInWithGithub();
         handleAuthUser(u);
     };
 

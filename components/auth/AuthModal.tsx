@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, ArrowRight, Github } from 'lucide-react';
+import { X, Mail, Lock, ArrowRight, Github, Loader2 } from 'lucide-react';
+import { useApp } from '../../contexts/AppContext';
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -8,12 +9,21 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+    const { login } = useApp();
     const [mode, setMode] = useState<'login' | 'register'>('login');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSocialLogin = (provider: 'google' | 'github') => (e: React.MouseEvent) => {
+    const handleSocialLogin = (provider: 'google' | 'github') => async (e: React.MouseEvent) => {
         e.stopPropagation();
-        console.log(`${provider} Button Clicked`);
-        // Actual login logic would go here
+        setIsLoading(true);
+        try {
+            await login(provider);
+            onClose();
+        } catch (err) {
+            console.error(`${provider} login failed`, err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const googleIcon = (
@@ -91,18 +101,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         <div className="flex flex-col gap-3 mb-6">
                             <button
                                 type="button"
+                                disabled={isLoading}
                                 onMouseDown={handleSocialLogin('google')}
-                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto"
+                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto disabled:opacity-50"
                             >
-                                {googleIcon}
+                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : googleIcon}
                                 <span>Sign in with Google</span>
                             </button>
                             <button
                                 type="button"
+                                disabled={isLoading}
                                 onMouseDown={handleSocialLogin('github')}
-                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto"
+                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto disabled:opacity-50"
                             >
-                                <Github size={20} className="text-[var(--main)] group-hover:text-[var(--accent)] transition-colors" />
+                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Github size={20} className="text-[var(--main)] group-hover:text-[var(--accent)] transition-colors" />}
                                 <span>Sign in with GitHub</span>
                             </button>
                         </div>
