@@ -10,6 +10,12 @@ interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     const [mode, setMode] = useState<'login' | 'register'>('login');
 
+    const handleSocialLogin = (provider: 'google' | 'github') => (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log(`${provider} Button Clicked`);
+        // Actual login logic would go here
+    };
+
     const googleIcon = (
         <svg viewBox="0 0 24 24" className="w-5 h-5">
             <path
@@ -34,13 +40,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+                <div
+                    className="fixed inset-0 z-[999] flex items-center justify-center p-4 pointer-events-auto"
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={onClose}
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                            onClose();
+                        }}
                         className="absolute inset-0 bg-[var(--bg)]/80 backdrop-blur-md"
                     />
 
@@ -49,12 +61,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="w-full max-w-[400px] bg-[var(--bg)] border border-[var(--sub)]/20 p-8 rounded-[32px] shadow-2xl relative z-10 font-mono"
+                        className="w-full max-w-[400px] bg-[var(--bg)] border border-[var(--sub)]/20 p-8 rounded-[32px] shadow-2xl relative z-[1000] font-mono pointer-events-auto"
                         style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
+                        onMouseDown={(e) => e.stopPropagation()}
                     >
                         {/* Close Button */}
                         <button
-                            onClick={onClose}
+                            type="button"
+                            onMouseDown={(e) => {
+                                e.stopPropagation();
+                                onClose();
+                            }}
                             className="absolute right-6 top-6 p-2 text-[var(--sub)] hover:text-[var(--accent)] transition-colors"
                         >
                             <X size={20} />
@@ -72,11 +89,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                         {/* Social Buttons */}
                         <div className="flex flex-col gap-3 mb-6">
-                            <button className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group">
+                            <button
+                                type="button"
+                                onMouseDown={handleSocialLogin('google')}
+                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto"
+                            >
                                 {googleIcon}
                                 <span>Sign in with Google</span>
                             </button>
-                            <button className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group">
+                            <button
+                                type="button"
+                                onMouseDown={handleSocialLogin('github')}
+                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto"
+                            >
                                 <Github size={20} className="text-[var(--main)] group-hover:text-[var(--accent)] transition-colors" />
                                 <span>Sign in with GitHub</span>
                             </button>
@@ -97,6 +122,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                     <input
                                         type="email"
                                         placeholder="email"
+                                        onMouseDown={(e) => e.stopPropagation()}
                                         className="bg-transparent text-[var(--main)] placeholder:text-[var(--sub)]/40 w-full outline-none text-sm font-bold"
                                     />
                                 </div>
@@ -107,12 +133,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                     <input
                                         type="password"
                                         placeholder="password"
+                                        onMouseDown={(e) => e.stopPropagation()}
                                         className="bg-transparent text-[var(--main)] placeholder:text-[var(--sub)]/40 w-full outline-none text-sm font-bold"
                                     />
                                 </div>
                             </div>
 
-                            <button className="flex items-center justify-between w-full mt-4 p-4 rounded-2xl bg-[var(--accent)] text-[var(--bg)] shadow-xl shadow-[var(--accent)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group">
+                            <button
+                                type="button"
+                                onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                    console.log('Email Sign In Clicked');
+                                }}
+                                className="flex items-center justify-between w-full mt-4 p-4 rounded-2xl bg-[var(--accent)] text-[var(--bg)] shadow-xl shadow-[var(--accent)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group pointer-events-auto"
+                            >
                                 <span className="font-black uppercase tracking-widest text-[11px]">
                                     {mode === 'login' ? 'sign in' : 'create account'}
                                 </span>
@@ -123,13 +157,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         {/* Footer Links */}
                         <div className="mt-8 flex justify-between text-[10px] font-bold uppercase tracking-widest">
                             <button
-                                onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+                                type="button"
+                                onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                    setMode(mode === 'login' ? 'register' : 'login');
+                                }}
                                 className="text-[var(--sub)] hover:text-[var(--accent)] transition-colors"
                             >
                                 {mode === 'login' ? 'create account' : 'back to login'}
                             </button>
                             {mode === 'login' && (
-                                <button className="text-[var(--sub)]/50 hover:text-[var(--sub)] transition-colors">
+                                <button
+                                    type="button"
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    className="text-[var(--sub)]/50 hover:text-[var(--sub)] transition-colors"
+                                >
                                     forgot password?
                                 </button>
                             )}

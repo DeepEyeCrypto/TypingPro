@@ -30,7 +30,7 @@ interface AppContextType {
     user: AuthUser | null;
     keyStats: Record<string, KeyStats>;
     fingerStats: Record<string, FingerStats>;
-    activeModal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles';
+    activeModal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles' | 'auth';
     isCodeMode: boolean;
     isSidebarCollapsed: boolean;
     dailyActivity: Record<string, DailyActivity>;
@@ -40,7 +40,7 @@ interface AppContextType {
 
     // Actions
     setActiveLessonId: (id: number) => void;
-    setActiveModal: (modal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles') => void;
+    setActiveModal: (modal: 'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles' | 'auth') => void;
     setIsCodeMode: (val: boolean) => void;
     setIsSidebarCollapsed: (val: boolean) => void;
     setIsAccuracyMasterActive: (val: boolean) => void;
@@ -216,7 +216,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
     const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
     const [activeLessonId, setActiveLessonId] = useState(1);
-    const [activeModal, setActiveModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles'>('none');
+    const [activeModal, setActiveModal] = useState<'none' | 'settings' | 'history' | 'achievements' | 'dashboard' | 'profiles' | 'auth'>('none');
     const [isCodeMode, setIsCodeMode] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 

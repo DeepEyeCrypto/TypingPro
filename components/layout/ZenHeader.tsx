@@ -7,8 +7,8 @@ import { AuthModal } from '../auth/AuthModal';
 
 export const ZenHeader: React.FC = () => {
     const { setTheme, availableThemes, activeTheme } = useTheme();
+    const { activeModal, setActiveModal } = useApp();
     const [showThemes, setShowThemes] = useState(false);
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     return (
         <div className="flex items-center justify-between w-full h-12 relative">
@@ -69,7 +69,7 @@ export const ZenHeader: React.FC = () => {
                     <Settings size={20} />
                 </button>
                 <button
-                    onClick={() => setIsAuthModalOpen(true)}
+                    onClick={() => setActiveModal('auth')}
                     className="p-2 hover:text-[var(--accent)] transition-colors text-[var(--sub)]"
                 >
                     <User size={20} />
@@ -77,7 +77,7 @@ export const ZenHeader: React.FC = () => {
             </div>
 
             {/* Auth Modal Overlay */}
-            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+            <AuthModal isOpen={activeModal === 'auth'} onClose={() => setActiveModal('none')} />
         </div>
     );
 };

@@ -39,7 +39,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   duration = 60
 }) => {
   const { playSound } = useSound();
-  const { isAccuracyMasterActive } = useApp();
+  const { isAccuracyMasterActive, activeModal } = useApp();
   const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, timeLeft } = useTypingEngine(content, stopOnError, practiceMode, duration);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,8 +90,10 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   }, [content, onActiveKeyChange, engineRefs]);
 
   useEffect(() => {
-    if (isActive && inputRef.current) inputRef.current.focus({ preventScroll: true });
-  }, [isActive, practiceMode]);
+    if (isActive && activeModal === 'none' && inputRef.current) {
+      inputRef.current.focus({ preventScroll: true });
+    }
+  }, [isActive, practiceMode, activeModal]);
 
   useEffect(() => {
     reset();
@@ -137,7 +139,9 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   return (
     <div
       className="w-full h-full flex flex-col items-center justify-center relative cursor-text outline-none"
-      onClick={() => inputRef.current?.focus()}
+      onClick={() => {
+        if (activeModal === 'none') inputRef.current?.focus();
+      }}
     >
       <input
         ref={inputRef}
