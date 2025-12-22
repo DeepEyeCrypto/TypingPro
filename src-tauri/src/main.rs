@@ -25,29 +25,54 @@ struct UserProfile {
 
 #[tauri::command]
 async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    // 1. Robust Env Loading
+    // 1. Diagnostics & Robust Env Loading
+    let cwd = std::env::current_dir().unwrap_or_default();
+    log_to_file(&app_handle, &format!("--- Login Started ---"));
+    log_to_file(&app_handle, &format!("CWD: {:?}", cwd));
+
     let mut env_loaded = false;
+    
+    // Try CWD/.env
     if dotenv::dotenv().is_ok() {
+        log_to_file(&app_handle, "Loaded .env from CWD or parent");
         env_loaded = true;
-    } else if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
-        if dotenv::from_path(resource_path).is_ok() {
+    } 
+    
+    // Try src-tauri/.env (for tauri dev)
+    if !env_loaded {
+        let mut tauri_env = cwd.clone();
+        tauri_env.push("src-tauri");
+        tauri_env.push(".env");
+        if dotenv::from_path(&tauri_env).is_ok() {
+            log_to_file(&app_handle, &format!("Loaded .env from {:?}", tauri_env));
             env_loaded = true;
         }
     }
 
+    // Try resources (for production)
     if !env_loaded {
-        log_to_file(&app_handle, "Warning: .env file not found in CWD or resources");
+        if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
+            log_to_file(&app_handle, &format!("Checking resource path: {:?}", resource_path));
+            if dotenv::from_path(resource_path).is_ok() {
+                log_to_file(&app_handle, "Loaded .env from resources");
+                env_loaded = true;
+            }
+        }
+    }
+
+    if !env_loaded {
+        log_to_file(&app_handle, "CRITICAL: Could not find .env in any location!");
     }
 
     let google_client_id = std::env::var("GOOGLE_CLIENT_ID")
-        .map_err(|_| "GOOGLE_CLIENT_ID not found. Is .env bundled?".to_string())?;
+        .map_err(|_| "GOOGLE_CLIENT_ID missing in backend env".to_string())?;
     let google_client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
-        .map_err(|_| "GOOGLE_CLIENT_SECRET not found in environment".to_string())?;
+        .map_err(|_| "GOOGLE_CLIENT_SECRET missing in backend env".to_string())?;
 
-    log_to_file(&app_handle, &format!("Google Login started (ID length: {})", google_client_id.len()));
+    log_to_file(&app_handle, &format!("Keys loaded. ID: {}...", &google_client_id[..5]));
 
     if google_client_id.is_empty() || google_client_id.contains("your_") {
-         return Err("Invalid Google Client ID (Placeholder). Check .env".to_string());
+         return Err("Invalid Google Client ID (Placeholder).".to_string());
     }
 
     // 1. Setup Client
@@ -179,29 +204,54 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
 #[tauri::command]
 async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    // 1. Robust Env Loading
+    // 1. Diagnostics & Robust Env Loading
+    let cwd = std::env::current_dir().unwrap_or_default();
+    log_to_file(&app_handle, &format!("--- GitHub Login Started ---"));
+    log_to_file(&app_handle, &format!("CWD: {:?}", cwd));
+
     let mut env_loaded = false;
+    
+    // Try CWD/.env
     if dotenv::dotenv().is_ok() {
+        log_to_file(&app_handle, "Loaded .env from CWD or parent");
         env_loaded = true;
-    } else if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
-        if dotenv::from_path(resource_path).is_ok() {
+    } 
+    
+    // Try src-tauri/.env (for tauri dev)
+    if !env_loaded {
+        let mut tauri_env = cwd.clone();
+        tauri_env.push("src-tauri");
+        tauri_env.push(".env");
+        if dotenv::from_path(&tauri_env).is_ok() {
+            log_to_file(&app_handle, &format!("Loaded .env from {:?}", tauri_env));
             env_loaded = true;
         }
     }
 
+    // Try resources (for production)
     if !env_loaded {
-        log_to_file(&app_handle, "Warning: .env file not found in CWD or resources");
+        if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
+            log_to_file(&app_handle, &format!("Checking resource path: {:?}", resource_path));
+            if dotenv::from_path(resource_path).is_ok() {
+                log_to_file(&app_handle, "Loaded .env from resources");
+                env_loaded = true;
+            }
+        }
+    }
+
+    if !env_loaded {
+        log_to_file(&app_handle, "CRITICAL: Could not find .env in any location!");
     }
 
     let github_client_id = std::env::var("GITHUB_CLIENT_ID")
-        .map_err(|_| "GITHUB_CLIENT_ID not found. Is .env bundled?".to_string())?;
+        .map_err(|_| "GITHUB_CLIENT_ID missing in backend env".to_string())?;
     let github_client_secret = std::env::var("GITHUB_CLIENT_SECRET")
-        .map_err(|_| "GITHUB_CLIENT_SECRET not found in environment".to_string())?;
+        .map_err(|_| "GITHUB_CLIENT_SECRET missing in backend env".to_string())?;
 
-    log_to_file(&app_handle, &format!("GitHub Login started (ID length: {})", github_client_id.len()));
+    log_to_file(&app_handle, &format!("Keys loaded. ID: {}...", &github_client_id[..5]));
 
     if github_client_id.is_empty() || github_client_id.contains("your_") {
-        return Err("Invalid GitHub Client ID (Placeholder). Check .env".to_string());
+        return Err("Invalid GitHub Client ID (Placeholder).".to_string());
     }
 
     let client_id = ClientId::new(github_client_id);
