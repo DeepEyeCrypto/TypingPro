@@ -18,8 +18,11 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const playSound = useCallback(() => {
         if (soundType === 'off' || !settings.soundEnabled) return;
+        if (settings.soundProfile) {
+            soundManager.setProfile(settings.soundProfile);
+        }
         soundManager.playMechanicalClick();
-    }, [soundType, settings.soundEnabled]);
+    }, [soundType, settings.soundEnabled, settings.soundProfile]);
 
     const setSoundType = (type: SoundType) => {
         setSoundState(type);

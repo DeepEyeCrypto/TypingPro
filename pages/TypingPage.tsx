@@ -67,12 +67,13 @@ export default function TypingPage(): React.ReactNode {
         cursorIndex: number;
         errorIndices: number[];
         timeLeft?: number;
+        wpmTimeline?: { timestamp: number; wpm: number }[];
         aiInsights?: {
             enemyKeys: { char: string; avgHold: number }[];
             bottlenecks: { pair: string; avgLat: number }[];
         };
         recommendation?: AICoachRecommendation;
-    }>({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [], timeLeft: 60 });
+    }>({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [], timeLeft: 60, wpmTimeline: [] });
 
     const [activeKey, setActiveKey] = useState<string | null>(null);
     const [modalStats, setModalStats] = useState<(Stats & { completed: boolean }) | null>(null);
@@ -172,7 +173,12 @@ export default function TypingPage(): React.ReactNode {
 
         recordLessonComplete(activeLesson.id, enrichedStats);
         setModalStats({ ...enrichedStats, completed: stats.accuracy >= 95 });
-        setLiveStats(prev => ({ ...prev, aiInsights: enrichedStats.aiInsights, recommendation }));
+        setLiveStats(prev => ({
+            ...prev,
+            aiInsights: enrichedStats.aiInsights,
+            recommendation,
+            wpmTimeline: stats.wpmTimeline
+        }));
     }, [activeLesson, recordLessonComplete, analyzeSession, identifyEnemyKeys, identifyBottlenecks, generateRecommendation, calculateXP, processLevelUp, userProfile, setUserProfile]);
 
     const handleNext = useCallback(() => {
@@ -213,7 +219,8 @@ export default function TypingPage(): React.ReactNode {
                         errors: liveStats.errors,
                         timeLeft: liveStats.timeLeft,
                         aiInsights: liveStats.aiInsights,
-                        recommendation: liveStats.recommendation
+                        recommendation: liveStats.recommendation,
+                        wpmTimeline: modalStats ? modalStats.wpmTimeline : liveStats.wpmTimeline
                     }}
                     onRestart={handleRetry}
                     onNext={modalStats?.completed ? handleNext : undefined}

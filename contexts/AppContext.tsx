@@ -104,7 +104,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         showHands: true,
         performanceMode: false,
         caretSpeed: 'smooth',
-        themeName: 'Serika Dark'
+        themeName: 'Serika Dark',
+        soundProfile: 'mechanical'
     });
 
     // Apply theme variables

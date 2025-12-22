@@ -45,20 +45,32 @@ export class AdaptiveEngine {
     }
 
     /**
-     * Generates a custom drill string based on target characters.
+     * Generates a custom drill string based on target characters or bigrams.
      */
-    static generateDrill(chars: string[]): string {
+    static generateDrill(chars: string[], bigrams: string[] = []): string {
         const segments: string[] = [];
         const charPool = chars.length > 0 ? chars : ['f', 'j'];
 
+        // If we have specific bigrams to target, prioritize them
+        if (bigrams.length > 0) {
+            for (let i = 0; i < 15; i++) {
+                const b1 = bigrams[Math.floor(Math.random() * bigrams.length)];
+                const b2 = bigrams[Math.floor(Math.random() * bigrams.length)];
+                segments.push(`${b1}${b2}`);
+                segments.push(`${b1} ${b2}`);
+            }
+        }
+
         for (let i = 0; i < 20; i++) {
             let word = '';
-            for (let j = 0; j < Math.ceil(Math.random() * 4) + 1; j++) {
+            const len = Math.ceil(Math.random() * 4) + 1;
+            for (let j = 0; j < len; j++) {
                 word += charPool[Math.floor(Math.random() * charPool.length)];
             }
             segments.push(word);
         }
 
-        return segments.join(' ');
+        // Shuffle segments
+        return segments.sort(() => Math.random() - 0.5).join(' ');
     }
 }

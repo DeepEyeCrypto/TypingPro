@@ -204,6 +204,7 @@ export interface UserSettings {
   performanceMode: boolean;
   caretSpeed: CaretSpeed;
   themeName: string;
+  soundProfile?: 'mechanical' | 'creamy' | 'laptop' | 'nk-cream';
 }
 
 export interface UserProfile {

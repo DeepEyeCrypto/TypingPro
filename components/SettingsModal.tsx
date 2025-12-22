@@ -295,8 +295,8 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                     </div>
 
                     {/* Sound */}
-                    <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center justify-between mb-3">
+                    <div className="p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
+                        <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Volume2 className="w-5 h-5 text-gray-500" />
                                 <div>
@@ -310,13 +310,37 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                                 <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform ${settings.soundEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
                         </div>
+
                         {settings.soundEnabled && (
-                            <input
-                                type="range" min="0" max="1" step="0.1"
-                                value={settings.volume}
-                                onChange={(e) => updateUserSetting('volume', parseFloat(e.target.value))}
-                                className="w-full accent-blue-600"
-                            />
+                            <>
+                                <div>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Volume</label>
+                                    <input
+                                        type="range" min="0" max="1" step="0.1"
+                                        value={settings.volume}
+                                        onChange={(e) => updateUserSetting('volume', parseFloat(e.target.value))}
+                                        className="w-full accent-blue-600"
+                                    />
+                                </div>
+
+                                <div className="pt-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Switch Profile</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {(['mechanical', 'creamy', 'laptop', 'nk-cream'] as const).map(profile => (
+                                            <button
+                                                key={profile}
+                                                onClick={() => updateUserSetting('soundProfile', profile)}
+                                                className={`py-2 px-3 text-xs font-bold rounded-lg border transition-all text-center ${settings.soundProfile === profile
+                                                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400'
+                                                    : 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 text-gray-500 hover:border-gray-300 dark:hover:border-gray-600'
+                                                    }`}
+                                            >
+                                                {profile.charAt(0).toUpperCase() + profile.slice(1).replace('-', ' ')}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>

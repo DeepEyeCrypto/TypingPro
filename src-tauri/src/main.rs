@@ -153,7 +153,8 @@ struct SystemStatus {
 }
 
 #[tauri::command]
-fn get_system_status() -> SystemStatus {
+fn get_system_status(app_handle: tauri::AppHandle) -> SystemStatus {
+    ensure_env_loaded(&app_handle);
     let mut backend_env = std::collections::HashMap::new();
     let keys = vec![
         "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "VITE_GOOGLE_REDIRECT_URI",

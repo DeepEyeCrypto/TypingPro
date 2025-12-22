@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Award, Zap, AlertTriangle, Lightbulb, RotateCcw, ChevronRight } from 'lucide-react';
 import { AICoachRecommendation } from '../../types';
+import { PerformanceGraph } from '../analytics/PerformanceGraph';
 
 interface ZenStatsProps {
     isTyping: boolean;
@@ -11,6 +12,7 @@ interface ZenStatsProps {
         accuracy: number;
         errors: number;
         timeLeft?: number;
+        wpmTimeline?: { timestamp: number; wpm: number }[];
         aiInsights?: {
             enemyKeys: { char: string; avgHold: number }[];
             bottlenecks: { pair: string; avgLat: number }[];
@@ -65,6 +67,13 @@ export const ZenStats: React.FC<ZenStatsProps> = ({ isTyping, isComplete, stats,
                                 </div>
                             ))}
                         </div>
+
+                        {/* Performance Graph */}
+                        {stats.wpmTimeline && stats.wpmTimeline.length > 0 && (
+                            <div className="w-full max-w-2xl px-4">
+                                <PerformanceGraph data={stats.wpmTimeline} />
+                            </div>
+                        )}
 
                         {/* AI Coaching Card */}
                         {stats.recommendation && (
