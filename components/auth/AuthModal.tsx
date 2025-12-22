@@ -28,7 +28,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             if (errorMsg.includes('CSRF')) setError('Security check failed. Please try again.');
             else if (errorMsg.includes('time') || errorMsg.includes('TIMEOUT')) setError('Login session timed out. Please try again.');
-            else if (errorMsg.includes('CLIENT_ID')) setError('OAuth Configuration Missing. Check .env file.');
+            else if (errorMsg.includes('CLIENT_ID') || errorMsg.includes('SECRET')) {
+                setError(`${provider.toUpperCase()} Config Error: ${errorMsg}`);
+            }
             else setError(errorMsg || 'Authentication failed. Please check your connection.');
         } finally {
             setIsLoading(false);

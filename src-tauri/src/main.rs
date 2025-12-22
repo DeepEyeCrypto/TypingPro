@@ -26,18 +26,25 @@ struct UserProfile {
 #[tauri::command]
 async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
     // Load credentials at runtime
-    dotenv::dotenv().ok();
+    if let Ok(path) = std::env::current_dir() {
+        log_to_file(&format!("Current working directory: {:?}", path));
+    }
+    
+    match dotenv::dotenv() {
+        Ok(path) => log_to_file(&format!(".env file loaded from: {:?}", path)),
+        Err(e) => log_to_file(&format!("Warning: .env file not loaded: {}", e)),
+    }
     
     let google_client_id = std::env::var("GOOGLE_CLIENT_ID")
-        .map_err(|_| "GOOGLE_CLIENT_ID not found in environment".to_string())?;
+        .map_err(|_| "GOOGLE_CLIENT_ID not found in environment. Is .env present?".to_string())?;
     let google_client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
         .map_err(|_| "GOOGLE_CLIENT_SECRET not found in environment".to_string())?;
 
-    if google_client_id.is_empty() || google_client_id.contains("your_") {
-         return Err("Invalid Google Client ID. Check your .env file.".to_string());
-    }
+    log_to_file(&format!("Google Client ID found (Length: {})", google_client_id.len()));
 
-    log_to_file(&format!("Starting Google Login with Client ID: {}...", &google_client_id[..10]));
+    if google_client_id.is_empty() || google_client_id.contains("your_") {
+         return Err("Invalid Google Client ID (Placeholder or Empty). Check your .env file.".to_string());
+    }
 
     // 1. Setup Client
     let client_id = ClientId::new(google_client_id);
@@ -168,15 +175,24 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
 #[tauri::command]
 async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    dotenv::dotenv().ok();
+    if let Ok(path) = std::env::current_dir() {
+        log_to_file(&format!("Current working directory: {:?}", path));
+    }
+
+    match dotenv::dotenv() {
+        Ok(path) => log_to_file(&format!(".env file loaded from: {:?}", path)),
+        Err(e) => log_to_file(&format!("Warning: .env file not loaded: {}", e)),
+    }
 
     let github_client_id = std::env::var("GITHUB_CLIENT_ID")
-        .map_err(|_| "GITHUB_CLIENT_ID not found in environment".to_string())?;
+        .map_err(|_| "GITHUB_CLIENT_ID not found in environment. Is .env present?".to_string())?;
     let github_client_secret = std::env::var("GITHUB_CLIENT_SECRET")
         .map_err(|_| "GITHUB_CLIENT_SECRET not found in environment".to_string())?;
 
+    log_to_file(&format!("GitHub Client ID found (Length: {})", github_client_id.len()));
+
     if github_client_id.is_empty() || github_client_id.contains("your_") {
-        return Err("Invalid GitHub Client ID. Check your .env file.".to_string());
+        return Err("Invalid GitHub Client ID (Placeholder or Empty). Check your .env file.".to_string());
     }
 
     let client_id = ClientId::new(github_client_id);
