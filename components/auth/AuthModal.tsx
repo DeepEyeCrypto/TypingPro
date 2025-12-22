@@ -8,7 +8,15 @@ import { useOAuthConfig } from '../../hooks/useOAuthConfig';
 
 export const AuthModal: React.FC = () => {
     const { activeModal, setActiveModal, login } = useApp();
-    const { configHealth, loading: configLoading, isViteOk, allLoaded, refreshHealth } = useOAuthConfig();
+    const {
+        configHealth,
+        systemStatus,
+        loading: configLoading,
+        isViteOk,
+        viteErrors,
+        allLoaded,
+        refreshHealth
+    } = useOAuthConfig();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showSystemCheck, setShowSystemCheck] = useState(false);
@@ -29,9 +37,14 @@ export const AuthModal: React.FC = () => {
 
     if (activeModal !== 'auth') return null;
 
+    const handleRefresh = async () => {
+        setError(null);
+        await refreshHealth();
+    };
+
     const handleLogin = async (provider: 'google' | 'github') => {
         if (!allLoaded && !isViteOk) {
-            setError('System configuration is incomplete. Check System Health below.');
+            setError('SYSTEM CONFIGURATION INCOMPLETE. Check Health below.');
             setShowSystemCheck(true);
             return;
         }
@@ -114,25 +127,44 @@ export const AuthModal: React.FC = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <StatusItem label="Frontend Env" status={isViteOk ? 'OK' : 'FAIL'} details="Vite Injected" />
+                                        <StatusItem label="Frontend Env" status={isViteOk ? 'OK' : 'FAIL'} details={viteErrors.length > 0 ? `${viteErrors.length} Errors` : 'Vite Injected'} />
                                         <StatusItem label="Google Auth" status={configHealth?.google_client_id_loaded && configHealth?.google_client_secret_loaded ? 'OK' : 'FAIL'} details="Backend" />
                                         <StatusItem label="GitHub Auth" status={configHealth?.github_client_id_loaded && configHealth?.github_client_secret_loaded ? 'OK' : 'FAIL'} details="Backend" />
-                                        <StatusItem label="Redirect URIs" status="OK" details="localhost:1420" />
                                     </div>
 
-                                    {!allLoaded && (
+                                    {systemStatus && (
+                                        <div className="mt-4 p-3 bg-black/40 rounded-xl font-mono text-[7px] border border-white/5 space-y-1">
+                                            <div className="text-[var(--main)] opacity-60 mb-1 border-b border-white/5 pb-1 flex justify-between">
+                                                <span>BACKEND PROBE (MASKED)</span>
+                                                <span>CWD: {systemStatus.cwd.split('/').pop()}</span>
+                                            </div>
+                                            {Object.entries(systemStatus.backend_env).map(([key, val]) => (
+                                                <div key={key} className="flex justify-between">
+                                                    <span className="opacity-40">{key}:</span>
+                                                    <span className={val === 'MISSING' ? 'text-rose-500' : 'text-emerald-400'}>{val}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {(!allLoaded || !isViteOk) && (
                                         <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-start gap-3">
                                             <AlertTriangle size={14} className="text-rose-500 shrink-0 mt-0.5" />
-                                            <p className="text-[9px] text-rose-200/80 leading-relaxed font-medium">
-                                                <span className="text-rose-400 font-bold block mb-1">Config Check Failed</span>
+                                            <div className="text-[9px] text-rose-200/80 leading-relaxed font-medium">
+                                                <span className="text-rose-400 font-bold block mb-1">RECOVERY ACTION REQUIRED</span>
+                                                {viteErrors.length > 0 && (
+                                                    <div className="mb-2 text-rose-300 font-mono">
+                                                        Vite missing: {viteErrors.join(', ')}
+                                                    </div>
+                                                )}
                                                 Backend environment variables are missing. Please verify your <span className="text-white font-mono bg-white/10 px-1 rounded">.env</span> file and restart <span className="text-white font-mono bg-white/10 px-1 rounded">cargo tauri dev</span>.
-                                            </p>
+                                            </div>
                                         </div>
                                     )}
 
                                     <div className="flex gap-2 pt-2">
                                         <button
-                                            onClick={refreshHealth}
+                                            onClick={handleRefresh}
                                             disabled={isLoading || configLoading}
                                             className="flex-1 py-3 bg-[var(--main)] text-[var(--bg)] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 hover:opacity-90"
                                         >

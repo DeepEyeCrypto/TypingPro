@@ -147,6 +147,39 @@ async fn get_backend_config(app_handle: tauri::AppHandle) -> Result<config::Conf
 }
 
 #[derive(Serialize)]
+struct SystemStatus {
+    backend_env: std::collections::HashMap<String, String>,
+    cwd: String,
+}
+
+#[tauri::command]
+fn get_system_status() -> SystemStatus {
+    let mut backend_env = std::collections::HashMap::new();
+    let keys = vec![
+        "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "VITE_GOOGLE_REDIRECT_URI",
+        "GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET", "VITE_GITHUB_REDIRECT_URI"
+    ];
+    
+    for key in keys {
+        if let Ok(val) = std::env::var(key) {
+            let masked = if val.len() > 6 {
+                format!("{}...{}", &val[..3], &val[val.len()-3..])
+            } else {
+                "***".to_string()
+            };
+            backend_env.insert(key.to_string(), masked);
+        } else {
+            backend_env.insert(key.to_string(), "MISSING".to_string());
+        }
+    }
+
+    SystemStatus {
+        backend_env,
+        cwd: std::env::current_dir().unwrap_or_default().to_string_lossy().to_string(),
+    }
+}
+
+#[derive(Serialize)]
 struct OAuthCredentials {
     client_id: String,
     redirect_uri: String,
@@ -463,6 +496,7 @@ fn log_to_file(app_handle: &tauri::AppHandle, msg: &str) {
 }
 
 fn main() {
+  dotenv::dotenv().ok();
   tauri::Builder::default()
     .plugin(tauri_plugin_store::Builder::default().build())
             .invoke_handler(tauri::generate_handler![
@@ -472,7 +506,8 @@ fn main() {
                 log_to_file_command,
                 get_env_debug_info,
                 get_backend_config,
-                get_oauth_credentials
+                get_oauth_credentials,
+                get_system_status
             ])
     .setup(|app| {
         // Init Logger

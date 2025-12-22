@@ -8,24 +8,56 @@ export interface ConfigHealth {
     github_client_secret_loaded: boolean;
 }
 
+export interface SystemStatus {
+    backend_env: Record<string, string>;
+    cwd: string;
+}
+
 export const useOAuthConfig = () => {
     const [configHealth, setConfigHealth] = useState<ConfigHealth | null>(null);
+    const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
     const [loading, setLoading] = useState(true);
     const [isViteOk, setIsViteOk] = useState(false);
+    const [viteErrors, setViteErrors] = useState<string[]>([]);
 
     const refreshHealth = async () => {
         setLoading(true);
+        const errors: string[] = [];
         try {
+            // 1. Fetch Backend Diagnostics
             const health = await invoke<ConfigHealth>('get_backend_config');
-            setConfigHealth(health);
+            const status = await invoke<SystemStatus>('get_system_status');
 
-            // Check Vite Env
+            setConfigHealth(health);
+            setSystemStatus(status);
+
+            // 2. Strict Vite Check
             const env = (import.meta as any).env;
-            const googleOk = !!env.VITE_GOOGLE_CLIENT_ID;
-            const githubOk = !!env.VITE_GITHUB_CLIENT_ID;
-            setIsViteOk(googleOk && githubOk);
+            const required = [
+                'VITE_GOOGLE_CLIENT_ID',
+                'VITE_GITHUB_CLIENT_ID',
+                'VITE_GOOGLE_REDIRECT_URI',
+                'VITE_GITHUB_REDIRECT_URI'
+            ];
+
+            required.forEach(key => {
+                const val = env[key];
+                if (!val || val === '' || val.includes('your_')) {
+                    errors.push(`Missing: ${key}`);
+                }
+            });
+
+            if (errors.length > 0) {
+                console.error('Vite Env Recovery Errors:', errors);
+                setViteErrors(errors);
+                setIsViteOk(false);
+            } else {
+                setIsViteOk(true);
+                setViteErrors([]);
+            }
+
         } catch (e) {
-            console.error('Failed to fetch config health:', e);
+            console.error('System Health Bridge Failure:', e);
         } finally {
             setLoading(false);
         }
@@ -42,5 +74,13 @@ export const useOAuthConfig = () => {
         configHealth.github_client_secret_loaded
     ) : false;
 
-    return { configHealth, loading, isViteOk, allLoaded, refreshHealth };
+    return {
+        configHealth,
+        systemStatus,
+        loading,
+        isViteOk,
+        viteErrors,
+        allLoaded,
+        refreshHealth
+    };
 };
