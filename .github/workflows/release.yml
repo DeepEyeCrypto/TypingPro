@@ -58,10 +58,14 @@ jobs:
           mkdir -p src-tauri
           echo "GOOGLE_CLIENT_ID=$G_ID" > src-tauri/.env
           echo "GOOGLE_CLIENT_SECRET=$G_SECRET" >> src-tauri/.env
+          echo "GITHUB_CLIENT_ID=$GH_ID" >> src-tauri/.env
+          echo "GITHUB_CLIENT_SECRET=$GH_SECRET" >> src-tauri/.env
           echo "GEMINI_API_KEY=$G_API" > .env
         env:
           G_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           G_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GH_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GH_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
           G_API: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Build and Release
