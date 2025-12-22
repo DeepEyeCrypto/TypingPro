@@ -43,7 +43,7 @@ fn manual_env_parser(app_handle: &tauri::AppHandle, path: PathBuf) -> bool {
                 if !key.is_empty() {
                     std::env::set_var(key, value);
                     count += 1;
-                    let masked = if value.len() > 5 { format!("{}...", &value[..5]) } else { "***".to_string() };
+                    let masked = if value.len() > 4 { format!("{}...", &value[..4]) } else { "***".to_string() };
                     log_to_file(app_handle, &format!("Manual Env: Set {} = {}", key, masked));
                 }
             }
@@ -66,7 +66,7 @@ fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
         }
     } 
 
-    let paths_to_check = vec![
+    let mut paths_to_check = vec![
         cwd.join(".env"),
         cwd.join("src-tauri").join(".env"),
     ];
@@ -117,8 +117,9 @@ async fn get_env_debug_info(app_handle: tauri::AppHandle) -> Result<String, Stri
         if path.exists() {
             return std::fs::read_to_string(path).map_err(|e| e.to_string());
         }
+        return Ok(format!("Log file not found at {:?}", path));
     }
-    Ok("Log file not found.".to_string())
+    Ok("Could not resolve log directory.".to_string())
 }
 
 #[derive(Serialize)]
@@ -152,7 +153,8 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     let google_client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
         .map_err(|_| "GOOGLE_CLIENT_SECRET missing in backend env".to_string())?;
 
-    log_to_file(&app_handle, &format!("Keys loaded. ID: {}...", &google_client_id[..5]));
+    let masked_id = if google_client_id.len() > 4 { format!("{}...", &google_client_id[..4]) } else { "SHORT".to_string() };
+    log_to_file(&app_handle, &format!("Keys loaded. ID: {}", masked_id));
 
     if google_client_id.is_empty() || google_client_id.contains("your_") {
          return Err("Invalid Google Client ID (Placeholder).".to_string());
@@ -277,7 +279,7 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     stream.write_all(response.as_bytes()).map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
-        id: user_data["id"].as_str().unwrap_or("").to_string(),
+        id: user_data["id"].as_str().map(|s| s.to_string()).unwrap_or_else(|| user_data["id"].as_u64().map(|id| id.to_string()).unwrap_or_default()),
         name: user_data["name"].as_str().unwrap_or("").to_string(),
         email: user_data["email"].as_str().unwrap_or("").to_string(),
         picture: user_data["picture"].as_str().unwrap_or("").to_string(),
@@ -295,7 +297,8 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     let github_client_secret = std::env::var("GITHUB_CLIENT_SECRET")
         .map_err(|_| "GITHUB_CLIENT_SECRET missing in backend env".to_string())?;
 
-    log_to_file(&app_handle, &format!("Keys loaded. ID: {}...", &github_client_id[..5]));
+    let masked_id = if github_client_id.len() > 4 { format!("{}...", &github_client_id[..4]) } else { "SHORT".to_string() };
+    log_to_file(&app_handle, &format!("Keys loaded. ID: {}", masked_id));
 
     if github_client_id.is_empty() || github_client_id.contains("your_") {
         return Err("Invalid GitHub Client ID (Placeholder).".to_string());
@@ -409,7 +412,7 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     stream.write_all(response.as_bytes()).map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
-        id: user_data["id"].as_u64().map(|id| id.to_string()).unwrap_or_default(),
+        id: user_data["id"].as_str().map(|s| s.to_string()).unwrap_or_else(|| user_data["id"].as_u64().map(|id| id.to_string()).unwrap_or_default()),
         name: user_data["name"].as_str().unwrap_or_else(|| user_data["login"].as_str().unwrap_or("")).to_string(),
         email: user_data["email"].as_str().unwrap_or("").to_string(),
         picture: user_data["avatar_url"].as_str().unwrap_or("").to_string(),
