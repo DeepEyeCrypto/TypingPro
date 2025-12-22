@@ -77,7 +77,7 @@ export const ZenHeader: React.FC = () => {
             </div>
 
             {/* Auth Modal Overlay */}
-            <AuthModal isOpen={activeModal === 'auth'} onClose={() => setActiveModal('none')} />
+            <AuthModal />
         </div>
     );
 };

@@ -23,46 +23,62 @@ struct UserProfile {
     token: String,
 }
 
-#[tauri::command]
-async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    // 1. Diagnostics & Robust Env Loading
+fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
     let cwd = std::env::current_dir().unwrap_or_default();
-    log_to_file(&app_handle, &format!("--- Login Started ---"));
-    log_to_file(&app_handle, &format!("CWD: {:?}", cwd));
-
     let mut env_loaded = false;
     
-    // Try CWD/.env
+    // 1. Try CWD/.env
     if dotenv::dotenv().is_ok() {
-        log_to_file(&app_handle, "Loaded .env from CWD or parent");
+        log_to_file(app_handle, "Loaded .env from CWD or parent");
         env_loaded = true;
     } 
+
+    // 2. Try Executable Directory/.env
+    if !env_loaded {
+        if let Ok(exe_path) = std::env::current_exe() {
+            if let Some(exe_dir) = exe_path.parent() {
+                let mut exe_env = exe_dir.to_path_buf();
+                exe_env.push(".env");
+                if dotenv::from_path(&exe_env).is_ok() {
+                    log_to_file(app_handle, &format!("Loaded .env from exe dir: {:?}", exe_env));
+                    env_loaded = true;
+                }
+            }
+        }
+    }
     
-    // Try src-tauri/.env (for tauri dev)
+    // 3. Try src-tauri/.env (for tauri dev)
     if !env_loaded {
         let mut tauri_env = cwd.clone();
         tauri_env.push("src-tauri");
         tauri_env.push(".env");
         if dotenv::from_path(&tauri_env).is_ok() {
-            log_to_file(&app_handle, &format!("Loaded .env from {:?}", tauri_env));
+            log_to_file(app_handle, &format!("Loaded .env from {:?}", tauri_env));
             env_loaded = true;
         }
     }
 
-    // Try resources (for production)
+    // 4. Try resources (for production)
     if !env_loaded {
         if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
-            log_to_file(&app_handle, &format!("Checking resource path: {:?}", resource_path));
             if dotenv::from_path(resource_path).is_ok() {
-                log_to_file(&app_handle, "Loaded .env from resources");
+                log_to_file(app_handle, "Loaded .env from resources");
                 env_loaded = true;
             }
         }
     }
 
     if !env_loaded {
-        log_to_file(&app_handle, "CRITICAL: Could not find .env in any location!");
+        log_to_file(app_handle, &format!("CRITICAL: .env not found. CWD: {:?}", cwd));
     }
+
+    env_loaded
+}
+
+#[tauri::command]
+async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
+    log_to_file(&app_handle, "--- Google Login Started ---");
+    ensure_env_loaded(&app_handle);
 
     let google_client_id = std::env::var("GOOGLE_CLIENT_ID")
         .map_err(|_| "GOOGLE_CLIENT_ID missing in backend env".to_string())?;
@@ -204,44 +220,8 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
 #[tauri::command]
 async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    // 1. Diagnostics & Robust Env Loading
-    let cwd = std::env::current_dir().unwrap_or_default();
-    log_to_file(&app_handle, &format!("--- GitHub Login Started ---"));
-    log_to_file(&app_handle, &format!("CWD: {:?}", cwd));
-
-    let mut env_loaded = false;
-    
-    // Try CWD/.env
-    if dotenv::dotenv().is_ok() {
-        log_to_file(&app_handle, "Loaded .env from CWD or parent");
-        env_loaded = true;
-    } 
-    
-    // Try src-tauri/.env (for tauri dev)
-    if !env_loaded {
-        let mut tauri_env = cwd.clone();
-        tauri_env.push("src-tauri");
-        tauri_env.push(".env");
-        if dotenv::from_path(&tauri_env).is_ok() {
-            log_to_file(&app_handle, &format!("Loaded .env from {:?}", tauri_env));
-            env_loaded = true;
-        }
-    }
-
-    // Try resources (for production)
-    if !env_loaded {
-        if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
-            log_to_file(&app_handle, &format!("Checking resource path: {:?}", resource_path));
-            if dotenv::from_path(resource_path).is_ok() {
-                log_to_file(&app_handle, "Loaded .env from resources");
-                env_loaded = true;
-            }
-        }
-    }
-
-    if !env_loaded {
-        log_to_file(&app_handle, "CRITICAL: Could not find .env in any location!");
-    }
+    log_to_file(&app_handle, "--- GitHub Login Started ---");
+    ensure_env_loaded(&app_handle);
 
     let github_client_id = std::env::var("GITHUB_CLIENT_ID")
         .map_err(|_| "GITHUB_CLIENT_ID missing in backend env".to_string())?;

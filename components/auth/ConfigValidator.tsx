@@ -1,23 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
+import { validateConfig } from '../../utils/env';
 
 export const ConfigValidator: React.FC = () => {
     const [missingKeys, setMissingKeys] = useState<string[]>([]);
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        const env = (import.meta as any).env || {};
-        console.log('[ConfigValidator] import.meta.env keys:', Object.keys(env));
-        console.log('[ConfigValidator] VITE_GOOGLE_CLIENT_ID exists:', !!env.VITE_GOOGLE_CLIENT_ID);
-
-        const requiredKeys = [
-            'VITE_GOOGLE_CLIENT_ID',
-            'VITE_GITHUB_CLIENT_ID'
-        ];
-
-        const missing = requiredKeys.filter(key => !env[key] || env[key].includes('your_'));
-
-        if (missing.length > 0) {
+        const { isValid, missing } = validateConfig();
+        if (!isValid) {
             setMissingKeys(missing);
             setShow(true);
         }

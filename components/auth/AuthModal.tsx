@@ -1,35 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { X, ShieldCheck, AlertTriangle, Terminal, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, ArrowRight, Github, Loader2 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
-
 import { LoginPanel } from './LoginPanel';
+import { validateConfig } from '../../utils/env';
 
-interface AuthModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-    const { login } = useApp();
-    const [mode, setMode] = useState<'login' | 'register'>('login');
+export const AuthModal: React.FC = () => {
+    const { activeModal, setActiveModal, login } = useApp();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showSystemCheck, setShowSystemCheck] = useState(false);
+    const [configStatus, setConfigStatus] = useState(validateConfig());
+
+    if (activeModal !== 'auth') return null;
 
     const handleLogin = async (provider: 'google' | 'github') => {
         setIsLoading(true);
         setError(null);
         try {
             await login(provider);
-            onClose();
+            setActiveModal('none');
         } catch (err: any) {
-            console.error(`${provider} login failed`, err);
+            console.error('Login failed:', err);
             const errorMsg = typeof err === 'string' ? err : (err?.message || JSON.stringify(err));
 
             if (errorMsg.includes('CSRF')) setError('Security check failed. Please try again.');
             else if (errorMsg.includes('time') || errorMsg.includes('TIMEOUT')) setError('Login session timed out. Please try again.');
-            else if (errorMsg.includes('CLIENT_ID') || errorMsg.includes('SECRET')) {
+            else if (errorMsg.includes('CLIENT_ID') || errorMsg.includes('SECRET') || errorMsg.includes('env')) {
                 setError(`${provider.toUpperCase()} Config Error: ${errorMsg}`);
+                setShowSystemCheck(true);
             }
             else setError(errorMsg || 'Authentication failed. Please check your connection.');
         } finally {
@@ -38,136 +37,123 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     };
 
     return (
-        <AnimatePresence>
-            {isOpen && (
-                <div
-                    className="fixed inset-0 z-[999] flex items-center justify-center p-4 pointer-events-auto"
-                    onMouseDown={(e) => e.stopPropagation()}
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setActiveModal('none')}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                className="relative w-full max-w-[450px] bg-[#2c2e31] rounded-[2.5rem] p-10 border border-white/5 shadow-2xl overflow-hidden"
+            >
+                {/* Close Button */}
+                <button
+                    onClick={() => setActiveModal('none')}
+                    className="absolute top-8 right-8 text-[var(--sub)] hover:text-[var(--main)] transition-colors"
                 >
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onMouseDown={(e) => {
-                            e.stopPropagation();
-                            onClose();
-                        }}
-                        className="absolute inset-0 bg-[var(--bg)]/80 backdrop-blur-md"
-                    />
+                    <X size={20} />
+                </button>
 
-                    {/* Modal Card */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="w-full max-w-[420px] bg-[var(--bg)] border border-[var(--sub)]/20 p-10 rounded-[40px] shadow-2xl relative z-[1000] font-mono pointer-events-auto"
-                        style={{ boxShadow: '0 40px 100px -20px rgba(0, 0, 0, 0.7)' }}
-                        onMouseDown={(e) => e.stopPropagation()}
-                    >
-                        {/* Close Button */}
-                        <button
-                            type="button"
-                            onMouseDown={(e) => {
-                                e.stopPropagation();
-                                onClose();
-                            }}
-                            className="absolute right-8 top-8 p-3 text-[var(--sub)] hover:text-[var(--accent)] transition-all hover:rotate-90"
-                        >
-                            <X size={24} />
-                        </button>
-
-                        {/* Title */}
-                        <div className="mb-10 text-center">
-                            <h2 className="text-3xl font-black text-[var(--main)] tracking-tighter uppercase">
-                                {mode === 'login' ? 'sign in' : 'join crew'}
-                            </h2>
-                            <p className="text-[10px] text-[var(--sub)] uppercase tracking-[0.4em] mt-2 font-bold opacity-60">
-                                elevate your typing speed
-                            </p>
-                        </div>
-
-                        {/* Integrated Login Panel */}
-                        <div className="mb-8">
-                            <LoginPanel
-                                onLogin={handleLogin}
-                                isLoading={isLoading}
-                                error={error}
-                            />
-                        </div>
-
-                        {/* Divider */}
-                        <div className="flex items-center gap-6 mb-8 opacity-20">
-                            <div className="h-px flex-1 bg-[var(--sub)]" />
-                            <span className="text-[10px] text-[var(--sub)] uppercase tracking-[0.3em] font-black">or</span>
-                            <div className="h-px flex-1 bg-[var(--sub)]" />
-                        </div>
-
-                        {/* Form */}
-                        <div className="flex flex-col gap-4">
-                            <div className="group">
-                                <div className="flex items-center gap-3 border-b border-[var(--sub)]/20 group-focus-within:border-[var(--accent)] transition-colors py-2">
-                                    <Mail size={16} className="text-[var(--sub)] group-focus-within:text-[var(--accent)]" />
-                                    <input
-                                        type="email"
-                                        placeholder="email"
-                                        onMouseDown={(e) => e.stopPropagation()}
-                                        className="bg-transparent text-[var(--main)] placeholder:text-[var(--sub)]/40 w-full outline-none text-sm font-bold"
-                                    />
-                                </div>
-                            </div>
-                            <div className="group">
-                                <div className="flex items-center gap-3 border-b border-[var(--sub)]/20 group-focus-within:border-[var(--accent)] transition-colors py-2">
-                                    <Lock size={16} className="text-[var(--sub)] group-focus-within:text-[var(--accent)]" />
-                                    <input
-                                        type="password"
-                                        placeholder="password"
-                                        onMouseDown={(e) => e.stopPropagation()}
-                                        className="bg-transparent text-[var(--main)] placeholder:text-[var(--sub)]/40 w-full outline-none text-sm font-bold"
-                                    />
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onMouseDown={(e) => {
-                                    e.stopPropagation();
-                                    console.log('Email Sign In Clicked');
-                                }}
-                                className="flex items-center justify-between w-full mt-4 p-4 rounded-2xl bg-[var(--accent)] text-[var(--bg)] shadow-xl shadow-[var(--accent)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all group pointer-events-auto"
-                            >
-                                <span className="font-black uppercase tracking-widest text-[11px]">
-                                    {mode === 'login' ? 'sign in' : 'create account'}
-                                </span>
-                                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </div>
-
-                        {/* Footer Links */}
-                        <div className="mt-8 flex justify-between text-[10px] font-bold uppercase tracking-widest">
-                            <button
-                                type="button"
-                                onMouseDown={(e) => {
-                                    e.stopPropagation();
-                                    setMode(mode === 'login' ? 'register' : 'login');
-                                }}
-                                className="text-[var(--sub)] hover:text-[var(--accent)] transition-colors"
-                            >
-                                {mode === 'login' ? 'create account' : 'back to login'}
-                            </button>
-                            {mode === 'login' && (
-                                <button
-                                    type="button"
-                                    onMouseDown={(e) => e.stopPropagation()}
-                                    className="text-[var(--sub)]/50 hover:text-[var(--sub)] transition-colors"
-                                >
-                                    forgot password?
-                                </button>
-                            )}
-                        </div>
-                    </motion.div>
+                {/* Header */}
+                <div className="text-center mb-10">
+                    <h2 className="text-3xl font-black text-[var(--main)] uppercase tracking-[0.2em] mb-2 font-mono">Sign In</h2>
+                    <p className="text-[10px] text-[var(--sub)] uppercase tracking-[0.3em] font-bold opacity-60">Elevate your typing speed</p>
                 </div>
-            )}
-        </AnimatePresence>
+
+                <LoginPanel onLogin={handleLogin} isLoading={isLoading} error={error} />
+
+                {/* System Check Dashboard */}
+                <AnimatePresence>
+                    {showSystemCheck && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            className="mt-6 pt-6 border-t border-white/5"
+                        >
+                            <div className="bg-black/20 rounded-2xl p-5 border border-white/5 space-y-3">
+                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider">
+                                    <span className="text-[var(--sub)]">System Health</span>
+                                    <Settings size={12} className="opacity-40" />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <StatusItem
+                                        label="Frontend Env"
+                                        status={configStatus.isValid ? 'OK' : 'FAIL'}
+                                        details={configStatus.missing.join(', ') || 'VITE_ Loaded'}
+                                    />
+                                    <StatusItem
+                                        label="Backend Engine"
+                                        status={error?.includes('backend') || error?.includes('env') ? 'FAIL' : 'OK'}
+                                        details={error?.includes('backend') || error?.includes('env') ? 'Check .env bundling' : 'Tauri Ready'}
+                                    />
+                                    <StatusItem
+                                        label="Redirect URI"
+                                        status="OK"
+                                        details="localhost:1420"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        setConfigStatus(validateConfig());
+                                        setError(null);
+                                    }}
+                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all"
+                                >
+                                    Refresh Config
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5"></span></div>
+                    <div className="relative flex justify-center text-[10px] uppercase font-black"><span className="bg-[#2c2e31] px-4 text-[var(--sub)] opacity-20">or</span></div>
+                </div>
+
+                {/* Traditional Auth Form (Monkeytype Style) */}
+                <div className="space-y-6">
+                    <div className="relative group">
+                        <Terminal size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--sub)] opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                        <input type="email" placeholder="email" className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-sm outline-none focus:border-[var(--main)] transition-colors font-mono" />
+                    </div>
+                    <div className="relative group">
+                        <ShieldCheck size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--sub)] opacity-40 group-focus-within:opacity-100 transition-opacity" />
+                        <input type="password" placeholder="password" className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-sm outline-none focus:border-[var(--main)] transition-colors font-mono" />
+                    </div>
+
+                    <button className="w-full bg-[var(--main)] text-[var(--bg)] py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:opacity-90 transition-all flex items-center justify-center gap-2 group">
+                        Sign In
+                        <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                            →
+                        </motion.span>
+                    </button>
+                </div>
+
+                {/* Footer Links */}
+                <div className="mt-8 flex justify-between text-[10px] font-bold uppercase tracking-widest text-[var(--sub)] opacity-40">
+                    <button className="hover:text-[var(--main)] transition-colors">create account</button>
+                    <button className="hover:text-[var(--main)] transition-colors">forgot password?</button>
+                </div>
+            </motion.div>
+        </div>
     );
 };
+
+const StatusItem: React.FC<{ label: string; status: 'OK' | 'FAIL'; details: string }> = ({ label, status, details }) => (
+    <div className="flex items-center justify-between text-[9px] font-bold">
+        <span className="text-[var(--sub)] opacity-60">{label}</span>
+        <div className="flex items-center gap-2">
+            <span className="opacity-40 font-mono truncate max-w-[120px]">{details}</span>
+            <span className={status === 'OK' ? 'text-[#96d2d9]' : 'text-[#ca4754]'}>[{status}]</span>
+        </div>
+    </div>
+);
