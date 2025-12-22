@@ -10,7 +10,6 @@ import TypingPage from './pages/TypingPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { PerformanceOverlay } from './components/PerformanceOverlay';
-import { ConfigValidator } from './components/auth/ConfigValidator';
 
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { isSidebarCollapsed, setIsSidebarCollapsed } = useApp();
@@ -36,7 +35,6 @@ export default function App(): React.ReactNode {
                 <AppProvider>
                     <SoundProvider>
                         <ThemeProvider>
-                            <ConfigValidator />
                             <Routes>
                                 <Route path="/" element={<TypingPage />} />
                                 <Route path="*" element={<Navigate to="/" replace />} />

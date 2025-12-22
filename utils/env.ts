@@ -17,8 +17,8 @@ const getEnv = (key: string, defaultValue = ''): string => {
 };
 
 export const config: AppConfig = {
-    googleClientId: getEnv('VITE_GOOGLE_CLIENT_ID'),
-    githubClientId: getEnv('VITE_GITHUB_CLIENT_ID'),
+    googleClientId: (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || '',
+    githubClientId: (import.meta as any).env.VITE_GITHUB_CLIENT_ID || '',
     mode: (import.meta as any).env.MODE || 'development',
     isDev: (import.meta as any).env.DEV || false,
 };

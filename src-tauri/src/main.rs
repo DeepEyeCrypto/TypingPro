@@ -43,10 +43,8 @@ fn manual_env_parser(app_handle: &tauri::AppHandle, path: PathBuf) -> bool {
                 if !key.is_empty() {
                     std::env::set_var(key, value);
                     count += 1;
-                    if key.contains("CLIENT_ID") || key.contains("SECRET") {
-                        let masked = if value.len() > 5 { format!("{}...", &value[..5]) } else { "***".to_string() };
-                        log_to_file(app_handle, &format!("Manual Env: Set {} = {}", key, masked));
-                    }
+                    let masked = if value.len() > 5 { format!("{}...", &value[..5]) } else { "***".to_string() };
+                    log_to_file(app_handle, &format!("Manual Env: Set {} = {}", key, masked));
                 }
             }
         }
@@ -61,30 +59,28 @@ fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
     // 1. Try CWD/.env
     if dotenv::dotenv().is_ok() {
         log_to_file(app_handle, "Loaded .env via dotenv (CWD)");
-        env_loaded = true;
+        if std::env::var("GITHUB_CLIENT_ID").is_ok() { env_loaded = true; }
     } 
 
-    // 2. Try Executable Directory/.env
+    // 2. Try root/.env (Manual)
+    if !env_loaded {
+        let mut root_env = cwd.clone();
+        root_env.push(".env");
+        if manual_env_parser(app_handle, root_env) {
+             if std::env::var("GITHUB_CLIENT_ID").is_ok() { env_loaded = true; }
+        }
+    }
+
+    // 3. Try Executable Directory/.env
     if !env_loaded {
         if let Ok(exe_path) = std::env::current_exe() {
             if let Some(exe_dir) = exe_path.parent() {
                 let mut exe_env = exe_dir.to_path_buf();
                 exe_env.push(".env");
-                if manual_env_parser(app_handle, exe_env.clone()) {
-                    log_to_file(app_handle, &format!("Loaded .env manually from exe dir: {:?}", exe_env));
-                    env_loaded = true;
+                if manual_env_parser(app_handle, exe_env) {
+                    if std::env::var("GITHUB_CLIENT_ID").is_ok() { env_loaded = true; }
                 }
             }
-        }
-    }
-    
-    // 3. Try project root (relative to CWD)
-    if !env_loaded {
-        let mut root_env = cwd.clone();
-        root_env.push(".env");
-        if manual_env_parser(app_handle, root_env.clone()) {
-            log_to_file(app_handle, &format!("Loaded .env manually from root: {:?}", root_env));
-            env_loaded = true;
         }
     }
 

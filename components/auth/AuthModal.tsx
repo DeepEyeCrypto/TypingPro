@@ -154,7 +154,10 @@ export const AuthModal: React.FC = () => {
                         <input type="password" placeholder="password" className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-sm outline-none focus:border-[var(--main)] transition-colors font-mono" />
                     </div>
 
-                    <button className="w-full bg-[var(--main)] text-[var(--bg)] py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:opacity-90 transition-all flex items-center justify-center gap-2 group">
+                    <button
+                        onClick={() => setError('Email login is currently in development. Please use Google or GitHub above.')}
+                        className="w-full bg-[var(--main)] text-[var(--bg)] py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:opacity-90 transition-all flex items-center justify-center gap-2 group"
+                    >
                         Sign In
                         <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
                             →

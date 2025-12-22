@@ -16,6 +16,16 @@ export interface BackendConfig {
 let cachedConfig: AppConfig | null = null;
 
 const getViteEnv = (key: string): string | null => {
+    // Explicit lookups for baked-in values
+    if (key === 'VITE_GOOGLE_CLIENT_ID') {
+        const val = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
+        if (val && !val.includes('your_')) return val;
+    }
+    if (key === 'VITE_GITHUB_CLIENT_ID') {
+        const val = (import.meta as any).env.VITE_GITHUB_CLIENT_ID;
+        if (val && !val.includes('your_')) return val;
+    }
+
     const value = (import.meta as any).env[key];
     if (!value || value.includes('your_')) return null;
     return value;
