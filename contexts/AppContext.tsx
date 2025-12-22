@@ -22,6 +22,7 @@ interface AppContextType {
     // State
     profiles: UserProfile[];
     currentProfile: UserProfile;
+    userProfile: UserProfile; // Alias for consistency in advanced features
     settings: UserSettings;
     lessonProgress: Record<number, LessonProgress>;
     history: HistoryEntry[];
@@ -47,7 +48,8 @@ interface AppContextType {
     setIsAccuracyMasterActive: (val: boolean) => void;
     setIsMetronomeActive: (val: boolean) => void;
     setMetronomeBpm: (val: number) => void;
-    switchProfile: (profile) => void;
+    switchProfile: (profile: UserProfile) => void;
+    setUserProfile: (profile: UserProfile) => void;
     createNewProfile: (name: string) => void;
     updateUserSetting: <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => void;
     recordLessonComplete: (lessonId: number, stats: Stats) => boolean;
@@ -74,7 +76,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         level: 1,
         streakCount: 1,
         lastLoginDate: new Date().toISOString(),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        progression: {
+            unlockedLessons: [1],
+            completedLessons: {},
+            weaknessHeatmap: {},
+            dailyQuests: [],
+            badges: [],
+            totalWordsTyped: 0,
+            totalTimeSpent: 0
+        }
     });
     const [user, setUser] = useState<AuthUser | null>(null);
     const [settings, setSettings] = useState<UserSettings>({
@@ -285,7 +296,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 level: 1,
                 streakCount: 1,
                 lastLoginDate: new Date().toISOString(),
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                progression: {
+                    unlockedLessons: [1],
+                    completedLessons: {},
+                    weaknessHeatmap: {},
+                    dailyQuests: [],
+                    badges: [],
+                    totalWordsTyped: 0,
+                    totalTimeSpent: 0
+                }
             };
             const updatedProfiles = [...getProfiles(), newProfile];
             localStorage.setItem('typingpro_profiles', JSON.stringify(updatedProfiles));
@@ -433,7 +453,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             xp: 0,
             level: 1,
             streakCount: 1,
-            lastLoginDate: new Date().toISOString()
+            lastLoginDate: new Date().toISOString(),
+            progression: {
+                unlockedLessons: [1],
+                completedLessons: {},
+                weaknessHeatmap: {},
+                dailyQuests: [],
+                badges: [],
+                totalWordsTyped: 0,
+                totalTimeSpent: 0
+            }
         };
         setProfiles(prev => [...prev, fullProfile]);
         setCurrentProfile(fullProfile);
@@ -541,7 +570,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             wpmTimeline: stats.wpmTimeline,
             keystrokeLog: stats.keystrokeLog,
             handEfficiency: stats.handEfficiency,
-            aiInsights: stats.aiInsights
+            aiInsights: {
+                enemyKeys: stats.aiInsights?.enemyKeys || [],
+                bottlenecks: stats.aiInsights?.bottlenecks || []
+            }
         };
 
         saveHistory(currentProfile.id, entry);
@@ -570,7 +602,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         addXp(xpGained);
 
-        // Check for and award badges
+        const lastHistory = newHistory[0];
+        const lastAiInsights = lastHistory.aiInsights;
+
         BADGES.forEach(badge => {
             if (!earnedBadges.some(eb => eb.badgeId === badge.id)) {
                 if (badge.condition(newHistory, updatedProgress, currentProfile.streakCount)) {
@@ -605,6 +639,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         isAccuracyMasterActive,
         isMetronomeActive,
         metronomeBpm,
+        userProfile: currentProfile,
+        setUserProfile: setCurrentProfile,
         setActiveLessonId,
         setActiveModal,
         setIsCodeMode,

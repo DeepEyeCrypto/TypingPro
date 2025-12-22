@@ -32,7 +32,16 @@ export const getProfiles = (): UserProfile[] => {
                 xp: 0,
                 level: 1,
                 streakCount: 1,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                progression: {
+                    unlockedLessons: [1],
+                    completedLessons: {},
+                    weaknessHeatmap: {},
+                    dailyQuests: [],
+                    badges: [],
+                    totalWordsTyped: 0,
+                    totalTimeSpent: 0
+                }
             };
             localStorage.setItem(KEYS.PROFILES, JSON.stringify([def]));
             return [def];
@@ -45,7 +54,16 @@ export const getProfiles = (): UserProfile[] => {
             xp: 0,
             level: 1,
             streakCount: 1,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            progression: {
+                unlockedLessons: [1],
+                completedLessons: {},
+                weaknessHeatmap: {},
+                dailyQuests: [],
+                badges: [],
+                totalWordsTyped: 0,
+                totalTimeSpent: 0
+            }
         }];
     }
 };
@@ -58,7 +76,16 @@ export const createProfile = (name: string): UserProfile => {
         xp: 0,
         level: 1,
         streakCount: 1,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        progression: {
+            unlockedLessons: [1],
+            completedLessons: {},
+            weaknessHeatmap: {},
+            dailyQuests: [],
+            badges: [],
+            totalWordsTyped: 0,
+            totalTimeSpent: 0
+        }
     };
     profiles.push(newProfile);
     localStorage.setItem(KEYS.PROFILES, JSON.stringify(profiles));

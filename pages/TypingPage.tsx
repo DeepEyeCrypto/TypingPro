@@ -16,6 +16,11 @@ import { TypingLayout } from '../components/layout/TypingLayout';
 import { ZenHeader } from '../components/layout/ZenHeader';
 import { ZenStats } from '../components/layout/ZenStats';
 import { FocusMode } from '../components/typing/FocusMode';
+import { useWeaknessDetection } from '../src/hooks/useWeaknessDetection';
+import { useAICoaching } from '../src/hooks/useAICoaching';
+import { useGamification } from '../src/hooks/useGamification';
+import { AdaptiveEngine } from '../src/utils/AdaptiveEngine';
+import { AICoachRecommendation } from '../types';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,8 +33,13 @@ export default function TypingPage(): React.ReactNode {
         getWeaknessDrill,
         isAccuracyMasterActive, setIsAccuracyMasterActive,
         isMetronomeActive, setIsMetronomeActive,
-        metronomeBpm, setMetronomeBpm
+        metronomeBpm, setMetronomeBpm,
+        userProfile, setUserProfile
     } = useApp();
+
+    const { analyzeSession, identifyEnemyKeys, identifyBottlenecks } = useWeaknessDetection();
+    const { generateRecommendation } = useAICoaching();
+    const { calculateXP, processLevelUp } = useGamification();
 
     const { setIsSidebarOpen } = useOutletContext<MainLayoutContext>() || {};
 
@@ -57,6 +67,11 @@ export default function TypingPage(): React.ReactNode {
         cursorIndex: number;
         errorIndices: number[];
         timeLeft?: number;
+        aiInsights?: {
+            enemyKeys: { char: string; avgHold: number }[];
+            bottlenecks: { pair: string; avgLat: number }[];
+        };
+        recommendation?: AICoachRecommendation;
     }>({ wpm: 0, accuracy: 100, errors: 0, progress: 0, cursorIndex: 0, errorIndices: [], timeLeft: 60 });
 
     const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -134,9 +149,31 @@ export default function TypingPage(): React.ReactNode {
     }, []);
 
     const handleComplete = useCallback((stats: Stats) => {
-        recordLessonComplete(activeLesson.id, stats);
-        setModalStats({ ...stats, completed: stats.accuracy >= 95 });
-    }, [activeLesson, recordLessonComplete]);
+        // 1. Analyze session
+        const heatmap = analyzeSession(stats.keystrokeLog || []);
+        const enemyKeys = identifyEnemyKeys(heatmap);
+        const bottlenecks = identifyBottlenecks(stats.keystrokeLog || []);
+
+        // 2. AI Coaching
+        const recommendation = generateRecommendation(stats, heatmap, enemyKeys, bottlenecks);
+
+        // 3. Gamification
+        const xpGained = calculateXP(stats);
+        if (userProfile) {
+            const updatedProfile = processLevelUp(userProfile, xpGained);
+            setUserProfile(updatedProfile);
+        }
+
+        const enrichedStats = {
+            ...stats,
+            aiInsights: { enemyKeys, bottlenecks },
+            recommendation
+        };
+
+        recordLessonComplete(activeLesson.id, enrichedStats);
+        setModalStats({ ...enrichedStats, completed: stats.accuracy >= 95 });
+        setLiveStats(prev => ({ ...prev, aiInsights: enrichedStats.aiInsights, recommendation }));
+    }, [activeLesson, recordLessonComplete, analyzeSession, identifyEnemyKeys, identifyBottlenecks, generateRecommendation, calculateXP, processLevelUp, userProfile, setUserProfile]);
 
     const handleNext = useCallback(() => {
         const nextLesson = HERO_CURRICULUM.find(l => l.id > currentLessonId);
@@ -174,7 +211,9 @@ export default function TypingPage(): React.ReactNode {
                         wpm: liveStats.wpm,
                         accuracy: liveStats.accuracy,
                         errors: liveStats.errors,
-                        timeLeft: liveStats.timeLeft
+                        timeLeft: liveStats.timeLeft,
+                        aiInsights: liveStats.aiInsights,
+                        recommendation: liveStats.recommendation
                     }}
                     onRestart={handleRetry}
                     onNext={modalStats?.completed ? handleNext : undefined}

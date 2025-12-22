@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, ChevronRight, Share2, Award } from 'lucide-react';
-import { Stats } from '../../types';
+import { Share2, Award, Zap, AlertTriangle, Lightbulb, RotateCcw, ChevronRight } from 'lucide-react';
+import { AICoachRecommendation } from '../../types';
 
 interface ZenStatsProps {
     isTyping: boolean;
@@ -11,6 +11,11 @@ interface ZenStatsProps {
         accuracy: number;
         errors: number;
         timeLeft?: number;
+        aiInsights?: {
+            enemyKeys: { char: string; avgHold: number }[];
+            bottlenecks: { pair: string; avgLat: number }[];
+        };
+        recommendation?: AICoachRecommendation;
     };
     onRestart: () => void;
     onNext?: () => void;
@@ -42,6 +47,39 @@ export const ZenStats: React.FC<ZenStatsProps> = ({ isTyping, isComplete, stats,
                                 <span className="text-[10px] font-bold text-[var(--sub)] uppercase tracking-[0.3em] mt-2">Errors</span>
                             </div>
                         </div>
+
+                        {/* AI Insights & Weakness Heatmap Mock */}
+                        <div className="flex flex-wrap justify-center gap-4 w-full max-w-2xl px-4">
+                            {stats.aiInsights?.enemyKeys.map((k, i) => (
+                                <div key={i} className="flex flex-col items-center p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500">
+                                    <AlertTriangle size={16} />
+                                    <span className="text-xl font-black mt-1 uppercase">{k.char}</span>
+                                    <span className="text-[8px] font-bold uppercase opacity-60">Enemy Key</span>
+                                </div>
+                            ))}
+                            {stats.aiInsights?.bottlenecks.map((b, i) => (
+                                <div key={i} className="flex flex-col items-center p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-500">
+                                    <Zap size={16} />
+                                    <span className="text-xl font-black mt-1 uppercase">{b.pair}</span>
+                                    <span className="text-[8px] font-bold uppercase opacity-60">Slow Pair</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* AI Coaching Card */}
+                        {stats.recommendation && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="w-full max-w-md p-6 rounded-3xl bg-gradient-to-br from-[var(--accent)]/10 to-transparent border border-[var(--accent)]/20 text-center"
+                            >
+                                <div className="inline-flex p-3 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] mb-4">
+                                    <Lightbulb size={24} />
+                                </div>
+                                <h3 className="text-lg font-black text-[var(--main)] uppercase tracking-widest mb-2">{stats.recommendation.title}</h3>
+                                <p className="text-sm text-[var(--sub)] leading-relaxed">{stats.recommendation.description}</p>
+                            </motion.div>
+                        )}
 
                         <div className="flex items-center gap-4">
                             <button

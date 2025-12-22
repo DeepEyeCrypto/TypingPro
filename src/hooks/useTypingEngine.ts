@@ -38,6 +38,8 @@ export const useTypingEngine = (content: string, stopOnError: boolean, mode: Pra
         isCorrect: boolean;
         cursorIndex: number;
         combo: number;
+        keystrokeLog: KeystrokeEvent[];
+        wpmTimeline: { timestamp: number; wpm: number }[];
     }) => void) => {
         PerformanceMonitor.startMeasure('typing-engine-input');
 
@@ -56,7 +58,9 @@ export const useTypingEngine = (content: string, stopOnError: boolean, mode: Pra
                     index: cursorIndexRef.current,
                     isCorrect: true,
                     cursorIndex: cursorIndexRef.current,
-                    combo: comboRef.current
+                    combo: comboRef.current,
+                    keystrokeLog: keystrokeLog.current,
+                    wpmTimeline: wpmTimeline.current
                 });
             }
             PerformanceMonitor.endMeasure('typing-engine-input');
@@ -118,7 +122,9 @@ export const useTypingEngine = (content: string, stopOnError: boolean, mode: Pra
             index: currentIndex,
             isCorrect,
             cursorIndex: cursorIndexRef.current,
-            combo: comboRef.current
+            combo: comboRef.current,
+            keystrokeLog: keystrokeLog.current,
+            wpmTimeline: wpmTimeline.current
         });
 
         PerformanceMonitor.endMeasure('typing-engine-input');

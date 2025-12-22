@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useCallback, memo, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Stats, FontSize, CursorStyle, TrainingMode, PracticeMode, CaretSpeed } from '../types';
+import { Stats, FontSize, CursorStyle, TrainingMode, PracticeMode, CaretSpeed, KeystrokeEvent } from '../types';
 import { useSound } from '../contexts/SoundContext';
 import { useTypingEngine } from '../src/hooks/useTypingEngine';
+import { usePerformanceTracking } from '../src/hooks/usePerformanceTracking';
 import { useApp } from '../contexts/AppContext';
 import styles from './TypingArea.module.css';
 
@@ -43,6 +44,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 }) => {
   const { playSound } = useSound();
   const { isAccuracyMasterActive, activeModal } = useApp();
+  const { calculateRealTimeStats, stats: performanceStats } = usePerformanceTracking(content.length);
   const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, timeLeft, isComplete } = useTypingEngine(content, stopOnError, practiceMode, duration);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -113,12 +115,25 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => window.removeEventListener('resize', updateCaret);
   }, [updateCaret]);
 
-  const updateVisuals = useCallback((data: { index: number; isCorrect: boolean; cursorIndex: number }) => {
-    const { cursorIndex } = data;
+  const updateVisuals = useCallback((data: {
+    index: number;
+    isCorrect: boolean;
+    cursorIndex: number;
+    keystrokeLog: KeystrokeEvent[];
+    wpmTimeline: { timestamp: number; wpm: number }[];
+  }) => {
+    const { cursorIndex, keystrokeLog, wpmTimeline } = data;
     if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
-    updateCaret(); // Trigger caret update on visual changes
+    updateCaret();
 
     if (workerRef.current && engineRefs.startTime.current) {
+      calculateRealTimeStats(
+        cursorIndex,
+        engineRefs.errors.current,
+        keystrokeLog,
+        engineRefs.startTime.current
+      );
+
       workerRef.current.postMessage({
         type: 'UPDATE_STATS',
         data: {
@@ -126,12 +141,12 @@ const TypingArea: React.FC<TypingAreaProps> = ({
           errors: engineRefs.errors.current,
           startTime: engineRefs.startTime.current,
           contentLength: content.length,
-          keystrokeLog: engineRefs.keystrokeLog.current,
-          wpmTimeline: engineRefs.wpmTimeline.current
+          keystrokeLog,
+          wpmTimeline
         }
       });
     }
-  }, [content, onActiveKeyChange, engineRefs]);
+  }, [content, onActiveKeyChange, engineRefs, calculateRealTimeStats]);
 
   useEffect(() => {
     if (isActive && activeModal === 'none' && inputRef.current) {
@@ -231,7 +246,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         }}
         transition={caretTransition}
         style={{
-          boxShadow: '0 0 15px var(--accent)',
+          boxShadow: `0 0 ${10 + (performanceStats.speedIndicator || 0) / 10}px var(--accent)`,
+          borderRightColor: (performanceStats.speedIndicator || 0) > 75 ? '#34C759' : 'var(--accent)',
           display: isComplete ? 'none' : 'block'
         }}
       />

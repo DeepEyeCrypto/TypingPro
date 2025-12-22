@@ -104,6 +104,8 @@ export interface Stats {
     enemyKeys: { char: string; avgHold: number }[];
     bottlenecks: { pair: string; avgLat: number }[];
   };
+  recommendation?: AICoachRecommendation;
+  speedIndicator?: number; // 0-100 real-time speed relative to goal/avg
 }
 
 export enum GameState {
@@ -139,6 +141,30 @@ export interface HistoryEntry {
     enemyKeys: { char: string; avgHold: number }[];
     bottlenecks: { pair: string; avgLat: number }[];
   };
+  speedIndicator?: number; // 0-100 real-time speed relative to goal/avg
+}
+
+export interface WeaknessData {
+  accuracy: number;
+  avgLatency: number;
+  errorCount: number;
+  lastTested: string;
+}
+
+export type WeaknessHeatmap = Record<string, WeaknessData>;
+
+export interface AICoachRecommendation {
+  type: 'drill' | 'lesson' | 'review' | 'tip';
+  title: string;
+  description: string;
+  drillChars?: string[];
+  targetLessonId?: number;
+}
+
+export interface AIStatsPrediction {
+  targetWpm: number;
+  estimatedDays: number;
+  confidence: number;
 }
 
 export interface LessonProgress {
@@ -189,6 +215,19 @@ export interface UserProfile {
   streakCount: number;
   lastLoginDate?: string; // ISO string
   createdAt: string;
+  progression: {
+    unlockedLessons: number[];
+    completedLessons: Record<number, LessonProgress>;
+    weaknessHeatmap: WeaknessHeatmap;
+    dailyQuests: DailyQuest[];
+    badges: EarnedBadge[];
+    totalWordsTyped: number;
+    totalTimeSpent: number; // seconds
+  };
+  aiCoaching?: {
+    lastRecommendation?: AICoachRecommendation;
+    speedPredictions?: AIStatsPrediction[];
+  };
 }
 
 export interface DailyActivity {
