@@ -25,15 +25,23 @@ struct UserProfile {
 
 #[tauri::command]
 async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    use dotenv_codegen::dotenv;
+    // Load credentials at runtime
+    dotenv::dotenv().ok();
+    
+    let google_client_id = std::env::var("GOOGLE_CLIENT_ID")
+        .map_err(|_| "GOOGLE_CLIENT_ID not found in environment".to_string())?;
+    let google_client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
+        .map_err(|_| "GOOGLE_CLIENT_SECRET not found in environment".to_string())?;
 
-    // Load credentials at compile time
-    let google_client_id = dotenv!("GOOGLE_CLIENT_ID");
-    let google_client_secret = dotenv!("GOOGLE_CLIENT_SECRET");
+    if google_client_id.is_empty() || google_client_id.contains("your_") {
+         return Err("Invalid Google Client ID. Check your .env file.".to_string());
+    }
+
+    log_to_file(&format!("Starting Google Login with Client ID: {}...", &google_client_id[..10]));
 
     // 1. Setup Client
-    let client_id = ClientId::new(google_client_id.to_string());
-    let client_secret = ClientSecret::new(google_client_secret.to_string());
+    let client_id = ClientId::new(google_client_id);
+    let client_secret = ClientSecret::new(google_client_secret);
     
     // 2. Start Local Server
     let listener = TcpListener::bind("127.0.0.1:0").map_err(|e| e.to_string())?;
@@ -61,8 +69,7 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
         .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.email".to_string()))
         .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.profile".to_string()))
         .add_scope(Scope::new("openid".to_string()))
-        // CRITICAL FOR DESKTOP: Force consent to ensure we get a refresh token if needed
-        .add_extra_param("prompt", "consent") 
+        .add_extra_param("prompt", "select_account") 
         .add_extra_param("access_type", "offline")
         .set_pkce_challenge(pkce_challenge)
         .url();
@@ -169,13 +176,19 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
 #[tauri::command]
 async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    use dotenv_codegen::dotenv;
+    dotenv::dotenv().ok();
 
-    let github_client_id = dotenv!("GITHUB_CLIENT_ID");
-    let github_client_secret = dotenv!("GITHUB_CLIENT_SECRET");
+    let github_client_id = std::env::var("GITHUB_CLIENT_ID")
+        .map_err(|_| "GITHUB_CLIENT_ID not found in environment".to_string())?;
+    let github_client_secret = std::env::var("GITHUB_CLIENT_SECRET")
+        .map_err(|_| "GITHUB_CLIENT_SECRET not found in environment".to_string())?;
 
-    let client_id = ClientId::new(github_client_id.to_string());
-    let client_secret = ClientSecret::new(github_client_secret.to_string());
+    if github_client_id.is_empty() || github_client_id.contains("your_") {
+        return Err("Invalid GitHub Client ID. Check your .env file.".to_string());
+    }
+
+    let client_id = ClientId::new(github_client_id);
+    let client_secret = ClientSecret::new(github_client_secret);
     
     let listener = TcpListener::bind("127.0.0.1:0").map_err(|e| e.to_string())?;
     let port = listener.local_addr().map_err(|e| e.to_string())?.port();
