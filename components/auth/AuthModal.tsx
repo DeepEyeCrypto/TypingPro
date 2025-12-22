@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, ArrowRight, Github, Loader2 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 
+import { LoginPanel } from './LoginPanel';
+
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -12,40 +14,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     const { login } = useApp();
     const [mode, setMode] = useState<'login' | 'register'>('login');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSocialLogin = (provider: 'google' | 'github') => async (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleLogin = async (provider: 'google' | 'github') => {
         setIsLoading(true);
+        setError(null);
         try {
             await login(provider);
             onClose();
-        } catch (err) {
+        } catch (err: any) {
             console.error(`${provider} login failed`, err);
+            // Map common error codes to friendly messages
+            if (err.includes('CSRF')) setError('Security check failed. Try again.');
+            else if (err.includes('time')) setError('Login took too long. Try again.');
+            else setError('Authentication failed. Please check your connection.');
         } finally {
             setIsLoading(false);
         }
     };
-
-    const googleIcon = (
-        <svg viewBox="0 0 24 24" className="w-5 h-5">
-            <path
-                fill="#EA4335"
-                d="M5.266 9.765A7.077 7.077 0 0112 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3.09c-2.127-1.927-4.882-3.09-7.91-3.09C7.391 0 3.191 2.909 1.255 7.155l4.011 2.61z"
-            />
-            <path
-                fill="#34A853"
-                d="M12 24c3.127 0 5.727-1.036 7.636-2.8l-3.664-2.836c-1.118.755-2.545 1.191-3.972 1.191-3.018 0-5.582-2.036-6.491-4.773L1.518 17.4C3.527 21.364 7.645 24 12 24z"
-            />
-            <path
-                fill="#4285F4"
-                d="M23.491 12.273c0-.855-.073-1.682-.209-2.482H12v4.691h6.455c-.273 1.482-1.109 2.727-2.336 3.555l3.664 2.836C21.936 19.018 24 15.936 24 12z"
-            />
-            <path
-                fill="#FBBC05"
-                d="M5.509 14.8c-.245-.727-.382-1.509-.382-2.327s.137-1.591.382-2.327l-4.011-2.61C.536 8.782 0 10.336 0 12s.536 3.218 1.491 4.673l4.018-3.327z"
-            />
-        </svg>
-    );
 
     return (
         <AnimatePresence>
@@ -71,8 +57,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="w-full max-w-[400px] bg-[var(--bg)] border border-[var(--sub)]/20 p-8 rounded-[32px] shadow-2xl relative z-[1000] font-mono pointer-events-auto"
-                        style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
+                        className="w-full max-w-[420px] bg-[var(--bg)] border border-[var(--sub)]/20 p-10 rounded-[40px] shadow-2xl relative z-[1000] font-mono pointer-events-auto"
+                        style={{ boxShadow: '0 40px 100px -20px rgba(0, 0, 0, 0.7)' }}
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         {/* Close Button */}
@@ -82,48 +68,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                                 e.stopPropagation();
                                 onClose();
                             }}
-                            className="absolute right-6 top-6 p-2 text-[var(--sub)] hover:text-[var(--accent)] transition-colors"
+                            className="absolute right-8 top-8 p-3 text-[var(--sub)] hover:text-[var(--accent)] transition-all hover:rotate-90"
                         >
-                            <X size={20} />
+                            <X size={24} />
                         </button>
 
                         {/* Title */}
-                        <div className="mb-8">
-                            <h2 className="text-2xl font-black text-[var(--main)] tracking-tighter">
-                                {mode === 'login' ? 'login' : 'register'}
+                        <div className="mb-10 text-center">
+                            <h2 className="text-3xl font-black text-[var(--main)] tracking-tighter uppercase">
+                                {mode === 'login' ? 'sign in' : 'join crew'}
                             </h2>
-                            <p className="text-[10px] text-[var(--sub)] uppercase tracking-widest mt-1">
-                                to sync your progress
+                            <p className="text-[10px] text-[var(--sub)] uppercase tracking-[0.4em] mt-2 font-bold opacity-60">
+                                elevate your typing speed
                             </p>
                         </div>
 
-                        {/* Social Buttons */}
-                        <div className="flex flex-col gap-3 mb-6">
-                            <button
-                                type="button"
-                                disabled={isLoading}
-                                onMouseDown={handleSocialLogin('google')}
-                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto disabled:opacity-50"
-                            >
-                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : googleIcon}
-                                <span>Sign in with Google</span>
-                            </button>
-                            <button
-                                type="button"
-                                disabled={isLoading}
-                                onMouseDown={handleSocialLogin('github')}
-                                className="flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-[var(--sub)]/5 border border-[var(--sub)]/10 hover:border-[var(--accent)]/50 text-[var(--main)] transition-all font-bold text-xs uppercase tracking-widest group pointer-events-auto disabled:opacity-50"
-                            >
-                                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Github size={20} className="text-[var(--main)] group-hover:text-[var(--accent)] transition-colors" />}
-                                <span>Sign in with GitHub</span>
-                            </button>
+                        {/* Integrated Login Panel */}
+                        <div className="mb-8">
+                            <LoginPanel
+                                onLogin={handleLogin}
+                                isLoading={isLoading}
+                                error={error}
+                            />
                         </div>
 
                         {/* Divider */}
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="h-px flex-1 bg-[var(--sub)]/10" />
-                            <span className="text-[10px] text-[var(--sub)] uppercase tracking-widest">or email</span>
-                            <div className="h-px flex-1 bg-[var(--sub)]/10" />
+                        <div className="flex items-center gap-6 mb-8 opacity-20">
+                            <div className="h-px flex-1 bg-[var(--sub)]" />
+                            <span className="text-[10px] text-[var(--sub)] uppercase tracking-[0.3em] font-black">or</span>
+                            <div className="h-px flex-1 bg-[var(--sub)]" />
                         </div>
 
                         {/* Form */}

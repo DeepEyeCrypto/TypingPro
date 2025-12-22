@@ -64,7 +64,7 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
     // 3. Generate Auth URL
     let (pkce_challenge, pkce_verifier) = PkceCodeChallenge::new_random_sha256();
-    let (auth_url, _csrf_token) = client
+    let (auth_url, csrf_token) = client
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.email".to_string()))
         .add_scope(Scope::new("https://www.googleapis.com/auth/userinfo.profile".to_string()))
@@ -78,38 +78,33 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     tauri::api::shell::open(&app_handle.shell_scope(), auth_url.as_str(), None)
         .map_err(|e| e.to_string())?;
 
-    // 5. Wait for Callback (with 2 min timeout)
-    let start_time = std::time::Instant::now();
-    let timeout = std::time::Duration::from_secs(120);
-    
-    listener.set_nonblocking(true).map_err(|e| e.to_string())?;
-
+    // 5. Wait for Callback
     let (mut stream, _) = loop {
-        if start_time.elapsed() > timeout {
-            return Err("Login timed out. Please try again.".to_string());
-        }
         match listener.accept() {
             Ok(conn) => break conn,
             Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                 std::thread::sleep(std::time::Duration::from_millis(100));
                 continue;
             }
-            Err(e) => return Err(e.to_string()),
+            Err(e) => return Err(format!("AUTH_SERVER_ERROR: {}", e)),
         }
     };
-    
-    // Set back to blocking for reliable reading
-    stream.set_nonblocking(false).map_err(|e| e.to_string())?;
     
     let mut reader = BufReader::new(&stream);
     let mut request_line = String::new();
     reader.read_line(&mut request_line).map_err(|e| e.to_string())?;
     
-    let redirect_url = request_line.split_whitespace().nth(1).ok_or("Invalid request")?;
+    let redirect_url = request_line.split_whitespace().nth(1).ok_or("INVALID_REQUEST")?;
     let url = Url::parse(&format!("http://localhost{}", redirect_url)).map_err(|e| e.to_string())?;
     
+    // CSRF Validation
+    let state = url.query_pairs().find(|(k, _)| k == "state").map(|(_, v)| v.into_owned());
+    if state.as_deref() != Some(csrf_token.secret()) {
+        return Err("CSRF_VALIDATION_FAILED".to_string());
+    }
+
     let code_pair = url.query_pairs().find(|(key, _)| key == "code")
-        .ok_or("No code found in redirect")?;
+        .ok_or("AUTH_CODE_MISSING")?;
     let code = oauth2::AuthorizationCode::new(code_pair.1.into_owned());
 
     // 6. Exchange Code
@@ -118,51 +113,41 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
         .set_pkce_verifier(pkce_verifier)
         .request_async(oauth2::reqwest::async_http_client)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| format!("TOKEN_EXCHANGE_FAILED: {}", e))?;
 
     let access_token = token_result.access_token().secret();
 
     // 7. Get User Info
     let user_info_url = "https://www.googleapis.com/oauth2/v2/userinfo";
-    let http_client = reqwest::Client::builder()
-        .user_agent("TypingPro-App")
-        .build()
-        .map_err(|e| e.to_string())?;
-    
-    let res = http_client.get(user_info_url)
-        .header("Authorization", format!("Bearer {}", access_token))
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-        
+    let http_client = reqwest::Client::builder().user_agent("TypingPro").build().map_err(|e| e.to_string())?;
+    let res = http_client.get(user_info_url).header("Authorization", format!("Bearer {}", access_token)).send().await.map_err(|e| e.to_string())?;
     let user_data: serde_json::Value = res.json().await.map_err(|e| e.to_string())?;
-    log_to_file(&format!("Fetched User Data: {}", user_data));
 
-    // 8. Respond to Browser
-    let response_body = r#"
+    // 8. Premium Response
+    let response_body = format!(r#"
         <html>
             <head>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
                 <style>
-                    body { font-family: 'JetBrains Mono', monospace; background: #0d0d0d; color: #00f2ff; text-align: center; padding: 100px; }
-                    .card { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 20px; padding: 40px; display: inline-block; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
-                    h1 { text-transform: uppercase; letter-spacing: 2px; }
-                    p { color: rgba(255, 255, 255, 0.6); }
+                    body {{ background: #323437; color: #e2b714; font-family: 'JetBrains+Mono', monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }}
+                    .card {{ border: 2px solid #e2b714; padding: 40px; border-radius: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+                    h1 {{ margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 4px; }}
+                    p {{ color: #646669; margin-top: 10px; font-size: 14px; }}
                 </style>
             </head>
             <body>
                 <div class="card">
-                    <h1>Authentication Secured</h1>
-                    <p>Profile synced successfully. You can close this window.</p>
+                    <h1>TypingPro Secured</h1>
+                    <p>Profile synced for {}. Close this window.</p>
                 </div>
-                <script>setTimeout(() => window.close(), 3000)</script>
+                <script>setTimeout(() => window.close(), 2000)</script>
             </body>
         </html>
-    "#;
-    let response = format!(
-        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n{}",
-        response_body.len(),
-        response_body
-    );
+    "#, user_data["name"].as_str().unwrap_or("User"));
+
+    let response = format!("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n{}", response_body.len(), response_body);
     stream.write_all(response.as_bytes()).map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
@@ -208,7 +193,7 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     )
     .set_redirect_uri(redirect_url);
 
-    let (auth_url, _csrf_token) = client
+    let (auth_url, csrf_token) = client
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("read:user".to_string()))
         .add_scope(Scope::new("user:email".to_string()))
@@ -217,22 +202,14 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     tauri::api::shell::open(&app_handle.shell_scope(), auth_url.as_str(), None)
         .map_err(|e| e.to_string())?;
 
-    let start_time = std::time::Instant::now();
-    let timeout = std::time::Duration::from_secs(120);
-    
-    listener.set_nonblocking(true).map_err(|e| e.to_string())?;
-
     let (mut stream, _) = loop {
-        if start_time.elapsed() > timeout {
-            return Err("Login timed out. Please try again.".to_string());
-        }
         match listener.accept() {
             Ok(conn) => break conn,
             Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                 std::thread::sleep(std::time::Duration::from_secs(1));
                 continue;
             }
-            Err(e) => return Err(e.to_string()),
+            Err(e) => return Err(format!("AUTH_SERVER_ERROR: {}", e)),
         }
     };
     
@@ -242,11 +219,17 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     let mut request_line = String::new();
     reader.read_line(&mut request_line).map_err(|e| e.to_string())?;
     
-    let redirect_url = request_line.split_whitespace().nth(1).ok_or("Invalid request")?;
+    let redirect_url = request_line.split_whitespace().nth(1).ok_or("INVALID_REQUEST")?;
     let url = Url::parse(&format!("http://localhost{}", redirect_url)).map_err(|e| e.to_string())?;
     
+    // CSRF Validation
+    let state = url.query_pairs().find(|(k, _)| k == "state").map(|(_, v)| v.into_owned());
+    if state.as_deref() != Some(csrf_token.secret()) {
+        return Err("CSRF_VALIDATION_FAILED".to_string());
+    }
+
     let code_pair = url.query_pairs().find(|(key, _)| key == "code")
-        .ok_or("No code found in redirect")?;
+        .ok_or("AUTH_CODE_MISSING")?;
     let code = oauth2::AuthorizationCode::new(code_pair.1.into_owned());
 
     let token_result = client
@@ -258,48 +241,39 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     let access_token = token_result.access_token().secret();
 
     let user_info_url = "https://api.github.com/user";
-    let http_client = reqwest::Client::builder()
-        .user_agent("TypingPro-App")
-        .build()
-        .map_err(|e| e.to_string())?;
-    
-    let res = http_client.get(user_info_url)
-        .header("Authorization", format!("token {}", access_token))
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-        
+    let http_client = reqwest::Client::builder().user_agent("TypingPro").build().map_err(|e| e.to_string())?;
+    let res = http_client.get(user_info_url).header("Authorization", format!("token {}", access_token)).send().await.map_err(|e| e.to_string())?;
     let user_data: serde_json::Value = res.json().await.map_err(|e| e.to_string())?;
     
-    let response_body = r#"
+    let response_body = format!(r#"
         <html>
             <head>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
                 <style>
-                    body { font-family: 'JetBrains Mono', monospace; background: #0d0d0d; color: #00f2ff; text-align: center; padding: 100px; }
-                    .card { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 20px; padding: 40px; display: inline-block; box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
-                    h1 { text-transform: uppercase; letter-spacing: 2px; }
-                    p { color: rgba(255, 255, 255, 0.6); }
+                    body {{ background: #323437; color: #e2b714; font-family: 'JetBrains+Mono', monospace; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }}
+                    .card {{ border: 2px solid #e2b714; padding: 40px; border-radius: 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+                    h1 {{ margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 4px; }}
+                    p {{ color: #646669; margin-top: 10px; font-size: 14px; }}
                 </style>
             </head>
             <body>
                 <div class="card">
-                    <h1>TypingPro: GitHub Secured</h1>
-                    <p>Profile synced. Closing in 3 seconds...</p>
+                    <h1>GitHub Secured</h1>
+                    <p>Synced with {}. Close window.</p>
                 </div>
-                <script>setTimeout(() => window.close(), 3000)</script>
+                <script>setTimeout(() => window.close(), 2000)</script>
             </body>
         </html>
-    "#;
-    let response = format!(
-        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n{}",
-        response_body.len(),
-        response_body
-    );
+    "#, user_data["login"].as_str().unwrap_or("User"));
+
+    let response = format!("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\n\r\n{}", response_body.len(), response_body);
     stream.write_all(response.as_bytes()).map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
-        id: user_data["id"].as_i64().map(|i| i.to_string()).unwrap_or_default(),
-        name: user_data["name"].as_str().unwrap_or(user_data["login"].as_str().unwrap_or("")).to_string(),
+        id: user_data["id"].as_u64().map(|id| id.to_string()).unwrap_or_default(),
+        name: user_data["name"].as_str().unwrap_or_else(|| user_data["login"].as_str().unwrap_or("")).to_string(),
         email: user_data["email"].as_str().unwrap_or("").to_string(),
         picture: user_data["avatar_url"].as_str().unwrap_or("").to_string(),
         token: access_token.to_string(),

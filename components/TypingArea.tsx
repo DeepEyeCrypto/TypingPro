@@ -100,7 +100,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       const containerRect = containerEl.getBoundingClientRect();
 
       setCursorPos({
-        x: (useRight ? charRect.right : charRect.left) - containerRect.left,
+        x: charRect.left - containerRect.left + (useRight ? charRect.width : 0),
         y: charRect.top - containerRect.top,
         height: charRect.height
       });
@@ -111,11 +111,12 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     updateCaret();
     window.addEventListener('resize', updateCaret);
     return () => window.removeEventListener('resize', updateCaret);
-  }, [updateCaret, fontSize]);
+  }, [updateCaret]);
 
   const updateVisuals = useCallback((data: { index: number; isCorrect: boolean; cursorIndex: number }) => {
     const { cursorIndex } = data;
     if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
+    updateCaret(); // Trigger caret update on visual changes
 
     if (workerRef.current && engineRefs.startTime.current) {
       workerRef.current.postMessage({
