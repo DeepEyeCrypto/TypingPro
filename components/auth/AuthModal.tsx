@@ -100,12 +100,12 @@ export const AuthModal: React.FC = () => {
                                     <StatusItem
                                         label="Frontend Env"
                                         status={config?.googleClientId ? 'OK' : 'FAIL'}
-                                        details={config?.source === 'vite' ? 'VITE_ Loaded' : (config?.source === 'backend' ? 'Recovered' : 'Missing')}
+                                        details={config?.source === 'vite' ? 'Vite Injected' : (config?.source === 'backend' ? 'Bridge Recovered' : 'Missing')}
                                     />
                                     <StatusItem
                                         label="Backend Engine"
                                         status={(error?.includes('backend') || config?.source === 'none') ? 'FAIL' : 'OK'}
-                                        details={config?.source === 'backend' ? 'Handshake Active' : 'Tauri Connected'}
+                                        details={config?.source === 'backend' ? 'Manual Sync' : 'Tauri Link [OK]'}
                                     />
                                     <StatusItem
                                         label="Redirect URI"
@@ -114,13 +114,25 @@ export const AuthModal: React.FC = () => {
                                     />
                                 </div>
 
-                                <button
-                                    onClick={refreshConfig}
-                                    disabled={isLoading}
-                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all disabled:opacity-50"
-                                >
-                                    {isLoading ? 'Relinking...' : 'Refresh Config'}
-                                </button>
+                                <div className="flex gap-2 pt-2">
+                                    <button
+                                        onClick={refreshConfig}
+                                        disabled={isLoading}
+                                        className="flex-1 py-3 bg-[var(--main)] text-[var(--bg)] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 hover:opacity-90"
+                                    >
+                                        {isLoading ? 'Relinking...' : 'Refresh Config'}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            localStorage.clear();
+                                            window.location.reload();
+                                        }}
+                                        className="px-4 py-3 bg-white/5 hover:bg-[#ca4754] hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                        title="Hard Reset"
+                                    >
+                                        Reset
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     )}

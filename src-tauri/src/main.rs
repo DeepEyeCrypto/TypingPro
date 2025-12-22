@@ -25,13 +25,42 @@ struct UserProfile {
     token: String,
 }
 
+fn manual_env_parser(app_handle: &tauri::AppHandle, path: PathBuf) -> bool {
+    let file = match std::fs::File::open(&path) {
+        Ok(f) => f,
+        Err(_) => return false,
+    };
+    
+    let reader = BufReader::new(file);
+    let mut count = 0;
+    for line in reader.lines() {
+        if let Ok(l) = line {
+            let l = l.trim();
+            if l.is_empty() || l.starts_with('#') { continue; }
+            if let Some((key, value)) = l.split_once('=') {
+                let key = key.trim();
+                let value = value.trim().trim_matches('"').trim_matches('\'');
+                if !key.is_empty() {
+                    std::env::set_var(key, value);
+                    count += 1;
+                    if key.contains("CLIENT_ID") || key.contains("SECRET") {
+                        let masked = if value.len() > 5 { format!("{}...", &value[..5]) } else { "***".to_string() };
+                        log_to_file(app_handle, &format!("Manual Env: Set {} = {}", key, masked));
+                    }
+                }
+            }
+        }
+    }
+    count > 0
+}
+
 fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
     let cwd = std::env::current_dir().unwrap_or_default();
     let mut env_loaded = false;
     
     // 1. Try CWD/.env
     if dotenv::dotenv().is_ok() {
-        log_to_file(app_handle, "Loaded .env from CWD or parent");
+        log_to_file(app_handle, "Loaded .env via dotenv (CWD)");
         env_loaded = true;
     } 
 
@@ -41,37 +70,47 @@ fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
             if let Some(exe_dir) = exe_path.parent() {
                 let mut exe_env = exe_dir.to_path_buf();
                 exe_env.push(".env");
-                if dotenv::from_path(&exe_env).is_ok() {
-                    log_to_file(app_handle, &format!("Loaded .env from exe dir: {:?}", exe_env));
+                if manual_env_parser(app_handle, exe_env.clone()) {
+                    log_to_file(app_handle, &format!("Loaded .env manually from exe dir: {:?}", exe_env));
                     env_loaded = true;
                 }
             }
         }
     }
     
-    // 3. Try src-tauri/.env (for tauri dev)
+    // 3. Try project root (relative to CWD)
     if !env_loaded {
-        let mut tauri_env = cwd.clone();
-        tauri_env.push("src-tauri");
-        tauri_env.push(".env");
-        if dotenv::from_path(&tauri_env).is_ok() {
-            log_to_file(app_handle, &format!("Loaded .env from {:?}", tauri_env));
+        let mut root_env = cwd.clone();
+        root_env.push(".env");
+        if manual_env_parser(app_handle, root_env.clone()) {
+            log_to_file(app_handle, &format!("Loaded .env manually from root: {:?}", root_env));
             env_loaded = true;
         }
     }
 
-    // 4. Try resources (for production)
+    // 4. Try src-tauri/.env
+    if !env_loaded {
+        let mut tauri_env = cwd.clone();
+        tauri_env.push("src-tauri");
+        tauri_env.push(".env");
+        if manual_env_parser(app_handle, tauri_env.clone()) {
+            log_to_file(app_handle, &format!("Loaded .env manually from src-tauri: {:?}", tauri_env));
+            env_loaded = true;
+        }
+    }
+
+    // 5. Try resources (for production)
     if !env_loaded {
         if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
-            if dotenv::from_path(resource_path).is_ok() {
-                log_to_file(app_handle, "Loaded .env from resources");
+            if manual_env_parser(app_handle, resource_path.clone()) {
+                log_to_file(app_handle, &format!("Loaded .env manually from resources: {:?}", resource_path));
                 env_loaded = true;
             }
         }
     }
 
     if !env_loaded {
-        log_to_file(app_handle, &format!("CRITICAL: .env not found. CWD: {:?}", cwd));
+        log_to_file(app_handle, &format!("CRITICAL: .env not found in any location. CWD: {:?}", cwd));
     }
 
     env_loaded
