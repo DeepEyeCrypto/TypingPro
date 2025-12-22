@@ -1,71 +1,45 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, AlertTriangle, Terminal, Settings } from 'lucide-react';
+import { X, ShieldCheck, AlertTriangle, Settings, Globe, Github } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../contexts/AppContext';
-import { LoginPanel } from './LoginPanel';
 import { invoke } from '@tauri-apps/api/tauri';
-import { useOAuthConfig } from '../../hooks/useOAuthConfig';
+import { useSystemHealth } from '../../hooks/useSystemHealth';
 
 export const AuthModal: React.FC = () => {
-    const { activeModal, setActiveModal, login } = useApp();
-    const {
-        configHealth,
-        systemStatus,
-        loading: configLoading,
-        isViteOk,
-        viteErrors,
-        allLoaded,
-        refreshHealth
-    } = useOAuthConfig();
+    const { activeModal, setActiveModal } = useApp();
+    const { health, refresh } = useSystemHealth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [showSystemCheck, setShowSystemCheck] = useState(false);
-    const [showDebug, setShowDebug] = useState(false);
-    const [debugLog, setDebugLog] = useState<string | null>(null);
-
-    const toggleDebug = async () => {
-        if (!showDebug) {
-            try {
-                const logs = await invoke<string>('get_env_debug_info');
-                setDebugLog(logs);
-            } catch (e) {
-                setDebugLog(`Error fetching logs: ${e}`);
-            }
-        }
-        setShowDebug(!showDebug);
-    };
+    const [showHealth, setShowHealth] = useState(false);
 
     if (activeModal !== 'auth') return null;
 
-    const handleRefresh = async () => {
-        setError(null);
-        await refreshHealth();
-    };
+    const isSystemOk = health.frontendEnvOk && health.googleBackendOk && health.githubBackendOk;
 
     const handleLogin = async (provider: 'google' | 'github') => {
-        if (!allLoaded && !isViteOk) {
+        if (!isSystemOk) {
             setError('SYSTEM CONFIGURATION INCOMPLETE. Check Health below.');
-            setShowSystemCheck(true);
+            setShowHealth(true);
             return;
         }
 
         setIsLoading(true);
         setError(null);
         try {
-            await login(provider);
-            setActiveModal('none');
-        } catch (err: any) {
-            console.error('Login failed:', err);
-            const errorMsg = typeof err === 'string' ? err : (err?.message || JSON.stringify(err));
+            const creds: any = await invoke('get_oauth_credentials', { provider });
 
-            if (errorMsg.includes('CSRF')) setError('Security check failed. Please try again.');
-            else if (errorMsg.includes('time') || errorMsg.includes('TIMEOUT')) setError('Login session timed out. Please try again.');
-            else if (errorMsg.includes('CLIENT_ID') || errorMsg.includes('SECRET') || errorMsg.includes('env')) {
-                setError(`${provider.toUpperCase()} Config Error: ${errorMsg}`);
-                setShowSystemCheck(true);
+            let url = '';
+            if (provider === 'google') {
+                url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${creds.client_id}&redirect_uri=${encodeURIComponent(creds.redirect_uri)}&response_type=code&scope=openid%20email%20profile`;
+            } else {
+                url = `https://github.com/login/oauth/authorize?client_id=${creds.client_id}&redirect_uri=${encodeURIComponent(creds.redirect_uri)}&scope=user:email`;
             }
-            else setError(errorMsg || 'Authentication failed. Please check your connection.');
-        } finally {
+
+            // Redirect to OAuth Provider
+            window.location.href = url;
+        } catch (err: any) {
+            console.error('Failed to start OAuth flow:', err);
+            setError(err?.message || 'Failed to initialize login. Check .env and restart backend.');
             setIsLoading(false);
         }
     };
@@ -100,153 +74,96 @@ export const AuthModal: React.FC = () => {
                     <p className="text-[10px] text-[var(--sub)] uppercase tracking-[0.3em] font-bold opacity-60">Elevate your typing speed</p>
                 </div>
 
-                <LoginPanel onLogin={handleLogin} isLoading={isLoading || configLoading} error={error} />
+                <div className="space-y-4 mb-8">
+                    <ActionButton
+                        provider="google"
+                        onClick={() => handleLogin('google')}
+                        disabled={isLoading}
+                        icon={<Globe size={18} />}
+                        label="Sign in with Google"
+                    />
+                    <ActionButton
+                        provider="github"
+                        onClick={() => handleLogin('github')}
+                        disabled={isLoading}
+                        icon={<Github size={18} />}
+                        label="Sign in with GitHub"
+                    />
+                </div>
 
-                {/* System Check Dashboard */}
-                <div className="mt-8">
+                {error && (
+                    <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-[10px] text-rose-400 font-bold uppercase tracking-wider text-center">
+                        {error}
+                    </div>
+                )}
+
+                {/* Health Section */}
+                <div className="border-t border-white/5 pt-6">
                     <button
-                        onClick={() => setShowSystemCheck(!showSystemCheck)}
-                        className="flex items-center gap-2 text-[var(--sub)] hover:text-[var(--main)] transition-colors text-[9px] font-black uppercase tracking-[0.2em]"
+                        onClick={() => setShowHealth(!showHealth)}
+                        className="flex items-center gap-2 text-[var(--sub)] hover:text-[var(--main)] transition-colors text-[9px] font-black uppercase tracking-[0.2em] mb-4"
                     >
-                        <Settings size={12} className={showSystemCheck ? 'rotate-90 transition-transform' : 'transition-transform'} />
-                        System Health {allLoaded && isViteOk ? '[OK]' : '[ACTION REQUIRED]'}
+                        <Settings size={12} className={showHealth ? 'rotate-90 transition-transform' : 'transition-transform'} />
+                        System Health {isSystemOk ? '[OK]' : '[FAIL]'}
                     </button>
 
                     <AnimatePresence>
-                        {showSystemCheck && (
+                        {showHealth && (
                             <motion.div
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: 'auto', opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
-                                className="overflow-hidden"
+                                className="overflow-hidden space-y-3 p-4 bg-black/20 rounded-2xl"
                             >
-                                <div className="mt-6 p-6 bg-black/20 rounded-3xl border border-white/5 space-y-3">
-                                    <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider mb-2">
-                                        <span className="text-[var(--sub)]">Diagnostic Bridge</span>
-                                        <ShieldCheck size={12} className="text-[var(--main)]" />
+                                <HealthItem label="Frontend Env" ok={health.frontendEnvOk} />
+                                <HealthItem label="Google Auth" ok={health.googleBackendOk} />
+                                <HealthItem label="GitHub Auth" ok={health.githubBackendOk} />
+
+                                {health.errors.length > 0 && (
+                                    <div className="mt-4 p-3 bg-rose-500/5 rounded-xl border border-rose-500/10">
+                                        {health.errors.map((err, i) => (
+                                            <div key={i} className="text-[8px] text-rose-300/60 font-mono mb-1">• {err}</div>
+                                        ))}
                                     </div>
+                                )}
 
-                                    <div className="space-y-2">
-                                        <StatusItem label="Frontend Env" status={isViteOk ? 'OK' : 'FAIL'} details={viteErrors.length > 0 ? `${viteErrors.length} Errors` : 'Vite Injected'} />
-                                        <StatusItem label="Google Auth" status={configHealth?.google_client_id_loaded && configHealth?.google_client_secret_loaded ? 'OK' : 'FAIL'} details="Backend" />
-                                        <StatusItem label="GitHub Auth" status={configHealth?.github_client_id_loaded && configHealth?.github_client_secret_loaded ? 'OK' : 'FAIL'} details="Backend" />
-                                    </div>
-
-                                    {systemStatus && (
-                                        <div className="mt-4 p-3 bg-black/40 rounded-xl font-mono text-[7px] border border-white/5 space-y-1">
-                                            <div className="text-[var(--main)] opacity-60 mb-1 border-b border-white/5 pb-1 flex justify-between">
-                                                <span>BACKEND PROBE (MASKED)</span>
-                                                <span>CWD: {systemStatus.cwd.split('/').pop()}</span>
-                                            </div>
-                                            {Object.entries(systemStatus.backend_env).map(([key, val]) => (
-                                                <div key={key} className="flex justify-between">
-                                                    <span className="opacity-40">{key}:</span>
-                                                    <span className={val === 'MISSING' ? 'text-rose-500' : 'text-emerald-400'}>{val}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {(!allLoaded || !isViteOk) && (
-                                        <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-start gap-3">
-                                            <AlertTriangle size={14} className="text-rose-500 shrink-0 mt-0.5" />
-                                            <div className="text-[9px] text-rose-200/80 leading-relaxed font-medium">
-                                                <span className="text-rose-400 font-bold block mb-1">RECOVERY ACTION REQUIRED</span>
-                                                {viteErrors.length > 0 && (
-                                                    <div className="mb-2 text-rose-300 font-mono">
-                                                        Vite missing: {viteErrors.join(', ')}
-                                                    </div>
-                                                )}
-                                                Backend environment variables are missing. Please verify your <span className="text-white font-mono bg-white/10 px-1 rounded">.env</span> file and restart <span className="text-white font-mono bg-white/10 px-1 rounded">cargo tauri dev</span>.
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="flex gap-2 pt-2">
-                                        <button
-                                            onClick={handleRefresh}
-                                            disabled={isLoading || configLoading}
-                                            className="flex-1 py-3 bg-[var(--main)] text-[var(--bg)] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 hover:opacity-90"
-                                        >
-                                            {configLoading ? 'Syncing...' : 'Refresh Config'}
-                                        </button>
-                                        <button
-                                            onClick={toggleDebug}
-                                            className="px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                                            title="View Debug Log"
-                                        >
-                                            Logs
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                localStorage.clear();
-                                                window.location.reload();
-                                            }}
-                                            className="px-4 py-3 bg-white/5 hover:bg-[#ca4754] hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                                            title="Hard Reset"
-                                        >
-                                            Reset
-                                        </button>
-                                    </div>
-
-                                    {showDebug && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            className="mt-4 p-3 bg-black/40 rounded-xl font-mono text-[8px] max-h-40 overflow-y-auto border border-white/5 text-[var(--sub)] whitespace-pre-wrap"
-                                        >
-                                            {debugLog || 'Loading forensic logs...'}
-                                        </motion.div>
-                                    )}
+                                <div className="flex gap-2 pt-2">
+                                    <button
+                                        onClick={refresh}
+                                        className="flex-1 py-3 bg-[var(--main)] text-[var(--bg)] rounded-[1rem] text-[9px] font-black uppercase tracking-widest"
+                                    >
+                                        Refresh Config
+                                    </button>
+                                </div>
+                                <div className="text-[8px] text-[var(--sub)] opacity-40 text-center uppercase tracking-widest mt-2">
+                                    Change .env and restart cargo tauri dev
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </div>
-
-                <div className="relative my-8">
-                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5"></span></div>
-                    <div className="relative flex justify-center text-[10px] uppercase font-black"><span className="bg-[#2c2e31] px-4 text-[var(--sub)] opacity-20">or</span></div>
-                </div>
-
-                {/* Traditional Auth Form (Monkeytype Style) */}
-                <div className="space-y-6">
-                    <div className="relative group">
-                        <Terminal size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--sub)] opacity-40 group-focus-within:opacity-100 transition-opacity" />
-                        <input type="email" placeholder="email" className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-sm outline-none focus:border-[var(--main)] transition-colors font-mono" />
-                    </div>
-                    <div className="relative group">
-                        <ShieldCheck size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--sub)] opacity-40 group-focus-within:opacity-100 transition-opacity" />
-                        <input type="password" placeholder="password" className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-sm outline-none focus:border-[var(--main)] transition-colors font-mono" />
-                    </div>
-
-                    <button
-                        onClick={() => setError('Email login is currently in development. Please use Google or GitHub above.')}
-                        className="w-full bg-[var(--main)] text-[var(--bg)] py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:opacity-90 transition-all flex items-center justify-center gap-2 group"
-                    >
-                        Sign In
-                        <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
-                            →
-                        </motion.span>
-                    </button>
-                </div>
-
-                {/* Footer Links */}
-                <div className="mt-8 flex justify-between text-[10px] font-bold uppercase tracking-widest text-[var(--sub)] opacity-40">
-                    <button className="hover:text-[var(--main)] transition-colors">create account</button>
-                    <button className="hover:text-[var(--main)] transition-colors">forgot password?</button>
                 </div>
             </motion.div>
         </div>
     );
 };
 
-const StatusItem: React.FC<{ label: string; status: 'OK' | 'FAIL'; details: string }> = ({ label, status, details }) => (
-    <div className="flex items-center justify-between text-[9px] font-bold">
+const ActionButton: React.FC<{ provider: string, onClick: () => void, disabled: boolean, icon: React.ReactNode, label: string }> = ({ provider, onClick, disabled, icon, label }) => (
+    <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={onClick}
+        disabled={disabled}
+        className={`flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all relative overflow-hidden group
+            ${provider === 'google' ? 'bg-white text-black' : 'bg-[#24292e] text-white'}`}
+    >
+        {icon}
+        {label}
+    </motion.button>
+);
+
+const HealthItem: React.FC<{ label: string, ok: boolean }> = ({ label, ok }) => (
+    <div className="flex items-center justify-between text-[10px] font-bold">
         <span className="text-[var(--sub)] opacity-60">{label}</span>
-        <div className="flex items-center gap-2">
-            <span className="opacity-40 font-mono truncate max-w-[120px]">{details}</span>
-            <span className={status === 'OK' ? 'text-[#96d2d9]' : 'text-[#ca4754]'}>[{status}]</span>
-        </div>
+        <span className={ok ? 'text-emerald-400' : 'text-rose-500'}>[{ok ? 'OK' : 'FAIL'}]</span>
     </div>
 );

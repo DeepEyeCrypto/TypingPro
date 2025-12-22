@@ -1,15 +1,18 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { GoogleCallback } from './src/components/auth/GoogleCallback';
+import { GitHubCallback } from './src/components/auth/GitHubCallback';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 import { AppProvider, useApp } from './contexts/AppContext';
 import { SoundProvider } from './contexts/SoundContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AppShell } from './components/layout/AppShell';
-import Header from './components/Header';
+import { ZenHeader as Header } from './components/layout/ZenHeader';
 import Sidebar from './components/Sidebar';
 import TypingPage from './pages/TypingPage';
-import { ErrorBoundary } from './components/ErrorBoundary';
-
 import { PerformanceOverlay } from './components/PerformanceOverlay';
+
 
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { isSidebarCollapsed, setIsSidebarCollapsed } = useApp();
@@ -31,18 +34,23 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 export default function App(): React.ReactNode {
     return (
         <ErrorBoundary name="GlobalApp">
-            <HashRouter>
+            <BrowserRouter>
                 <AppProvider>
                     <SoundProvider>
                         <ThemeProvider>
-                            <Routes>
-                                <Route path="/" element={<TypingPage />} />
-                                <Route path="*" element={<Navigate to="/" replace />} />
-                            </Routes>
+                            <LayoutWrapper>
+                                <Routes>
+                                    <Route path="/" element={<TypingPage />} />
+                                    <Route path="/auth/google/callback" element={<GoogleCallback />} />
+                                    <Route path="/auth/github/callback" element={<GitHubCallback />} />
+                                    <Route path="*" element={<Navigate to="/" replace />} />
+                                </Routes>
+                            </LayoutWrapper>
                         </ThemeProvider>
                     </SoundProvider>
                 </AppProvider>
-            </HashRouter>
+            </BrowserRouter>
         </ErrorBoundary>
     );
 }
+
