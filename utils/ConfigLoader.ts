@@ -16,19 +16,20 @@ export interface BackendConfig {
 let cachedConfig: AppConfig | null = null;
 
 const getViteEnv = (key: string): string | null => {
-    // Explicit lookups for baked-in values
+    // Explicit lookups for baked-in values (Must be literals for Vite replacement)
     if (key === 'VITE_GOOGLE_CLIENT_ID') {
-        const val = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
-        if (val && !val.includes('your_')) return val;
+        const val = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        if (val && val !== '' && !val.includes('your_')) return val;
     }
     if (key === 'VITE_GITHUB_CLIENT_ID') {
-        const val = (import.meta as any).env.VITE_GITHUB_CLIENT_ID;
-        if (val && !val.includes('your_')) return val;
+        const val = import.meta.env.VITE_GITHUB_CLIENT_ID;
+        if (val && val !== '' && !val.includes('your_')) return val;
     }
 
-    const value = (import.meta as any).env[key];
-    if (!value || value.includes('your_')) return null;
-    return value;
+    // Dynamic lookup (Fallback for local dev)
+    const val = (import.meta as any).env[key];
+    if (val && val !== '' && !val.includes('your_')) return val;
+    return null;
 };
 
 export const loadConfig = async (): Promise<AppConfig> => {

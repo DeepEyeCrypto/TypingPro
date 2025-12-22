@@ -56,60 +56,69 @@ fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
     let cwd = std::env::current_dir().unwrap_or_default();
     let mut env_loaded = false;
     
+    log_to_file(app_handle, &format!("--- Env Probe Started (CWD: {:?}) ---", cwd));
+
     // 1. Try CWD/.env
     if dotenv::dotenv().is_ok() {
-        log_to_file(app_handle, "Loaded .env via dotenv (CWD)");
-        if std::env::var("GITHUB_CLIENT_ID").is_ok() { env_loaded = true; }
-    } 
-
-    // 2. Try root/.env (Manual)
-    if !env_loaded {
-        let mut root_env = cwd.clone();
-        root_env.push(".env");
-        if manual_env_parser(app_handle, root_env) {
-             if std::env::var("GITHUB_CLIENT_ID").is_ok() { env_loaded = true; }
-        }
-    }
-
-    // 3. Try Executable Directory/.env
-    if !env_loaded {
-        if let Ok(exe_path) = std::env::current_exe() {
-            if let Some(exe_dir) = exe_path.parent() {
-                let mut exe_env = exe_dir.to_path_buf();
-                exe_env.push(".env");
-                if manual_env_parser(app_handle, exe_env) {
-                    if std::env::var("GITHUB_CLIENT_ID").is_ok() { env_loaded = true; }
-                }
-            }
-        }
-    }
-
-    // 4. Try src-tauri/.env
-    if !env_loaded {
-        let mut tauri_env = cwd.clone();
-        tauri_env.push("src-tauri");
-        tauri_env.push(".env");
-        if manual_env_parser(app_handle, tauri_env.clone()) {
-            log_to_file(app_handle, &format!("Loaded .env manually from src-tauri: {:?}", tauri_env));
+        if std::env::var("GOOGLE_CLIENT_ID").is_ok() || std::env::var("GITHUB_CLIENT_ID").is_ok() {
+            log_to_file(app_handle, "SUCCESS: Found .env via standard dotenv() in CWD");
             env_loaded = true;
         }
+    } 
+
+    let paths_to_check = vec![
+        cwd.join(".env"),
+        cwd.join("src-tauri").join(".env"),
+    ];
+
+    // Add Executable directory
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            paths_to_check.push(exe_dir.join(".env"));
+        }
     }
 
-    // 5. Try resources (for production)
-    if !env_loaded {
-        if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
-            if manual_env_parser(app_handle, resource_path.clone()) {
-                log_to_file(app_handle, &format!("Loaded .env manually from resources: {:?}", resource_path));
-                env_loaded = true;
+    // Add Resources directory
+    if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
+        paths_to_check.push(resource_path);
+    }
+
+    for path in paths_to_check {
+        if !env_loaded {
+            log_to_file(app_handle, &format!("Probing Path: {:?}", path));
+            if path.exists() {
+                log_to_file(app_handle, "Path EXISTS. Attempting manual parse...");
+                if manual_env_parser(app_handle, path.clone()) {
+                     if std::env::var("GOOGLE_CLIENT_ID").is_ok() {
+                         log_to_file(app_handle, &format!("SUCCESS: Loaded GOOGLE_CLIENT_ID from {:?}", path));
+                         env_loaded = true;
+                     }
+                }
+            } else {
+                log_to_file(app_handle, "Path does NOT exist.");
             }
         }
     }
 
     if !env_loaded {
-        log_to_file(app_handle, &format!("CRITICAL: .env not found in any location. CWD: {:?}", cwd));
+        log_to_file(app_handle, "CRITICAL: No .env found or valid variables assigned after all probes.");
     }
-
     env_loaded
+}
+
+#[tauri::command]
+async fn get_env_debug_info(app_handle: tauri::AppHandle) -> Result<String, String> {
+    let log_path = app_handle.path_resolver().app_log_dir().map(|mut p| {
+        p.push("typingpro.log");
+        p
+    });
+
+    if let Some(path) = log_path {
+        if path.exists() {
+            return std::fs::read_to_string(path).map_err(|e| e.to_string());
+        }
+    }
+    Ok("Log file not found.".to_string())
 }
 
 #[derive(Serialize)]
@@ -425,7 +434,8 @@ fn main() {
                 login_google,
                 login_github,
                 get_auth_config,
-                log_to_file_command
+                log_to_file_command,
+                get_env_debug_info
             ])
     .setup(|app| {
         // Init Logger

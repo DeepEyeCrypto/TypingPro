@@ -3,6 +3,7 @@ import { X, ShieldCheck, AlertTriangle, Terminal, Settings } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../contexts/AppContext';
 import { LoginPanel } from './LoginPanel';
+import { invoke } from '@tauri-apps/api/tauri';
 import { loadConfig, AppConfig } from '../../utils/ConfigLoader';
 
 export const AuthModal: React.FC = () => {
@@ -11,6 +12,20 @@ export const AuthModal: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [showSystemCheck, setShowSystemCheck] = useState(false);
     const [config, setConfig] = useState<AppConfig | null>(null);
+    const [showDebug, setShowDebug] = useState(false);
+    const [debugLog, setDebugLog] = useState<string | null>(null);
+
+    const toggleDebug = async () => {
+        if (!showDebug) {
+            try {
+                const logs = await invoke<string>('get_env_debug_info');
+                setDebugLog(logs);
+            } catch (e) {
+                setDebugLog(`Error fetching logs: ${e}`);
+            }
+        }
+        setShowDebug(!showDebug);
+    };
 
     useEffect(() => {
         if (activeModal === 'auth') {
@@ -123,6 +138,13 @@ export const AuthModal: React.FC = () => {
                                         {isLoading ? 'Relinking...' : 'Refresh Config'}
                                     </button>
                                     <button
+                                        onClick={toggleDebug}
+                                        className="px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                        title="View Debug Log"
+                                    >
+                                        Logs
+                                    </button>
+                                    <button
                                         onClick={() => {
                                             localStorage.clear();
                                             window.location.reload();
@@ -133,6 +155,16 @@ export const AuthModal: React.FC = () => {
                                         Reset
                                     </button>
                                 </div>
+
+                                {showDebug && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="mt-4 p-3 bg-black/40 rounded-xl font-mono text-[8px] max-h-40 overflow-y-auto border border-white/5 text-[var(--sub)] whitespace-pre-wrap"
+                                    >
+                                        {debugLog || 'Loading forensic logs...'}
+                                    </motion.div>
+                                )}
                             </div>
                         </motion.div>
                     )}
