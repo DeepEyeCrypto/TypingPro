@@ -3,16 +3,30 @@ import { X, ShieldCheck, AlertTriangle, Terminal, Settings } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../contexts/AppContext';
 import { LoginPanel } from './LoginPanel';
-import { validateConfig } from '../../utils/env';
+import { loadConfig, AppConfig } from '../../utils/ConfigLoader';
 
 export const AuthModal: React.FC = () => {
     const { activeModal, setActiveModal, login } = useApp();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showSystemCheck, setShowSystemCheck] = useState(false);
-    const [configStatus, setConfigStatus] = useState(validateConfig());
+    const [config, setConfig] = useState<AppConfig | null>(null);
+
+    useEffect(() => {
+        if (activeModal === 'auth') {
+            loadConfig().then(setConfig);
+        }
+    }, [activeModal]);
 
     if (activeModal !== 'auth') return null;
+
+    const refreshConfig = async () => {
+        setIsLoading(true);
+        const newConfig = await loadConfig();
+        setConfig(newConfig);
+        setIsLoading(false);
+        if (newConfig.source !== 'none') setError(null);
+    };
 
     const handleLogin = async (provider: 'google' | 'github') => {
         setIsLoading(true);
@@ -85,13 +99,13 @@ export const AuthModal: React.FC = () => {
                                 <div className="space-y-2">
                                     <StatusItem
                                         label="Frontend Env"
-                                        status={configStatus.isValid ? 'OK' : 'FAIL'}
-                                        details={configStatus.missing.join(', ') || 'VITE_ Loaded'}
+                                        status={config?.googleClientId ? 'OK' : 'FAIL'}
+                                        details={config?.source === 'vite' ? 'VITE_ Loaded' : (config?.source === 'backend' ? 'Recovered' : 'Missing')}
                                     />
                                     <StatusItem
                                         label="Backend Engine"
-                                        status={error?.includes('backend') || error?.includes('env') ? 'FAIL' : 'OK'}
-                                        details={error?.includes('backend') || error?.includes('env') ? 'Check .env bundling' : 'Tauri Ready'}
+                                        status={(error?.includes('backend') || config?.source === 'none') ? 'FAIL' : 'OK'}
+                                        details={config?.source === 'backend' ? 'Handshake Active' : 'Tauri Connected'}
                                     />
                                     <StatusItem
                                         label="Redirect URI"
@@ -101,13 +115,11 @@ export const AuthModal: React.FC = () => {
                                 </div>
 
                                 <button
-                                    onClick={() => {
-                                        setConfigStatus(validateConfig());
-                                        setError(null);
-                                    }}
-                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all"
+                                    onClick={refreshConfig}
+                                    disabled={isLoading}
+                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-[9px] font-bold uppercase tracking-widest transition-all disabled:opacity-50"
                                 >
-                                    Refresh Config
+                                    {isLoading ? 'Relinking...' : 'Refresh Config'}
                                 </button>
                             </div>
                         </motion.div>

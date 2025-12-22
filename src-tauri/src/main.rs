@@ -75,6 +75,22 @@ fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
     env_loaded
 }
 
+#[derive(serde::Serialize)]
+struct AuthConfig {
+    google_client_id: String,
+    github_client_id: String,
+}
+
+#[tauri::command]
+async fn get_auth_config(app_handle: tauri::AppHandle) -> Result<AuthConfig, String> {
+    ensure_env_loaded(&app_handle);
+    
+    Ok(AuthConfig {
+        google_client_id: std::env::var("GOOGLE_CLIENT_ID").unwrap_or_default(),
+        github_client_id: std::env::var("GITHUB_CLIENT_ID").unwrap_or_default(),
+    })
+}
+
 #[tauri::command]
 async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
     log_to_file(&app_handle, "--- Google Login Started ---");
@@ -363,7 +379,12 @@ fn log_to_file(app_handle: &tauri::AppHandle, msg: &str) {
 fn main() {
   tauri::Builder::default()
     .plugin(tauri_plugin_store::Builder::default().build())
-    .invoke_handler(tauri::generate_handler![login_google, login_github])
+            .invoke_handler(tauri::generate_handler![
+                login_google,
+                login_github,
+                get_auth_config,
+                log_to_file_command
+            ])
     .setup(|app| {
         // Init Logger
         let _handle = app.handle();
