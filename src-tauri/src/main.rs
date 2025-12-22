@@ -13,6 +13,8 @@ use oauth2::{
 };
 use url::Url;
 use serde::{Deserialize, Serialize};
+use reqwest;
+use tokio;
 
 #[derive(Serialize, Deserialize)]
 struct UserProfile {
@@ -75,7 +77,7 @@ fn ensure_env_loaded(app_handle: &tauri::AppHandle) -> bool {
     env_loaded
 }
 
-#[derive(serde::Serialize)]
+#[derive(Serialize)]
 struct AuthConfig {
     google_client_id: String,
     github_client_id: String,
@@ -89,6 +91,11 @@ async fn get_auth_config(app_handle: tauri::AppHandle) -> Result<AuthConfig, Str
         google_client_id: std::env::var("GOOGLE_CLIENT_ID").unwrap_or_default(),
         github_client_id: std::env::var("GITHUB_CLIENT_ID").unwrap_or_default(),
     })
+}
+
+#[tauri::command]
+fn log_to_file_command(app_handle: tauri::AppHandle, msg: String) {
+    log_to_file(&app_handle, &msg);
 }
 
 #[tauri::command]
