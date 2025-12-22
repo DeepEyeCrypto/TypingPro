@@ -78,12 +78,19 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     tauri::api::shell::open(&app_handle.shell_scope(), auth_url.as_str(), None)
         .map_err(|e| e.to_string())?;
 
-    // 5. Wait for Callback
+    // 5. Wait for Callback with Timeout
+    listener.set_nonblocking(true).map_err(|e| e.to_string())?;
+    let start_time = std::time::Instant::now();
+    let timeout = std::time::Duration::from_secs(120);
+
     let (mut stream, _) = loop {
+        if start_time.elapsed() > timeout {
+            return Err("LOGIN_TIMEOUT".to_string());
+        }
         match listener.accept() {
             Ok(conn) => break conn,
             Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                std::thread::sleep(std::time::Duration::from_millis(100));
+                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                 continue;
             }
             Err(e) => return Err(format!("AUTH_SERVER_ERROR: {}", e)),
@@ -202,11 +209,19 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     tauri::api::shell::open(&app_handle.shell_scope(), auth_url.as_str(), None)
         .map_err(|e| e.to_string())?;
 
+    // Wait for Callback with Timeout
+    listener.set_nonblocking(true).map_err(|e| e.to_string())?;
+    let start_time = std::time::Instant::now();
+    let timeout = std::time::Duration::from_secs(120);
+
     let (mut stream, _) = loop {
+        if start_time.elapsed() > timeout {
+            return Err("LOGIN_TIMEOUT".to_string());
+        }
         match listener.accept() {
             Ok(conn) => break conn,
             Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                std::thread::sleep(std::time::Duration::from_secs(1));
+                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                 continue;
             }
             Err(e) => return Err(format!("AUTH_SERVER_ERROR: {}", e)),

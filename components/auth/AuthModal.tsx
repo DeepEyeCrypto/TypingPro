@@ -24,10 +24,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             onClose();
         } catch (err: any) {
             console.error(`${provider} login failed`, err);
-            // Map common error codes to friendly messages
-            if (err.includes('CSRF')) setError('Security check failed. Try again.');
-            else if (err.includes('time')) setError('Login took too long. Try again.');
-            else setError('Authentication failed. Please check your connection.');
+            const errorMsg = typeof err === 'string' ? err : (err?.message || JSON.stringify(err));
+
+            if (errorMsg.includes('CSRF')) setError('Security check failed. Please try again.');
+            else if (errorMsg.includes('time') || errorMsg.includes('TIMEOUT')) setError('Login session timed out. Please try again.');
+            else if (errorMsg.includes('CLIENT_ID')) setError('OAuth Configuration Missing. Check .env file.');
+            else setError(errorMsg || 'Authentication failed. Please check your connection.');
         } finally {
             setIsLoading(false);
         }
