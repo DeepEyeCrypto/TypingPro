@@ -177,6 +177,7 @@ export interface UserSettings {
   showHands: boolean;
   performanceMode: boolean;
   caretSpeed: CaretSpeed;
+  themeName: string;
 }
 
 export interface UserProfile {

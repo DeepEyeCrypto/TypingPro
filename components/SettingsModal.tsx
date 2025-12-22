@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../contexts/AppContext'; // Update imports
-import { Loader2, Type, Search, X, Sun, Moon, Laptop, Keyboard, Volume2, Monitor, AlertCircle, ScanLine, Download, Activity } from 'lucide-react';
+import { useApp } from '../contexts/AppContext';
+import {
+    X, Volume2, Keyboard, Layout, Type, MousePointer2, Palette, Cloud, Terminal,
+    History, Trophy, LayoutDashboard, Users, Chrome, Github, Sun, Moon, Laptop,
+    ScanLine, AlertCircle, Activity, Search, Loader2, Monitor
+} from 'lucide-react';
+import { THEMES } from '../constants/themes';
 import { FANCY_FONTS } from '../constants';
 import { ThemeMode, FontSize, CursorStyle, KeyboardLayoutType } from '../types';
 
@@ -72,6 +77,43 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                         <div className="flex items-center gap-3 mb-1">
                             <ScanLine className="w-5 h-5 text-gray-500" />
                             <h3 className="font-medium text-gray-800 dark:text-gray-200">Gameplay & Visuals</h3>
+                        </div>
+
+                        {/* Theme Selection */}
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <Palette className="w-5 h-5 text-gray-500" />
+                                <h3 className="font-medium text-gray-800 dark:text-gray-200">Theme</h3>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {THEMES.map((theme) => (
+                                    <button
+                                        key={theme.name}
+                                        onClick={() => updateUserSetting('themeName', theme.name)}
+                                        className={`
+                                        flex flex-col items-center justify-center p-3 rounded-lg border transition-all
+                                        ${settings.themeName === theme.name
+                                                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-sm'
+                                                : 'bg-white dark:bg-gray-900/50 border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                                            }
+                                    `}
+                                        style={{
+                                            '--theme-bg': theme.bgColor,
+                                            '--theme-main': theme.mainColor,
+                                            '--theme-sub': theme.subColor
+                                        } as React.CSSProperties}
+                                    >
+                                        <div className="flex gap-1 mb-2">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.bgColor }} />
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.mainColor }} />
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.subColor }} />
+                                        </div>
+                                        <span className={`text-xs font-semibold ${settings.themeName === theme.name ? 'text-blue-700 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400'}`}>
+                                            {theme.name}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                         {/* Font Size */}

@@ -6,26 +6,6 @@
 @layer base {
   :root {
     /* --- GLASS v3 TOKENS (Premium Architecture) --- */
-    --bg-primary: 15 23 42;
-    /* Rich Navy Dark */
-    --bg-secondary: 2 6 23;
-    /* Deep Slate/Black */
-
-    --text-primary: 255 255 255;
-    --text-secondary: 255 255 255 / 0.6;
-    --text-muted: 255 255 255 / 0.3;
-
-    /* Semantic States */
-    --color-correct: 16 185 129;
-    /* Emerald 500 */
-    --color-incorrect: 239 68 68;
-    /* Rose 500 */
-    --color-active: 56 189 248;
-    /* Sky 400 */
-
-    --glass-blur: 16px;
-    --glass-radius: 24px;
-    --glass-border: rgba(255, 255, 255, 0.1);
     /* Hairline effect */
     --glass-bg: rgba(255, 255, 255, 0.05);
 
@@ -116,5 +96,39 @@
 
   .animate-caret-blink {
     animation: caretBlink 1s step-end infinite;
+  }
+
+  .theme-preset-card {
+    background: var(--theme-bg);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .theme-preset-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.2);
+  }
+
+  .theme-preview {
+    display: flex;
+    gap: 4px;
+  }
+
+  .preview-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .theme-name {
+    color: var(--theme-main);
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 }

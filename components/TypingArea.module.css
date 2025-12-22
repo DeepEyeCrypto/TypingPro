@@ -44,36 +44,32 @@
 /* Dimming Logic */
 .untyped {
     color: var(--sub);
-    opacity: 0.3;
+    opacity: 0.5;
 }
 
 .current {
     color: var(--main);
-    opacity: 0.6;
 }
 
 .correct {
     color: var(--main);
-    opacity: 1;
 }
 
 .error {
     color: var(--error);
-    opacity: 1;
 }
 
 .errorBackground {
-    background-color: rgba(var(--error-rgb), 0.2);
+    background-color: rgba(202, 71, 84, 0.2);
 }
 
 .extra {
-    color: #ef4444;
-    /* color-incorrect */
+    color: var(--error);
     opacity: 0.5;
 }
 
 .missed {
-    color: rgb(var(--color-incorrect));
+    color: var(--error);
     text-decoration: underline;
     opacity: 0.5;
 }

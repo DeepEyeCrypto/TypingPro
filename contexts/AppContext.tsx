@@ -16,6 +16,7 @@ import { BADGES, FANCY_FONTS, XP_LEVELS } from '../constants';
 
 import { authService, AuthUser } from '../services/authService';
 import { HERO_CURRICULUM } from '../constants/curriculum';
+import { THEMES } from '../constants/themes';
 
 interface AppContextType {
     // State
@@ -46,7 +47,7 @@ interface AppContextType {
     setIsAccuracyMasterActive: (val: boolean) => void;
     setIsMetronomeActive: (val: boolean) => void;
     setMetronomeBpm: (val: number) => void;
-    switchProfile: (profile: UserProfile) => void;
+    switchProfile: (profile) => void;
     createNewProfile: (name: string) => void;
     updateUserSetting: <K extends keyof UserSettings>(key: K, val: UserSettings[K]) => void;
     recordLessonComplete: (lessonId: number, stats: Stats) => boolean;
@@ -91,8 +92,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         fontColor: '#FFFF00', // Bright Yellow
         showHands: true,
         performanceMode: false,
-        caretSpeed: 'smooth'
+        caretSpeed: 'smooth',
+        themeName: 'Serika Dark'
     });
+
+    // Apply theme variables
+    useEffect(() => {
+        const theme = THEMES.find(t => t.name === settings.themeName) || THEMES[0];
+        const root = document.documentElement;
+        root.style.setProperty('--bg', theme.bgColor);
+        root.style.setProperty('--main', theme.mainColor);
+        root.style.setProperty('--sub', theme.subColor);
+        root.style.setProperty('--accent', theme.accentColor);
+    }, [settings.themeName]);
 
     // Apply performance mode class to body
     useEffect(() => {
@@ -102,6 +114,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             document.body.classList.remove('perf-mode');
         }
     }, [settings.performanceMode]);
+
+
 
     const [lessonProgress, setLessonProgress] = useState<Record<number, LessonProgress>>({});
     const [history, setHistory] = useState<HistoryEntry[]>([]);

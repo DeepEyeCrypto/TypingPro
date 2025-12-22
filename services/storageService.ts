@@ -260,7 +260,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     fontColor: 'white',
     showHands: true,
     performanceMode: false,
-    caretSpeed: 'smooth'
+    caretSpeed: 'smooth',
+    themeName: 'Serika Dark'
 };
 
 export const getSettings = (profileId: string): UserSettings => {
