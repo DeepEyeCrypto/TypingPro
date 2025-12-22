@@ -16,6 +16,8 @@ use serde::{Deserialize, Serialize};
 use reqwest;
 use tokio;
 
+mod config;
+
 #[derive(Serialize, Deserialize)]
 struct UserProfile {
     id: String,
@@ -136,6 +138,36 @@ async fn get_auth_config(app_handle: tauri::AppHandle) -> Result<AuthConfig, Str
         google_client_id: std::env::var("GOOGLE_CLIENT_ID").unwrap_or_default(),
         github_client_id: std::env::var("GITHUB_CLIENT_ID").unwrap_or_default(),
     })
+}
+
+#[tauri::command]
+async fn get_backend_config(app_handle: tauri::AppHandle) -> Result<config::ConfigHealthSummary, String> {
+    ensure_env_loaded(&app_handle);
+    Ok(config::OAuthConfig::get_summary())
+}
+
+#[derive(Serialize)]
+struct OAuthCredentials {
+    client_id: String,
+    redirect_uri: String,
+}
+
+#[tauri::command]
+async fn get_oauth_credentials(app_handle: tauri::AppHandle, provider: String) -> Result<OAuthCredentials, String> {
+    ensure_env_loaded(&app_handle);
+    let cfg = config::OAuthConfig::from_env(&app_handle)?;
+    
+    if provider == "google" {
+        Ok(OAuthCredentials {
+            client_id: cfg.google_client_id,
+            redirect_uri: cfg.google_redirect_uri,
+        })
+    } else {
+        Ok(OAuthCredentials {
+            client_id: cfg.github_client_id,
+            redirect_uri: cfg.github_redirect_uri,
+        })
+    }
 }
 
 #[tauri::command]
@@ -438,7 +470,9 @@ fn main() {
                 login_github,
                 get_auth_config,
                 log_to_file_command,
-                get_env_debug_info
+                get_env_debug_info,
+                get_backend_config,
+                get_oauth_credentials
             ])
     .setup(|app| {
         // Init Logger

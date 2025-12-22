@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, ShieldCheck, AlertTriangle, Terminal, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../contexts/AppContext';
 import { LoginPanel } from './LoginPanel';
 import { invoke } from '@tauri-apps/api/tauri';
-import { loadConfig, AppConfig } from '../../utils/ConfigLoader';
+import { useOAuthConfig } from '../../hooks/useOAuthConfig';
 
 export const AuthModal: React.FC = () => {
     const { activeModal, setActiveModal, login } = useApp();
+    const { configHealth, loading: configLoading, isViteOk, allLoaded, refreshHealth } = useOAuthConfig();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showSystemCheck, setShowSystemCheck] = useState(false);
-    const [config, setConfig] = useState<AppConfig | null>(null);
     const [showDebug, setShowDebug] = useState(false);
     const [debugLog, setDebugLog] = useState<string | null>(null);
 
@@ -27,23 +27,15 @@ export const AuthModal: React.FC = () => {
         setShowDebug(!showDebug);
     };
 
-    useEffect(() => {
-        if (activeModal === 'auth') {
-            loadConfig().then(setConfig);
-        }
-    }, [activeModal]);
-
     if (activeModal !== 'auth') return null;
 
-    const refreshConfig = async () => {
-        setIsLoading(true);
-        const newConfig = await loadConfig();
-        setConfig(newConfig);
-        setIsLoading(false);
-        if (newConfig.source !== 'none') setError(null);
-    };
-
     const handleLogin = async (provider: 'google' | 'github') => {
+        if (!allLoaded && !isViteOk) {
+            setError('System configuration is incomplete. Check System Health below.');
+            setShowSystemCheck(true);
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
@@ -95,80 +87,90 @@ export const AuthModal: React.FC = () => {
                     <p className="text-[10px] text-[var(--sub)] uppercase tracking-[0.3em] font-bold opacity-60">Elevate your typing speed</p>
                 </div>
 
-                <LoginPanel onLogin={handleLogin} isLoading={isLoading} error={error} />
+                <LoginPanel onLogin={handleLogin} isLoading={isLoading || configLoading} error={error} />
 
                 {/* System Check Dashboard */}
-                <AnimatePresence>
-                    {showSystemCheck && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            className="mt-6 pt-6 border-t border-white/5"
-                        >
-                            <div className="bg-black/20 rounded-2xl p-5 border border-white/5 space-y-3">
-                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider">
-                                    <span className="text-[var(--sub)]">System Health</span>
-                                    <Settings size={12} className="opacity-40" />
-                                </div>
+                <div className="mt-8">
+                    <button
+                        onClick={() => setShowSystemCheck(!showSystemCheck)}
+                        className="flex items-center gap-2 text-[var(--sub)] hover:text-[var(--main)] transition-colors text-[9px] font-black uppercase tracking-[0.2em]"
+                    >
+                        <Settings size={12} className={showSystemCheck ? 'rotate-90 transition-transform' : 'transition-transform'} />
+                        System Health {allLoaded && isViteOk ? '[OK]' : '[ACTION REQUIRED]'}
+                    </button>
 
-                                <div className="space-y-2">
-                                    <StatusItem
-                                        label="Frontend Env"
-                                        status={config?.googleClientId ? 'OK' : 'FAIL'}
-                                        details={config?.source === 'vite' ? 'Vite Injected' : (config?.source === 'backend' ? 'Bridge Recovered' : 'Missing')}
-                                    />
-                                    <StatusItem
-                                        label="Backend Engine"
-                                        status={(error?.includes('backend') || config?.source === 'none') ? 'FAIL' : 'OK'}
-                                        details={config?.source === 'backend' ? 'Manual Sync' : 'Tauri Link [OK]'}
-                                    />
-                                    <StatusItem
-                                        label="Redirect URI"
-                                        status="OK"
-                                        details="localhost:1420"
-                                    />
-                                </div>
+                    <AnimatePresence>
+                        {showSystemCheck && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                            >
+                                <div className="mt-6 p-6 bg-black/20 rounded-3xl border border-white/5 space-y-3">
+                                    <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider mb-2">
+                                        <span className="text-[var(--sub)]">Diagnostic Bridge</span>
+                                        <ShieldCheck size={12} className="text-[var(--main)]" />
+                                    </div>
 
-                                <div className="flex gap-2 pt-2">
-                                    <button
-                                        onClick={refreshConfig}
-                                        disabled={isLoading}
-                                        className="flex-1 py-3 bg-[var(--main)] text-[var(--bg)] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 hover:opacity-90"
-                                    >
-                                        {isLoading ? 'Relinking...' : 'Refresh Config'}
-                                    </button>
-                                    <button
-                                        onClick={toggleDebug}
-                                        className="px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                                        title="View Debug Log"
-                                    >
-                                        Logs
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            localStorage.clear();
-                                            window.location.reload();
-                                        }}
-                                        className="px-4 py-3 bg-white/5 hover:bg-[#ca4754] hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                                        title="Hard Reset"
-                                    >
-                                        Reset
-                                    </button>
-                                </div>
+                                    <div className="space-y-2">
+                                        <StatusItem label="Frontend Env" status={isViteOk ? 'OK' : 'FAIL'} details="Vite Injected" />
+                                        <StatusItem label="Google Auth" status={configHealth?.google_client_id_loaded && configHealth?.google_client_secret_loaded ? 'OK' : 'FAIL'} details="Backend" />
+                                        <StatusItem label="GitHub Auth" status={configHealth?.github_client_id_loaded && configHealth?.github_client_secret_loaded ? 'OK' : 'FAIL'} details="Backend" />
+                                        <StatusItem label="Redirect URIs" status="OK" details="localhost:1420" />
+                                    </div>
 
-                                {showDebug && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        className="mt-4 p-3 bg-black/40 rounded-xl font-mono text-[8px] max-h-40 overflow-y-auto border border-white/5 text-[var(--sub)] whitespace-pre-wrap"
-                                    >
-                                        {debugLog || 'Loading forensic logs...'}
-                                    </motion.div>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                                    {!allLoaded && (
+                                        <div className="mt-4 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-start gap-3">
+                                            <AlertTriangle size={14} className="text-rose-500 shrink-0 mt-0.5" />
+                                            <p className="text-[9px] text-rose-200/80 leading-relaxed font-medium">
+                                                <span className="text-rose-400 font-bold block mb-1">Config Check Failed</span>
+                                                Backend environment variables are missing. Please verify your <span className="text-white font-mono bg-white/10 px-1 rounded">.env</span> file and restart <span className="text-white font-mono bg-white/10 px-1 rounded">cargo tauri dev</span>.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex gap-2 pt-2">
+                                        <button
+                                            onClick={refreshHealth}
+                                            disabled={isLoading || configLoading}
+                                            className="flex-1 py-3 bg-[var(--main)] text-[var(--bg)] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 hover:opacity-90"
+                                        >
+                                            {configLoading ? 'Syncing...' : 'Refresh Config'}
+                                        </button>
+                                        <button
+                                            onClick={toggleDebug}
+                                            className="px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                            title="View Debug Log"
+                                        >
+                                            Logs
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                localStorage.clear();
+                                                window.location.reload();
+                                            }}
+                                            className="px-4 py-3 bg-white/5 hover:bg-[#ca4754] hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                            title="Hard Reset"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+
+                                    {showDebug && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            className="mt-4 p-3 bg-black/40 rounded-xl font-mono text-[8px] max-h-40 overflow-y-auto border border-white/5 text-[var(--sub)] whitespace-pre-wrap"
+                                        >
+                                            {debugLog || 'Loading forensic logs...'}
+                                        </motion.div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
 
                 <div className="relative my-8">
                     <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/5"></span></div>
