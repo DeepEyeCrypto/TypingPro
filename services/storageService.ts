@@ -259,7 +259,8 @@ const DEFAULT_SETTINGS: UserSettings = {
     trainingMode: 'accuracy',
     fontColor: 'white',
     showHands: true,
-    performanceMode: false
+    performanceMode: false,
+    caretSpeed: 'smooth'
 };
 
 export const getSettings = (profileId: string): UserSettings => {

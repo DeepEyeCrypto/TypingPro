@@ -47,6 +47,22 @@ export const useTypingEngine = (content: string, stopOnError: boolean, mode: Pra
             return false;
         }
 
+        if (key === 'Backspace') {
+            if (cursorIndexRef.current > 0) {
+                cursorIndexRef.current -= 1;
+                // Remove error if we backspaced over it
+                errorsRef.current = errorsRef.current.filter(e => e !== cursorIndexRef.current);
+                onUpdate({
+                    index: cursorIndexRef.current,
+                    isCorrect: true,
+                    cursorIndex: cursorIndexRef.current,
+                    combo: comboRef.current
+                });
+            }
+            PerformanceMonitor.endMeasure('typing-engine-input');
+            return true;
+        }
+
         const targetChar = content[cursorIndexRef.current];
         const isCorrect = key === targetChar;
 

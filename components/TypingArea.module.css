@@ -65,3 +65,15 @@
 .errorBackground {
     background-color: rgba(var(--error-rgb), 0.2);
 }
+
+.extra {
+    color: #ef4444;
+    /* color-incorrect */
+    opacity: 0.5;
+}
+
+.missed {
+    color: rgb(var(--color-incorrect));
+    text-decoration: underline;
+    opacity: 0.5;
+}

@@ -101,4 +101,20 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
   }
+
+  @keyframes caretBlink {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .animate-caret-blink {
+    animation: caretBlink 1s step-end infinite;
+  }
 }

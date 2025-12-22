@@ -29,16 +29,22 @@ self.onmessage = (e: MessageEvent<StatsEvent>) => {
         // Overall WPM (Standard displayed speed)
         const wpm = Math.round((cursorIndex / 5) / timeMin);
 
-        // Rolling WPM (last 10s for more sensitivity in graphs)
-        const cutoff = now - 10000;
+        // Rolling WPM (last 5s for even more sensitivity) with smoothing
+        const cutoff = now - 5000;
         const recentKeystrokes = keystrokeLog.filter(k => k.timestamp > cutoff && !k.isError);
-        const rollingWpm = Math.round((recentKeystrokes.length / 5) * 6); // Normalize to 60s
+        let rollingWpm = Math.round((recentKeystrokes.length / 5) * 12); // Normalize to 60s
+
+        // Apply slight smoothing if we have history
+        if (wpmTimeline.length > 0) {
+            const lastWpm = wpmTimeline[wpmTimeline.length - 1].wpm;
+            rollingWpm = Math.round(lastWpm * 0.7 + rollingWpm * 0.3);
+        }
 
         // Accuracy
         const accuracy = Math.round(((cursorIndex - errors.length) / Math.max(1, cursorIndex)) * 100);
 
         // Progress
-        const progress = Math.round((cursorIndex / contentLength) * 100);
+        const progress = Math.min(100, Math.round((cursorIndex / contentLength) * 100));
 
         // Combo Calculation
         let currentCombo = 0;

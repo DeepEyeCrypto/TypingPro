@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback, memo, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Stats, FontSize, CursorStyle, TrainingMode, PracticeMode } from '../types';
+import { Stats, FontSize, CursorStyle, TrainingMode, PracticeMode, CaretSpeed } from '../types';
 import { useSound } from '../contexts/SoundContext';
 import { useTypingEngine } from '../src/hooks/useTypingEngine';
 import { useApp } from '../contexts/AppContext';
@@ -23,6 +23,7 @@ interface TypingAreaProps {
   isMasterMode?: boolean;
   practiceMode?: PracticeMode;
   duration?: number;
+  caretSpeed?: CaretSpeed;
 }
 
 const TypingArea: React.FC<TypingAreaProps> = ({
@@ -37,17 +38,20 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   stopOnError,
   isMasterMode,
   practiceMode = 'curriculum',
-  duration = 60
+  duration = 60,
+  caretSpeed = 'smooth'
 }) => {
   const { playSound } = useSound();
   const { isAccuracyMasterActive, activeModal } = useApp();
-  const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, timeLeft } = useTypingEngine(content, stopOnError, practiceMode, duration);
+  const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, timeLeft, isComplete } = useTypingEngine(content, stopOnError, practiceMode, duration);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const extraCharRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const workerRef = useRef<Worker | null>(null);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0, height: 32 });
+  const [extraChars, setExtraChars] = useState<Record<number, string[]>>({});
 
   // Initialize Worker for stats
   useEffect(() => {
@@ -60,27 +64,51 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => workerRef.current?.terminate();
   }, [onStatsUpdate, timeLeft]);
 
+  const words = useMemo(() => {
+    let currentIdx = 0;
+    return content.split(' ').map((word, wordIdx, array) => {
+      const chars = word.split('').map(char => ({ char, idx: currentIdx++ }));
+      const isLast = wordIdx === array.length - 1;
+      const spaceIdx = isLast ? -1 : currentIdx++;
+      return { word, chars, spaceIdx, wordIdx };
+    });
+  }, [content]);
+
   // Precision Caret Positioning logic
   const updateCaret = useCallback(() => {
     const index = engineRefs.cursorIndex.current;
-    const charEl = charRefs.current[index];
-    const containerEl = containerRef.current;
+    const activeWord = words.find(w => index >= w.chars[0].idx && (w.spaceIdx === -1 || index <= w.spaceIdx));
+    const extras = activeWord ? (extraChars[activeWord.wordIdx] || []) : [];
 
+    let charEl;
+    let useRight = false;
+
+    if (extras.length > 0 && activeWord) {
+      charEl = extraCharRefs.current[`${activeWord.wordIdx}-${extras.length - 1}`];
+      useRight = true;
+    } else {
+      charEl = charRefs.current[index];
+      if (!charEl && index > 0) {
+        charEl = charRefs.current[index - 1];
+        useRight = true;
+      }
+    }
+
+    const containerEl = containerRef.current;
     if (charEl && containerEl) {
       const charRect = charEl.getBoundingClientRect();
       const containerRect = containerEl.getBoundingClientRect();
 
       setCursorPos({
-        x: charRect.left - containerRect.left,
+        x: (useRight ? charRect.right : charRect.left) - containerRect.left,
         y: charRect.top - containerRect.top,
         height: charRect.height
       });
     }
-  }, [engineRefs.cursorIndex]);
+  }, [engineRefs.cursorIndex, extraChars, words]);
 
   useEffect(() => {
     updateCaret();
-    // Also update on window resize to keep pixel-perfect alignment
     window.addEventListener('resize', updateCaret);
     return () => window.removeEventListener('resize', updateCaret);
   }, [updateCaret, fontSize]);
@@ -112,14 +140,42 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
   useEffect(() => {
     reset();
+    setExtraChars({});
     if (inputRef.current) inputRef.current.value = '';
   }, [content, reset]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (activeModal !== 'none') return;
-    if (engineRefs.cursorIndex.current >= content.length) return;
+    if (activeModal !== 'none' || isComplete) return;
+    const currentIndex = engineRefs.cursorIndex.current;
+
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
+
+    const activeWord = words.find(w => currentIndex >= w.chars[0].idx && (w.spaceIdx === -1 || currentIndex <= w.spaceIdx));
+    const isAtWordEnd = activeWord && currentIndex === (activeWord.spaceIdx === -1 ? activeWord.chars[activeWord.chars.length - 1].idx + 1 : activeWord.spaceIdx);
+
+    // Handle Backspace for extra characters first
+    if (e.key === 'Backspace' && activeWord) {
+      const extras = extraChars[activeWord.wordIdx] || [];
+      if (extras.length > 0) {
+        setExtraChars(prev => ({
+          ...prev,
+          [activeWord.wordIdx]: extras.slice(0, -1)
+        }));
+        if (soundEnabled) playSound();
+        return;
+      }
+    }
+
+    // Handle Extra Characters
+    if (isAtWordEnd && e.key !== ' ' && e.key !== 'Backspace' && !['Enter', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      setExtraChars(prev => ({
+        ...prev,
+        [activeWord!.wordIdx]: [...(prev[activeWord!.wordIdx] || []), e.key]
+      }));
+      if (soundEnabled) playSound();
+      return;
+    }
 
     const isCorrect = handleKeyDown(e.key, updateVisuals);
 
@@ -129,17 +185,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     }
 
     if (soundEnabled) playSound();
-  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex, isAccuracyMasterActive, isMasterMode, onRestart, activeModal]);
-
-  const words = useMemo(() => {
-    let currentIdx = 0;
-    return content.split(' ').map((word, wordIdx, array) => {
-      const chars = word.split('').map(char => ({ char, idx: currentIdx++ }));
-      const isLast = wordIdx === array.length - 1;
-      const spaceIdx = isLast ? -1 : currentIdx++;
-      return { word, chars, spaceIdx };
-    });
-  }, [content]);
+  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex, isAccuracyMasterActive, isMasterMode, onRestart, activeModal, words, extraChars, isComplete]);
 
   const getTextSizeClass = () => {
     switch (fontSize) {
@@ -150,6 +196,12 @@ const TypingArea: React.FC<TypingAreaProps> = ({
       default: return "text-2xl";
     }
   };
+
+  const caretTransition = useMemo(() => {
+    if (caretSpeed === 'off') return { duration: 0 };
+    if (caretSpeed === 'fast') return { type: "spring" as const, stiffness: 1000, damping: 50, mass: 0.2 };
+    return { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.5 };
+  }, [caretSpeed]);
 
   return (
     <div
@@ -169,22 +221,17 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         autoFocus
       />
 
-      {/* Sub-pixel accurate caret */}
       <motion.div
-        className={styles.caret}
+        className={`${styles.caret} ${!isActive || isComplete ? '' : 'animate-caret-blink'}`}
         animate={{
           x: cursorPos.x,
           y: cursorPos.y,
           height: cursorPos.height
         }}
-        transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 40,
-          mass: 0.5
-        }}
+        transition={caretTransition}
         style={{
-          boxShadow: '0 0 15px var(--accent)'
+          boxShadow: '0 0 15px var(--accent)',
+          display: isComplete ? 'none' : 'block'
         }}
       />
 
@@ -215,6 +262,17 @@ const TypingArea: React.FC<TypingAreaProps> = ({
                   </span>
                 );
               })}
+
+              {/* Render Extra Characters */}
+              {(extraChars[wIdx] || []).map((char, eIdx) => (
+                <span
+                  key={`extra-${wIdx}-${eIdx}`}
+                  ref={el => { extraCharRefs.current[`${wIdx}-${eIdx}`] = el; }}
+                  className={`${styles.char} ${styles.extra}`}
+                >
+                  {char}
+                </span>
+              ))}
 
               {/* Space handler */}
               {w.spaceIdx !== -1 && (

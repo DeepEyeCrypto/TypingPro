@@ -90,7 +90,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         trainingMode: 'accuracy',
         fontColor: '#FFFF00', // Bright Yellow
         showHands: true,
-        performanceMode: false
+        performanceMode: false,
+        caretSpeed: 'smooth'
     });
 
     // Apply performance mode class to body

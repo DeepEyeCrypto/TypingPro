@@ -157,6 +157,7 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 export type FontSize = 'small' | 'medium' | 'large' | 'xl';
 export type CursorStyle = 'block' | 'line' | 'underline' | 'box';
 export type TrainingMode = 'speed' | 'accuracy';
+export type CaretSpeed = 'off' | 'smooth' | 'fast';
 
 export interface UserSettings {
   theme: ThemeMode;
@@ -175,6 +176,7 @@ export interface UserSettings {
   accuracyGoal?: number;
   showHands: boolean;
   performanceMode: boolean;
+  caretSpeed: CaretSpeed;
 }
 
 export interface UserProfile {

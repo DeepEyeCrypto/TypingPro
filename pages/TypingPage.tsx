@@ -15,6 +15,7 @@ import { Lesson, Stats, PracticeMode, ModeConfig } from '../types';
 import { TypingLayout } from '../components/layout/TypingLayout';
 import { ZenHeader } from '../components/layout/ZenHeader';
 import { ZenStats } from '../components/layout/ZenStats';
+import { FocusMode } from '../components/typing/FocusMode';
 
 interface MainLayoutContext {
     setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -109,7 +110,6 @@ export default function TypingPage(): React.ReactNode {
         if (modeConfig.mode === 'curriculum') {
             initializeLesson(currentLessonId, isCodeMode);
         } else {
-            // Generate content for other modes
             const content = PracticeEngine.generateContent(modeConfig, HERO_CURRICULUM);
             if (content) {
                 setActiveLesson({
@@ -222,29 +222,32 @@ export default function TypingPage(): React.ReactNode {
                 {/* 3. Main Typing deck */}
                 {!modalStats && (
                     <div className="w-full">
-                        <TypingArea
-                            key={`${activeLesson.id}-${retryCount}-${modeConfig.mode}`}
-                            content={activeLesson.content}
-                            activeLessonId={activeLesson.id}
-                            isActive={!modalStats && (modeConfig.mode !== 'custom' || !!modeConfig.customText)}
-                            onComplete={handleComplete}
-                            onRestart={handleRetry}
-                            onStatsUpdate={(s) => setLiveStats(prev => ({
-                                ...prev,
-                                ...s,
-                                cursorIndex: Math.floor(s.progress * activeLesson.content.length / 100)
-                            }))}
-                            onActiveKeyChange={setActiveKey}
-                            fontFamily={settings.fontFamily}
-                            fontSize={settings.fontSize}
-                            soundEnabled={settings.soundEnabled}
-                            cursorStyle={settings.cursorStyle}
-                            stopOnError={settings.stopOnError}
-                            trainingMode={settings.trainingMode}
-                            isMasterMode={activeLesson.isMasterMode}
-                            practiceMode={modeConfig.mode}
-                            duration={modeConfig.duration}
-                        />
+                        <FocusMode isActive={liveStats.cursorIndex > 0 && !modalStats}>
+                            <TypingArea
+                                key={`${activeLesson.id}-${retryCount}-${modeConfig.mode}`}
+                                content={activeLesson.content}
+                                activeLessonId={activeLesson.id}
+                                isActive={!modalStats && (modeConfig.mode !== 'custom' || !!modeConfig.customText)}
+                                onComplete={handleComplete}
+                                onRestart={handleRetry}
+                                onStatsUpdate={(s) => setLiveStats(prev => ({
+                                    ...prev,
+                                    ...s,
+                                    cursorIndex: Math.floor(s.progress * activeLesson.content.length / 100)
+                                }))}
+                                onActiveKeyChange={setActiveKey}
+                                fontFamily={settings.fontFamily}
+                                fontSize={settings.fontSize}
+                                soundEnabled={settings.soundEnabled}
+                                cursorStyle={settings.cursorStyle}
+                                stopOnError={settings.stopOnError}
+                                trainingMode={settings.trainingMode}
+                                isMasterMode={activeLesson.isMasterMode}
+                                practiceMode={modeConfig.mode}
+                                duration={modeConfig.duration}
+                                caretSpeed={settings.caretSpeed}
+                            />
+                        </FocusMode>
                     </div>
                 )}
             </div>

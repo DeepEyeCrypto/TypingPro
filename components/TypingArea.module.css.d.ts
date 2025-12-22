@@ -9,5 +9,7 @@ declare const styles: {
     readonly correct: string;
     readonly error: string;
     readonly errorBackground: string;
+    readonly extra: string;
+    readonly missed: string;
 };
 export default styles;

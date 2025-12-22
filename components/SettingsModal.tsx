@@ -127,6 +127,25 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                             </div>
                         </div>
 
+                        {/* Caret Speed */}
+                        <div className="flex flex-col gap-2 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1 block">Caret Animation</label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {(['off', 'smooth', 'fast'] as const).map((speed) => (
+                                    <button
+                                        key={speed}
+                                        onClick={() => updateUserSetting('caretSpeed', speed)}
+                                        className={`py-2 text-sm font-medium rounded-lg border transition-all ${settings.caretSpeed === speed
+                                            ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+                                            : 'bg-transparent border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                            }`}
+                                    >
+                                        {speed.charAt(0).toUpperCase() + speed.slice(1)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Stop On Error */}
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
