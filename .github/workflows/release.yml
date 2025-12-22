@@ -47,7 +47,8 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
 
       - name: Version Sync
         run: node scripts/sync-version.js
@@ -56,17 +57,28 @@ jobs:
         shell: bash
         run: |
           mkdir -p src-tauri
-          echo "GOOGLE_CLIENT_ID=$G_ID" > src-tauri/.env
-          echo "GOOGLE_CLIENT_SECRET=$G_SECRET" >> src-tauri/.env
-          echo "GITHUB_CLIENT_ID=$GH_ID" >> src-tauri/.env
-          echo "GITHUB_CLIENT_SECRET=$GH_SECRET" >> src-tauri/.env
-          echo "GEMINI_API_KEY=$G_API" > .env
+          # Inject into both root and src-tauri for safety
+          echo "GOOGLE_CLIENT_ID=$G_ID" > .env
+          echo "GOOGLE_CLIENT_SECRET=$G_SECRET" >> .env
+          echo "GITHUB_CLIENT_ID=$GH_ID" >> .env
+          echo "GITHUB_CLIENT_SECRET=$GH_SECRET" >> .env
+          echo "GEMINI_API_KEY=$G_API" >> .env
+          
+          # Frontend VITE_ vars
+          echo "VITE_GOOGLE_CLIENT_ID=$G_ID" >> .env
+          echo "VITE_GITHUB_CLIENT_ID=$GH_ID" >> .env
+          echo "VITE_GOOGLE_REDIRECT_URI=http://localhost:1420/auth/google/callback" >> .env
+          echo "VITE_GITHUB_REDIRECT_URI=http://localhost:1420/auth/github/callback" >> .env
+          
+          # Sync to src-tauri
+          cp .env src-tauri/.env
         env:
           G_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           G_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GH_ID: ${{ secrets.GITHUB_CLIENT_ID }}
           GH_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
           G_API: ${{ secrets.GEMINI_API_KEY }}
+
 
       - name: Build and Release
         uses: tauri-apps/tauri-action@v0
