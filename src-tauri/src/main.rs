@@ -25,25 +25,29 @@ struct UserProfile {
 
 #[tauri::command]
 async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    // Load credentials at runtime
-    if let Ok(path) = std::env::current_dir() {
-        log_to_file(&format!("Current working directory: {:?}", path));
+    // 1. Robust Env Loading
+    let mut env_loaded = false;
+    if dotenv::dotenv().is_ok() {
+        env_loaded = true;
+    } else if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
+        if dotenv::from_path(resource_path).is_ok() {
+            env_loaded = true;
+        }
     }
-    
-    match dotenv::dotenv() {
-        Ok(path) => log_to_file(&format!(".env file loaded from: {:?}", path)),
-        Err(e) => log_to_file(&format!("Warning: .env file not loaded: {}", e)),
+
+    if !env_loaded {
+        log_to_file(&app_handle, "Warning: .env file not found in CWD or resources");
     }
-    
+
     let google_client_id = std::env::var("GOOGLE_CLIENT_ID")
-        .map_err(|_| "GOOGLE_CLIENT_ID not found in environment. Is .env present?".to_string())?;
+        .map_err(|_| "GOOGLE_CLIENT_ID not found. Is .env bundled?".to_string())?;
     let google_client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
         .map_err(|_| "GOOGLE_CLIENT_SECRET not found in environment".to_string())?;
 
-    log_to_file(&format!("Google Client ID found (Length: {})", google_client_id.len()));
+    log_to_file(&app_handle, &format!("Google Login started (ID length: {})", google_client_id.len()));
 
     if google_client_id.is_empty() || google_client_id.contains("your_") {
-         return Err("Invalid Google Client ID (Placeholder or Empty). Check your .env file.".to_string());
+         return Err("Invalid Google Client ID (Placeholder). Check .env".to_string());
     }
 
     // 1. Setup Client
@@ -175,24 +179,29 @@ async fn login_google(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
 
 #[tauri::command]
 async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, String> {
-    if let Ok(path) = std::env::current_dir() {
-        log_to_file(&format!("Current working directory: {:?}", path));
+    // 1. Robust Env Loading
+    let mut env_loaded = false;
+    if dotenv::dotenv().is_ok() {
+        env_loaded = true;
+    } else if let Some(resource_path) = app_handle.path_resolver().resolve_resource(".env") {
+        if dotenv::from_path(resource_path).is_ok() {
+            env_loaded = true;
+        }
     }
 
-    match dotenv::dotenv() {
-        Ok(path) => log_to_file(&format!(".env file loaded from: {:?}", path)),
-        Err(e) => log_to_file(&format!("Warning: .env file not loaded: {}", e)),
+    if !env_loaded {
+        log_to_file(&app_handle, "Warning: .env file not found in CWD or resources");
     }
 
     let github_client_id = std::env::var("GITHUB_CLIENT_ID")
-        .map_err(|_| "GITHUB_CLIENT_ID not found in environment. Is .env present?".to_string())?;
+        .map_err(|_| "GITHUB_CLIENT_ID not found. Is .env bundled?".to_string())?;
     let github_client_secret = std::env::var("GITHUB_CLIENT_SECRET")
         .map_err(|_| "GITHUB_CLIENT_SECRET not found in environment".to_string())?;
 
-    log_to_file(&format!("GitHub Client ID found (Length: {})", github_client_id.len()));
+    log_to_file(&app_handle, &format!("GitHub Login started (ID length: {})", github_client_id.len()));
 
     if github_client_id.is_empty() || github_client_id.contains("your_") {
-        return Err("Invalid GitHub Client ID (Placeholder or Empty). Check your .env file.".to_string());
+        return Err("Invalid GitHub Client ID (Placeholder). Check .env".to_string());
     }
 
     let client_id = ClientId::new(github_client_id);
@@ -311,8 +320,8 @@ async fn login_github(app_handle: tauri::AppHandle) -> Result<UserProfile, Strin
     })
 }
 
-fn log_to_file(msg: &str) {
-    if let Some(mut path) = tauri::api::path::app_log_dir(&tauri::Config::default()) {
+fn log_to_file(app_handle: &tauri::AppHandle, msg: &str) {
+    if let Some(mut path) = app_handle.path_resolver().app_log_dir() {
         std::fs::create_dir_all(&path).ok();
         path.push("typingpro.log");
         if let Ok(mut file) = OpenOptions::new().create(true).append(true).open(path) {

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.1.22"
+    "version": "0.1.23"
   },
   "tauri": {
     "allowlist": {
@@ -24,6 +24,9 @@
         "nsis",
         "dmg",
         "deb"
+      ],
+      "resources": [
+        "../.env"
       ],
       "identifier": "com.typingpro.app",
       "icon": [
