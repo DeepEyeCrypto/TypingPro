@@ -45,15 +45,15 @@ const TypingArea: React.FC<TypingAreaProps> = ({
   const { playSound } = useSound();
   const { isAccuracyMasterActive, activeModal } = useApp();
   const { calculateRealTimeStats, stats: performanceStats } = usePerformanceTracking(content.length);
-  const { engineRefs, handleKeyDown, handleKeyUp, reset, shake, timeLeft, isComplete } = useTypingEngine(content, stopOnError, practiceMode, duration);
+  const { handleKeyDown, handleKeyUp, reset, shake, timeLeft, isComplete, engineState } = useTypingEngine(content, stopOnError, practiceMode, duration);
 
+  const { cursorIndex, errors, combo, startTime, keystrokeLog, wpmTimeline, words, extraChars } = engineState;
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const charRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const extraCharRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const workerRef = useRef<Worker | null>(null);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0, height: 32 });
-  const [extraChars, setExtraChars] = useState<Record<number, string[]>>({});
 
   // Initialize Worker for stats
   useEffect(() => {
@@ -66,19 +66,9 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => workerRef.current?.terminate();
   }, [onStatsUpdate, timeLeft]);
 
-  const words = useMemo(() => {
-    let currentIdx = 0;
-    return content.split(' ').map((word, wordIdx, array) => {
-      const chars = word.split('').map(char => ({ char, idx: currentIdx++ }));
-      const isLast = wordIdx === array.length - 1;
-      const spaceIdx = isLast ? -1 : currentIdx++;
-      return { word, chars, spaceIdx, wordIdx };
-    });
-  }, [content]);
-
   // Precision Caret Positioning logic
   const updateCaret = useCallback(() => {
-    const index = engineRefs.cursorIndex.current;
+    const index = cursorIndex;
     const activeWord = words.find(w => index >= w.chars[0].idx && (w.spaceIdx === -1 || index <= w.spaceIdx));
     const extras = activeWord ? (extraChars[activeWord.wordIdx] || []) : [];
 
@@ -107,7 +97,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
         height: charRect.height
       });
     }
-  }, [engineRefs.cursorIndex, extraChars, words]);
+  }, [cursorIndex, extraChars, words]);
 
   useEffect(() => {
     updateCaret();
@@ -115,38 +105,32 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => window.removeEventListener('resize', updateCaret);
   }, [updateCaret]);
 
-  const updateVisuals = useCallback((data: {
-    index: number;
-    isCorrect: boolean;
-    cursorIndex: number;
-    keystrokeLog: KeystrokeEvent[];
-    wpmTimeline: { timestamp: number; wpm: number }[];
-  }) => {
-    const { cursorIndex, keystrokeLog, wpmTimeline } = data;
-    if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
+  const updateVisuals = useCallback((data: any) => {
+    const { index, keystrokeLog: logs, wpmTimeline: timeline } = data;
+    if (onActiveKeyChange) onActiveKeyChange(content[index] || null);
     updateCaret();
 
-    if (workerRef.current && engineRefs.startTime.current) {
+    if (workerRef.current && startTime) {
       calculateRealTimeStats(
-        cursorIndex,
-        engineRefs.errors.current,
-        keystrokeLog,
-        engineRefs.startTime.current
+        index,
+        errors,
+        logs,
+        startTime
       );
 
       workerRef.current.postMessage({
         type: 'UPDATE_STATS',
         data: {
-          cursorIndex,
-          errors: engineRefs.errors.current,
-          startTime: engineRefs.startTime.current,
+          cursorIndex: index,
+          errors,
+          startTime,
           contentLength: content.length,
-          keystrokeLog,
-          wpmTimeline
+          keystrokeLog: logs,
+          wpmTimeline: timeline
         }
       });
     }
-  }, [content, onActiveKeyChange, engineRefs, calculateRealTimeStats]);
+  }, [content, onActiveKeyChange, startTime, errors, calculateRealTimeStats, updateCaret]);
 
   useEffect(() => {
     if (isActive && activeModal === 'none' && inputRef.current) {
@@ -156,52 +140,24 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
   useEffect(() => {
     reset();
-    setExtraChars({});
     if (inputRef.current) inputRef.current.value = '';
   }, [content, reset]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (activeModal !== 'none' || isComplete) return;
-    const currentIndex = engineRefs.cursorIndex.current;
 
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
 
-    const activeWord = words.find(w => currentIndex >= w.chars[0].idx && (w.spaceIdx === -1 || currentIndex <= w.spaceIdx));
-    const isAtWordEnd = activeWord && currentIndex === (activeWord.spaceIdx === -1 ? activeWord.chars[activeWord.chars.length - 1].idx + 1 : activeWord.spaceIdx);
-
-    // Handle Backspace for extra characters first
-    if (e.key === 'Backspace' && activeWord) {
-      const extras = extraChars[activeWord.wordIdx] || [];
-      if (extras.length > 0) {
-        setExtraChars(prev => ({
-          ...prev,
-          [activeWord.wordIdx]: extras.slice(0, -1)
-        }));
-        if (soundEnabled) playSound();
-        return;
-      }
-    }
-
-    // Handle Extra Characters
-    if (isAtWordEnd && e.key !== ' ' && e.key !== 'Backspace' && !['Enter', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-      setExtraChars(prev => ({
-        ...prev,
-        [activeWord!.wordIdx]: [...(prev[activeWord!.wordIdx] || []), e.key]
-      }));
-      if (soundEnabled) playSound();
-      return;
-    }
-
     const isCorrect = handleKeyDown(e.key, updateVisuals);
 
-    if (!isCorrect && (isAccuracyMasterActive || isMasterMode)) {
+    if (!isCorrect && (isAccuracyMasterActive || isMasterMode) && e.key !== 'Backspace') {
       onRestart();
       return;
     }
 
     if (soundEnabled) playSound();
-  }, [content.length, handleKeyDown, updateVisuals, soundEnabled, playSound, engineRefs.cursorIndex, isAccuracyMasterActive, isMasterMode, onRestart, activeModal, words, extraChars, isComplete]);
+  }, [handleKeyDown, updateVisuals, soundEnabled, playSound, isAccuracyMasterActive, isMasterMode, onRestart, activeModal, isComplete]);
 
   const getTextSizeClass = () => {
     switch (fontSize) {
@@ -254,13 +210,13 @@ const TypingArea: React.FC<TypingAreaProps> = ({
 
       <div className={`${styles.textWrapper} ${getTextSizeClass()} ${shake ? 'animate-shake' : ''}`}>
         {words.map((w, wIdx) => {
-          const isCurrentWord = w.chars.some(c => c.idx === engineRefs.cursorIndex.current) || w.spaceIdx === engineRefs.cursorIndex.current;
+          const isCurrentWord = w.chars.some(c => c.idx === cursorIndex) || w.spaceIdx === cursorIndex;
 
           return (
             <div key={wIdx} className={styles.word}>
               {w.chars.map(({ char, idx }) => {
-                const isTyped = idx < engineRefs.cursorIndex.current;
-                const isError = engineRefs.errors.current.includes(idx);
+                const isTyped = idx < cursorIndex;
+                const isError = errors.includes(idx);
 
                 let stateClass = styles.untyped;
                 if (isTyped) {
@@ -295,8 +251,8 @@ const TypingArea: React.FC<TypingAreaProps> = ({
               {w.spaceIdx !== -1 && (
                 <span
                   ref={el => { charRefs.current[w.spaceIdx] = el; }}
-                  className={`${styles.char} ${w.spaceIdx < engineRefs.cursorIndex.current
-                    ? (engineRefs.errors.current.includes(w.spaceIdx) ? styles.errorBackground : styles.correct)
+                  className={`${styles.char} ${w.spaceIdx < cursorIndex
+                    ? (errors.includes(w.spaceIdx) ? styles.errorBackground : styles.correct)
                     : (isCurrentWord ? styles.current : styles.untyped)
                     }`}
                 >

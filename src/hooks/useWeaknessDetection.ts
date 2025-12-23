@@ -5,27 +5,29 @@ export const useWeaknessDetection = () => {
     const analyzeSession = useCallback((keystrokeLog: KeystrokeEvent[]): WeaknessHeatmap => {
         const heatmap: WeaknessHeatmap = {};
 
+        // Group events by character
+        const charGroups: Record<string, KeystrokeEvent[]> = {};
         keystrokeLog.forEach(event => {
             const char = event.expectedChar.toLowerCase();
-            if (!heatmap[char]) {
-                heatmap[char] = {
-                    accuracy: 0,
-                    avgLatency: 0,
-                    errorCount: 0,
-                    lastTested: new Date().toISOString(),
-                };
-            }
+            if (!charGroups[char]) charGroups[char] = [];
+            charGroups[char].push(event);
+        });
 
-            const data = heatmap[char];
-            data.errorCount += event.isError ? 1 : 0;
+        Object.entries(charGroups).forEach(([char, events]) => {
+            const totalPresses = events.length;
+            const errorCount = events.filter(e => e.isError).length;
+            const correctEvents = events.filter(e => !e.isError);
+            const avgLatency = correctEvents.length > 0
+                ? correctEvents.reduce((acc, curr) => acc + curr.latency, 0) / correctEvents.length
+                : 0;
+            const accuracy = Math.round(((totalPresses - errorCount) / totalPresses) * 100);
 
-            // Update running average for latency
-            const totalPresses = keystrokeLog.filter(k => k.expectedChar.toLowerCase() === char).length;
-            data.avgLatency = (data.avgLatency * (totalPresses - 1) + event.latency) / totalPresses;
-
-            // Accuracy for this character in this session
-            const correctPresses = keystrokeLog.filter(k => k.expectedChar.toLowerCase() === char && !k.isError).length;
-            data.accuracy = Math.round((correctPresses / totalPresses) * 100);
+            heatmap[char] = {
+                accuracy,
+                avgLatency,
+                errorCount,
+                lastTested: new Date().toISOString(),
+            };
         });
 
         return heatmap;
@@ -33,9 +35,9 @@ export const useWeaknessDetection = () => {
 
     const identifyEnemyKeys = useCallback((heatmap: WeaknessHeatmap) => {
         return Object.entries(heatmap)
-            .map(([char, data]) => ({ char, avgHold: (data as WeaknessData).avgLatency, ...(data as WeaknessData) }))
-            .filter(k => k.accuracy < 90 || k.avgHold > 300)
-            .sort((a, b) => (b.errorCount - a.errorCount) || (b.avgHold - a.avgHold))
+            .map(([char, data]) => ({ char, ...(data as WeaknessData) }))
+            .filter(k => k.accuracy < 90 || k.avgLatency > 300)
+            .sort((a, b) => (b.errorCount - a.errorCount) || (b.avgLatency - a.avgLatency))
             .slice(0, 3);
     }, []);
 
@@ -46,7 +48,7 @@ export const useWeaknessDetection = () => {
             const prev = keystrokeLog[i - 1];
             const curr = keystrokeLog[i];
             if (!prev.isError && !curr.isError) {
-                const pair = (prev.char + curr.char).toLowerCase();
+                const pair = (prev.expectedChar + curr.expectedChar).toLowerCase();
                 if (!bigrams[pair]) bigrams[pair] = [];
                 bigrams[pair].push(curr.latency);
             }

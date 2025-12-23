@@ -25,47 +25,34 @@ export const GoogleCallback: React.FC = () => {
 
     const exchangeCode = async (code: string) => {
         try {
-            const userData = await invoke<any>('exchange_oauth_code', { provider: 'google', code });
-            // Depending on Google's response, you might need to fetch profile separately
-            // but the user wants to "redirect to app" on success.
-            console.log('Google User Data:', userData);
+            const { authService } = await import('@/services/authService');
+            const user = await authService.completeOAuthFlow('google', code);
 
-            // In a real app, you'd fetch the user profile here with the access_token
-            // For now, let's assume we store the token and mock the profile or handle it in backend
-
-            // If the backend returns the full profile:
-            if (userData.access_token) {
-                // Fetches profile using access_token
-                const profileRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                    headers: { Authorization: `Bearer ${userData.access_token}` }
-                });
-                const profile = await profileRes.json();
-                setUserProfile({
-                    id: profile.id,
-                    name: profile.name,
-                    email: profile.email,
-                    avatar: profile.picture,
-                    token: userData.access_token,
-                    xp: 0,
-                    level: 1,
-                    streakCount: 1,
-                    createdAt: new Date().toISOString(),
-                    progression: {
-                        unlockedLessons: [1],
-                        completedLessons: {},
-                        weaknessHeatmap: {},
-                        dailyQuests: [],
-                        badges: [],
-                        totalWordsTyped: 0,
-                        totalTimeSpent: 0
-                    }
-                });
-            }
+            setUserProfile({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                avatar: user.picture,
+                token: user.token,
+                xp: 0,
+                level: 1,
+                streakCount: 1,
+                createdAt: new Date().toISOString(),
+                progression: {
+                    unlockedLessons: [1],
+                    completedLessons: {},
+                    weaknessHeatmap: {},
+                    dailyQuests: [],
+                    badges: [],
+                    totalWordsTyped: 0,
+                    totalTimeSpent: 0
+                }
+            });
 
             navigate('/');
-        } catch (err) {
+        } catch (err: any) {
             console.error('Exchange failed:', err);
-            navigate('/?auth_error=exchange_failed');
+            navigate('/?auth_error=' + encodeURIComponent(err.message || 'exchange_failed'));
         }
     };
 

@@ -101,7 +101,7 @@ export interface Stats {
   handEfficiency?: { left: number; right: number }; // Speed/accuracy ratio per hand
   bestCombo?: number;
   aiInsights?: {
-    enemyKeys: { char: string; avgHold: number }[];
+    enemyKeys: { char: string; avgLatency: number }[];
     bottlenecks: { pair: string; avgLat: number }[];
   };
   recommendation?: AICoachRecommendation;
@@ -138,7 +138,7 @@ export interface HistoryEntry {
   handEfficiency?: { left: number; right: number };
   bestCombo?: number;
   aiInsights?: {
-    enemyKeys: { char: string; avgHold: number }[];
+    enemyKeys: { char: string; avgLatency: number }[];
     bottlenecks: { pair: string; avgLat: number }[];
   };
   speedIndicator?: number; // 0-100 real-time speed relative to goal/avg

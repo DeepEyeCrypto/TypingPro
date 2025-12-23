@@ -1,5 +1,4 @@
-# yaml-language-server: $schema=none
-name: Release
+name: "Release"
 on:
   push:
     tags:
@@ -7,86 +6,78 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:
-    name: Build and Release
-    runs-on: ${{ matrix.platform }}
-    permissions:
-      contents: write
+  publish:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest
-            target: aarch64-apple-darwin
-          - platform: macos-latest
-            target: x86_64-apple-darwin
-          - platform: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-          - platform: windows-latest
-            target: x86_64-pc-windows-msvc
+          - platform: "macos-latest"
+            target: "aarch64-apple-darwin"
+          - platform: "macos-latest"
+            target: "x86_64-apple-darwin"
+          - platform: "ubuntu-22.04"
+            target: "x86_64-unknown-linux-gnu"
+          - platform: "windows-latest"
+            target: "x86_64-pc-windows-msvc"
 
+    runs-on: ${{ matrix.platform }}
+    permissions:
+      contents: write
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Install Rust
+      - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      - name: Linux Dependencies
+      - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf pkg-config libssl-dev
 
+      - name: install frontend dependencies
+        run: npm ci
 
       - name: Version Sync
         run: node scripts/sync-version.js
 
-      - name: Inject Configuration
+      - name: Build Frontend
+        run: npm run build
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          VITE_GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          VITE_GOOGLE_REDIRECT_URI: http://localhost:1420/auth/google/callback
+          VITE_GITHUB_REDIRECT_URI: http://localhost:1420/auth/github/callback
+
+      - name: Debug Env (Lengths Only)
         shell: bash
         run: |
-          mkdir -p src-tauri
-          # Clean slate and inject into both root and src-tauri
-          # Using printf to handle potential special characters in secrets
-          printf "GOOGLE_CLIENT_ID=%s\n" "$G_ID" > .env
-          printf "GOOGLE_CLIENT_SECRET=%s\n" "$G_SECRET" >> .env
-          printf "GITHUB_CLIENT_ID=%s\n" "$GH_ID" >> .env
-          printf "GITHUB_CLIENT_SECRET=%s\n" "$GH_SECRET" >> .env
-          printf "GEMINI_API_KEY=%s\n" "$G_API" >> .env
-          
-          # Frontend VITE_ vars
-          printf "VITE_GOOGLE_CLIENT_ID=%s\n" "$G_ID" >> .env
-          printf "VITE_GITHUB_CLIENT_ID=%s\n" "$GH_ID" >> .env
-          printf "VITE_GOOGLE_REDIRECT_URI=http://localhost:1420/auth/google/callback\n" >> .env
-          printf "VITE_GITHUB_REDIRECT_URI=http://localhost:1420/auth/github/callback\n" >> .env
-          
-          cp .env src-tauri/.env
+          echo "GOOGLE_CLIENT_ID length: ${#G_ID}"
+          echo "GITHUB_CLIENT_ID length: ${#GH_ID}"
         env:
           G_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          G_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GH_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          GH_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
-          G_API: ${{ secrets.GEMINI_API_KEY }}
 
-
-
-      - name: Build and Release
-        uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # Backend Secrets for Tauri build
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          VITE_GOOGLE_REDIRECT_URI: http://localhost:1420/auth/google/callback
+          VITE_GITHUB_REDIRECT_URI: http://localhost:1420/auth/github/callback
         with:
           tagName: v__VERSION__
           releaseName: "TypingPro v__VERSION__"

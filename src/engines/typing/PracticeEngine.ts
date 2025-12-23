@@ -1,5 +1,5 @@
-import { TOP_200_WORDS } from '../../constants/dictionaries';
-import { ModeConfig, Lesson } from '../../types';
+import { TOP_200_WORDS } from '../../../constants/dictionaries';
+import { PracticeMode, Lesson, ModeConfig } from '../../../types';
 
 export class PracticeEngine {
     /**

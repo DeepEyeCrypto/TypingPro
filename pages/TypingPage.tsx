@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import InstructionalOverlay from '../components/curriculum/InstructionalOverlay';
 import { Target, Activity, Music, Zap, Clock, Type as TypeIcon } from 'lucide-react';
 import { ModeSelector } from '../components/training/ModeSelector';
-import { PracticeEngine } from '../src/engines/PracticeEngine';
+import { PracticeEngine } from '../src/engines/typing/PracticeEngine';
 import { Lesson, Stats, PracticeMode, ModeConfig } from '../types';
 import { TypingLayout } from '../components/layout/TypingLayout';
 import { ZenHeader } from '../components/layout/ZenHeader';
@@ -69,7 +69,7 @@ export default function TypingPage(): React.ReactNode {
         timeLeft?: number;
         wpmTimeline?: { timestamp: number; wpm: number }[];
         aiInsights?: {
-            enemyKeys: { char: string; avgHold: number }[];
+            enemyKeys: { char: string; avgLatency: number }[];
             bottlenecks: { pair: string; avgLat: number }[];
         };
         recommendation?: AICoachRecommendation;
@@ -165,14 +165,18 @@ export default function TypingPage(): React.ReactNode {
             setUserProfile(updatedProfile);
         }
 
-        const enrichedStats = {
+        const enrichedStats: Stats & { completed: boolean } = {
             ...stats,
-            aiInsights: { enemyKeys, bottlenecks },
+            completed: stats.accuracy >= 95,
+            aiInsights: {
+                enemyKeys: enemyKeys.map(k => ({ char: k.char, avgLatency: k.avgLatency })),
+                bottlenecks
+            },
             recommendation
         };
 
         recordLessonComplete(activeLesson.id, enrichedStats);
-        setModalStats({ ...enrichedStats, completed: stats.accuracy >= 95 });
+        setModalStats(enrichedStats);
         setLiveStats(prev => ({
             ...prev,
             aiInsights: enrichedStats.aiInsights,

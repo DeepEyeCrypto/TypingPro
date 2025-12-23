@@ -330,10 +330,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const login = async (provider: 'google' | 'github' = 'google') => {
-        const u = provider === 'google'
-            ? await authService.signInWithGoogle()
-            : await authService.signInWithGithub();
-        handleAuthUser(u);
+        if (provider === 'google') {
+            await authService.signInWithGoogle();
+        } else {
+            await authService.signInWithGithub();
+        }
     };
 
     const logout = async () => {

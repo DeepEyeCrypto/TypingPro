@@ -26,20 +26,18 @@ export const AuthModal: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const creds: any = await invoke('get_oauth_credentials', { provider });
-
-            let url = '';
+            const { authService } = await import('@/services/authService');
             if (provider === 'google') {
-                url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${creds.client_id}&redirect_uri=${encodeURIComponent(creds.redirect_uri)}&response_type=code&scope=openid%20email%20profile`;
+                await authService.signInWithGoogle();
             } else {
-                url = `https://github.com/login/oauth/authorize?client_id=${creds.client_id}&redirect_uri=${encodeURIComponent(creds.redirect_uri)}&scope=user:email`;
+                await authService.signInWithGithub();
             }
-
-            // Redirect to OAuth Provider
-            window.location.href = url;
+            // Note: browser will open, and redirect back to our callback route
+            // We can close the modal now or keep it open with a loading state
+            setActiveModal('none');
         } catch (err: any) {
             console.error('Failed to start OAuth flow:', err);
-            setError(err?.message || 'Failed to initialize login. Check .env and restart backend.');
+            setError(err?.message || 'Failed to initialize login.');
             setIsLoading(false);
         }
     };

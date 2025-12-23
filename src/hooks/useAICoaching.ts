@@ -5,8 +5,8 @@ export const useAICoaching = () => {
     const generateRecommendation = useCallback((
         stats: Stats,
         heatmap: WeaknessHeatmap,
-        enemyKeys: { char: string }[],
-        bottlenecks: { pair: string }[]
+        enemyKeys: { char: string; avgLatency: number; accuracy: number; errorCount: number; lastTested: string }[],
+        bottlenecks: { pair: string; avgLat: number }[]
     ): AICoachRecommendation => {
 
         // Low Accuracy Focus
@@ -14,7 +14,7 @@ export const useAICoaching = () => {
             return {
                 type: 'drill',
                 title: 'Accuracy Overhaul',
-                description: 'Your accuracy is dipping. Let\'s slow down and focus on precision with these keys.',
+                description: "Your accuracy is dipping. Let's slow down and focus on precision with these keys.",
                 drillChars: enemyKeys.map(k => k.char),
             };
         }
@@ -51,12 +51,11 @@ export const useAICoaching = () => {
         return {
             type: 'tip',
             title: 'Maintain Momentum',
-            description: 'You\'re making great progress. Keep practicing consistently to lock in these speeds.',
+            description: "You're making great progress. Keep practicing consistently to lock in these speeds.",
         };
     }, []);
 
     const predictMilestones = useCallback((history: any[]): any[] => {
-        // Basic linear prediction based on recent history
         if (history.length < 5) return [];
 
         const recentWpm = history.slice(-5).map(h => h.wpm);

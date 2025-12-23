@@ -14,7 +14,7 @@ interface ZenStatsProps {
         timeLeft?: number;
         wpmTimeline?: { timestamp: number; wpm: number }[];
         aiInsights?: {
-            enemyKeys: { char: string; avgHold: number }[];
+            enemyKeys: { char: string; avgLatency: number }[];
             bottlenecks: { pair: string; avgLat: number }[];
         };
         recommendation?: AICoachRecommendation;
