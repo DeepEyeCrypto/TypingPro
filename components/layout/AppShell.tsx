@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import FuturisticBackground from './FuturisticBackground';
 
+import { PerformanceOverlay } from '../PerformanceOverlay';
+
 interface AppShellProps {
     header?: React.ReactNode;
     sidebar?: React.ReactNode;
@@ -86,6 +88,8 @@ export const AppShell: React.FC<AppShellProps> = ({
                     </button>
                 </>
             )}
+            {/* Performance Monitoring Overlay */}
+            <PerformanceOverlay />
         </div>
     );
 };

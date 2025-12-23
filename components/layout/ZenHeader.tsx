@@ -11,9 +11,9 @@ export const ZenHeader: React.FC = () => {
     const [showThemes, setShowThemes] = useState(false);
 
     return (
-        <div className="flex items-center justify-between w-full h-12 relative">
+        <div className="flex items-center justify-between w-full max-w-[1400px] mx-auto h-12 relative px-8">
             {/* Logo */}
-            <div className="flex items-center gap-2 group cursor-pointer">
+            <div className="flex items-center gap-2 group cursor-pointer" onClick={() => window.location.href = '/'}>
                 <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center rotate-45 group-hover:rotate-90 transition-transform duration-500">
                     <Zap size={18} className="text-[var(--bg)] -rotate-45 group-hover:-rotate-90 transition-transform duration-500" />
                 </div>

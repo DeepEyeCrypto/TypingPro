@@ -10,10 +10,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import InstructionalOverlay from '../components/curriculum/InstructionalOverlay';
 import { Target, Activity, Music, Zap, Clock, Type as TypeIcon } from 'lucide-react';
 import { ModeSelector } from '../components/training/ModeSelector';
-import { PracticeEngine } from '../src/engines/typing/PracticeEngine';
 import { Lesson, Stats, PracticeMode, ModeConfig } from '../types';
-import { TypingLayout } from '../components/layout/TypingLayout';
+import { AppShell } from '../components/layout/AppShell';
+import { PracticeEngine } from '../src/engines/typing/PracticeEngine';
 import { ZenHeader } from '../components/layout/ZenHeader';
+import Sidebar from '../components/Sidebar';
 import { ZenStats } from '../components/layout/ZenStats';
 import { FocusMode } from '../components/typing/FocusMode';
 import { useWeaknessDetection } from '../src/hooks/useWeaknessDetection';
@@ -29,7 +30,7 @@ interface MainLayoutContext {
 export default function TypingPage(): React.ReactNode {
     const {
         settings, recordLessonComplete,
-        setActiveLessonId, isCodeMode, setIsSidebarCollapsed,
+        setActiveLessonId, isCodeMode, setIsSidebarCollapsed, isSidebarCollapsed,
         getWeaknessDrill,
         isAccuracyMasterActive, setIsAccuracyMasterActive,
         isMetronomeActive, setIsMetronomeActive,
@@ -211,8 +212,12 @@ export default function TypingPage(): React.ReactNode {
     }, [handleRetry]);
 
     return (
-        <TypingLayout
+        <AppShell
             header={<ZenHeader />}
+            sidebar={<Sidebar />}
+            isSidebarCollapsed={isSidebarCollapsed}
+            onToggleSidebar={setIsSidebarCollapsed}
+            isFocused={liveStats.cursorIndex > 0 && !modalStats}
             footer={
                 <ZenStats
                     isTyping={liveStats.cursorIndex > 0 && !modalStats}
@@ -301,6 +306,6 @@ export default function TypingPage(): React.ReactNode {
                     </div>
                 )}
             </div>
-        </TypingLayout>
+        </AppShell>
     );
 }

@@ -14,22 +14,7 @@ import TypingPage from './pages/TypingPage';
 import { PerformanceOverlay } from './components/PerformanceOverlay';
 
 
-const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { isSidebarCollapsed, setIsSidebarCollapsed } = useApp();
-    return (
-        <AppShell
-            header={<Header />}
-            sidebar={<Sidebar />}
-            isSidebarCollapsed={isSidebarCollapsed}
-            onToggleSidebar={setIsSidebarCollapsed}
-        >
-            <div className="w-full max-w-[1000px] mx-auto h-full flex flex-col">
-                {children}
-            </div>
-            <PerformanceOverlay />
-        </AppShell>
-    );
-};
+// Header and Sidebar are now managed within pages or specific layouts to prevent duplication
 
 export default function App(): React.ReactNode {
     return (
@@ -38,14 +23,12 @@ export default function App(): React.ReactNode {
                 <AppProvider>
                     <SoundProvider>
                         <ThemeProvider>
-                            <LayoutWrapper>
-                                <Routes>
-                                    <Route path="/" element={<TypingPage />} />
-                                    <Route path="/auth/google/callback" element={<GoogleCallback />} />
-                                    <Route path="/auth/github/callback" element={<GitHubCallback />} />
-                                    <Route path="*" element={<Navigate to="/" replace />} />
-                                </Routes>
-                            </LayoutWrapper>
+                            <Routes>
+                                <Route path="/" element={<TypingPage />} />
+                                <Route path="/auth/google/callback" element={<GoogleCallback />} />
+                                <Route path="/auth/github/callback" element={<GitHubCallback />} />
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
                         </ThemeProvider>
                     </SoundProvider>
                 </AppProvider>
