@@ -105,32 +105,26 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     return () => window.removeEventListener('resize', updateCaret);
   }, [updateCaret]);
 
-  const updateVisuals = useCallback((data: any) => {
-    const { index, keystrokeLog: logs, wpmTimeline: timeline } = data;
-    if (onActiveKeyChange) onActiveKeyChange(content[index] || null);
+  useEffect(() => {
+    if (onActiveKeyChange) onActiveKeyChange(content[cursorIndex] || null);
     updateCaret();
 
     if (workerRef.current && startTime) {
-      calculateRealTimeStats(
-        index,
-        errors,
-        logs,
-        startTime
-      );
+      onStatsUpdate({ ...performanceStats, timeLeft });
 
       workerRef.current.postMessage({
         type: 'UPDATE_STATS',
         data: {
-          cursorIndex: index,
+          cursorIndex,
           errors,
           startTime,
           contentLength: content.length,
-          keystrokeLog: logs,
-          wpmTimeline: timeline
+          keystrokeLog,
+          wpmTimeline
         }
       });
     }
-  }, [content, onActiveKeyChange, startTime, errors, calculateRealTimeStats, updateCaret]);
+  }, [cursorIndex, errors, startTime, content, keystrokeLog, wpmTimeline, performanceStats, timeLeft, onStatsUpdate, onActiveKeyChange, updateCaret]);
 
   useEffect(() => {
     if (isActive && activeModal === 'none' && inputRef.current) {
@@ -149,7 +143,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key)) return;
     if (e.key === ' ') e.preventDefault();
 
-    const isCorrect = handleKeyDown(e.key, updateVisuals);
+    const isCorrect = handleKeyDown(e.key);
 
     if (!isCorrect && (isAccuracyMasterActive || isMasterMode) && e.key !== 'Backspace') {
       onRestart();
@@ -157,7 +151,7 @@ const TypingArea: React.FC<TypingAreaProps> = ({
     }
 
     if (soundEnabled) playSound();
-  }, [handleKeyDown, updateVisuals, soundEnabled, playSound, isAccuracyMasterActive, isMasterMode, onRestart, activeModal, isComplete]);
+  }, [handleKeyDown, soundEnabled, playSound, isAccuracyMasterActive, isMasterMode, onRestart, activeModal, isComplete]);
 
   const getTextSizeClass = () => {
     switch (fontSize) {

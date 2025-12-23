@@ -27,7 +27,7 @@ export const useTypingEngine = (content: string, stopOnError: boolean, mode: Pra
         return () => clearInterval(interval);
     }, [mode, engineState.startTime, engineState.isComplete, engine]);
 
-    const handleKeyDown = useCallback((key: string, onUpdate: (data: any) => void) => {
+    const handleKeyDown = useCallback((key: string) => {
         PerformanceMonitor.startMeasure('typing-engine-input');
 
         const { isCorrect, state } = engine.handleKeyDown(key);
@@ -37,15 +37,6 @@ export const useTypingEngine = (content: string, stopOnError: boolean, mode: Pra
             setShake(true);
             setTimeout(() => setShake(false), 150);
         }
-
-        onUpdate({
-            index: state.cursorIndex,
-            isCorrect,
-            cursorIndex: state.cursorIndex,
-            combo: state.combo,
-            keystrokeLog: state.keystrokeLog,
-            wpmTimeline: state.wpmTimeline
-        });
 
         PerformanceMonitor.endMeasure('typing-engine-input');
         return isCorrect;

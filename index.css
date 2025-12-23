@@ -34,14 +34,73 @@
 
 @layer components {
 
-  /* Glass v3 Container */
+  /* Glass v3 Container - Performance Optimized (NO BLUR) */
   .glass-premium {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    /* REMOVED: backdrop-filter: blur(var(--glass-blur)) saturate(180%); - Performance killer */
+    /* REMOVED: -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%); - Performance killer */
     border: 1px solid var(--glass-border);
     border-radius: var(--glass-radius);
     transition: all 0.3s ease-in-out;
+  }
+
+  /* Apple iOS 18 Design System */
+  .ios18-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    box-shadow: 
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 4px 24px rgba(0, 0, 0, 0.05);
+    backdrop-filter: none; /* Performance optimized */
+  }
+
+  .ios18-button {
+    background: transparent;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 150ms ease-out;
+    cursor: pointer;
+  }
+
+  .ios18-button:hover {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: rgba(0, 217, 255, 0.3);
+    color: rgba(0, 217, 255, 1);
+  }
+
+  .ios18-button:active {
+    background: rgba(0, 217, 255, 0.2);
+    border-color: rgba(0, 217, 255, 0.4);
+    transform: scale(0.98);
+  }
+
+  /* Hairline borders */
+  .hairline {
+    border: 0.5px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Large radius */
+  .radius-large {
+    border-radius: 20px;
+  }
+
+  .radius-xl {
+    border-radius: 24px;
+  }
+
+  /* Liquid glass without blur */
+  .liquid-glass {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: none; /* Critical for performance */
   }
 
   /* Segmented Pill Control */
