@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TypingPro",
-    "version": "0.1.48"
+    "version": "0.1.49"
   },
   "tauri": {
     "allowlist": {
@@ -25,9 +25,7 @@
         "dmg",
         "deb"
       ],
-      "resources": [
-        "../.env"
-      ],
+      "resources": [],
       "identifier": "com.typingpro.app",
       "icon": [
         "icons/32x32.png",
