@@ -1,6 +1,6 @@
 [package]
 name = "typingpro"
-version = "0.1.44"
+version = "0.1.46"
 description = "A professional typing tutor application"
 authors = ["TypingPro Team"]
 license = ""
@@ -20,7 +20,8 @@ dotenv = "0.15"
 dotenv_codegen = "0.15"
 oauth2 = "4.4"
 tokio = { version = "1.36", features = ["full"] }
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+
 url = "2.5"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
