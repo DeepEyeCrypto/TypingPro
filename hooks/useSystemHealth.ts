@@ -25,10 +25,22 @@ export function useSystemHealth() {
         const googleRedirect = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
         const githubRedirect = import.meta.env.VITE_GITHUB_REDIRECT_URI;
 
-        const frontendEnvOk = !!(googleId && githubId && googleRedirect && githubRedirect);
+        console.log('SystemHealth Check:', {
+            googleId: googleId ? 'EXISTS' : 'MISSING',
+            githubId: githubId ? 'EXISTS' : 'MISSING'
+        });
+
+        const isPlaceholder = (id?: string) => !id || id.includes('your_') || id.includes('PENDING');
+
+        const frontendEnvOk = !!(googleId && githubId && googleRedirect && githubRedirect) && !isPlaceholder(googleId) && !isPlaceholder(githubId);
+
         if (!frontendEnvOk) {
             if (!googleId) errors.push("VITE_GOOGLE_CLIENT_ID missing");
+            else if (isPlaceholder(googleId)) errors.push("VITE_GOOGLE_CLIENT_ID is placeholder");
+
             if (!githubId) errors.push("VITE_GITHUB_CLIENT_ID missing");
+            else if (isPlaceholder(githubId)) errors.push("VITE_GITHUB_CLIENT_ID is placeholder");
+
             if (!googleRedirect) errors.push("VITE_GOOGLE_REDIRECT_URI missing");
             if (!githubRedirect) errors.push("VITE_GITHUB_REDIRECT_URI missing");
         }

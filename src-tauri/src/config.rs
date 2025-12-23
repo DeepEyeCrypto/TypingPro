@@ -32,13 +32,15 @@ pub struct ConfigHealthSummary {
 
 impl OAuthConfig {
     pub fn from_env() -> Result<Self, String> {
-        // Explicitly load .env from the executable's directory or root
         if let Ok(exe_path) = std::env::current_exe() {
             if let Some(exe_dir) = exe_path.parent() {
                 dotenv::from_path(exe_dir.join(".env")).ok();
+                dotenv::from_path(exe_dir.join("../.env")).ok();
+                dotenv::from_path(exe_dir.join("../../.env")).ok();
+                dotenv::from_path(exe_dir.join("../../../.env")).ok();
             }
         }
-        dotenv::dotenv().ok(); // Fallback to current directory
+        dotenv::dotenv().ok(); // Fallback to searches from CWD
 
         let get_var = |name: &str| -> Result<String, String> {
             env::var(name).map_err(|_| format!("Critical configuration missing: {}. Please check your .env file or GitHub Secrets.", name))
