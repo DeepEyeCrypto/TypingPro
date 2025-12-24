@@ -13,32 +13,52 @@ struct AppState {
 }
 
 #[tauri::command]
-fn start_test(state: State<AppState>, text: String) {
+fn get_lesson(state: State<AppState>, lesson_id: usize) -> Option<engine::Lesson> {
     let mut engine = state.engine.lock().unwrap();
-    engine.start_test(text);
+    engine.get_lesson(lesson_id)
 }
 
 #[tauri::command]
-fn process_key(state: State<AppState>, key: char) -> TypingStats {
+fn start_test(state: State<AppState>, text: String) {
+    let mut engine = state.engine.lock().unwrap();
+    // We can still support direct text for custom tests
+    engine.current_lesson = Some(engine::Lesson {
+        id: 0,
+        stage: 0,
+        title: "Custom Test".to_string(),
+        text: text.clone(),
+        target_wpm: 0.0,
+    });
+    engine.user_input = String::new();
+    engine.start_time = None;
+    engine.last_key_time = None;
+    engine.latencies = Vec::new();
+    engine.error_indices = Vec::new();
+    engine.is_finished = false;
+}
+
+#[tauri::command]
+fn process_key(state: State<AppState>, key: char) -> engine::TypingStats {
     let mut engine = state.engine.lock().unwrap();
     engine.process_key(key)
 }
 
 #[tauri::command]
-fn get_stats(state: State<AppState>) -> TypingStats {
+fn handle_backspace(state: State<AppState>) -> engine::TypingStats {
+    let mut engine = state.engine.lock().unwrap();
+    engine.handle_backspace()
+}
+
+#[tauri::command]
+fn get_stats(state: State<AppState>) -> engine::TypingStats {
     let engine = state.engine.lock().unwrap();
     engine.get_stats()
 }
 
 #[tauri::command]
-fn get_slow_keys(state: State<AppState>) -> Vec<(char, f64)> {
+fn fetch_analytics(state: State<AppState>) -> engine::TypingStats {
     let engine = state.engine.lock().unwrap();
-    engine.get_slow_keys()
-}
-
-#[tauri::command]
-fn generate_text(count: usize) -> String {
-    engine::generate_words(count)
+    engine.get_stats()
 }
 
 fn main() {
@@ -53,11 +73,12 @@ fn main() {
             engine: Mutex::new(TypingEngine::new()),
         })
         .invoke_handler(tauri::generate_handler![
+            get_lesson,
             start_test,
             process_key,
+            handle_backspace,
             get_stats,
-            get_slow_keys,
-            generate_text
+            fetch_analytics
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

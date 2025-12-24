@@ -1,71 +1,103 @@
-import React, { useState } from 'react';
-import TypingAreaV2 from './components/TypingAreaV2';
-import { useTypingStore } from './stores/typingStore';
+import React, { useState, useEffect } from 'react';
+import TypingEngine from './components/TypingEngine';
+import { SCIENTIFIC_CURRICULUM } from './data/LessonData';
 import './styles/LiquidGlass.css';
 
 const App: React.FC = () => {
-    const [text] = useState("The evolution of speed requires the precision of Rust. TypingPro: Rust-Core delivers sub-millisecond latency for the ultimate typing performance.");
+    const [currentLessonId, setCurrentLessonId] = useState(1);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        // Disable Interactions
+        const preventDefault = (e: Event) => e.preventDefault();
+        document.addEventListener('contextmenu', preventDefault);
+        document.addEventListener('selectstart', preventDefault);
+
+        // Auto-Focus Preservation
+        const handleFocus = () => {
+            const typingArea = document.getElementById('typing-input-handler');
+            if (typingArea) (typingArea as HTMLInputElement).focus();
+        };
+        window.addEventListener('click', handleFocus);
+        window.addEventListener('keydown', handleFocus);
+
+        return () => {
+            document.removeEventListener('contextmenu', preventDefault);
+            document.removeEventListener('selectstart', preventDefault);
+            window.removeEventListener('click', handleFocus);
+            window.removeEventListener('keydown', handleFocus);
+        };
+    }, []);
 
     return (
-        <div className="h-screen w-screen bg-[#050505] text-white flex flex-col overflow-hidden font-sans">
+        <div className={`h-screen w-screen bg-[#050505] text-white flex flex-col overflow-hidden font-sans ${sidebarOpen ? 'sidebar-active' : ''}`}>
             {/* SVG Filters for Liquid Glass Effect */}
             <svg className="filters-svg">
                 <defs>
                     <filter id="liquid-refraction">
                         <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="2" result="noise" />
-                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
+                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
                     </filter>
                 </defs>
             </svg>
 
+            {/* Liquid Sidebar */}
+            <aside className="liquid-sidebar p-10 flex flex-col">
+                <h2 className="text-xl font-bold mb-8 liquid-text">Curriculum</h2>
+                <div className="flex-1 overflow-y-auto space-y-4 pr-4">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(stage => (
+                        <div key={stage} className="space-y-2">
+                            <h3 className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Stage {stage}</h3>
+                            {SCIENTIFIC_CURRICULUM.filter(l => l.stage === stage).map(lesson => (
+                                <button
+                                    key={lesson.id}
+                                    onClick={() => {
+                                        setCurrentLessonId(lesson.id);
+                                        setSidebarOpen(false);
+                                    }}
+                                    className={`w-full text-left p-3 rounded-lg text-sm transition-all ${currentLessonId === lesson.id ? 'bg-white/10 text-white' : 'text-white/40 hover:bg-white/5'}`}
+                                >
+                                    {lesson.title}
+                                </button>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </aside>
+
             {/* Header */}
             <header className="p-10 flex justify-between items-center z-10">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white flex items-center justify-center rounded-2xl text-black font-black text-2xl shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                    <div className="w-10 h-10 bg-white flex items-center justify-center rounded-xl text-black font-black text-xl shadow-[0_0_30px_rgba(255,255,255,0.15)]">
                         T
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight liquid-text">TypingPro</h1>
-                        <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold">Rust-Core v0.2.0</p>
+                        <h1 className="text-xl font-bold tracking-tight liquid-text">TypingPro</h1>
                     </div>
                 </div>
 
-                <nav className="flex gap-8">
-                    <button className="liquid-button px-6 py-2 text-sm">Curriculum</button>
-                    <button className="liquid-button px-6 py-2 text-sm">Leaderboard</button>
-                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10" />
+                <nav className="flex items-center gap-6">
+                    <button
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        className="liquid-button"
+                    >
+                        {sidebarOpen ? 'Close Curriculum' : 'Scientific Curriculum'}
+                    </button>
+                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-white/20 transition-colors cursor-pointer" />
                 </nav>
             </header>
 
             {/* Main Experience */}
-            <main className="flex-1 flex flex-col items-center justify-center px-10">
-                <div className="mb-20 flex gap-20 items-center justify-center w-full">
-                    <StatBox label="Latency" value="<1ms" color="text-blue-500" />
-                    <StatBox label="Engine" value="Rust v2" color="text-white/40" />
-                    <StatBox label="Visuals" value="iOS 26" color="text-white/40" />
-                </div>
+            <main className="flex-1 flex flex-col items-center justify-center px-10 pb-20">
+                <TypingEngine lessonId={currentLessonId} />
 
-                <TypingAreaV2 text={text} />
-
-                <div className="mt-20 opacity-20 text-[10px] uppercase tracking-[0.5em] font-bold">
-                    Reactive Liquid Surface Active
+                <div className="mt-20 flex gap-12 opacity-0 hover:opacity-100 transition-opacity duration-700">
+                    <div className="text-[10px] uppercase tracking-[0.5em] font-bold text-white/10">Refractive Surface v2.6.0</div>
+                    <div className="text-[10px] uppercase tracking-[0.5em] font-bold text-white/10">Engine Status: Ultra-Low Latency</div>
                 </div>
             </main>
-
-            {/* Footer */}
-            <footer className="p-10 flex justify-between items-center text-[10px] text-white/20 font-bold tracking-widest uppercase">
-                <div>Sub-Millisecond Keystroke Processing</div>
-                <div>Built with Antigravity & Rust</div>
-            </footer>
         </div>
     );
 };
-
-const StatBox = ({ label, value, color }: { label: string, value: string, color: string }) => (
-    <div className="flex flex-col items-center gap-2">
-        <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">{label}</span>
-        <span className={`text-4xl font-black tracking-tighter ${color}`}>{value}</span>
-    </div>
-);
 
 export default App;
