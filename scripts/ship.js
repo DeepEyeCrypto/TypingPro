@@ -24,21 +24,13 @@ function run(command, msg) {
 console.log('\n📈 VERSION SYNC & BUMP...');
 try {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    const newVersion = packageJson.version; // Use manual version
+    const oldVersion = packageJson.version;
+    const parts = oldVersion.split('.').map(Number);
+    parts[2] += 1; // Increment Patch
+    const newVersion = parts.join('.');
 
-    if (fs.existsSync(tauriConfPath)) {
-        const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
-        tauriConf.package.version = newVersion;
-        fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
-    }
-
-    if (fs.existsSync(cargoTomlPath)) {
-        let cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
-        cargoToml = cargoToml.replace(/^version\s*=\s*"[^"]+"/m, `version = "${newVersion}"`);
-        fs.writeFileSync(cargoTomlPath, cargoToml);
-    }
-
-    console.log(`✅ Version synced: ${newVersion}`);
+    packageJson.version = newVersion;
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 } catch (e) {
     console.error('❌ Version sync failed:', e);
     process.exit(1);
