@@ -1,0 +1,36 @@
+.top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(5, 5, 5, 0.8) 0%, rgba(5, 5, 5, 0) 100%);
+    backdrop-filter: blur(8px);
+}
+
+.profile-btn:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.auth-dropdown {
+    background: rgba(15, 15, 15, 0.8) !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transform-origin: top right;
+}
+
+.dropdown-header {
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 12px;
+}
+
+.auth-dropdown button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.liquid-text {
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

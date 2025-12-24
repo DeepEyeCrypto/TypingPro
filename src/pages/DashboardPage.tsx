@@ -4,6 +4,8 @@ import LessonEngine from '../components/LessonEngine';
 import ProgressTracker from '../components/ProgressTracker';
 import '../styles/LiquidGlass.css';
 
+import TopBar from '../components/TopBar';
+
 export const DashboardPage: React.FC = () => {
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,7 +16,12 @@ export const DashboardPage: React.FC = () => {
     });
 
     useEffect(() => {
-        // Load initial lesson
+        // Load progress from localStorage if exists
+        const savedProgress = localStorage.getItem('typingPro_progress');
+        if (savedProgress) {
+            setUserStats(JSON.parse(savedProgress));
+        }
+
         const firstLesson = CURRICULUM[0];
         setCurrentLesson(firstLesson);
 
@@ -30,12 +37,13 @@ export const DashboardPage: React.FC = () => {
     }, []);
 
     const handleLessonComplete = (stats: any) => {
-        console.log('Lesson Complete:', stats);
-        setUserStats(prev => ({
-            ...prev,
-            lessonsCompleted: prev.lessonsCompleted + 1,
-            bestWPM: Math.max(prev.bestWPM, stats.wpm)
-        }));
+        const newStats = {
+            ...userStats,
+            lessonsCompleted: userStats.lessonsCompleted + 1,
+            bestWPM: Math.max(userStats.bestWPM, stats.wpm)
+        };
+        setUserStats(newStats);
+        localStorage.setItem('typingPro_progress', JSON.stringify(newStats));
 
         // Logic to move to next lesson
         const currentIndex = CURRICULUM.findIndex(l => l.id === currentLesson?.id);
@@ -46,8 +54,23 @@ export const DashboardPage: React.FC = () => {
 
     return (
         <div className={`h-screen w-screen bg-[#050505] text-white flex flex-col overflow-hidden font-sans ${sidebarOpen ? 'sidebar-active' : ''}`}>
+            {/* NEW TOPBAR */}
+            <TopBar
+                isSidebarOpen={sidebarOpen}
+                onCurriculumToggle={() => setSidebarOpen(!sidebarOpen)}
+            />
+
+            {/* Stats Overview (Quick reference) */}
+            <div className="absolute top-24 right-10 z-10 pointer-events-none">
+                <ProgressTracker
+                    currentStage={userStats.stage}
+                    lessonsCompleted={userStats.lessonsCompleted}
+                    currentWPM={userStats.bestWPM}
+                />
+            </div>
+
             {/* Liquid Sidebar */}
-            <aside className="liquid-sidebar p-10 flex flex-col">
+            <aside className="liquid-sidebar p-10 flex flex-col pt-32">
                 <h2 className="text-xl font-bold mb-8 liquid-text">Scientific Curriculum</h2>
                 <div className="flex-1 overflow-y-auto space-y-6 pr-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(stage => (
@@ -70,37 +93,8 @@ export const DashboardPage: React.FC = () => {
                 </div>
             </aside>
 
-            {/* Header */}
-            <header className="p-10 flex justify-between items-center z-10">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-white flex items-center justify-center rounded-xl text-black font-black text-xl shadow-[0_0_30px_rgba(255,255,255,0.15)]">
-                        T
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold tracking-tight liquid-text">TypingPro</h1>
-                    </div>
-                </div>
-
-                <nav className="flex items-center gap-6">
-                    <ProgressTracker
-                        currentStage={userStats.stage}
-                        lessonsCompleted={userStats.lessonsCompleted}
-                        currentWPM={userStats.bestWPM}
-                    />
-                    <button
-                        onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="liquid-button"
-                    >
-                        {sidebarOpen ? 'Close' : 'Curriculum'}
-                    </button>
-                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-white/20 transition-colors cursor-pointer flex items-center justify-center">
-                        <span className="text-xs">User</span>
-                    </div>
-                </nav>
-            </header>
-
             {/* Main Experience */}
-            <main className="flex-1 flex flex-col items-center justify-center px-10 pb-20 overflow-y-auto">
+            <main className="flex-1 flex flex-col items-center justify-center px-10 pb-20 pt-20 overflow-y-auto">
                 {currentLesson && (
                     <LessonEngine
                         lesson={currentLesson}
