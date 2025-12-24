@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { EngineState } from '../engines/typing/TypingEngine';
 
 interface TypingState {
     currentLessonId: number | null;

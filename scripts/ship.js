@@ -24,13 +24,7 @@ function run(command, msg) {
 console.log('\n📈 VERSION SYNC & BUMP...');
 try {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    const oldVersion = packageJson.version;
-    const parts = oldVersion.split('.').map(Number);
-    parts[2] += 1; // Increment Patch
-    const newVersion = parts.join('.');
-
-    packageJson.version = newVersion;
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    const newVersion = packageJson.version; // Use manual version
 
     if (fs.existsSync(tauriConfPath)) {
         const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
@@ -44,9 +38,9 @@ try {
         fs.writeFileSync(cargoTomlPath, cargoToml);
     }
 
-    console.log(`✅ Version bumped: ${oldVersion} -> ${newVersion}`);
+    console.log(`✅ Version synced: ${newVersion}`);
 } catch (e) {
-    console.error('❌ Version bump failed:', e);
+    console.error('❌ Version sync failed:', e);
     process.exit(1);
 }
 

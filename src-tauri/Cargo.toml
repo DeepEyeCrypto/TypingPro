@@ -1,6 +1,6 @@
 [package]
 name = "typingpro"
-version = "0.1.57"
+version = "0.2.0"
 description = "A professional typing tutor application"
 authors = ["TypingPro Team"]
 license = ""
@@ -8,10 +8,18 @@ repository = ""
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = "2.0"
 
 [dependencies]
-tauri = { version = "1.6", features = [ "updater", "shell-open", "devtools"] }
+tauri = { version = "2.0", features = ["updater", "shell-open", "devtools"] }
+tauri-plugin-shell = "2.0"
+tauri-plugin-process = "2.0"
+tauri-plugin-updater = "2.0"
+tauri-plugin-oauth = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = "0.4"
+rand = "0.8"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 chrono = "0.4.42"
@@ -19,11 +27,9 @@ chrono = "0.4.42"
 dotenv = "0.15"
 dotenv_codegen = "0.15"
 oauth2 = "4.4"
-tokio = { version = "1.36", features = ["full"] }
+tokio = { version = "1.0", features = ["full"] }
 reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
-
 url = "2.5"
-tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

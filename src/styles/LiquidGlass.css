@@ -1,0 +1,82 @@
+:root {
+    --liquid-bg: #050505;
+    --liquid-accent: #007aff;
+    --liquid-glass: rgba(255, 255, 255, 0.03);
+    --liquid-border: rgba(255, 255, 255, 0.1);
+    --specular-high: rgba(255, 255, 255, 0.4);
+}
+
+.liquid-surface {
+    position: relative;
+    background: var(--liquid-glass);
+    border: 0.5px solid var(--liquid-border);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow:
+        inset 0 1px 1px var(--specular-high),
+        0 10px 40px rgba(0, 0, 0, 0.5);
+    /* Liquid Refraction Effect */
+    filter: url(#liquid-refraction);
+}
+
+.liquid-surface::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 50%);
+    pointer-events: none;
+    animation: surface-shimmer 15s linear infinite;
+}
+
+@keyframes surface-shimmer {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.liquid-text {
+    background: linear-gradient(180deg, #fff 0%, #888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.liquid-button {
+    background: var(--liquid-glass);
+    border: 0.5px solid var(--liquid-border);
+    padding: 12px 24px;
+    border-radius: 16px;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.liquid-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.liquid-button:active {
+    transform: scale(0.98);
+}
+
+/* Hidden SVG Filters */
+.filters-svg {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}

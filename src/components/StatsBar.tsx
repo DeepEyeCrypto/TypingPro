@@ -1,37 +1,40 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 interface StatsBarProps {
     wpm: number;
     accuracy: number;
-    time: number;
-    isStarted: boolean;
+    errors: number;
 }
 
-const StatsBar: React.FC<StatsBarProps> = ({ wpm, accuracy, time, isStarted }) => {
+const StatsBar: React.FC<StatsBarProps> = ({ wpm, accuracy, errors }) => {
     return (
-        <div className={`flex gap-12 items-center transition-all duration-500 ${isStarted ? 'opacity-100 scale-100' : 'opacity-40 scale-95'}`}>
-            <StatItem label="WPM" value={wpm} color="text-blue-500" />
-            <StatItem label="Accuracy" value={`${accuracy}%`} color="text-green-500" />
-            <StatItem label="Time" value={`${time}s`} color="text-purple-500" />
+        <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-16 w-full">
+            <div className="text-center transform transition-transform hover:scale-105">
+                <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">WPM</div>
+                <div className="font-mono text-xl sm:text-2xl md:text-3xl font-black text-brand-dark dark:text-blue-400 transition-all duration-300">
+                    {wpm}
+                </div>
+            </div>
+
+            <div className="w-px h-8 sm:h-10 bg-gray-200 dark:bg-gray-700"></div>
+
+            <div className="text-center transform transition-transform hover:scale-105">
+                <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Accuracy</div>
+                <div className={`font-mono text-xl sm:text-2xl md:text-3xl font-black transition-colors duration-300 ${accuracy === 100 ? 'text-green-500' : 'text-orange-500'}`}>
+                    {accuracy}%
+                </div>
+            </div>
+
+            <div className="w-px h-8 sm:h-10 bg-gray-200 dark:bg-gray-700"></div>
+
+            <div className="text-center transform transition-transform hover:scale-105">
+                <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Errors</div>
+                <div className={`font-mono text-xl sm:text-2xl md:text-3xl font-black transition-colors duration-300 ${errors === 0 ? 'text-gray-400' : 'text-red-500'}`}>
+                    {errors}
+                </div>
+            </div>
         </div>
     );
 };
 
-const StatItem = ({ label, value, color }: { label: string; value: string | number; color: string }) => (
-    <div className="flex flex-col items-center gap-1">
-        <span className="text-[10px] uppercase tracking-widest text-gray-500 font-medium">
-            {label}
-        </span>
-        <motion.span
-            key={value}
-            initial={{ y: 5, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className={`text-4xl font-bold tracking-tighter ${color}`}
-        >
-            {value}
-        </motion.span>
-    </div>
-);
-
-export default StatsBar;
+export default React.memo(StatsBar);
