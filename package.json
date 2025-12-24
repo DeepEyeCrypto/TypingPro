@@ -1,7 +1,7 @@
 {
   "name": "typingpro",
   "private": true,
-  "version": "0.1.55",
+  "version": "0.1.57",
   "author": "TypingPro Team",
   "description": "A professional typing tutor application.",
   "license": "MIT",
@@ -29,7 +29,8 @@
     "react-dom": "^19.2.1",
     "react-router-dom": "^7.1.5",
     "recharts": "^3.6.0",
-    "tauri-plugin-store-api": "^0.0.0"
+    "tauri-plugin-store-api": "^0.0.0",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.6.0",
