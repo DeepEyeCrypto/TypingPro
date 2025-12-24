@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -59,17 +59,6 @@
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IHRhdXJpIHByaXZhdGUga2V5ClJXUlZMdUtSREdaREpndWd3UjFkTXN2N2JUTmZXVFFwMk5LdlRzQWd4QkI3L2tCbit4VzZLeHk5Cg=="
-    }
-  },
-  "env": {
-    "GOOGLE_CLIENT_ID": {
-      "default": "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
-    },
-    "GITHUB_CLIENT_ID": {
-      "default": "0v23l1i00BXXC6qACXDuG"
-    },
-    "FIREBASE_PROJECT_ID": {
-      "default": "typingpro-prod-1234"
     }
   }
 }
