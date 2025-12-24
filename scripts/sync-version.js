@@ -20,11 +20,11 @@ try {
     // 2. Sync Tauri Config
     if (existsSync(tauriConfPath)) {
         const tauriConf = JSON.parse(readFileSync(tauriConfPath, 'utf8'));
-        const currentTauriVersion = tauriConf.package.version;
+        const currentTauriVersion = tauriConf.version;
 
         if (currentTauriVersion !== targetVersion) {
             console.log(`⚠️  Mismatch found in tauri.conf.json (v${currentTauriVersion}). Fixing...`);
-            tauriConf.package.version = targetVersion;
+            tauriConf.version = targetVersion;
             writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
             console.log(`✅ Updated tauri.conf.json to v${targetVersion}`);
         } else {

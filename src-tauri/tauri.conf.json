@@ -1,49 +1,57 @@
 {
+  "productName": "TypingPro",
+  "version": "0.2.3",
+  "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": true
+    "distDir": "../dist"
   },
-  "package": {
-    "productName": "TypingPro",
-    "version": "0.2.0"
+  "app": {
+    "windows": [
+      {
+        "title": "TypingPro",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis",
+      "dmg",
+      "deb"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "signingIdentity": null,
+      "entitlements": null
     },
-    "bundle": {
-      "active": true,
-      "targets": [
-        "nsis",
-        "dmg",
-        "deb"
-      ],
-      "resources": [],
-      "identifier": "com.typingpro.app",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "macOS": {
-        "signingIdentity": null,
-        "entitlements": null
-      },
-      "windows": {
-        "wix": {
-          "language": "en-US"
-        }
+    "windows": {
+      "wix": {
+        "language": "en-US"
       }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
     },
+    "process": {},
     "updater": {
       "active": true,
       "endpoints": [
@@ -51,19 +59,6 @@
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IHRhdXJpIHByaXZhdGUga2V5ClJXUlZMdUtSREdaREpndWd3UjFkTXN2N2JUTmZXVFFwMk5LdlRzQWd4QkI3L2tCbit4VzZLeHk5Cg=="
-    },
-    "security": {
-      "csp": null
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "TypingPro",
-        "width": 1200,
-        "height": 800,
-        "center": true
-      }
-    ]
+    }
   }
 }
