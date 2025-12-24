@@ -22,6 +22,7 @@ function run(command, msg) {
 
 // 1. Sync & Bump Version
 console.log('\n📈 VERSION SYNC & BUMP...');
+let tagName = '';
 try {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     const oldVersion = packageJson.version;
@@ -31,13 +32,25 @@ try {
 
     packageJson.version = newVersion;
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+    if (fs.existsSync(tauriConfPath)) {
+        const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
+        tauriConf.version = newVersion;
+        fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
+    }
+
+    if (fs.existsSync(cargoTomlPath)) {
+        let cargoToml = fs.readFileSync(cargoTomlPath, 'utf8');
+        cargoToml = cargoToml.replace(/^version\s*=\s*"[^"]+"/m, `version = "${newVersion}"`);
+        fs.writeFileSync(cargoTomlPath, cargoToml);
+    }
+
+    console.log(`✅ Version bumped: ${oldVersion} -> ${newVersion}`);
+    tagName = `v${newVersion}`;
 } catch (e) {
     console.error('❌ Version sync failed:', e);
     process.exit(1);
 }
-
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-const tagName = `v${packageJson.version}`;
 
 // 2. Clean Build
 run('npm run clean', 'Cleaning old artifacts');
