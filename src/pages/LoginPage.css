@@ -1,0 +1,238 @@
+.login-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+.login-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 300px;
+    height: 300px;
+    background: rgba(0, 217, 255, 0.4);
+    top: -50px;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 250px;
+    height: 250px;
+    background: rgba(100, 150, 255, 0.3);
+    bottom: 50px;
+    right: 100px;
+    animation-delay: 2s;
+}
+
+.orb-3 {
+    width: 200px;
+    height: 200px;
+    background: rgba(0, 217, 255, 0.2);
+    top: 50%;
+    right: -100px;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px);
+    }
+
+    50% {
+        transform: translateY(-20px) translateX(10px);
+    }
+}
+
+.login-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    background: rgba(20, 28, 50, 0.8);
+    backdrop-filter: blur(10px);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.6s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.login-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.glass-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 200ms ease-out;
+}
+
+.glass-btn:hover {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: rgba(0, 217, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
+}
+
+.glass-btn:active {
+    transform: translateY(0);
+}
+
+.glass-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.btn-guest {
+    padding: 12px 20px;
+    background: rgba(100, 100, 200, 0.15);
+    border: 0.5px solid rgba(100, 100, 200, 0.3);
+    color: #a0aec0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 200ms ease-out;
+}
+
+.btn-guest:hover {
+    background: rgba(100, 100, 200, 0.25);
+    border-color: rgba(100, 100, 200, 0.5);
+}
+
+.divider {
+    text-align: center;
+    color: #64748b;
+    font-size: 12px;
+    margin: 15px 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    width: 35%;
+    height: 0.5px;
+    background: rgba(255, 255, 255, 0.1);
+    top: 50%;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 8px;
+}
+
+.trust-indicators {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.indicator {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.indicator .icon {
+    font-size: 20px;
+}
+
+.indicator .text {
+    font-size: 11px;
+    color: #94a3b8;
+}

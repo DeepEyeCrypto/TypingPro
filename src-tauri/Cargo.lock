@@ -4974,12 +4974,13 @@ checksum = "562d481066bde0658276a35467c4af00bdc6ee726305698a55b86e61d7ad82bb"
 
 [[package]]
 name = "typingpro"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "chrono",
  "dotenv",
  "dotenv_codegen",
  "oauth2",
+ "open",
  "rand 0.8.5",
  "reqwest 0.11.27",
  "serde",

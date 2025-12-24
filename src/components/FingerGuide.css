@@ -1,0 +1,53 @@
+.finger-guide {
+    margin-bottom: 30px;
+}
+
+.finger-guide h3 {
+    font-size: 14px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 15px 0;
+}
+
+.keyboard-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(10, 14, 39, 0.6);
+    padding: 15px;
+    border-radius: 12px;
+    border: 0.5px solid rgba(255, 255, 255, 0.05);
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.key {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(100, 100, 100, 0.1);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 150ms ease-out;
+}
+
+.key.active {
+    background: rgba(0, 217, 255, 0.2);
+    border-color: rgba(0, 217, 255, 0.5);
+    color: #00d9ff;
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.2);
+}
+
+.key.inactive {
+    opacity: 0.3;
+}

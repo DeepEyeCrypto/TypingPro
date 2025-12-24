@@ -1,6 +1,6 @@
 [package]
 name = "typingpro"
-version = "0.2.5"
+version = "0.2.6"
 description = "A professional typing tutor application"
 authors = ["TypingPro Team"]
 license = ""
@@ -29,6 +29,7 @@ oauth2 = "4.4"
 tokio = { version = "1.0", features = ["full"] }
 reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
 url = "2.5"
+open = "5.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
