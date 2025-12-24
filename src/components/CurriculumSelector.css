@@ -1,0 +1,144 @@
+.curriculum-selector {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.selector-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.selector-header h1 {
+    font-size: 36px;
+    margin: 0 0 10px 0;
+    color: #f1f5f9;
+}
+
+.selector-header p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.stages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stage-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stage-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(0, 217, 255, 0.2);
+    border-radius: 12px;
+    color: #f1f5f9;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease-out;
+    width: 100%;
+}
+
+.stage-header:hover {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: rgba(0, 217, 255, 0.4);
+}
+
+.stage-header.expanded {
+    border-color: rgba(0, 217, 255, 0.5);
+    background: rgba(0, 217, 255, 0.15);
+}
+
+.stage-number {
+    font-size: 12px;
+    color: #00d9ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stage-title {
+    flex: 1;
+    text-align: left;
+}
+
+.lesson-count {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.expand-icon {
+    font-size: 10px;
+    transition: transform 200ms ease-out;
+}
+
+.stage-header.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+.lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    padding: 0 10px;
+}
+
+.lesson-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(20, 28, 50, 0.6);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 200ms ease-out;
+    text-align: left;
+}
+
+.lesson-card:hover {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: rgba(0, 217, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.lesson-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: #00d9ff;
+}
+
+.lesson-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+    line-height: 1.4;
+}
+
+.lesson-meta {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+}
+
+.target-wpm {
+    color: #00d9ff;
+    font-weight: 600;
+}
+
+.difficulty {
+    color: #94a3b8;
+    text-transform: capitalize;
+}
