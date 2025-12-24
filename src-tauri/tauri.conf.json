@@ -1,12 +1,12 @@
 {
   "productName": "TypingPro",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
   "app": {
     "windows": [
