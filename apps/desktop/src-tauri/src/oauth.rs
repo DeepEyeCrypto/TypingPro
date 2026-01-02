@@ -44,32 +44,41 @@ struct GithubUserResponse {
 }
 
 
+
 pub fn get_google_auth_url() -> String {
-    let client_id = std::env::var("GOOGLE_CLIENT_ID").unwrap_or_else(|_| "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com".to_string());
+    let client_id = std::env::var("GOOGLE_CLIENT_ID")
+        .unwrap_or_else(|_| "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com".to_string())
+        .trim().to_string();
     format!(
-        "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={}&redirect_uri=typingpro://auth/google/callback&scope=openid%20profile%20email",
+        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri=http://localhost:1420/auth&response_type=code&scope=openid%20profile%20email",
         client_id
     )
 }
 
 pub fn get_github_auth_url() -> String {
-    let client_id = std::env::var("GITHUB_CLIENT_ID").unwrap_or_else(|_| "0v23l1i00BXXC6qACXDuG".to_string());
+    let client_id = std::env::var("GITHUB_CLIENT_ID")
+        .unwrap_or_else(|_| "0v23l1i00BXXC6qACXDuG".to_string())
+        .trim().to_string();
     format!(
-        "https://github.com/login/oauth/authorize?client_id={}&redirect_uri=typingpro://auth/github/callback&scope=user:email",
+        "https://github.com/login/oauth/authorize?client_id={}&redirect_uri=http://localhost:1420/auth&scope=user:email",
         client_id
     )
 }
 
 pub async fn exchange_google_code(code: String) -> Result<UserProfile, String> {
     let client = reqwest::Client::new();
-    let client_id = std::env::var("GOOGLE_CLIENT_ID").unwrap_or_else(|_| "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com".to_string());
-    let client_secret = std::env::var("GOOGLE_CLIENT_SECRET").unwrap_or_else(|_| "154138a75e1266a4e8279be91e85d189d6a0dbbd".to_string());
+    let client_id = std::env::var("GOOGLE_CLIENT_ID")
+        .unwrap_or_else(|_| "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com".to_string())
+        .trim().to_string();
+    let client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
+        .unwrap_or_else(|_| "154138a75e1266a4e8279be91e85d189d6a0dbbd".to_string())
+        .trim().to_string();
     
     let mut params = HashMap::new();
     params.insert("code", code);
     params.insert("client_id", client_id);
     params.insert("client_secret", client_secret);
-    params.insert("redirect_uri", "typingpro://auth/google/callback".to_string());
+    params.insert("redirect_uri", "http://localhost:1420/auth".to_string());
     params.insert("grant_type", "authorization_code".to_string());
 
     let res: reqwest::Response = client.post("https://oauth2.googleapis.com/token")
@@ -100,14 +109,18 @@ pub async fn exchange_google_code(code: String) -> Result<UserProfile, String> {
 
 pub async fn exchange_github_code(code: String) -> Result<UserProfile, String> {
     let client = reqwest::Client::new();
-    let client_id = std::env::var("GITHUB_CLIENT_ID").unwrap_or_else(|_| "0v23l1i00BXXC6qACXDuG".to_string());
-    let client_secret = std::env::var("GITHUB_CLIENT_SECRET").unwrap_or_else(|_| "cd1416b9e41edc7a5c713aff95e60ff1d1aeff47".to_string());
+    let client_id = std::env::var("GITHUB_CLIENT_ID")
+        .unwrap_or_else(|_| "0v23l1i00BXXC6qACXDuG".to_string())
+        .trim().to_string();
+    let client_secret = std::env::var("GITHUB_CLIENT_SECRET")
+        .unwrap_or_else(|_| "cd1416b9e41edc7a5c713aff95e60ff1d1aeff47".to_string())
+        .trim().to_string();
     
     let mut params = HashMap::new();
     params.insert("code", code);
     params.insert("client_id", client_id);
     params.insert("client_secret", client_secret);
-    params.insert("redirect_uri", "typingpro://auth/github/callback".to_string());
+    params.insert("redirect_uri", "http://localhost:1420/auth".to_string());
 
     let res: reqwest::Response = client.post("https://github.com/login/oauth/access_token")
         .header(ACCEPT, "application/json")
