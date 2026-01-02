@@ -1,11 +1,15 @@
 use serde::{Deserialize, Serialize};
 use reqwest::header::{ACCEPT, USER_AGENT};
 use std::collections::HashMap;
+use tauri_plugin_oauth::start_with_config;
+use tauri::{AppHandle, Manager};
+// use tauri_plugin_shell::ShellExt;
 
-pub const GOOGLE_CLIENT_ID: &str = "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com";
-pub const GOOGLE_CLIENT_SECRET: &str = "154138a75e1266a4e8279be91e85d189d6a0dbbd";
-pub const GITHUB_CLIENT_ID: &str = "0v23l1i00BXXC6qACXDuG";
-pub const GITHUB_CLIENT_SECRET: &str = "cd1416b9e41edc7a5c713aff95e60ff1d1aeff47";
+pub const GOOGLE_CLIENT_ID: &str = "62301411076-ivu6svrcuffanue275q30noq1nmjk4lv.apps.googleusercontent.com";
+pub const GOOGLE_CLIENT_SECRET: &str = "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";
+pub const GITHUB_CLIENT_ID: &str = "Ov23liOD0XVCGqACXDuG";
+pub const GITHUB_CLIENT_SECRET: &str = "6e16d13be4f231e4ae5eebfbc80fcf8d22870f79";
+pub const REDIRECT_URI: &str = "http://localhost:1420/auth";
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserProfile {
@@ -43,109 +47,135 @@ struct GithubUserResponse {
     avatar_url: Option<String>
 }
 
+pub async fn perform_google_login(app: AppHandle) -> Result<UserProfile, String> {
+    let (tx, rx): (async_channel::Sender<String>, async_channel::Receiver<String>) = async_channel::bounded(1);
+    
+    // Start listener on Rust side
+    let port = start_with_config(tauri_plugin_oauth::OauthConfig {
+        ports: Some(vec![1420]),
+        response: None,
+    }, move |url: String| {
+        let _ = tx.try_send(url);
+    }).map_err(|e| e.to_string())?;
 
+    let url = format!(
+        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri=http://localhost:{}/auth&response_type=code&scope=openid%20profile%20email",
+        GOOGLE_CLIENT_ID, port
+    );
 
-pub fn get_google_auth_url() -> String {
-    let client_id = std::env::var("GOOGLE_CLIENT_ID")
-        .unwrap_or_else(|_| "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com".to_string())
-        .trim().to_string();
-    format!(
-        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri=http://localhost:1420/auth&response_type=code&scope=openid%20profile%20email",
-        client_id
-    )
+    // Open browser
+    // Open browser
+    open::that(&url).map_err(|e| e.to_string())?;
+
+    // Wait for code
+    let uri_str = rx.recv().await.map_err(|e| e.to_string())?;
+    let url_obj = url::Url::parse(&uri_str).map_err(|e| e.to_string())?;
+    
+    let code = url_obj
+        .query_pairs()
+        .find(|(key, _)| key == "code")
+        .map(|(_, value)| value.to_string())
+        .ok_or("No code found in redirect")?;
+
+    exchange_google_code(code).await
 }
 
-pub fn get_github_auth_url() -> String {
-    let client_id = std::env::var("GITHUB_CLIENT_ID")
-        .unwrap_or_else(|_| "0v23l1i00BXXC6qACXDuG".to_string())
-        .trim().to_string();
-    format!(
-        "https://github.com/login/oauth/authorize?client_id={}&redirect_uri=http://localhost:1420/auth&scope=user:email",
-        client_id
-    )
+pub async fn perform_github_login(app: AppHandle) -> Result<UserProfile, String> {
+    let (tx, rx): (async_channel::Sender<String>, async_channel::Receiver<String>) = async_channel::bounded(1);
+    
+    let port = start_with_config(tauri_plugin_oauth::OauthConfig {
+        ports: Some(vec![1420]),
+        response: None,
+    }, move |url: String| {
+        let _ = tx.try_send(url);
+    }).map_err(|e| e.to_string())?;
+
+    let redirect_uri = format!("http://localhost:{}/auth", port);
+    
+    // EXACT URL structure requested by user
+    let url = format!(
+        "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&scope=user:email",
+        GITHUB_CLIENT_ID, redirect_uri
+    );
+
+    println!("DEBUG: Opening GitHub Auth URL: {}", url);
+
+    open::that(&url).map_err(|e| e.to_string())?;
+
+    let uri_str = rx.recv().await.map_err(|e| e.to_string())?;
+    let url_obj = url::Url::parse(&uri_str).map_err(|e| e.to_string())?;
+    
+    let code = url_obj
+        .query_pairs()
+        .find(|(key, _)| key == "code")
+        .map(|(_, value)| value.to_string())
+        .ok_or("No code found in redirect")?;
+
+    exchange_github_code(code, redirect_uri).await
 }
 
+// Keep exchange functions as helpers
 pub async fn exchange_google_code(code: String) -> Result<UserProfile, String> {
     let client = reqwest::Client::new();
-    let client_id = std::env::var("GOOGLE_CLIENT_ID")
-        .unwrap_or_else(|_| "2xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com".to_string())
-        .trim().to_string();
-    let client_secret = std::env::var("GOOGLE_CLIENT_SECRET")
-        .unwrap_or_else(|_| "154138a75e1266a4e8279be91e85d189d6a0dbbd".to_string())
-        .trim().to_string();
     
     let mut params = HashMap::new();
     params.insert("code", code);
-    params.insert("client_id", client_id);
-    params.insert("client_secret", client_secret);
-    params.insert("redirect_uri", "http://localhost:1420/auth".to_string());
+    params.insert("client_id", GOOGLE_CLIENT_ID.to_string());
+    params.insert("client_secret", GOOGLE_CLIENT_SECRET.to_string());
+    params.insert("redirect_uri", REDIRECT_URI.to_string());
     params.insert("grant_type", "authorization_code".to_string());
 
-    let res: reqwest::Response = client.post("https://oauth2.googleapis.com/token")
+    let res = client.post("https://oauth2.googleapis.com/token")
         .form(&params)
-        .send()
-        .await
-        .map_err(|e: reqwest::Error| e.to_string())?;
-
-    let token_data = res.json::<GoogleTokenResponse>().await.map_err(|e: reqwest::Error| e.to_string())?;
+        .send().await.map_err(|e| e.to_string())?;
+    
+    let token_data: GoogleTokenResponse = res.json().await.map_err(|e| e.to_string())?;
 
     let user_res = client.get("https://www.googleapis.com/oauth2/v2/userinfo")
-        .bearer_auth(token_data.access_token.clone())
-        .send()
-        .await
-        .map_err(|e: reqwest::Error| e.to_string())?;
-
-    let user_data = user_res.json::<GoogleUserResponse>().await.map_err(|e: reqwest::Error| e.to_string())?;
+        .bearer_auth(&token_data.access_token)
+        .send().await.map_err(|e| e.to_string())?;
+    
+    let user: GoogleUserResponse = user_res.json().await.map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
-        id: user_data.id,
-        name: user_data.name,
-        email: user_data.email,
-        avatar_url: user_data.picture,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar_url: user.picture,
         provider: "google".to_string(),
         token: token_data.access_token
     })
 }
 
-pub async fn exchange_github_code(code: String) -> Result<UserProfile, String> {
+pub async fn exchange_github_code(code: String, redirect_uri: String) -> Result<UserProfile, String> {
     let client = reqwest::Client::new();
-    let client_id = std::env::var("GITHUB_CLIENT_ID")
-        .unwrap_or_else(|_| "0v23l1i00BXXC6qACXDuG".to_string())
-        .trim().to_string();
-    let client_secret = std::env::var("GITHUB_CLIENT_SECRET")
-        .unwrap_or_else(|_| "cd1416b9e41edc7a5c713aff95e60ff1d1aeff47".to_string())
-        .trim().to_string();
     
     let mut params = HashMap::new();
     params.insert("code", code);
-    params.insert("client_id", client_id);
-    params.insert("client_secret", client_secret);
-    params.insert("redirect_uri", "http://localhost:1420/auth".to_string());
+    params.insert("client_id", GITHUB_CLIENT_ID.to_string());
+    params.insert("client_secret", GITHUB_CLIENT_SECRET.to_string());
+    params.insert("redirect_uri", redirect_uri);
 
-    let res: reqwest::Response = client.post("https://github.com/login/oauth/access_token")
+    let res = client.post("https://github.com/login/oauth/access_token")
         .header(ACCEPT, "application/json")
         .form(&params)
-        .send()
-        .await
-        .map_err(|e: reqwest::Error| e.to_string())?;
-
-    let token_data = res.json::<GithubTokenResponse>().await.map_err(|e: reqwest::Error| e.to_string())?;
+        .send().await.map_err(|e| e.to_string())?;
+    
+    let token_data: GithubTokenResponse = res.json().await.map_err(|e| e.to_string())?;
 
     let user_res = client.get("https://api.github.com/user")
-        .header(USER_AGENT, "DeepEyeSniper")
+        .header(USER_AGENT, "TypingPro")
         .header(ACCEPT, "application/json")
-        .bearer_auth(token_data.access_token.clone())
-        .send()
-        .await
-        .map_err(|e: reqwest::Error| e.to_string())?;
-
-    let user_data = user_res.json::<GithubUserResponse>().await.map_err(|e: reqwest::Error| e.to_string())?;
+        .bearer_auth(&token_data.access_token)
+        .send().await.map_err(|e| e.to_string())?;
+    
+    let user: GithubUserResponse = user_res.json().await.map_err(|e| e.to_string())?;
 
     Ok(UserProfile {
-        id: user_data.id.to_string(),
-        name: user_data.login,
-        email: user_data.email,
-        avatar_url: user_data.avatar_url,
+        id: user.id.to_string(),
+        name: user.login,
+        email: user.email,
+        avatar_url: user.avatar_url,
         provider: "github".to_string(),
         token: token_data.access_token
     })

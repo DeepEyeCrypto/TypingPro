@@ -53,3 +53,11 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
+
+.no-drag {
+  -webkit-app-region: no-drag;
+  /* CRITICAL for macOS clickability */
+  cursor: pointer !important;
+  z-index: 9999;
+  position: relative;
+}

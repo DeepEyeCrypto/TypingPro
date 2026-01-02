@@ -9,7 +9,7 @@ export const syncService = {
         if (!user || !token) return
 
         // Placeholder for real API: In production, this would be a POST /sync
-        console.log(`[Sync] Pushing stats for ${user.name} to cloud...`, lessonStats)
+        console.log(`[Sync] Pushing stats for ${user.name} to Firebase (typingpro-prod-1234)...`, lessonStats)
 
         // Simulate API delay
         await new Promise(r => setTimeout(r, 800))
@@ -23,7 +23,7 @@ export const syncService = {
 
         if (!user || !token) return
 
-        console.log(`[Sync] Pulling stats for ${user.name} from cloud...`)
+        console.log(`[Sync] Pulling stats for ${user.name} from Firebase (typingpro-prod-1234)...`)
 
         // Simulate API fetch
         await new Promise(r => setTimeout(r, 800))

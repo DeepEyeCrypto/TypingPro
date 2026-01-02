@@ -171,7 +171,10 @@ const App: React.FC = () => {
           flex-direction: column;
           overflow: hidden;
           position: relative;
-          transition: background-color 0.5s, color 0.5s;
+          transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                      color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                      backdrop-filter 0.5s ease;
+          backdrop-filter: blur(0px);
         }
         
         .theme-classic { background-color: #050505; color: #d1d0c5; }

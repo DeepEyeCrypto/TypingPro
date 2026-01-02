@@ -1,6 +1,7 @@
 {
   "name": "typingpro-monorepo",
   "private": true,
+  "version": "0.1.39",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -8,7 +9,8 @@
   "scripts": {
     "dev": "npm run dev --workspace=@typingpro/desktop",
     "build": "npm run build --workspaces",
-    "tauri": "npm run tauri --workspace=@typingpro/desktop"
+    "tauri": "npm run tauri --workspace=@typingpro/desktop",
+    "release:patch": "npm version patch --no-git-tag-version && node scripts/sync-tauri-version.cjs"
   },
   "devDependencies": {
     "prettier": "^3.0.0",

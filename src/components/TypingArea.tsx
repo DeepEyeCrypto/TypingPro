@@ -1,7 +1,6 @@
 import React from 'react'
 import { TypingField } from './TypingField'
 import { KeyboardOverlay } from './KeyboardOverlay'
-import { HandGuide } from './HandGuide'
 import './TypingArea.css'
 
 interface TypingAreaProps {
@@ -27,7 +26,6 @@ export const TypingArea = ({
 
             <div className="visual-guide-area">
                 <KeyboardOverlay activeChar={activeChar} />
-                <HandGuide activeChar={activeChar} />
             </div>
 
             <button className="btn-back" onClick={onBack}>

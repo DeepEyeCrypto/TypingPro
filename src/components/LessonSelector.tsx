@@ -13,11 +13,34 @@ export const LessonSelector = ({
   completedIds,
   onSelect
 }: LessonSelectorProps) => {
+  const nextLessonId = unlockedIds[unlockedIds.length - 1]
+  const nextLesson = CURRICULUM.find(l => l.id === nextLessonId) || CURRICULUM[0]
   const stages = Array.from(new Set(CURRICULUM.map((l) => l.stage)))
 
   return (
     <div className="lesson-selector custom-scrollbar">
-      {stages.map((stage) => (
+      <div className="dashboard-hero">
+        <div className="hero-content">
+          <h1 className="hero-title">TypingPro Enterprise</h1>
+          <p className="hero-subtitle">Mastery awaits. Continue your journey.</p>
+
+          <div className="hero-card liquid-glass-card">
+            <div className="hero-info">
+              <span className="hero-label">NEXT LESSON</span>
+              <h2 className="hero-lesson-title">{nextLesson.title}</h2>
+              <p className="hero-lesson-desc">{nextLesson.description}</p>
+            </div>
+            <button className="hero-cta" onClick={() => onSelect(nextLesson)}>
+              Start Session
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {stages.map((stage: string) => (
         <div key={stage} className="stage-group">
           <h2 className="stage-title">{stage}</h2>
           <div className="lesson-grid">

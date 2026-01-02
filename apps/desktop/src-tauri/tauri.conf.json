@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "0.1.1",
+  "version": "0.1.39",
   "identifier": "com.typingpro.monorepo",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -36,7 +36,24 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "macOS": {
+      "dmg": {
+        "background": "./icons/dmg-background.png",
+        "windowSize": {
+          "width": 600,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 160,
+          "y": 210
+        },
+        "applicationFolderPosition": {
+          "x": 440,
+          "y": 210
+        }
+      }
+    }
   },
   "plugins": {
     "shell": {

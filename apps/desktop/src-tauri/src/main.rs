@@ -7,7 +7,7 @@ mod oauth;
 use std::sync::Mutex;
 use tauri::State;
 use engine::TypingEngine;
-use oauth::{get_google_auth_url, get_github_auth_url, exchange_google_code, exchange_github_code, UserProfile};
+use oauth::{exchange_google_code, exchange_github_code, UserProfile};
 
 struct AppState {
     engine: Mutex<TypingEngine>,
@@ -33,23 +33,15 @@ fn complete_session(state: State<AppState>) -> engine::TypingMetrics {
 }
 
 #[tauri::command]
-fn google_auth_start() -> String {
-    get_google_auth_url()
+async fn google_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
+    println!("Executing google_login command");
+    oauth::perform_google_login(app).await
 }
 
 #[tauri::command]
-fn github_auth_start() -> String {
-    get_github_auth_url()
-}
-
-#[tauri::command]
-async fn google_auth_finish(code: String) -> Result<UserProfile, String> {
-    exchange_google_code(code).await
-}
-
-#[tauri::command]
-async fn github_auth_finish(code: String) -> Result<UserProfile, String> {
-    exchange_github_code(code).await
+async fn github_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
+    println!("Executing github_login command");
+    oauth::perform_github_login(app).await
 }
 
 fn main() {
@@ -61,10 +53,8 @@ fn main() {
             start_session,
             handle_keystroke,
             complete_session,
-            google_auth_start,
-            github_auth_start,
-            google_auth_finish,
-            github_auth_finish
+            google_login,
+            github_login
         ])
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_deep_link::init())
