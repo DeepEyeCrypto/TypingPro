@@ -1,104 +1,53 @@
-.topbar {
+.top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 40px;
-    background: rgba(5, 5, 5, 0.8);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
+    padding: 0 4rem;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
     z-index: 100;
-    width: 100%;
 }
 
-.topbar-logo {
+.mode-indicator,
+.stats-indicator {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-}
-
-.logo-icon {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: #00d9ff;
-    font-weight: 800;
-    font-size: 18px;
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
-}
-
-.logo-text {
-    font-size: 18px;
-    font-weight: 700;
-    color: #f1f5f9;
-    letter-spacing: -0.02em;
-}
-
-.topbar-actions {
-    display: flex;
-    gap: 20px;
+    gap: 2rem;
     align-items: center;
 }
 
-.btn-login-header {
-    padding: 10px 20px;
-    background: rgba(0, 217, 255, 0.05);
-    border: 1px solid rgba(0, 217, 255, 0.2);
-    border-radius: 10px;
-    color: #00d9ff;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+.stat {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
 }
 
-.btn-login-header:hover {
-    background: rgba(0, 217, 255, 0.1);
-    border-color: rgba(0, 217, 255, 0.4);
-    transform: translateY(-1px);
+.label {
+    font-size: 0.6rem;
+    color: #444444;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
 }
 
-.user-profile {
+.value {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: #888888;
+    font-family: 'Inter', sans-serif;
+}
+
+.text-white {
+    color: #ffffff;
+}
+
+/* Auth Buttons container shift to right */
+.top-bar-right {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 6px 16px 6px 6px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 30px;
-}
-
-.avatar-placeholder {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00d9ff 0%, #3b82f6 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 14px;
-    color: #fff;
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: #f1f5f9;
-}
-
-.user-status {
-    font-size: 10px;
-    color: #22c55e;
-    font-weight: 500;
+    gap: 1rem;
 }

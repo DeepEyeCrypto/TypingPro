@@ -1,0 +1,8 @@
+[package]
+name = "typingpro-core"
+version = "0.1.0"
+authors = ["TypingPro Team"]
+edition = "2021"
+
+[dependencies]
+# No JS logic - core engine will be implemented here

@@ -1,62 +1,18 @@
 {
-  "name": "typingpro",
+  "name": "typingpro-monorepo",
   "private": true,
-  "version": "0.2.9",
-  "author": "TypingPro Team",
-  "description": "A professional typing tutor application.",
-  "license": "MIT",
-  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "tauri": "tauri",
-    "check:requirements": "node scripts/check-requirements.cjs",
-    "build": "vite build",
-    "build:desktop": "node scripts/build-desktop.cjs",
-    "clean": "rimraf dist src-tauri/target release",
-    "lint": "tsc --noEmit",
-    "ship": "node scripts/ship.js",
-    "organize": "node scripts/organize-artifacts.js"
-  },
-  "dependencies": {
-    "@google/genai": "^1.31.0",
-    "@tauri-apps/api": "^2.9.1",
-    "@tauri-apps/plugin-dialog": "^2.4.2",
-    "@tauri-apps/plugin-os": "^2.3.2",
-    "@tauri-apps/plugin-process": "^2.3.1",
-    "@tauri-apps/plugin-shell": "^2.3.3",
-    "@tauri-apps/plugin-updater": "^2.9.0",
-    "firebase": "^12.6.0",
-    "framer-motion": "^12.23.26",
-    "hls.js": "^1.6.15",
-    "howler": "^2.2.4",
-    "lucide-react": "^0.556.0",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
-    "react-router-dom": "^7.1.5",
-    "recharts": "^3.6.0",
-    "tauri-plugin-store-api": "^0.0.0",
-    "zustand": "^5.0.9"
+    "dev": "npm run dev --workspace=@typingpro/desktop",
+    "build": "npm run build --workspaces",
+    "tauri": "npm run tauri --workspace=@typingpro/desktop"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.9.6",
-    "@types/howler": "^2.2.12",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.0.0",
-    "autoprefixer": "^10.4.22",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "ffmpeg-static": "^5.3.0",
-    "postcss": "^8.5.6",
-    "rimraf": "^6.1.2",
-    "standard-version": "^9.5.0",
-    "tailwindcss": "^3.4.19",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/DeepEyeCrypto/TypingPro.git"
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
   }
 }

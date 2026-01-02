@@ -1,0 +1,37 @@
+.sync-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 0.3px solid rgba(255, 255, 255, 0.05);
+    margin-right: 0.5rem;
+}
+
+.sync-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+}
+
+.synced .sync-dot {
+    background: #00ff66;
+    box-shadow: 0 0 5px #00ff66;
+}
+
+.pending .sync-dot {
+    background: #ffaa00;
+    box-shadow: 0 0 5px #ffaa00;
+}
+
+.sync-label {
+    font-size: 0.45rem;
+    letter-spacing: 0.1em;
+    color: #444444;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.synced .sync-label {
+    color: #666666;
+}

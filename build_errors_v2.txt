@@ -1,0 +1,72 @@
+
+> @typingpro/desktop@0.1.1 build
+> tsc && vite build
+
+src/main.tsx(9,6): error TS2786: 'ErrorBoundary' cannot be used as a JSX component.
+  Its type 'typeof ErrorBoundary' is not a valid JSX element type.
+    Type 'typeof ErrorBoundary' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+      Type 'ErrorBoundary' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, props, refs
+../../src/components/AccountAvatar.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/AccountAvatar.tsx(10,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AnalyticsDashboard.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/AnalyticsDashboard.tsx(13,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AuthButtonGithub.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/AuthButtonGithub.tsx(11,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AuthButtonGoogle.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/AuthButtonGoogle.tsx(11,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AuthButtons.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/AuthButtons.tsx(20,7): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/ErrorBoundary.tsx(1,56): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/ErrorBoundary.tsx(29,17): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/ErrorBoundary.tsx(74,21): error TS2339: Property 'props' does not exist on type 'ErrorBoundary'.
+../../src/components/GatekeeperModal.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/GatekeeperModal.tsx(24,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/HandGuide.tsx(1,32): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/HandGuide.tsx(38,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/KeyboardOverlay.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/KeyboardOverlay.tsx(13,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/KeyHeatmap.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/KeyHeatmap.tsx(11,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/LessonSelector.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/LessonSelector.tsx(19,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/SessionTable.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/SessionTable.tsx(8,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/SettingsPanel.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/SettingsPanel.tsx(26,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/SyncIndicator.tsx(1,44): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/SyncIndicator.tsx(28,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TopBar.tsx(1,33): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/TopBar.tsx(22,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TrendChart.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/TrendChart.tsx(12,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TypingArea.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/TypingArea.tsx(21,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TypingField.tsx(1,19): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+../../src/components/TypingField.tsx(15,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/hooks/useTyping.ts(1,59): error TS7016: Could not find a declaration file for module 'react'. '/Users/enayat/Documents/TypingPro/apps/desktop/node_modules/react/index.js' implicitly has an 'any' type.
+  If the 'react' package actually exposes this module, consider sending a pull request to amend 'https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react'
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path /Users/enayat/Documents/TypingPro/apps/desktop
+npm error workspace @typingpro/desktop@0.1.1
+npm error location /Users/enayat/Documents/TypingPro/apps/desktop
+npm error command failed
+npm error command sh -c tsc && vite build

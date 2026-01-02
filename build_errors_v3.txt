@@ -1,0 +1,13 @@
+
+> @typingpro/desktop@0.1.1 build
+> tsc && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 71 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.40 kB │ gzip:  0.26 kB
+dist/assets/index-CDy5NChD.css   12.40 kB │ gzip:  3.28 kB
+dist/assets/index-drDjBTac.js   176.65 kB │ gzip: 56.09 kB
+✓ built in 1.81s

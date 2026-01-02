@@ -61,11 +61,11 @@ Inspired by the **iOS 26 Visual Language**:
 
 Get the latest stable release from the [GitHub Releases](https://github.com/DeepEyeCrypto/TypingPro/releases).
 
-| Platform | Installer | Architecture |
-|----------|-----------|--------------|
-| **macOS** | `.dmg` | Universal (Silicon & Intel) |
-| **Windows** | `.exe` | x64 (NSIS) |
-| **Linux** | `.deb` | x64 |
+| Platform    | Installer | Architecture                |
+| ----------- | --------- | --------------------------- |
+| **macOS**   | `.dmg`    | Universal (Silicon & Intel) |
+| **Windows** | `.exe`    | x64 (NSIS)                  |
+| **Linux**   | `.deb`    | x64                         |
 
 ## 🛠 Technology Stack
 
@@ -101,6 +101,7 @@ Get the latest stable release from the [GitHub Releases](https://github.com/Deep
 MIT License. Built with ❤️ for the typing community.
 
 ---
+
 <div align="center">
   <sub>Elite Performance. Scientific Mastery. **TypingPro.**</sub>
 </div>

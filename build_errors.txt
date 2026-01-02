@@ -1,0 +1,87 @@
+
+> @typingpro/desktop@0.1.1 build
+> tsc && vite build
+
+src/main.tsx(9,6): error TS2786: 'ErrorBoundary' cannot be used as a JSX component.
+  Its type 'typeof ErrorBoundary' is not a valid JSX element type.
+    Type 'typeof ErrorBoundary' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+      Type 'ErrorBoundary' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, props, refs
+../../src/components/AccountAvatar.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/AccountAvatar.tsx(10,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AnalyticsDashboard.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/AnalyticsDashboard.tsx(11,73): error TS7031: Binding element 'onBack' implicitly has an 'any' type.
+../../src/components/AnalyticsDashboard.tsx(13,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AuthButtonGithub.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/AuthButtonGithub.tsx(11,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/AuthButtonGoogle.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/AuthButtonGoogle.tsx(11,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/ErrorBoundary.tsx(1,56): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/ErrorBoundary.tsx(29,17): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/ErrorBoundary.tsx(74,21): error TS2339: Property 'children' does not exist on type 'ErrorBoundary'.
+../../src/components/GatekeeperModal.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/GatekeeperModal.tsx(14,3): error TS7031: Binding element 'metrics' implicitly has an 'any' type.
+../../src/components/GatekeeperModal.tsx(15,3): error TS7031: Binding element 'targetWPM' implicitly has an 'any' type.
+../../src/components/GatekeeperModal.tsx(16,3): error TS7031: Binding element 'passed' implicitly has an 'any' type.
+../../src/components/GatekeeperModal.tsx(17,3): error TS7031: Binding element 'onClose' implicitly has an 'any' type.
+../../src/components/GatekeeperModal.tsx(18,3): error TS7031: Binding element 'onNext' implicitly has an 'any' type.
+../../src/components/GatekeeperModal.tsx(24,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/HandGuide.tsx(1,32): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/HandGuide.tsx(10,5): error TS7031: Binding element 'id' implicitly has an 'any' type.
+../../src/components/HandGuide.tsx(11,5): error TS7031: Binding element 'active' implicitly has an 'any' type.
+../../src/components/HandGuide.tsx(12,5): error TS7031: Binding element 'targetX' implicitly has an 'any' type.
+../../src/components/HandGuide.tsx(13,5): error TS7031: Binding element 'targetY' implicitly has an 'any' type.
+../../src/components/HandGuide.tsx(15,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<FingerId, { x: number; y: number; }>'.
+../../src/components/HandGuide.tsx(35,18): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<FingerId, { x: number; y: number; }>'.
+../../src/components/HandGuide.tsx(38,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/HandGuide.tsx(58,55): error TS7031: Binding element 'activeChar' implicitly has an 'any' type.
+../../src/components/KeyboardOverlay.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/KeyboardOverlay.tsx(9,67): error TS7031: Binding element 'activeChar' implicitly has an 'any' type.
+../../src/components/KeyboardOverlay.tsx(13,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/KeyHeatmap.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/KeyHeatmap.tsx(11,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/LessonSelector.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/LessonSelector.tsx(12,3): error TS7031: Binding element 'unlockedIds' implicitly has an 'any' type.
+../../src/components/LessonSelector.tsx(13,3): error TS7031: Binding element 'completedIds' implicitly has an 'any' type.
+../../src/components/LessonSelector.tsx(14,3): error TS7031: Binding element 'onSelect' implicitly has an 'any' type.
+../../src/components/LessonSelector.tsx(19,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/SessionTable.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/SessionTable.tsx(8,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/SettingsPanel.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/SettingsPanel.tsx(9,63): error TS7031: Binding element 'onClose' implicitly has an 'any' type.
+../../src/components/SettingsPanel.tsx(26,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/SyncIndicator.tsx(1,44): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/SyncIndicator.tsx(28,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TopBar.tsx(1,33): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/TopBar.tsx(17,49): error TS7031: Binding element 'metrics' implicitly has an 'any' type.
+../../src/components/TopBar.tsx(17,58): error TS7031: Binding element 'mode' implicitly has an 'any' type.
+../../src/components/TopBar.tsx(17,64): error TS7031: Binding element 'onAnalyticsClick' implicitly has an 'any' type.
+../../src/components/TopBar.tsx(22,5): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TrendChart.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/TrendChart.tsx(12,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TypingArea.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/TypingArea.tsx(15,5): error TS7031: Binding element 'targetText' implicitly has an 'any' type.
+../../src/components/TypingArea.tsx(16,5): error TS7031: Binding element 'input' implicitly has an 'any' type.
+../../src/components/TypingArea.tsx(17,5): error TS7031: Binding element 'activeChar' implicitly has an 'any' type.
+../../src/components/TypingArea.tsx(18,5): error TS7031: Binding element 'onBack' implicitly has an 'any' type.
+../../src/components/TypingArea.tsx(21,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TypingField.tsx(1,19): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/components/TypingField.tsx(11,59): error TS7031: Binding element 'targetText' implicitly has an 'any' type.
+../../src/components/TypingField.tsx(11,71): error TS7031: Binding element 'input' implicitly has an 'any' type.
+../../src/components/TypingField.tsx(11,78): error TS7031: Binding element 'active' implicitly has an 'any' type.
+../../src/components/TypingField.tsx(15,9): error TS2875: This JSX tag requires the module path 'react/jsx-runtime' to exist, but none could be found. Make sure you have types for the appropriate package installed.
+../../src/components/TypingField.tsx(16,40): error TS7006: Parameter 'char' implicitly has an 'any' type.
+../../src/components/TypingField.tsx(16,46): error TS7006: Parameter 'i' implicitly has an 'any' type.
+../../src/hooks/useTyping.ts(1,59): error TS2307: Cannot find module 'react' or its corresponding type declarations.
+../../src/hooks/useTyping.ts(73,33): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+../../src/hooks/useTyping.ts(79,36): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+../../src/hooks/useTyping.ts(96,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+../../src/hooks/useTyping.ts(107,27): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+../../src/hooks/useTyping.ts(113,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+../../src/stores/authStore.ts(24,30): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+npm error Lifecycle script `build` failed with error:
+npm error code 2
+npm error path /Users/enayat/Documents/TypingPro/apps/desktop
+npm error workspace @typingpro/desktop@0.1.1
+npm error location /Users/enayat/Documents/TypingPro/apps/desktop
+npm error command failed
+npm error command sh -c tsc && vite build
