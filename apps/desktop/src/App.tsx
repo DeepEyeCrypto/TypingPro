@@ -129,7 +129,10 @@ const App: React.FC = () => {
 
       {typing.showResult && typing.currentLesson && (
         <GatekeeperModal
-          metrics={typing.metrics}
+          stats={{
+            ...typing.finalStats,
+            accuracy: typing.metrics.accuracy
+          }}
           targetWPM={Math.max(28, typing.currentLesson.targetWPM)}
           passed={gatekeeperPassed}
           onClose={() => {

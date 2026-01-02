@@ -14,6 +14,16 @@ export const useTyping = () => {
         consistency: 100
     })
     const [input, setInput] = useState('')
+    const [startTime, setStartTime] = useState<number>(0)
+    const [totalKeystrokes, setTotalKeystrokes] = useState(0)
+    const [finalStats, setFinalStats] = useState({
+        netWpm: 0,
+        errorCount: 0,
+        timeTaken: 0,
+        rawWpm: 0,
+        consistency: 0,
+        totalKeystrokes: 0
+    })
     const [errors, setErrors] = useState<Record<string, number>>({})
     const [unlockedIds, setUnlockedIds] = useState<string[]>(['l1'])
     const [completedIds, setCompletedIds] = useState<string[]>([])
@@ -44,6 +54,9 @@ export const useTyping = () => {
         setInput('')
         setErrors({})
         setMetrics({ raw_wpm: 0, adjusted_wpm: 0, accuracy: 100, consistency: 100 })
+        setStartTime(Date.now())
+        setTotalKeystrokes(0)
+        setFinalStats({ netWpm: 0, errorCount: 0, timeTaken: 0, rawWpm: 0, consistency: 0, totalKeystrokes: 0 })
         await startSession(lesson.text)
         setView('typing')
         setShowResult(false)
@@ -57,6 +70,23 @@ export const useTyping = () => {
 
     const handleResult = useCallback(() => {
         if (!currentLesson) return
+
+        const endTime = Date.now()
+        const timeTaken = (endTime - startTime) / 1000 // Seconds
+        const totalErrors = Object.values(errors).reduce((a, b) => a + b, 0)
+
+        // Formulas
+        const calculatedRawWpm = ((totalKeystrokes / 5) / (timeTaken / 60))
+        const netWpm = Math.max(0, ((totalKeystrokes - totalErrors) / 5) / (timeTaken / 60))
+
+        setFinalStats({
+            rawWpm: Math.round(calculatedRawWpm),
+            netWpm: Math.round(netWpm),
+            errorCount: totalErrors,
+            consistency: Math.round(metrics.consistency),
+            timeTaken: timeTaken,
+            totalKeystrokes: totalKeystrokes
+        })
 
         // Record stats including errors
         recordAttempt(currentLesson.id, metrics.raw_wpm, metrics.accuracy, errors)
@@ -81,7 +111,7 @@ export const useTyping = () => {
             }
         }
         setShowResult(true)
-    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors])
+    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes])
 
     useEffect(() => {
         if (currentLesson && input.length === currentLesson.text.length && input.length > 0) {
@@ -110,6 +140,7 @@ export const useTyping = () => {
                 }))
             }
 
+            setTotalKeystrokes(prev => prev + 1)
             setInput((prev: string) => prev + char)
 
             try {
@@ -134,6 +165,7 @@ export const useTyping = () => {
         activeChar,
         startLesson,
         retryLesson,
-        onKeyDown
+        onKeyDown,
+        finalStats
     }
 }
