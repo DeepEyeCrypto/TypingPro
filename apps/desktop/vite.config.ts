@@ -15,9 +15,14 @@ export default defineConfig({
     strictPort: true
   },
   envPrefix: ['VITE_', 'TAURI_'],
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  },
   build: {
     target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari13',
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
-    sourcemap: !!process.env.TAURI_DEBUG
+    sourcemap: !!process.env.TAURI_DEBUG,
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 2000
   }
 })
