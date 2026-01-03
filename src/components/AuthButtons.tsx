@@ -10,15 +10,15 @@ export const AuthButtons = () => {
 
   const handleLogin = async (provider: 'google' | 'github') => {
     try {
-      console.log(`Login clicked: ${provider}`)
       // 1. Start Listener on 1420
       const port = await start({ ports: [1420] })
-      console.log(`OAuth listener started on port ${port}`)
+
 
       // 2. Get Auth URL from Rust
       // command names are now google_login / github_login
+      // command names are now google_login / github_login
       const url = await invoke<string>(`${provider}_login`)
-      console.log("Got auth url:", url)
+
 
       // 3. Open Browser
       await open(url)

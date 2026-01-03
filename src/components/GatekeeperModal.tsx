@@ -11,6 +11,7 @@ interface GatekeeperModalProps {
     errorCount: number
     timeTaken: number
     totalKeystrokes: number
+    errorsDetail?: Record<string, number>
   },
   targetWPM: number
   passed: boolean
@@ -37,10 +38,30 @@ export const GatekeeperModal = ({
 
   const net = Math.round(stats.netWpm)
   const gap = Math.max(0, targetWPM - net)
-  
-  const failureMessage = !wpmOk
-      ? `You were ${gap} WPM short of the target. Pick up the pace!`
-      : `Precision is non-negotiable. 100% accuracy is required to advance.`
+
+  // Dynamic Feedback
+  let feedbackMessage = ''
+  if (!wpmOk) {
+    feedbackMessage = `You were ${gap} WPM short of the target. Pick up the pace!`
+  } else if (!accuracyOk) {
+    feedbackMessage = `Precision is non-negotiable. 100% accuracy is required to advance.`
+  } else {
+    // Success Messages
+    const successMessages = [
+      "Hypersonic speed achieved. Systems nominal.",
+      "Target destroyed. You are ready for the next protocol.",
+      "Synchronization complete. Performance exceeds expectations.",
+      "Neural link stable. Excellent work."
+    ]
+    feedbackMessage = successMessages[Math.floor(Math.random() * successMessages.length)]
+  }
+
+  // Top Errors Analysis
+  const topErrors = stats.errorsDetail
+    ? Object.entries(stats.errorsDetail)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+    : []
 
   return (
     <div className="modal-overlay">
@@ -83,13 +104,18 @@ export const GatekeeperModal = ({
 
         <div className="keystrokes-bar">
           <span>Keystrokes: {stats.totalKeystrokes}</span>
+          {topErrors.length > 0 && (
+            <span className="error-summary">
+              | Missed: {topErrors.map(([char, count]) => (
+                <span key={char} className="missed-key">'{char}' ({count}) </span>
+              ))}
+            </span>
+          )}
         </div>
 
-        {!passed && (
-          <p className="failure-hint">
-            {failureMessage}
-          </p>
-        )}
+        <p className={`status-message ${passed ? 'passed' : 'failed'}`}>
+          {feedbackMessage}
+        </p>
 
         <div className="button-group">
           <button onClick={onClose} className="btn-secondary">

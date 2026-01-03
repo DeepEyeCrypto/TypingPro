@@ -179,6 +179,7 @@ export const useTyping = () => {
         startLesson,
         retryLesson,
         onKeyDown,
-        finalStats
+        finalStats,
+        errors
     }
 }

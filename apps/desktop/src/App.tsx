@@ -75,7 +75,6 @@ const App: React.FC = () => {
     let unlisten: (() => void) | undefined
     import('@tauri-apps/plugin-deep-link').then(({ onOpenUrl }) => {
       onOpenUrl((urls) => {
-        console.log('Deep link received:', urls)
         for (const url of urls) {
           handleAuth(url)
         }
@@ -134,7 +133,8 @@ const App: React.FC = () => {
         <GatekeeperModal
           stats={{
             ...typing.finalStats,
-            accuracy: typing.metrics.accuracy
+            accuracy: typing.metrics.accuracy,
+            errorsDetail: typing.errors
           }}
           targetWPM={Math.max(28, typing.currentLesson.targetWPM)}
           passed={gatekeeperPassed}

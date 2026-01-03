@@ -20,9 +20,7 @@ export const TopBar = ({ metrics, mode, onAnalyticsClick }: TopBarProps) => {
 
   const handleLogin = async (provider: 'google' | 'github') => {
     try {
-      console.log(`[TopBar] Login clicked: ${provider}`)
       const userData = await invoke<any>(`${provider}_login`)
-      console.log(`[TopBar] Login success:`, userData)
       setAuthenticated(userData, userData.token)
       syncService.pullFromCloud()
     } catch (e) {
