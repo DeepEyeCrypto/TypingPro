@@ -1,68 +1,88 @@
+/* Global Overlay */
 .settings-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
     z-index: 2000;
     display: flex;
     justify-content: flex-end;
-    animation: slideInRight 0.3s ease-out;
+    animation: fadeIn 0.3s ease-out;
 }
 
+/* Glass Drawer Panel */
 .settings-panel {
     width: 400px;
     height: 100vh;
-    background: rgba(13, 43, 51, 0.3);
-    /* Top Bar Tint */
+
+    /* Darker Deep Teal Glass Base */
+    background: rgba(10, 25, 30, 0.85);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
-    padding: 3rem 2rem;
+    box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5);
+
+    padding: 2.5rem;
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
     overflow-y: auto;
+
+    /* Animation */
+    animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    /* Hide Scrollbar */
     scrollbar-width: none;
-    /* Firefox */
     -ms-overflow-style: none;
-    /* IE 10+ */
 }
 
 .settings-panel::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
     display: none;
 }
 
+/* Header & Close Button */
 .settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
-    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .settings-header h2 {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: #ffffff;
+    margin: 0;
 }
 
 .close-btn {
-    background: transparent;
-    border: none;
-    color: #444444;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 0.8rem;
-    transition: color 0.2s;
+    transition: all 0.2s;
 }
 
 .close-btn:hover {
-    color: #ffffff;
+    background: rgba(255, 68, 68, 0.2);
+    border-color: rgba(255, 68, 68, 0.5);
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
 }
 
+/* Sections */
 .setting-group {
     display: flex;
     flex-direction: column;
@@ -70,163 +90,141 @@
 }
 
 .setting-label {
-    font-size: 0.65rem;
-    color: #444444;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
+    font-weight: 500;
 }
 
-.option-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-}
-
+/* Grids */
+.option-grid,
 .profile-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.75rem;
+}
+
+/* Profile Grid Special Sizing */
+.profile-grid {
     max-height: 240px;
     overflow-y: auto;
     padding-right: 4px;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    /* Space for hidden scrollbar */
 }
 
-/* Scrollbar for profile grid - Hidden FORCE */
-.profile-grid::-webkit-scrollbar {
-    width: 0px !important;
-    height: 0px !important;
-    background: transparent !important;
-    display: none !important;
-}
-
-.profile-grid::-webkit-scrollbar-track {
-    background: transparent !important;
-    display: none !important;
-}
-
-.profile-grid::-webkit-scrollbar-thumb {
-    background: transparent !important;
-    display: none !important;
-}
-
+/* Buttons (Universal Option Style) */
+.option-btn,
 .profile-btn {
-    padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 0.5px solid rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    color: #666666;
-    font-size: 0.7rem;
+    padding: 0.85rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
     text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
+.option-btn:hover,
+.profile-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+/* Active State - Neon Cyan */
+.option-btn.active,
 .profile-btn.active {
     background: rgba(0, 243, 255, 0.1);
     border-color: rgba(0, 243, 255, 0.5);
     color: #ffffff;
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    text-shadow: 0 0 5px rgba(0, 243, 255, 0.4);
 }
 
-.audio-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.volume-row {
+/* Sliders & Volume */
+.volume-row,
+.font-size-row {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: rgba(255, 255, 255, 0.02);
-    padding: 0.5rem;
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .sub-label {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     color: #888;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     min-width: 50px;
 }
 
-.value-preview {
+.value-preview,
+.size-preview {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: #ffffff;
+    font-size: 0.8rem;
+    color: #00f3ff;
+    /* Cyan Text */
     min-width: 35px;
     text-align: right;
 }
 
-.volume-slider {
-    flex: 1;
-    height: 4px;
+/* Range Input Styling */
+input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    /* Lint fix */
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    outline: none;
-}
-
-.volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #ffffff;
+    background: transparent;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-.option-btn {
-    padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 0.5px solid rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    color: #666666;
-    font-size: 0.7rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-}
-
-.option-btn.active {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-}
-
-.font-size-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-input[type="range"] {
     flex: 1;
-    accent-color: #ffffff;
 }
 
-.size-preview {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: #888888;
-    min-width: 30px;
+input[type="range"]::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.1);
+    height: 4px;
+    border-radius: 2px;
 }
 
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background-color: #00f3ff;
+    /* Neon Cyan */
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+    transition: transform 0.1s;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.8);
+}
+
+/* Animations */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
+        opacity: 0;
     }
 
     to {
         transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
     }
 }

@@ -34,6 +34,14 @@ export const GatekeeperModal = ({
     return `${m}:${s.toString().padStart(2, '0')}`
   }
 
+
+  const net = Math.round(stats.netWpm)
+  const gap = Math.max(0, targetWPM - net)
+  
+  const failureMessage = !wpmOk
+      ? `You were ${gap} WPM short of the target. Pick up the pace!`
+      : `Precision is non-negotiable. 100% accuracy is required to advance.`
+
   return (
     <div className="modal-overlay">
       <div className={`gatekeeper-card liquid-glass-card ${passed ? 'passed-glow' : 'failed-glow'}`}>
@@ -42,14 +50,14 @@ export const GatekeeperModal = ({
         </h2>
 
         <div className="result-grid">
-          {/* Row 1 */}
-          <div className={`result-item ${wpmOk ? 'ok' : 'fail'}`}>
-            <span className="label">Raw WPM</span>
-            <span className="value">{Math.round(stats.rawWpm)}</span>
-          </div>
+          {/* Row 1: Net vs Target */}
           <div className="result-item ok">
             <span className="label">Net WPM</span>
-            <span className="value">{Math.round(stats.netWpm)}</span>
+            <span className="value">{net}</span>
+          </div>
+          <div className={`result-item ${wpmOk ? 'dim' : 'fail'}`} style={{ opacity: wpmOk ? 0.6 : 1 }}>
+            <span className="label">Target</span>
+            <span className="value">{targetWPM}</span>
           </div>
 
           {/* Row 2 */}
@@ -79,7 +87,7 @@ export const GatekeeperModal = ({
 
         {!passed && (
           <p className="failure-hint">
-            Precision is non-negotiable. 100% accuracy and target speed are required to unlock next stage.
+            {failureMessage}
           </p>
         )}
 

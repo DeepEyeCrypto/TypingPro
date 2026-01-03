@@ -13,24 +13,25 @@
     height: 200px;
     transform: scale(1.55);
     transform-origin: top center;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent !important;
+    /* Removed container box */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
     border-radius: 12px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: none !important;
 }
 
 .key {
     position: absolute;
     width: 36px;
     height: 36px;
-    /* Glass Key Style */
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    /* Glass Key Style - Synced */
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
 
     display: flex;
     align-items: center;
@@ -44,16 +45,16 @@
 }
 
 .key.active {
-    /* Neon Cyan Glow */
-    background: rgba(0, 255, 242, 0.2);
-    border-color: rgba(0, 255, 242, 0.5);
-    color: #ffffff;
-    box-shadow: 0 0 15px rgba(0, 255, 242, 0.4);
+    /* Neon Red Target Glow */
+    background: rgba(255, 0, 0, 0.2) !important;
+    border-color: rgba(255, 0, 0, 0.5) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4) !important;
     transform: translateY(1px);
 }
 
 .key.home-marker {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Space bar special sizing */

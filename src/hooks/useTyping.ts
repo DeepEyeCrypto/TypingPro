@@ -4,6 +4,7 @@ import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
 import { syncService } from '@src/services/syncService'
 import { useSoundSystem } from '@src/hooks/useSoundSystem'
+import { AudioEngine } from '@src/lib/AudioEngine'
 
 export const useTyping = () => {
     const { playKeystroke } = useSoundSystem()
@@ -101,6 +102,7 @@ export const useTyping = () => {
         const passed = Math.round(metrics.accuracy) === 100 && Math.round(metrics.raw_wpm) >= speedTarget
 
         if (passed) {
+            AudioEngine.getInstance().playSuccess()
             if (!completedIds.includes(currentLesson.id)) {
                 setCompletedIds((prev: string[]) => [...prev, currentLesson.id])
             }
@@ -111,6 +113,8 @@ export const useTyping = () => {
                     setUnlockedIds((prev: string[]) => [...prev, nextId])
                 }
             }
+        } else {
+            AudioEngine.getInstance().playFailure()
         }
         setShowResult(true)
     }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes])
@@ -126,6 +130,7 @@ export const useTyping = () => {
 
         if (e.key === 'Backspace') {
             setInput((prev: string) => prev.slice(0, -1))
+            playKeystroke('Backspace')
             return
         }
 
@@ -140,11 +145,16 @@ export const useTyping = () => {
                     ...prev,
                     [targetChar]: (prev[targetChar] || 0) + 1
                 }))
+                // Play Error Sound
+                AudioEngine.getInstance().playError()
+            } else {
+                // Play Correct Keystroke Sound
+                playKeystroke(char)
             }
 
             setTotalKeystrokes(prev => prev + 1)
             setInput((prev: string) => prev + char)
-            playKeystroke()
+
 
             try {
                 const latestMetrics = await handleKeystroke(char, timestamp)

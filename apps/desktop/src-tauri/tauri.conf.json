@@ -1,7 +1,7 @@
 {
   "productName": "TypingPro",
-  "version": "0.1.40",
-  "identifier": "com.typingpro.monorepo",
+  "version": "1.0.0",
+  "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -66,6 +66,13 @@
       "schemes": [
         "typingpro"
       ]
+    },
+    "updater": {
+      "endpoints": [
+        "https://github.com/typingpro/typingpro-desktop/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDYzNjU4RjAzQUQ4RThERUUKUldUdWpZNnRBNDlsWTh6K2pkZHJhdWZ3Rk9TSGg3cEl0aU8yMVBmR1kzbndBcTkzM1ZMSElYQVkK"
     }
   }
 }
+```

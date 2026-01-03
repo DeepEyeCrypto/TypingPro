@@ -1,4 +1,6 @@
 import React from 'react'
+import { check } from '@tauri-apps/plugin-updater'
+import { relaunch } from '@tauri-apps/plugin-process'
 import { useSettingsStore, ThemeType, CaretStyle } from '@src/stores/settingsStore'
 import { SOUND_PROFILES } from '@src/data/soundProfiles'
 import './SettingsPanel.css'
@@ -121,7 +123,67 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                         ))}
                     </div>
                 </div>
+
+                <div className="setting-group">
+                    <span className="setting-label">Software Updates</span>
+                    <UpdateChecker />
+                </div>
             </div>
+        </div>
+    )
+}
+
+const UpdateChecker = () => {
+    const [status, setStatus] = React.useState<'idle' | 'checking' | 'available' | 'uptodate' | 'error'>('idle')
+    const [version, setVersion] = React.useState('')
+    const [updateObj, setUpdateObj] = React.useState<any>(null)
+
+    const checkUpdate = async () => {
+        try {
+            setStatus('checking')
+            const update = await check()
+            if (update) {
+                setVersion(update.version)
+                setUpdateObj(update)
+                setStatus('available')
+            } else {
+                setStatus('uptodate')
+            }
+        } catch (e) {
+            console.error(e)
+            setStatus('error')
+        }
+    }
+
+    const installUpdate = async () => {
+        if (!updateObj) return
+        try {
+            setStatus('checking') // Re-use checking style for installing
+            await updateObj.downloadAndInstall()
+            await relaunch()
+        } catch (e) {
+            console.error(e)
+            setStatus('error')
+        }
+    }
+
+    return (
+        <div className="update-checker">
+            <button
+                className={`glass-btn ${status === 'checking' ? 'loading' : ''}`}
+                onClick={checkUpdate}
+                disabled={status === 'checking' || status === 'available'}
+            >
+                {status === 'checking' ? 'Checking...' : 'Check for Updates'}
+            </button>
+            {status === 'uptodate' && <span className="status-text success">You are on the latest version.</span>}
+            {status === 'available' && (
+                <div className="update-available">
+                    <span>v{version} is available!</span>
+                    <button className="glass-btn primary" onClick={installUpdate}>Download & Install</button>
+                </div>
+            )}
+            {status === 'error' && <span className="status-text error">Failed to check for updates.</span>}
         </div>
     )
 }
