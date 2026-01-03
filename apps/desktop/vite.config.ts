@@ -8,7 +8,10 @@ export default defineConfig({
   clearScreen: false,
   server: {
     port: 1420,
-    strictPort: true
+    strictPort: true,
+    fs: {
+      allow: ['..']
+    }
   },
   envPrefix: ['VITE_', 'TAURI_'],
   esbuild: {

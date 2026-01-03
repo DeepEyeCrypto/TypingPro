@@ -30,3 +30,4 @@ src-tauri/.env
 *.sw?
 
 src-tauri/target/
+tsconfig.tsbuildinfo
