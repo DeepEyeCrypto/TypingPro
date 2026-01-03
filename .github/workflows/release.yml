@@ -84,4 +84,4 @@ jobs:
           releaseDraft: true
           prerelease: false
           projectPath: 'apps/desktop'
-          args: --target ${{ matrix.target }}
+          args: --verbose --target ${{ matrix.target }}
