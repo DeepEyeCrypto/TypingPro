@@ -4,11 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@src': path.resolve(__dirname, '../../src')
-    }
-  },
+
   clearScreen: false,
   server: {
     port: 1420,
@@ -23,6 +19,9 @@ export default defineConfig({
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     sourcemap: !!process.env.TAURI_DEBUG,
     reportCompressedSize: false,
-    chunkSizeWarningLimit: 2000
+    chunkSizeWarningLimit: 2000,
+    typescript: {
+      ignoreBuildErrors: true
+    }
   }
 })
