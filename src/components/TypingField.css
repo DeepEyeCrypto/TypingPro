@@ -12,7 +12,15 @@
     align-content: flex-start;
     gap: 0 0.1em;
     transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 0 1rem;
+
+    /* Glass Panel */
+    background: rgba(13, 43, 51, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .char {
@@ -21,27 +29,31 @@
 }
 
 .char.correct {
-    color: #ffffff;
+    color: var(--glass-text-primary, #ffffff);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
 
 .char.incorrect {
     color: #ff4444;
-    background: rgba(255, 68, 68, 0.05);
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+    background: rgba(255, 68, 68, 0.1);
     border-radius: 2px;
 }
 
 .char.pending {
-    color: #333333;
+    color: var(--glass-text-secondary, rgba(255, 255, 255, 0.3));
 }
 
 .caret {
     position: absolute;
-    background-color: #ffffff;
-    left: 0;
+    background-color: var(--neon-accent, #00f3ff);
+    left: -2px;
+    /* Slight offset for optics */
     top: 50%;
     transform: translateY(-50%);
-    transition: all 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    transition: all 0.08s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 0 10px var(--neon-accent, #00f3ff), 0 0 20px var(--neon-accent, #00f3ff);
+    z-index: 10;
 }
 
 .caret-line {

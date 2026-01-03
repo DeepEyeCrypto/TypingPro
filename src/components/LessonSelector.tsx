@@ -21,8 +21,7 @@ export const LessonSelector = ({
     <div className="lesson-selector custom-scrollbar">
       <div className="dashboard-hero">
         <div className="hero-content">
-          <h1 className="hero-title">TypingPro Enterprise</h1>
-          <p className="hero-subtitle">Mastery awaits. Continue your journey.</p>
+          {/* Header Removed */}
 
           <div className="hero-card liquid-glass-card">
             <div className="hero-info">

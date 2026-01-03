@@ -1,0 +1,14 @@
+.titlebar {
+    height: 32px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    /* Red background for debug if checked, keeping it transparent for prod */
+    background: transparent;
+    user-select: none;
+    -webkit-app-region: drag;
+    /* Electron standard, Tauri uses data attribute but CSS helps in some webviews */
+}

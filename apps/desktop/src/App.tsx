@@ -10,6 +10,8 @@ import { LessonSelector } from '@src/components/LessonSelector'
 import { GatekeeperModal } from '@src/components/GatekeeperModal'
 import { AnalyticsDashboard } from '@src/components/AnalyticsDashboard'
 import { CURRICULUM } from '@src/data/lessons'
+import '@src/styles/glass.css'
+import { TitleBar } from '@src/components/TitleBar'
 
 const App: React.FC = () => {
   /**
@@ -98,10 +100,11 @@ const App: React.FC = () => {
 
   return (
     <div
-      className={`main-layout theme-${theme}`}
+      className={`main-layout theme-${theme} glass-root dynamic-bg`}
       style={{ fontFamily: `'${fontFamily}', sans-serif` }}
       onClick={() => inputRef.current?.focus()}
     >
+      <TitleBar />
       <TopBar
         metrics={typing.metrics}
         mode={typing.currentLesson ? typing.currentLesson.stage : 'Curriculum'}

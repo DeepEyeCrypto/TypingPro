@@ -3,8 +3,10 @@ import { startSession, handleKeystroke, TypingMetrics } from '@src/lib/tauri'
 import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
 import { syncService } from '@src/services/syncService'
+import { useSoundSystem } from '@src/hooks/useSoundSystem'
 
 export const useTyping = () => {
+    const { playKeystroke } = useSoundSystem()
     const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [metrics, setMetrics] = useState<TypingMetrics>({
@@ -142,6 +144,7 @@ export const useTyping = () => {
 
             setTotalKeystrokes(prev => prev + 1)
             setInput((prev: string) => prev + char)
+            playKeystroke()
 
             try {
                 const latestMetrics = await handleKeystroke(char, timestamp)

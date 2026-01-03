@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSettingsStore, ThemeType, CaretStyle } from '@src/stores/settingsStore'
+import { SOUND_PROFILES } from '@src/data/soundProfiles'
 import './SettingsPanel.css'
 
 interface SettingsPanelProps {
@@ -42,6 +43,37 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                                 {t.label}
                             </button>
                         ))}
+                    </div>
+                </div>
+
+                <div className="setting-group">
+                    <span className="setting-label">Audio</span>
+                    <div className="audio-controls">
+                        <div className="volume-row">
+                            <span className="sub-label">Volume</span>
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="5"
+                                value={settings.soundVolume}
+                                onChange={(e) => settings.setSoundVolume(parseInt(e.target.value))}
+                                className="volume-slider"
+                            />
+                            <span className="value-preview">{settings.soundVolume}%</span>
+                        </div>
+
+                        <div className="profile-grid">
+                            {SOUND_PROFILES.map(p => (
+                                <button
+                                    key={p.id}
+                                    className={`profile-btn ${settings.activeSoundProfileId === p.id ? 'active' : ''}`}
+                                    onClick={() => settings.setSoundProfile(p.id)}
+                                >
+                                    {p.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

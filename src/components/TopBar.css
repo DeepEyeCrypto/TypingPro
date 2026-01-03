@@ -1,17 +1,26 @@
 .top-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: fixed;
+    top: 20px;
+    /* Below TitleBar */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1400px;
     height: 64px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 4rem;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+    padding: 0 2rem;
+
+    /* Glass Capsule */
+    background: rgba(13, 43, 51, 0.3);
+    /* Teal tint */
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     z-index: 100;
+    transition: all 0.3s ease;
 }
 
 .mode-indicator,
@@ -46,8 +55,78 @@
 }
 
 /* Auth Buttons container shift to right */
+/* Right Side Controls */
 .top-bar-right {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--glass-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    border-radius: 50%;
+    -webkit-app-region: no-drag;
+    /* Ensure clickable */
+}
+
+.icon-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.gear-btn:hover {
+    transform: rotate(45deg);
+}
+
+/* Auth Section */
+.auth-icons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.auth-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    color: var(--glass-text-secondary);
+    -webkit-app-region: no-drag;
+    /* Ensure clickable */
+
+    /* Glass Shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.auth-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--neon-accent);
+    box-shadow: 0 0 15px var(--glass-glow), 0 0 5px var(--neon-accent);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.auth-btn.logout:hover {
+    color: #ff4444;
+    border-color: #ff4444;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }

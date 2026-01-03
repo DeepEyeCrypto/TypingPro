@@ -16,7 +16,10 @@
         "height": 800,
         "resizable": true,
         "fullscreen": false,
-        "center": true
+        "center": true,
+        "transparent": true,
+        "decorations": true,
+        "titleBarStyle": "Overlay"
       }
     ],
     "security": {
