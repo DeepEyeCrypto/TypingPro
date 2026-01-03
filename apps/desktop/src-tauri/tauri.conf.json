@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
