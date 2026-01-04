@@ -2,10 +2,12 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { startSession, handleKeystroke, TypingMetrics } from '@src/lib/tauri'
 import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
+
 import { syncService } from '@src/services/syncService'
-import { soundService } from '@src/services/soundService'
+import { useSoundSystem } from '@src/hooks/useSoundSystem'
 
 export const useTyping = () => {
+    const { playClick, playSpace, playError } = useSoundSystem()
     const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [metrics, setMetrics] = useState<TypingMetrics>({
@@ -112,7 +114,7 @@ export const useTyping = () => {
                 }
             }
         } else {
-            soundService.playError()
+            playError()
         }
         setShowResult(true)
     }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes])
@@ -128,7 +130,7 @@ export const useTyping = () => {
 
         if (e.key === 'Backspace') {
             setInput((prev: string) => prev.slice(0, -1))
-            soundService.playClick()
+            playClick()
             return
         }
 
@@ -143,12 +145,12 @@ export const useTyping = () => {
                     ...prev,
                     [targetChar]: (prev[targetChar] || 0) + 1
                 }))
-                soundService.playError()
+                playError()
             } else {
                 if (char === ' ') {
-                    soundService.playSpace()
+                    playSpace()
                 } else {
-                    soundService.playClick()
+                    playClick()
                 }
             }
 

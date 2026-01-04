@@ -1,46 +1,27 @@
-import { useEffect, useCallback } from 'react'
-import useSound from 'use-sound'
-import { SOUND_PROFILES } from '@src/data/soundProfiles'
+import { useEffect } from 'react'
+import { soundManager } from '@src/utils/SoundManager'
 import { useSettingsStore } from '@src/stores/settingsStore'
-import { AudioEngine } from '@src/lib/AudioEngine'
 
 export const useSoundSystem = () => {
-    const { soundVolume, activeSoundProfileId, soundEnabled } = useSettingsStore()
-    const activeProfile = SOUND_PROFILES.find(p => p.id === activeSoundProfileId) || SOUND_PROFILES[0]
+    const { soundEnabled, soundVolume } = useSettingsStore()
 
-    // Initialize Audio Engine once
     useEffect(() => {
-        const engine = AudioEngine.getInstance()
-        engine.init(soundVolume)
+        soundManager.init()
     }, [])
 
-    // Sync Volume & Enabled State
     useEffect(() => {
-        const engine = AudioEngine.getInstance()
-        engine.setMasterVolume(soundVolume)
-        engine.setEnabled(soundEnabled)
-    }, [soundVolume, soundEnabled])
+        soundManager.setMute(!soundEnabled)
+    }, [soundEnabled])
 
-    // File-based playback (Legacy support)
-    const soundUrl = activeProfile.type === 'file' ? activeProfile.path : null
-    const [playActiveFile] = useSound(soundUrl || '', {
-        volume: (soundVolume / 100) * (activeProfile.volume || 1),
-        interrupt: true,
-    })
-
-    const playKeystroke = useCallback((key?: string) => {
-        if (!soundEnabled || activeProfile.id === 'off') return
-
-        if (activeProfile.type === 'file') {
-            playActiveFile()
-        } else {
-            // Delegate to AudioEngine for zero-latency procedural sound
-            AudioEngine.getInstance().play(activeProfile.id, key)
-        }
-    }, [soundEnabled, activeProfile, playActiveFile])
+    useEffect(() => {
+        // Assuming soundVolume is 0-100 in store, normalize to 0-1
+        soundManager.setVolume(soundVolume / 100)
+    }, [soundVolume])
 
     return {
-        playKeystroke
+        playClick: () => soundManager.playClick(),
+        playSpace: () => soundManager.playSpace(),
+        playError: () => soundManager.playError(),
+        manager: soundManager
     }
 }
-
