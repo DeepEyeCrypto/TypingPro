@@ -33,6 +33,7 @@
       "nsis",
       "deb"
     ],
+    "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -71,7 +72,7 @@
       "endpoints": [
         "https://github.com/typingpro/typingpro-desktop/releases/latest/download/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDYzNjU4RjAzQUQ4RThERUUKUldUdWpZNnRBNDlsWTh6K2pkZHJhdWZ3Rk9TSGg3cEl0aU8yMVBmR1kzbndBcTkzM1ZMSElYQVkK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE2RURGOTI0RjRGMzM4RDUKUldUVk9QUDBKUG50cHN0RTcrenNyRWF5VDhRRlR3VUdQczBLUzRVdzB4cDFXRzFFTzNzWUFVWWUK"
     }
   }
 }
