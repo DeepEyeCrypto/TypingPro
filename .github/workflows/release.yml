@@ -28,7 +28,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: '' # Hardcoded empty string to ensure it's not dropped as an unset secret
       # Frontend Secrets (VITE_ prefix is required for Vite to expose them)
       VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       VITE_GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
