@@ -85,4 +85,4 @@ jobs:
           prerelease: false
           projectPath: 'apps/desktop'
           tauriScript: npm run tauri
-          args: --verbose --bundles app --target ${{ matrix.target }}
+          args: --verbose --target ${{ matrix.target }}
