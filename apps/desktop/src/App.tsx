@@ -12,6 +12,7 @@ import { AnalyticsDashboard } from '../../../src/components/AnalyticsDashboard'
 import { CURRICULUM } from '../../../src/data/lessons'
 import '../../../src/styles/glass.css'
 import { TitleBar } from '../../../src/components/TitleBar'
+import { useUpdater } from '../../../src/hooks/useUpdater'
 
 const App: React.FC = () => {
   /**
@@ -22,7 +23,7 @@ const App: React.FC = () => {
    * 4. Interaction: Click-to-focus and mouse events verified
    * 5. Syntax: Strictly Zero Trailing Commas in TS/TSX
    */
-  import { useUpdater } from '../../../src/hooks/useUpdater'
+   */
 
   const { user, setAuthenticated } = useAuthStore()
   const { theme, fontFamily } = useSettingsStore()
