@@ -13,18 +13,15 @@ import { CURRICULUM } from '../../../src/data/lessons'
 import '../../../src/styles/glass.css'
 import { TitleBar } from '../../../src/components/TitleBar'
 import { useUpdater } from '../../../src/hooks/useUpdater'
+import { useLockdown } from '../../../src/hooks/useLockdown'
 
 const App: React.FC = () => {
   /**
    * STAGE 10 VALIDATION CHECKLIST:
-   * 1. Responsive: Tested 768p, 1080p, 1440p (verified via clamp & transform)
-   * 2. Layout: Zero-scroll maintained on all typing views
-   * 3. Error Handling: Global ErrorBoundary active
-   * 4. Interaction: Click-to-focus and mouse events verified
-   * 5. Syntax: Strictly Zero Trailing Commas in TS/TSX
+   * ...
    */
 
-
+  useLockdown() // Enforce UI Security
   const { user, setAuthenticated } = useAuthStore()
   const { theme, fontFamily } = useSettingsStore()
   const typing = useTyping()
