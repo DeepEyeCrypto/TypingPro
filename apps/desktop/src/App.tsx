@@ -22,12 +22,9 @@ const App: React.FC = () => {
    * 4. Interaction: Click-to-focus and mouse events verified
    * 5. Syntax: Strictly Zero Trailing Commas in TS/TSX
    */
-  import { useUpdater } from '../../../src/hooks/useUpdater'
-
   const { user, setAuthenticated } = useAuthStore()
   const { theme, fontFamily } = useSettingsStore()
   const typing = useTyping()
-  useUpdater() // Initialize auto-updater check
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Auth Redirect Handler & Initial Sync
