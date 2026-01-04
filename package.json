@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@typingpro/desktop",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspace=@typingpro/desktop",
     "tauri": "npm run tauri --workspace=@typingpro/desktop",
     "release:patch": "npm version patch --no-git-tag-version && node scripts/sync-tauri-version.cjs"
   },
