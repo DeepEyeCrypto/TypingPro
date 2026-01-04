@@ -129,6 +129,8 @@ const App: React.FC = () => {
             input={typing.input}
             activeChar={typing.activeChar}
             onBack={() => typing.setView('selection')}
+            onKeyDown={(e) => typing.onKeyDown(e.nativeEvent)} // Pass event handler
+            isPaused={typing.isPaused}
           />
         )}
       </main>
@@ -164,14 +166,7 @@ const App: React.FC = () => {
         <span>DeepEyeSniper v2.0 // Focus Protocol: Active</span>
       </footer>
 
-      <input
-        ref={inputRef}
-        className="hidden-input"
-        onKeyDown={(e) => typing.onKeyDown(e.nativeEvent)}
-        autoFocus
-        value=""
-        onChange={() => { }}
-      />
+      {/* Hidden input moved to TypingField for better focus management */}
 
       <style>{`
         .main-layout {
@@ -187,6 +182,7 @@ const App: React.FC = () => {
           backdrop-filter: blur(0px);
         }
         
+        /* ... existing styles ... */
         .theme-classic { background-color: #050505; color: #d1d0c5; }
         .theme-glass { background-color: #000000; color: #ffffff; }
         .theme-high-contrast { background-color: #ffffff; color: #000000; }
@@ -211,11 +207,6 @@ const App: React.FC = () => {
           letter-spacing: 0.5em;
           color: #222222;
           border-top: 0.5px solid rgba(255, 255, 255, 0.03);
-        }
-        .hidden-input {
-          position: absolute;
-          opacity: 0;
-          pointer-events: none;
         }
       `}</style>
     </div>

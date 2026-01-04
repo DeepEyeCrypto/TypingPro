@@ -7,14 +7,18 @@ interface TypingAreaProps {
     targetText: string,
     input: string,
     activeChar: string,
-    onBack: () => void
+    onBack: () => void,
+    onKeyDown: (e: any) => void,
+    isPaused: boolean
 }
 
 export const TypingArea = ({
     targetText,
     input,
     activeChar,
-    onBack
+    onBack,
+    onKeyDown,
+    isPaused
 }: TypingAreaProps) => {
     return (
         <div className="typing-area">
@@ -22,6 +26,8 @@ export const TypingArea = ({
                 targetText={targetText}
                 input={input}
                 active={true}
+                onKeyDown={onKeyDown}
+                isPaused={isPaused}
             />
 
             <div className="visual-guide-area">
