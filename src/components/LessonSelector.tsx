@@ -1,5 +1,7 @@
 import React from 'react'
 import { CURRICULUM, Lesson } from '@src/data/lessons'
+import { SmartLessonGenerator } from '@src/utils/SmartLessonGenerator'
+import { useStatsStore } from '@src/stores/statsStore'
 import '@src/components/CurriculumSelector.css'
 
 interface LessonSelectorProps {
@@ -21,8 +23,6 @@ export const LessonSelector = ({
     <div className="lesson-selector custom-scrollbar">
       <div className="dashboard-hero">
         <div className="hero-content">
-          {/* Header Removed */}
-
           <div className="hero-card liquid-glass-card">
             <div className="hero-info">
               <span className="hero-label">NEXT LESSON</span>
@@ -33,6 +33,38 @@ export const LessonSelector = ({
               Start Session
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="hero-card liquid-glass-card smart-training-card" style={{ marginLeft: '1rem', background: 'rgba(25, 25, 35, 0.6)' }}>
+            <div className="hero-info">
+              <span className="hero-label" style={{ color: '#00f0ff' }}>SMART TRAINING</span>
+              <h2 className="hero-lesson-title">Weakness Targeting</h2>
+              <p className="hero-lesson-desc">
+                AI-generated lesson focusing on your top 5 trouble keys.
+                {Object.keys(useStatsStore.getState().characterErrors).length === 0 && " (Play more to calibrate)"}
+              </p>
+            </div>
+            <button className="hero-cta" onClick={() => {
+              const errors = useStatsStore.getState().characterErrors
+              const weakKeys = SmartLessonGenerator.getWeakKeys(errors)
+              const text = SmartLessonGenerator.generate(weakKeys, 40)
+
+              const smartLesson: Lesson = {
+                id: 'smart-1',
+                title: 'Weakness Training',
+                description: `Focus on: ${weakKeys.join(', ').toUpperCase() || 'Random (No Data)'}`,
+                text: text,
+                targetWPM: 30,
+                focusFingers: ['All'],
+                stage: 'Smart'
+              }
+              onSelect(smartLesson)
+            }}>
+              Analyze & Train
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
             </button>
           </div>

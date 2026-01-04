@@ -2,6 +2,8 @@ import React from 'react'
 import { TrendChart } from './TrendChart'
 import { KeyHeatmap } from './KeyHeatmap'
 import { SessionTable } from './SessionTable'
+import { RealTimeGraph } from './RealTimeGraph'
+import { useStatsStore } from '@src/stores/statsStore'
 import './AnalyticsDashboard.css'
 
 interface AnalyticsDashboardProps {
@@ -9,6 +11,10 @@ interface AnalyticsDashboardProps {
 }
 
 export const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
+    const { sessionHistory } = useStatsStore()
+    const latestSession = sessionHistory[0]
+    const graphData = latestSession?.graphData || []
+
     return (
         <div className="analytics-dashboard">
             <div className="analytics-header">
@@ -18,6 +24,7 @@ export const AnalyticsDashboard = ({ onBack }: AnalyticsDashboardProps) => {
 
             <div className="analytics-grid">
                 <TrendChart />
+                <RealTimeGraph data={graphData} />
                 <KeyHeatmap />
                 <SessionTable />
             </div>

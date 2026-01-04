@@ -6,6 +6,8 @@ pub struct TypingMetrics {
     pub net_wpm: f64,
     pub accuracy: f64,
     pub consistency: f64,
+    pub is_bot: bool,
+    pub cheat_flags: String,
 }
 
 pub struct TypingEngine {
@@ -45,6 +47,8 @@ impl TypingEngine {
                 net_wpm: 0.0,
                 accuracy: 100.0,
                 consistency: 100.0,
+                is_bot: false,
+                cheat_flags: String::new(),
             };
         }
 
@@ -115,11 +119,50 @@ impl TypingEngine {
             100.0
         };
 
+        // Anti-Cheat Heuristics
+        let mut is_bot = false;
+        let mut cheat_flags = Vec::new();
+
+        // 1. Superhuman Speed (350+ NET WPM)
+        if net_wpm > 350.0 {
+            is_bot = true;
+            cheat_flags.push("SPEED_LIMIT_EXCEEDED");
+        }
+
+        // 2. Ultrasonic Typing (Avg Latency < 20ms) & Zero Variance (Std Dev < 2.0ms)
+        if !intervals.is_empty() {
+            let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
+
+            // Ultrasonic
+            if avg_interval < 20.0 {
+                is_bot = true;
+                cheat_flags.push("ULTRASONIC_INPUT");
+            }
+
+            // Zero Variance (Macro Detection)
+            // Std Dev is already calculated as variance.sqrt() logic but we need the raw std_dev here.
+            // Let's reuse or recalculate std_dev
+            let variance = intervals
+                .iter()
+                .map(|&i| (i - avg_interval).powi(2))
+                .sum::<f64>()
+                / intervals.len() as f64;
+            let std_dev = variance.sqrt();
+
+            // Strict consistency check: If user typed > 10 chars and std_dev is insanely low (< 2ms)
+            if self.typed_chars.len() > 10 && std_dev < 2.0 {
+                is_bot = true;
+                cheat_flags.push("MACRO_DETECTED_ZERO_VARIANCE");
+            }
+        }
+
         TypingMetrics {
             gross_wpm,
             net_wpm,
             accuracy,
             consistency,
+            is_bot,
+            cheat_flags: cheat_flags.join("|"),
         }
     }
 }

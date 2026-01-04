@@ -44,8 +44,29 @@ async fn github_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
     oauth::perform_github_login(app).await
 }
 
+use tauri::Manager;
+use window_vibrancy::{apply_vibrancy, apply_blur, NSVisualEffectMaterial};
+
+mod logger;
+
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            // Initialize Logger
+            logger::init_logging(app).expect("Failed to initialize logger");
+
+            let window = app.get_webview_window("main").unwrap();
+
+            #[cfg(target_os = "macos")]
+            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
+                .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+
+            #[cfg(target_os = "windows")]
+            apply_blur(&window, Some((18, 18, 18, 125)))
+                .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+
+            Ok(())
+        })
         .manage(AppState {
             engine: Mutex::new(TypingEngine::new()),
         })
@@ -60,6 +81,7 @@ fn main() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_oauth::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

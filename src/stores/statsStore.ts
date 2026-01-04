@@ -1,11 +1,17 @@
 import { create } from 'zustand'
 
+export interface ReplayData {
+    charAndTime: { char: string, time: number }[] // Time relative to start
+}
+
 export interface SessionResult {
     id: string,
     lessonId: string,
     wpm: number,
     accuracy: number,
-    timestamp: number
+    timestamp: number,
+    graphData?: { time: number, wpm: number, raw: number }[],
+    replayData?: ReplayData
 }
 
 export interface LessonStats {
@@ -19,18 +25,22 @@ interface StatsState {
     lessonStats: Record<string, LessonStats>,
     sessionHistory: SessionResult[],
     characterErrors: Record<string, number>,
-    recordAttempt: (lessonId: string, wpm: number, accuracy: number, errors?: Record<string, number>) => void,
-    loadStats: (stats: Record<string, LessonStats>, history?: SessionResult[], errors?: Record<string, number>) => void
+    bestReplays: Record<string, ReplayData>, // Best replay per lesson
+    recordAttempt: (lessonId: string, wpm: number, accuracy: number, errors?: Record<string, number>, graphData?: { time: number, wpm: number, raw: number }[], replayData?: ReplayData) => void,
+    loadStats: (stats: Record<string, LessonStats>, history?: SessionResult[], errors?: Record<string, number>, replays?: Record<string, ReplayData>) => void
 }
 
 export const useStatsStore = create<StatsState>((set) => ({
     lessonStats: JSON.parse(localStorage.getItem('typing_stats') || '{}'),
     sessionHistory: JSON.parse(localStorage.getItem('typing_history') || '[]'),
     characterErrors: JSON.parse(localStorage.getItem('typing_errors') || '{}'),
+    bestReplays: JSON.parse(localStorage.getItem('typing_replays') || '{}'),
 
-    recordAttempt: (lessonId, wpm, accuracy, errors = {}) => set((state) => {
+    recordAttempt: (lessonId, wpm, accuracy, errors = {}, graphData = [], replayData) => set((state) => {
         // Update per-lesson bests
         const current = state.lessonStats[lessonId] || { bestWPM: 0, bestAccuracy: 0, attempts: 0, completed: false }
+        const isPB = wpm > current.bestWPM
+
         const updatedLesson = {
             bestWPM: Math.max(current.bestWPM, wpm),
             bestAccuracy: Math.max(current.bestAccuracy, accuracy),
@@ -39,17 +49,26 @@ export const useStatsStore = create<StatsState>((set) => ({
         }
         const nextLessonStats = { ...state.lessonStats, [lessonId]: updatedLesson }
 
+        // Update Best Replay if PB
+        let nextReplays = state.bestReplays
+        if (isPB && replayData) {
+            nextReplays = { ...state.bestReplays, [lessonId]: replayData }
+            localStorage.setItem('typing_replays', JSON.stringify(nextReplays))
+        }
+
         // Update session history
         const session: SessionResult = {
             id: Math.random().toString(36).substring(7),
             lessonId,
             wpm,
             accuracy,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            graphData,
+            replayData
         }
         const nextHistory = [session, ...state.sessionHistory].slice(0, 100) // Keep last 100
 
-        // Update error heatmap
+        // ... existing error logic ...
         const nextErrors = { ...state.characterErrors }
         Object.entries(errors).forEach(([char, count]) => {
             nextErrors[char] = (nextErrors[char] || 0) + count
@@ -63,14 +82,16 @@ export const useStatsStore = create<StatsState>((set) => ({
         return {
             lessonStats: nextLessonStats,
             sessionHistory: nextHistory,
-            characterErrors: nextErrors
+            characterErrors: nextErrors,
+            bestReplays: nextReplays
         }
     }),
 
-    loadStats: (stats, history = [], errors = {}) => {
+    loadStats: (stats, history = [], errors = {}, replays = {}) => {
         localStorage.setItem('typing_stats', JSON.stringify(stats))
         localStorage.setItem('typing_history', JSON.stringify(history))
         localStorage.setItem('typing_errors', JSON.stringify(errors))
-        set({ lessonStats: stats, sessionHistory: history, characterErrors: errors })
+        localStorage.setItem('typing_replays', JSON.stringify(replays))
+        set({ lessonStats: stats, sessionHistory: history, characterErrors: errors, bestReplays: replays })
     }
 }))

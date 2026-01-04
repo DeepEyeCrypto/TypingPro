@@ -12,6 +12,7 @@
         "deep-link:default",
         "fs:default",
         "fs:allow-read-text-file",
-        "fs:allow-resource-read-recursive"
+        "fs:allow-resource-read-recursive",
+        "store:default"
     ]
 }

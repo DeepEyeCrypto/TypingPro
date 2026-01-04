@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+/* --- THEME PRESETS --- */
+
+/* CYBERPUNK: Neon Yellow/Blue/Pink on Deep Blue-Black */
+.theme-cyberpunk {
+    --bg-color: #0b0c15;
+    --text-color: #e0e0e0;
+    --accent-color: #fce300;
+    /* Cyber Yellow */
+    --secondary-color: #00f0ff;
+    /* Neon Blue */
+    --error-color: #ff003c;
+    --glass-bg: rgba(11, 12, 21, 0.7);
+    --glass-border: rgba(0, 240, 255, 0.2);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Space Mono', monospace;
+}
+
+/* DRACULA: Purple/Pink on Dark Grey */
+.theme-dracula {
+    --bg-color: #282a36;
+    --text-color: #f8f8f2;
+    --accent-color: #bd93f9;
+    /* Purple */
+    --secondary-color: #ff79c6;
+    /* Pink */
+    --error-color: #ff5555;
+    --glass-bg: rgba(40, 42, 54, 0.8);
+    --glass-border: rgba(189, 147, 249, 0.2);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* MATRIX: Green on Black */
+.theme-matrix {
+    --bg-color: #000000;
+    --text-color: #008f11;
+    --accent-color: #00ff41;
+    /* Bright Green */
+    --secondary-color: #0d0208;
+    --error-color: #ff0000;
+    /* Pure Red breakdown */
+    --glass-bg: rgba(0, 20, 0, 0.85);
+    --glass-border: rgba(0, 255, 65, 0.3);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+/* NORD: Ice Blue/Grey on Arctic Blue */
+.theme-nord {
+    --bg-color: #2e3440;
+    --text-color: #d8dee9;
+    --accent-color: #88c0d0;
+    /* Frost */
+    --secondary-color: #81a1c1;
+    --error-color: #bf616a;
+    --glass-bg: rgba(46, 52, 64, 0.8);
+    --glass-border: rgba(136, 192, 208, 0.2);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Apply variables to common elements if using them */
+.theme-cyberpunk .caret {
+    background-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.theme-dracula .caret {
+    background-color: var(--secondary-color);
+}
+
+.theme-matrix .caret {
+    background-color: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+.theme-nord .caret {
+    background-color: var(--accent-color);
+}
+
+/* Glass overrides */
+.theme-cyberpunk .liquid-glass-card,
+.theme-dracula .liquid-glass-card,
+.theme-matrix .liquid-glass-card,
+.theme-nord .liquid-glass-card {
+    background: var(--glass-bg);
+    border-color: var(--glass-border);
+}

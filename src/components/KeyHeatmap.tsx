@@ -27,16 +27,19 @@ export const KeyHeatmap = () => {
                                     key={key}
                                     className={`
                                         w-8 h-8 md:w-10 md:h-10 rounded flex items-center justify-center
-                                        text-sm font-mono uppercase transition-colors
-                                        ${isHot ? 'text-white' : 'text-gray-600 bg-white/5'}
+                                        text-sm font-mono uppercase transition-all duration-300
+                                        ${isHot ? 'text-white font-bold shadow-lg' : 'text-gray-600 bg-white/5'}
                                     `}
                                     style={{
+                                        // Red Scale: From subtle pink/red to deep crimson
                                         backgroundColor: isHot
-                                            ? `rgba(255, 0, 60, ${0.2 + intensity * 0.8})`
+                                            ? `rgba(255, ${Math.max(0, 100 - intensity * 100)}, ${Math.max(0, 100 - intensity * 100)}, ${0.3 + intensity * 0.7})`
                                             : undefined,
                                         border: isHot
-                                            ? `1px solid rgba(255, 0, 60, ${0.5 + intensity * 0.5})`
-                                            : '1px solid transparent'
+                                            ? `1px solid rgba(255, 0, 0, ${0.5 + intensity * 0.5})`
+                                            : '1px solid transparent',
+                                        boxShadow: isHot ? `0 0 ${intensity * 15}px rgba(255, 0, 0, ${intensity * 0.6})` : 'none',
+                                        transform: isHot ? `scale(${1 + intensity * 0.1})` : 'scale(1)'
                                     }}
                                     title={`${count} errors`}
                                 >

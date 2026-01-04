@@ -4,7 +4,9 @@ export interface TypingMetrics {
   raw_wpm: number,
   adjusted_wpm: number,
   accuracy: number,
-  consistency: number
+  consistency: number,
+  is_bot: boolean,
+  cheat_flags: string
 }
 
 export const startSession = async (text: string): Promise<void> => {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type ThemeType = 'classic' | 'glass' | 'high-contrast'
+export type ThemeType = 'classic' | 'glass' | 'high-contrast' | 'cyberpunk' | 'dracula' | 'matrix' | 'nord'
 export type CaretStyle = 'line' | 'block' | 'underline' | 'hidden'
 
 interface SettingsState {

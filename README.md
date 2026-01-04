@@ -1,105 +1,86 @@
-# ⚡ TypingPro
->
-> **The Ultimate Open-Source Native Typing Engine.** Built for speed, precision, and aesthetics.
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Tauri-Apps/tauri/dev/.github/splash.png" alt="TypingPro" width="200" style="border-radius: 20px" />
+  <h1>TypingPro Desktop</h1>
+  <p>
+    <strong>The World's Most Advanced Typing Platform.</strong><br/>
+    Built for Speed. Engineered in Rust. Designed with Liquid Glass.
+  </p>
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Tauri](https://img.shields.io/badge/Tauri-v2.0-orange)
-![Rust](https://img.shields.io/badge/Rust-Core-red)
-![React](https://img.shields.io/badge/React-TypeScript-blue)
-
-**TypingPro** is a next-generation desktop typing application designed for enthusiasts who demand **zero latency**, **scientific progression**, and **distraction-free aesthetics**. Built on **Tauri v2**, it combines the raw performance of a **Rust** backend with a stunning **Liquid Glassmorphism** frontend.
-
----
-
-## 🚀 Key Features
-
-### ⚡ **Zero-Latency Rust Core**
-
-Powered by a custom Rust engine that handles keystrokes at **sub-millisecond latency**. We bypass standard browser input lag for an instant, raw typing feel.
-
-### 💎 **Liquid Glass UI (Cyberpunk)**
-
-Aesthetically crafted with a consistent **Glassmorphism** design language.
-
-- **Frosted Glass Panels**: `backdrop-filter: blur(20px)`
-- **Neon Reactive System**: Dynamic Cyan/Red glowing feedback.
-- **Zero-Scroll Layout**: Adaptive design that fits perfectly on any screen (100vh).
-
-### 🔊 **Professional Audio Engine**
-
-Immersive soundscapes powered by the Web Audio API.
-
-- **Procedural Synths**: Sine, Triangle, and Square wave generators.
-- **Mechanical Presets**: Satisfying click/thock sounds.
-- **Spatial Audio**: Stereo panning based on key position.
-
-### 🧬 **Scientific Progression**
-
-A curriculum designed to build muscle memory from the ground up.
-
-- **Level Locking**: You must hit **100% Accuracy + Target WPM** to advance.
-- **Home Row to Symbol Mastery**: 30+ meticulously crafted levels.
-
-### 🔄 **Auto-Updates & CI/CD**
-
-Fully automated update pipeline via GitHub Actions.
-
-- **Signed Builds**: Secure, notarized releases for macOS.
-- **One-Click Updates**: Verification and installation baked right into the app.
+  [![Rust](https://img.shields.io/badge/Rust-Core-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
+  [![Tauri 2.0](https://img.shields.io/badge/Tauri-v2.0-blue?style=for-the-badge&logo=tauri)](https://tauri.app/)
+  [![React](https://img.shields.io/badge/React-TypeScript-cyan?style=for-the-badge&logo=react)](https://react.dev/)
+</div>
 
 ---
 
-## 🛠 Tech Stack
+## 🚀 The Ultimate Evolution
 
-- **Core**: [Tauri v2](https://v2.tauri.app/) (Rust)
-- **Frontend**: React + TypeScript + Vite
-- **State Management**: Zustand
-- **Styling**: Vanilla CSS (CSS Variables + Glassmorphism)
-- **Audio**: Web Audio API
+TypingPro Desktop is not just a typing test. It is a **focus instrument** designed to push your WPM beyond human limits. By shifting the core engine to **Rust**, we have achieved **sub-millisecond latency**, ensuring that every keystroke is captured with atomic precision.
+
+### ✨ Key Features
+
+- **⚡ Native Turbo Engine**: Core logic rewritten in Rust for zero-latency input processing.
+- **💎 Liquid Glass UI**: A stunning, distraction-free interface with native macOS Vibrancy and Windows Blur.
+- **🧠 Smart Weakness Tracker**: Uses a local graph to identify your slowest keys and generates custom "Smart Lessons" to target them.
+- **👻 Ghost Mode**: Race against your own Personal Best shadow in real-time.
+- **🔊 Polyphonic Audio**: Procedural mechanical keyboard sounds (Cherry MX Blue/Brown/Red) with zero delay.
+- **🛡️ Anti-Cheat System**: Detecting robotic consistencies (< 2ms deviation) and superhuman bursts.
 
 ---
 
-## 🏁 Getting Started
+## 🛠️ Technology Stack
 
-### Prerequisites
+This project uses the latest in web and native performance technology:
 
-- Node.js v18+
-- Rust (stable) through `rustup`
+- **Frontend**: React 18, TypeScript, TailwindCSS (limited), Custom CSS Glassmorphism.
+- **Backend**: Rust (Tauri 2.0), Serde, Window-Vibrancy.
+- **State Management**: Zustand (Persisted to LocalStorage).
+- **Authentication**: OAuth 2.0 (Google & GitHub) via Tauri Plugin.
 
-### Installation
+---
+
+## 📥 Installation
+
+### macOS
+
+Download the latest `.dmg` from the [Releases Page](https://github.com/typingpro/desktop/releases).
+Drag to Applications.
+
+### Windows
+
+Download the `.msi` or `.exe`. Run the installer.
+
+### Linux
+
+AppImage and Deb files available.
+
+---
+
+## 🧑‍💻 Development
+
+To run TypingPro locally:
 
 1. **Clone the repo**
 
    ```bash
-   git clone https://github.com/your-username/TypingPro.git
-   cd TypingPro
+   git clone https://github.com/typingpro/desktop.git
+   cd typingpro/apps/desktop
    ```
 
-2. **Install Frontend Dependencies**
+2. **Install Dependencies**
 
    ```bash
    npm install
    ```
 
-3. **Run Development Mode**
+3. **Run Dev Mode**
 
    ```bash
-   npm run dev
+   npm run tauri dev
    ```
-
----
-
-## 🦅 Contributing
-
-We are a **100% Open Source** project. We welcome contributions of all kinds, from new **Glass Themes** to **Rust Core optimizations**.
-
-👉 **[Read our Contributing Guide](CONTRIBUTING.md)** to get started!
 
 ---
 
 ## 📜 License
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
-
----
-*Built with ❤️ by the Open Source Community.*
+MIT License. Built with ❤️ by the TypingPro Team.

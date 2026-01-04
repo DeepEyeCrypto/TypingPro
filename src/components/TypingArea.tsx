@@ -1,6 +1,7 @@
 import React from 'react'
 import { TypingField } from './TypingField'
 import { KeyboardOverlay } from './KeyboardOverlay'
+import { ReplayData } from '@src/stores/statsStore'
 import './TypingArea.css'
 
 interface TypingAreaProps {
@@ -9,7 +10,8 @@ interface TypingAreaProps {
     activeChar: string,
     onBack: () => void,
     onKeyDown: (e: any) => void,
-    isPaused: boolean
+    isPaused: boolean,
+    ghostReplay?: ReplayData
 }
 
 export const TypingArea = ({
@@ -18,7 +20,8 @@ export const TypingArea = ({
     activeChar,
     onBack,
     onKeyDown,
-    isPaused
+    isPaused,
+    ghostReplay
 }: TypingAreaProps) => {
     return (
         <div className="typing-area">
@@ -28,6 +31,7 @@ export const TypingArea = ({
                 active={true}
                 onKeyDown={onKeyDown}
                 isPaused={isPaused}
+                ghostReplay={ghostReplay}
             />
 
             <div className="visual-guide-area">
