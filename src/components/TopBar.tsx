@@ -1,7 +1,20 @@
-import { getVersion } from '@tauri-apps/api/app' // Ensure this package is available, if not use fallback or just display 'v1.0.59'
+import React, { useState } from 'react'
+import { invoke } from '@tauri-apps/api/core'
+import { getVersion } from '@tauri-apps/api/app'
+import { TypingMetrics } from '@src/lib/tauri'
+import { useAuthStore } from '@src/stores/authStore'
 import { useUpdater } from '@src/hooks/useUpdater'
+import { syncService } from '@src/services/syncService'
+import { AccountAvatar } from './AccountAvatar'
+import { SyncIndicator } from './SyncIndicator'
+import { SettingsPanel } from './SettingsPanel'
+import './TopBar.css'
 
-// ... existing imports ...
+interface TopBarProps {
+  metrics: TypingMetrics,
+  mode: string,
+  onAnalyticsClick: () => void
+}
 
 export const TopBar = ({ metrics, mode, onAnalyticsClick }: TopBarProps) => {
   const { user, setAuthenticated, logout } = useAuthStore()
