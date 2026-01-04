@@ -1,6 +1,7 @@
 export class SoundManager {
     private context: AudioContext | null = null;
     private buffers: Map<string, AudioBuffer> = new Map();
+    private clickVariations: string[] = ['click', 'click1', 'click2', 'click3', 'click4', 'click5'];
     private isMuted: boolean = false;
     private volume: number = 0.5;
 
@@ -23,7 +24,10 @@ export class SoundManager {
             const audioBuffer = await this.context.decodeAudioData(arrayBuffer);
             this.buffers.set(key, audioBuffer);
         } catch (err) {
-            console.warn(`Sound missing: ${key} (${url}). Logic continues without sound.`);
+            // Warn only for base sounds, suppress for optional variations
+            if (key === 'click' || key === 'space' || key === 'error') {
+                console.warn(`Sound missing: ${key} (${url}). Logic continues without sound.`);
+            }
         }
     }
 
@@ -32,12 +36,19 @@ export class SoundManager {
             await this.context.resume();
         }
         // Preload sounds (Pointing to public/sounds/mechanical by default)
-        // User must add files: click.wav, space.wav, error.wav
-        await Promise.all([
-            this.loadSound('click', '/sounds/mechanical/click.wav'),
+        const loadPromises = [
             this.loadSound('space', '/sounds/mechanical/space.wav'),
             this.loadSound('error', '/sounds/mechanical/error.wav'),
-        ]);
+            // Base click
+            this.loadSound('click', '/sounds/mechanical/click.wav'),
+        ];
+
+        // Load variations
+        for (let i = 1; i <= 5; i++) {
+            loadPromises.push(this.loadSound(`click${i}`, `/sounds/mechanical/click${i}.wav`));
+        }
+
+        await Promise.all(loadPromises);
     }
 
     public play(key: string, options: { rate?: number, volume?: number } = {}) {
@@ -67,9 +78,15 @@ export class SoundManager {
     }
 
     public playClick() {
-        // Slight pitch randomization for mechanical feel
-        const rate = 0.95 + Math.random() * 0.1;
-        this.play('click', { rate });
+        // Find available click keys
+        const available = this.clickVariations.filter(k => this.buffers.has(k));
+
+        if (available.length > 0) {
+            const randomKey = available[Math.floor(Math.random() * available.length)];
+            // Slight pitch randomization for mechanical feel
+            const rate = 0.98 + Math.random() * 0.04;
+            this.play(randomKey, { rate });
+        }
     }
 
     public playSpace() {
