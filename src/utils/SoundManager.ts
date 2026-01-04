@@ -18,11 +18,12 @@ export class SoundManager {
         if (!this.context) return;
         try {
             const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await this.context.decodeAudioData(arrayBuffer);
             this.buffers.set(key, audioBuffer);
         } catch (err) {
-            console.error(`Failed to load sound: ${key} from ${url}`, err);
+            console.warn(`Sound missing: ${key} (${url}). Logic continues without sound.`);
         }
     }
 
@@ -30,12 +31,12 @@ export class SoundManager {
         if (this.context && this.context.state === 'suspended') {
             await this.context.resume();
         }
-        // Preload sounds
+        // Preload sounds (Pointing to public/sounds/mechanical by default)
+        // User must add files: click.wav, space.wav, error.wav
         await Promise.all([
-            this.loadSound('click', '/sounds/click.wav'),
-            this.loadSound('space', '/sounds/space.wav'),
-            this.loadSound('error', '/sounds/error.wav'),
-            // Optionally load variants if available, for now just base
+            this.loadSound('click', '/sounds/mechanical/click.wav'),
+            this.loadSound('space', '/sounds/mechanical/space.wav'),
+            this.loadSound('error', '/sounds/mechanical/error.wav'),
         ]);
     }
 
