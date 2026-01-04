@@ -23,7 +23,7 @@ const App: React.FC = () => {
    * 4. Interaction: Click-to-focus and mouse events verified
    * 5. Syntax: Strictly Zero Trailing Commas in TS/TSX
    */
-   */
+
 
   const { user, setAuthenticated } = useAuthStore()
   const { theme, fontFamily } = useSettingsStore()
