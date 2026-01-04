@@ -4,10 +4,10 @@ import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
 
 import { syncService } from '@src/services/syncService'
-import { useSoundSystem } from '@src/hooks/useSoundSystem'
+import { useTypingSounds } from '@src/hooks/useTypingSounds'
 
 export const useTyping = () => {
-    const { playClick, playSpace, playError } = useSoundSystem()
+    const { playTypingSound, playErrorSound } = useTypingSounds()
     const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [metrics, setMetrics] = useState<TypingMetrics>({
@@ -114,7 +114,7 @@ export const useTyping = () => {
                 }
             }
         } else {
-            playError()
+            playErrorSound()
         }
         setShowResult(true)
     }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes])
@@ -130,7 +130,7 @@ export const useTyping = () => {
 
         if (e.key === 'Backspace') {
             setInput((prev: string) => prev.slice(0, -1))
-            playClick()
+            playTypingSound('Backspace')
             return
         }
 
@@ -145,13 +145,9 @@ export const useTyping = () => {
                     ...prev,
                     [targetChar]: (prev[targetChar] || 0) + 1
                 }))
-                playError()
+                playErrorSound()
             } else {
-                if (char === ' ') {
-                    playSpace()
-                } else {
-                    playClick()
-                }
+                playTypingSound(char)
             }
 
             setTotalKeystrokes((prev: number) => prev + 1)

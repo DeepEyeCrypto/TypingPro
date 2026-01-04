@@ -9,6 +9,9 @@
         "core:default",
         "shell:default",
         "updater:default",
-        "deep-link:default"
+        "deep-link:default",
+        "fs:default",
+        "fs:allow-read-text-file",
+        "fs:allow-resource-read-recursive"
     ]
 }
