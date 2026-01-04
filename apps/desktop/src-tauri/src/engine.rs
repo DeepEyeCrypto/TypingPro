@@ -2,8 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TypingMetrics {
-    pub raw_wpm: f64,
-    pub adjusted_wpm: f64,
+    pub gross_wpm: f64,
+    pub net_wpm: f64,
     pub accuracy: f64,
     pub consistency: f64,
 }
@@ -41,8 +41,8 @@ impl TypingEngine {
     pub fn calculate_metrics(&self) -> TypingMetrics {
         if self.timestamps.len() < 2 {
             return TypingMetrics {
-                raw_wpm: 0.0,
-                adjusted_wpm: 0.0,
+                gross_wpm: 0.0,
+                net_wpm: 0.0,
                 accuracy: 100.0,
                 consistency: 100.0,
             };
@@ -50,41 +50,126 @@ impl TypingEngine {
 
         let start_time = self.timestamps[0];
         let last_time = *self.timestamps.last().unwrap();
-        let duration_mins = (last_time - start_time) as f64 / 60000.0;
+        // Avoid division by zero if start == last
+        let duration_mins = f64::max((last_time - start_time) as f64 / 60000.0, 0.0001);
 
         let total_chars = self.typed_chars.len();
         let mut correct_chars = 0;
+        let mut uncorrected_errors = 0;
         let target_chars: Vec<char> = self.target_text.chars().collect();
 
         for (i, &typed) in self.typed_chars.iter().enumerate() {
-            if i < target_chars.len() && typed == target_chars[i] {
-                correct_chars += 1;
+            if i < target_chars.len() {
+                if typed == target_chars[i] {
+                    correct_chars += 1;
+                } else {
+                    uncorrected_errors += 1;
+                }
+            } else {
+                // Extra characters typed are errors
+                uncorrected_errors += 1;
             }
         }
 
-        let raw_wpm = (total_chars as f64 / 5.0) / duration_mins;
-        let adjusted_wpm = (correct_chars as f64 / 5.0) / duration_mins;
-        let accuracy = (correct_chars as f64 / total_chars as f64) * 100.0;
+        // Gross WPM: (All typed entries / 5) / Time (min)
+        let gross_wpm = (total_chars as f64 / 5.0) / duration_mins;
 
+        // Net WPM: Gross WPM - (Uncorrected Errors / Time (min))
+        // This is the standard "Accuracy Penalty" logic.
+        let penalty = uncorrected_errors as f64 / duration_mins;
+        let net_wpm = f64::max(gross_wpm - penalty, 0.0);
+
+        let accuracy = if total_chars > 0 {
+            (correct_chars as f64 / total_chars as f64) * 100.0
+        } else {
+            100.0
+        };
+
+        // Consistency Calculation (Coefficient of Variation of Latency)
         let mut intervals = Vec::new();
         for i in 1..self.timestamps.len() {
+            // Filter out potential crazy outliers if needed, currently raw
             intervals.push((self.timestamps[i] - self.timestamps[i - 1]) as f64);
         }
 
-        let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
-        let variance = intervals
-            .iter()
-            .map(|&i| (i - avg_interval).powi(2))
-            .sum::<f64>()
-            / intervals.len() as f64;
+        let consistency = if !intervals.is_empty() {
+            let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
+            let variance = intervals
+                .iter()
+                .map(|&i| (i - avg_interval).powi(2))
+                .sum::<f64>()
+                / intervals.len() as f64;
 
-        let consistency = (100.0 - (variance.sqrt() / 10.0)).max(0.0).min(100.0);
+            let std_dev = variance.sqrt();
+            // CV based consistency map (lower variance -> higher score)
+            // A perfect consistency is 100. We penalize by variation.
+            // Using a simpler heuristic: 100 - (CV * 100)
+            // CV = std_dev / mean
+            if avg_interval > 0.0 {
+                let cv = std_dev / avg_interval;
+                (100.0 - (cv * 100.0)).clamp(0.0, 100.0)
+            } else {
+                100.0
+            }
+        } else {
+            100.0
+        };
 
         TypingMetrics {
-            raw_wpm,
-            adjusted_wpm,
+            gross_wpm,
+            net_wpm,
             accuracy,
             consistency,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_initial_metrics() {
+        let mut engine = TypingEngine::new();
+        engine.start("hello".to_string());
+        let metrics = engine.calculate_metrics();
+        assert_eq!(metrics.gross_wpm, 0.0);
+        assert_eq!(metrics.net_wpm, 0.0);
+        assert_eq!(metrics.accuracy, 100.0);
+    }
+
+    #[test]
+    fn test_perfect_typing() {
+        let mut engine = TypingEngine::new();
+        engine.start("abc".to_string());
+        // Type 'a' at 0ms, 'b' at 200ms, 'c' at 400ms
+        // Total time = 400ms = 0.4s = 0.00666 min
+        // Total chars = 3. Gross = (3/5) / 0.0066 = 0.6 / 0.0066 = ~90 WPM
+        engine.push_char('a', 1000);
+        engine.push_char('b', 1200);
+        engine.push_char('c', 1400);
+
+        let metrics = engine.calculate_metrics();
+        assert!(metrics.gross_wpm > 80.0);
+        assert!(metrics.net_wpm > 80.0); // No errors, so Net ~= Gross
+        assert_eq!(metrics.accuracy, 100.0);
+    }
+
+    #[test]
+    fn test_accuracy_penalty() {
+        let mut engine = TypingEngine::new();
+        engine.start("abc".to_string());
+        // Type 'a' (correct), 'x' (wrong), 'c' (correct)
+        // 1 Error.
+        engine.push_char('a', 1000);
+        engine.push_char('x', 1200);
+        engine.push_char('c', 1400);
+
+        let metrics = engine.calculate_metrics();
+        // Gross should be same as perfect typing (3 chars typed)
+        // Net should be significantly lower due to error penalty
+        assert!(metrics.gross_wpm > 80.0);
+        assert!(metrics.net_wpm < metrics.gross_wpm);
+        assert!(metrics.accuracy < 100.0);
     }
 }

@@ -7,7 +7,7 @@ mod oauth;
 use std::sync::Mutex;
 use tauri::State;
 use engine::TypingEngine;
-use oauth::{exchange_google_code, exchange_github_code, UserProfile};
+use oauth::UserProfile;
 
 struct AppState {
     engine: Mutex<TypingEngine>,

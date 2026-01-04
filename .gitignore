@@ -29,5 +29,5 @@ src-tauri/.env
 *.sln
 *.sw?
 
-src-tauri/target/
+**/target/
 tsconfig.tsbuildinfo

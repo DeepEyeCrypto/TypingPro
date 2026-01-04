@@ -13,6 +13,11 @@ export default defineConfig({
       allow: ['..']
     }
   },
+  resolve: {
+    alias: {
+      '@src': path.resolve(__dirname, '../../src')
+    }
+  },
   envPrefix: ['VITE_', 'TAURI_'],
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }

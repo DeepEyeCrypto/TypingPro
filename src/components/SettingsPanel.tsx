@@ -51,6 +51,15 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                 <div className="setting-group">
                     <span className="setting-label">Audio</span>
                     <div className="audio-controls">
+                        <div className="toggle-row">
+                            <span className="sub-label">Sound Effects</span>
+                            <button
+                                className={`option-btn ${settings.soundEnabled ? 'active' : ''}`}
+                                onClick={() => settings.setSoundEnabled(!settings.soundEnabled)}
+                            >
+                                {settings.soundEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
                         <div className="volume-row">
                             <span className="sub-label">Volume</span>
                             <input

@@ -3,11 +3,9 @@ import { startSession, handleKeystroke, TypingMetrics } from '@src/lib/tauri'
 import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
 import { syncService } from '@src/services/syncService'
-import { useSoundSystem } from '@src/hooks/useSoundSystem'
-import { AudioEngine } from '@src/lib/AudioEngine'
+import { soundService } from '@src/services/soundService'
 
 export const useTyping = () => {
-    const { playKeystroke } = useSoundSystem()
     const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [metrics, setMetrics] = useState<TypingMetrics>({
@@ -76,7 +74,7 @@ export const useTyping = () => {
 
         const endTime = Date.now()
         const timeTaken = (endTime - startTime) / 1000 // Seconds
-        const totalErrors = Object.values(errors).reduce((a, b) => a + b, 0)
+        const totalErrors = (Object.values(errors) as number[]).reduce((a: number, b: number) => a + b, 0)
 
         // Formulas
         const calculatedRawWpm = ((totalKeystrokes / 5) / (timeTaken / 60))
@@ -102,7 +100,7 @@ export const useTyping = () => {
         const passed = Math.round(metrics.accuracy) === 100 && Math.round(metrics.raw_wpm) >= speedTarget
 
         if (passed) {
-            AudioEngine.getInstance().playSuccess()
+            // Success sound (optional, reusing space or handled elsewhere)
             if (!completedIds.includes(currentLesson.id)) {
                 setCompletedIds((prev: string[]) => [...prev, currentLesson.id])
             }
@@ -114,7 +112,7 @@ export const useTyping = () => {
                 }
             }
         } else {
-            AudioEngine.getInstance().playFailure()
+            soundService.playError()
         }
         setShowResult(true)
     }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes])
@@ -130,7 +128,7 @@ export const useTyping = () => {
 
         if (e.key === 'Backspace') {
             setInput((prev: string) => prev.slice(0, -1))
-            playKeystroke('Backspace')
+            soundService.playClick()
             return
         }
 
@@ -145,14 +143,16 @@ export const useTyping = () => {
                     ...prev,
                     [targetChar]: (prev[targetChar] || 0) + 1
                 }))
-                // Play Error Sound
-                AudioEngine.getInstance().playError()
+                soundService.playError()
             } else {
-                // Play Correct Keystroke Sound
-                playKeystroke(char)
+                if (char === ' ') {
+                    soundService.playSpace()
+                } else {
+                    soundService.playClick()
+                }
             }
 
-            setTotalKeystrokes(prev => prev + 1)
+            setTotalKeystrokes((prev: number) => prev + 1)
             setInput((prev: string) => prev + char)
 
 

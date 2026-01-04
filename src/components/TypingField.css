@@ -34,9 +34,9 @@
 }
 
 .char.incorrect {
-    color: #ff4444;
-    text-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
-    background: rgba(255, 68, 68, 0.1);
+    color: #ff003c;
+    text-shadow: 0 0 10px rgba(255, 0, 60, 0.6);
+    background: rgba(255, 0, 60, 0.1);
     border-radius: 2px;
 }
 
