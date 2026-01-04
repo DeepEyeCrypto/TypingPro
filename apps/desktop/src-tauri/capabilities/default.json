@@ -1,0 +1,23 @@
+{
+    "identifier": "default",
+    "description": "Default permissions for the app",
+    "local": true,
+    "windows": [
+        "main"
+    ],
+    "permissions": [
+        "core:default",
+        "fs:default",
+        "path:default",
+        "shell:default",
+        "dialog:default",
+        "clipboard-manager:default",
+        "store:default",
+        "http:default",
+        "notification:default",
+        "os:default",
+        "process:default",
+        "updater:default",
+        "deep-link:default"
+    ]
+}

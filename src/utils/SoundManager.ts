@@ -10,6 +10,19 @@ export class SoundManager {
         try {
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             this.context = new AudioContextClass();
+
+            // FIX: Resume AudioContext on first interaction
+            const resumeAudio = () => {
+                if (this.context && this.context.state === 'suspended') {
+                    this.context.resume().then(() => {
+                        console.log('AudioContext resumed successfully');
+                    });
+                }
+            };
+
+            window.addEventListener('keydown', resumeAudio, { once: true });
+            window.addEventListener('click', resumeAudio, { once: true });
+
         } catch (e) {
             console.error('Web Audio API is not supported in this browser', e);
         }
