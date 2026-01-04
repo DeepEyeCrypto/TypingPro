@@ -6,32 +6,38 @@ import { relaunch } from '@tauri-apps/plugin-process'
 export const useUpdater = () => {
     const [updateAvailable, setUpdateAvailable] = useState(false)
     const [version, setVersion] = useState('')
+    const [checking, setChecking] = useState(false)
+
+    const checkUpdate = async (silent = false) => {
+        setChecking(true)
+        try {
+            const update = await check()
+            if (update?.available) {
+                setUpdateAvailable(true)
+                setVersion(update.version)
+
+                const yes = await ask(
+                    `Update to v${update.version} is available!\n\nRelease notes: ${update.body}`,
+                    { title: 'Update Available', kind: 'info', okLabel: 'Update', cancelLabel: 'Later' }
+                )
+
+                if (yes) {
+                    await update.downloadAndInstall()
+                    await relaunch()
+                }
+            } else if (!silent) {
+                // Optional: Notify user no update available
+            }
+        } catch (error) {
+            console.error('Failed to check for updates:', error)
+        } finally {
+            setChecking(false)
+        }
+    }
 
     useEffect(() => {
-        const checkForUpdates = async () => {
-            try {
-                const update = await check()
-                if (update?.available) {
-                    setUpdateAvailable(true)
-                    setVersion(update.version)
-
-                    const yes = await ask(
-                        `Update to v${update.version} is available!\n\nRelease notes: ${update.body}`,
-                        { title: 'Update Available', kind: 'info', okLabel: 'Update', cancelLabel: 'Later' }
-                    )
-
-                    if (yes) {
-                        await update.downloadAndInstall()
-                        await relaunch()
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to check for updates:', error)
-            }
-        }
-
-        checkForUpdates()
+        checkUpdate(true)
     }, [])
 
-    return { updateAvailable, version }
+    return { updateAvailable, version, checkUpdate, checking }
 }
