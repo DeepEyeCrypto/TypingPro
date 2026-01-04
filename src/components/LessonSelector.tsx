@@ -37,7 +37,7 @@ export const LessonSelector = ({
             </button>
           </div>
 
-          <div className="hero-card liquid-glass-card smart-training-card" style={{ marginLeft: '1rem', background: 'rgba(25, 25, 35, 0.6)' }}>
+          <div className="hero-card liquid-glass-card smart-training-card" style={{ background: 'rgba(25, 25, 35, 0.6)' }}>
             <div className="hero-info">
               <span className="hero-label" style={{ color: '#00f0ff' }}>SMART TRAINING</span>
               <h2 className="hero-lesson-title">Weakness Targeting</h2>

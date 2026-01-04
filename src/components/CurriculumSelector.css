@@ -26,6 +26,18 @@
     animation: fadeIn 0.8s ease-out;
 }
 
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 1000px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+    }
+}
+
 .hero-title {
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
