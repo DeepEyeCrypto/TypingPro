@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "1.0.45",
+  "version": "1.0.47",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -31,7 +31,7 @@
     "targets": [
       "dmg",
       "nsis",
-      "deb"
+      "appimage"
     ],
     "createUpdaterArtifacts": true,
     "icon": [
