@@ -1,4 +1,6 @@
-import { SoundProfile } from '@src/data/soundProfiles'
+import { Howl } from 'howler'
+import { SoundProfile, SOUND_PROFILES } from '@src/data/soundProfiles'
+import { convertFileSrc } from '@tauri-apps/api/core'
 
 type OscillatorType = 'sine' | 'square' | 'sawtooth' | 'triangle'
 
@@ -8,9 +10,10 @@ export class AudioEngine {
     private masterGain: GainNode | null = null
     private enabled: boolean = true
     private volume: number = 0.5
+    private soundCache: Map<string, Howl> = new Map()
 
     private constructor() {
-        // Lazy initialization in init() to adhere to browser policies
+        // Lazy init
     }
 
     public static getInstance(): AudioEngine {
@@ -24,12 +27,16 @@ export class AudioEngine {
         if (this.context) return
 
         try {
+            // 1. Init Web Audio API (for Synth Fallback)
             this.context = new (window.AudioContext || (window as any).webkitAudioContext)()
             this.masterGain = this.context.createGain()
             this.masterGain.connect(this.context.destination)
             this.setMasterVolume(initialVolume)
 
-            // Resume context on first interaction if suspended
+            // 2. Preload Howler Assets
+            this.preloadSounds()
+
+            // 3. Resume context on interaction
             if (this.context.state === 'suspended') {
                 const resume = () => {
                     this.context?.resume()
@@ -40,53 +47,94 @@ export class AudioEngine {
                 window.addEventListener('keydown', resume)
             }
         } catch (e) {
-            console.error('AudioEngine: Failed to initialize Web Audio API', e)
+            console.error('AudioEngine: Failed to initialize', e)
         }
+    }
+
+    private preloadSounds() {
+        SOUND_PROFILES.forEach(profile => {
+            if (profile.type === 'file' && profile.path) {
+                // Determine source path
+                let src = profile.path
+                // If running in Tauri (not simple browser dev), use convertFileSrc for local assets if needed
+                // But for 'public' folder assets, standard path usually works in Vite dev.
+                // In production, resources might be needing specific handling.
+                // We'll try standard path first.
+
+                const sound = new Howl({
+                    src: [src],
+                    volume: profile.volume * this.volume, // Initial volume
+                    preload: true,
+                    onload: () => console.log(`[Audio] Loaded: ${profile.id}`),
+                    onloaderror: (_id, err) => console.warn(`[Audio] Failed to load ${profile.id}:`, err)
+                })
+                this.soundCache.set(profile.id, sound)
+            }
+        })
     }
 
     public setMasterVolume(vol: number) {
         this.volume = vol / 100
+
+        // Update Synth Gain
         if (this.masterGain && this.context) {
-            // Smooth transition to avoid clicks
             this.masterGain.gain.setTargetAtTime(this.volume, this.context.currentTime, 0.05)
         }
+
+        // Update Howler Global Volume (or individual cached sounds)
+        // Howler.volume(this.volume) // Global Howler volume
+        this.soundCache.forEach(sound => sound.volume(this.volume))
     }
 
     public setEnabled(enabled: boolean) {
         this.enabled = enabled
     }
 
-    /**
-     * Play a sound based on the profile ID.
-     * Generates a unique, procedural sound instance for every call (zero latency).
-     */
     public play(profileId: string, key?: string) {
-        if (!this.enabled || !this.context || !this.masterGain) return
+        if (!this.enabled) return
 
-        if (this.context.state === 'suspended') {
-            this.context.resume()
-        }
+        // Global Resume Check
+        if (this.context?.state === 'suspended') this.context.resume()
 
-        // --- STAGE 8: Special Keys ---
+        // 1. Special Keys (Backspace) - Always Synth for consistency
         if (key === 'Backspace') {
             this.playBackspace()
             return
         }
+
+        // 2. Try File-Based Playback
+        if (this.soundCache.has(profileId)) {
+            const sound = this.soundCache.get(profileId)
+            if (sound && sound.state() === 'loaded') {
+                // Randomize playback slightly for realism
+                const rate = 0.95 + Math.random() * 0.1
+                const id = sound.play()
+                sound.rate(rate, id)
+                // sound.volume(this.volume, id) // Handled by setMasterVolume
+                return
+            }
+        }
+
+        // 3. Fallback to Synth Engine
+        this.playSynth(profileId, key)
+    }
+
+    private playSynth(profileId: string, key?: string) {
+        if (!this.context || !this.masterGain) return
 
         // Spacebar "Thump" modifier
         let pitchMod = 0
         let volMod = 1.0
 
         if (key === ' ') {
-            pitchMod = -200 // Drop pitch significantly for spacebar
+            pitchMod = -200
             volMod = 1.2
         } else {
-            // Random pitch variation (+/- 5%) for organic feel
             pitchMod = (Math.random() * 100) - 50
         }
 
         switch (profileId) {
-            case 'mechanical':
+            case 'mechanical': // Fallback if file missing
                 this.playMechanicalClick(pitchMod, volMod)
                 break
             case 'typewriter':
@@ -96,6 +144,9 @@ export class AudioEngine {
                 this.playCreamy(pitchMod, volMod)
                 break
             case 'pop':
+                this.playPop(pitchMod, volMod)
+                break
+            case 'bubble': // Alias
                 this.playPop(pitchMod, volMod)
                 break
             case 'rubber':
@@ -117,85 +168,9 @@ export class AudioEngine {
         }
     }
 
-    /**
-     * Play a distinct error sound (Low pitch "Crunch/Thud").
-     */
-    public playError() {
-        if (!this.enabled || !this.context || !this.masterGain) return
-
-        if (this.context.state === 'suspended') {
-            this.context.resume()
-        }
-
-        const t = this.context.currentTime
-
-        // 1. Low frequency Sawtooth "Buzz"
-        const osc = this.context.createOscillator()
-        const oscGain = this.context.createGain()
-
-        osc.type = 'sawtooth'
-        osc.frequency.setValueAtTime(100, t) // Low frequency
-        osc.frequency.linearRampToValueAtTime(50, t + 0.1) // Drop pitch
-
-        // 2. Filter for "Crunch" effect
-        const filter = this.context.createBiquadFilter()
-        filter.type = 'lowpass'
-        filter.frequency.setValueAtTime(300, t)
-
-        oscGain.gain.setValueAtTime(0.5, t)
-        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.15)
-
-        osc.connect(filter)
-        filter.connect(oscGain)
-        oscGain.connect(this.masterGain)
-
-        osc.start(t)
-        osc.stop(t + 0.15)
-    }
-
-    public playSuccess() {
-        if (!this.enabled || !this.context) return
-        const t = this.context.currentTime
-
-        // Ascending major arpeggio
-        const notes = [523.25, 659.25, 783.99, 1046.50] // C5, E5, G5, C6
-
-        notes.forEach((freq, i) => {
-            const osc = this.context!.createOscillator()
-            const g = this.context!.createGain()
-            osc.type = 'sine'
-            osc.frequency.value = freq
-            g.gain.setValueAtTime(0.1, t + i * 0.1)
-            g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.1 + 0.4)
-            osc.connect(g)
-            g.connect(this.masterGain!)
-            osc.start(t + i * 0.1)
-            osc.stop(t + i * 0.1 + 0.4)
-        })
-    }
-
-    public playFailure() {
-        if (!this.enabled || !this.context) return
-        const t = this.context.currentTime
-
-        // Descending dissonant tritone
-        const notes = [300, 212]
-        notes.forEach((freq, i) => {
-            const osc = this.context!.createOscillator()
-            const g = this.context!.createGain()
-            osc.type = 'sawtooth'
-            osc.frequency.value = freq
-            g.gain.setValueAtTime(0.2, t + i * 0.2)
-            g.gain.linearRampToValueAtTime(0.001, t + i * 0.2 + 0.5)
-            osc.connect(g)
-            g.connect(this.masterGain!)
-            osc.start(t + i * 0.2)
-            osc.stop(t + i * 0.2 + 0.5)
-        })
-    }
+    // --- SYNTH METHODS (Unchanged High-Quality Generators) ---
 
     private playBackspace() {
-        // "Receding" or "Delete" sound - Filters closing down
         const t = this.context!.currentTime
         const osc = this.context!.createOscillator()
         const g = this.context!.createGain()
@@ -208,7 +183,7 @@ export class AudioEngine {
         filter.frequency.setValueAtTime(800, t)
         filter.frequency.exponentialRampToValueAtTime(100, t + 0.1)
 
-        g.gain.setValueAtTime(0.3, t)
+        g.gain.setValueAtTime(0.3 * this.volume, t)
         g.gain.exponentialRampToValueAtTime(0.01, t + 0.1)
 
         osc.connect(filter)
@@ -219,22 +194,18 @@ export class AudioEngine {
         osc.stop(t + 0.1)
     }
 
-    // --- PROCEDURAL SOUND GENERATORS ---
+    // ... (Keeping all other procedural generators: playMechanicalClick, playTypewriter, etc. identical to before)
+    // For brevity in this replacement, assume we are restoring them. 
+    // I will explicitly write them out to ensure they are not lost.
 
-    /**
-     * Mechanical Switch Sound
-     * Complex layering of a low "thuck" (square wave) and a high "click" (noise burst).
-     */
     private playMechanicalClick(detune: number, volMod: number) {
         const t = this.context!.currentTime
-
-        // 1. The "Thuck" (Body of the switch)
         const osc = this.context!.createOscillator()
         const oscGain = this.context!.createGain()
 
         osc.type = 'square'
-        osc.frequency.setValueAtTime(150, t) // Low frequency thud
-        osc.frequency.exponentialRampToValueAtTime(40, t + 0.08) // Pitch drop
+        osc.frequency.setValueAtTime(150, t)
+        osc.frequency.exponentialRampToValueAtTime(40, t + 0.08)
         osc.detune.value = detune
 
         oscGain.gain.setValueAtTime(0.5 * volMod, t)
@@ -246,13 +217,11 @@ export class AudioEngine {
         osc.start(t)
         osc.stop(t + 0.1)
 
-        // 2. The "Click" (High frequency noise burst)
         this.playNoiseBurst(t, 0.04, 0.2 * volMod)
     }
 
     private playTypewriter(detune: number, volMod: number) {
         const t = this.context!.currentTime
-        // Sharp, high-pitch mechanical "clack"
         const osc = this.context!.createOscillator()
         const oscGain = this.context!.createGain()
 
@@ -267,14 +236,11 @@ export class AudioEngine {
         oscGain.connect(this.masterGain!)
         osc.start(t)
         osc.stop(t + 0.05)
-
-        // Add a metallic ring
         this.playNoiseBurst(t, 0.02, 0.3 * volMod)
     }
 
     private playCreamy(detune: number, volMod: number) {
         const t = this.context!.currentTime
-        // Soft, filtered switch (Thock)
         const osc = this.context!.createOscillator()
         const g = this.context!.createGain()
         const filter = this.context!.createBiquadFilter()
@@ -298,14 +264,8 @@ export class AudioEngine {
         osc.stop(t + 0.15)
     }
 
-    /**
-     * Hitmarker Sound
-     * High pitched, short burst of filtered noise.
-     */
     private playHitmarker(detune: number) {
         const t = this.context!.currentTime
-
-        // High frequency Sine ping
         const osc = this.context!.createOscillator()
         const oscGain = this.context!.createGain()
 
@@ -318,18 +278,12 @@ export class AudioEngine {
 
         osc.connect(oscGain)
         oscGain.connect(this.masterGain!)
-
         osc.start(t)
         osc.stop(t + 0.05)
     }
 
-    /**
-     * Simple Tone Generator
-     * For presets: Sine, Square, Triangle, Sawtooth
-     */
     private playPop(detune: number, volMod: number) {
         const t = this.context!.currentTime
-        // High Sine Pitch Drop
         const osc = this.context!.createOscillator()
         const g = this.context!.createGain()
 
@@ -343,14 +297,12 @@ export class AudioEngine {
 
         osc.connect(g)
         g.connect(this.masterGain!)
-
         osc.start(t)
         osc.stop(t + 0.1)
     }
 
     private playRubber(detune: number, volMod: number) {
         const t = this.context!.currentTime
-        // Dull, low sine/triangle thud
         const osc = this.context!.createOscillator()
         const g = this.context!.createGain()
 
@@ -363,7 +315,6 @@ export class AudioEngine {
 
         osc.connect(g)
         g.connect(this.masterGain!)
-
         osc.start(t)
         osc.stop(t + 0.08)
     }
@@ -374,7 +325,7 @@ export class AudioEngine {
         const oscGain = this.context!.createGain()
 
         osc.type = type
-        osc.frequency.setValueAtTime(600, t) // Standard pitch
+        osc.frequency.setValueAtTime(600, t)
         osc.detune.value = detune
 
         oscGain.gain.setValueAtTime(0.3 * volMod, t)
@@ -382,38 +333,89 @@ export class AudioEngine {
 
         osc.connect(oscGain)
         oscGain.connect(this.masterGain!)
-
         osc.start(t)
         osc.stop(t + 0.1)
     }
 
     private playGenericClick(detune: number, volMod: number) {
-        // Simple short noise click
         this.playNoiseBurst(this.context!.currentTime, 0.03, 0.15 * volMod)
     }
-
-    // --- HELPER: WHITE NOISE ---
 
     private playNoiseBurst(startTime: number, duration: number, volume: number) {
         const bufferSize = this.context!.sampleRate * duration
         const buffer = this.context!.createBuffer(1, bufferSize, this.context!.sampleRate)
         const data = buffer.getChannelData(0)
-
-        // Generate white noise
         for (let i = 0; i < bufferSize; i++) {
             data[i] = Math.random() * 2 - 1
         }
-
         const noise = this.context!.createBufferSource()
         noise.buffer = buffer
-
         const noiseGain = this.context!.createGain()
         noiseGain.gain.setValueAtTime(volume, startTime)
         noiseGain.gain.exponentialRampToValueAtTime(0.01, startTime + duration)
-
         noise.connect(noiseGain)
         noiseGain.connect(this.masterGain!)
-
         noise.start(startTime)
+    }
+
+    public playError() {
+        if (!this.enabled || !this.context || !this.masterGain) return
+        const t = this.context.currentTime
+        const osc = this.context.createOscillator()
+        const oscGain = this.context.createGain()
+
+        osc.type = 'sawtooth'
+        osc.frequency.setValueAtTime(100, t)
+        osc.frequency.linearRampToValueAtTime(50, t + 0.1)
+
+        const filter = this.context.createBiquadFilter()
+        filter.type = 'lowpass'
+        filter.frequency.setValueAtTime(300, t)
+
+        oscGain.gain.setValueAtTime(0.5, t)
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.15)
+
+        osc.connect(filter)
+        filter.connect(oscGain)
+        oscGain.connect(this.masterGain)
+
+        osc.start(t)
+        osc.stop(t + 0.15)
+    }
+
+    public playSuccess() {
+        if (!this.enabled || !this.context) return
+        const t = this.context.currentTime
+        const notes = [523.25, 659.25, 783.99, 1046.50]
+        notes.forEach((freq, i) => {
+            const osc = this.context!.createOscillator()
+            const g = this.context!.createGain()
+            osc.type = 'sine'
+            osc.frequency.value = freq
+            g.gain.setValueAtTime(0.1, t + i * 0.1)
+            g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.1 + 0.4)
+            osc.connect(g)
+            g.connect(this.masterGain!)
+            osc.start(t + i * 0.1)
+            osc.stop(t + i * 0.1 + 0.4)
+        })
+    }
+
+    public playFailure() {
+        if (!this.enabled || !this.context) return
+        const t = this.context.currentTime
+        const notes = [300, 212]
+        notes.forEach((freq, i) => {
+            const osc = this.context!.createOscillator()
+            const g = this.context!.createGain()
+            osc.type = 'sawtooth'
+            osc.frequency.value = freq
+            g.gain.setValueAtTime(0.2, t + i * 0.2)
+            g.gain.linearRampToValueAtTime(0.001, t + i * 0.2 + 0.5)
+            osc.connect(g)
+            g.connect(this.masterGain!)
+            osc.start(t + i * 0.2)
+            osc.stop(t + i * 0.2 + 0.5)
+        })
     }
 }
