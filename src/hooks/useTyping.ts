@@ -4,10 +4,10 @@ import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
 
 import { syncService } from '@src/services/syncService'
-import { useTypingSounds } from '@src/hooks/useTypingSounds'
+import { useSoundEngine } from '@src/hooks/useSoundEngine'
 
 export const useTyping = () => {
-    const { playTypingSound, playErrorSound } = useTypingSounds()
+    const { playTypingSound, playErrorSound } = useSoundEngine()
     const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [metrics, setMetrics] = useState<TypingMetrics>({

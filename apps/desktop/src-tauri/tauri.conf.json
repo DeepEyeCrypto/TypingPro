@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "1.0.75",
+  "version": "1.0.76",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -20,7 +20,8 @@
         "transparent": true,
         "decorations": true,
         "titleBarStyle": "Overlay",
-        "devtools": false
+        "devtools": false,
+        "additionalBrowserArgs": "--autoplay-policy=no-user-gesture-required"
       }
     ],
     "security": {
