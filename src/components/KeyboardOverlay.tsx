@@ -12,7 +12,7 @@ export const KeyboardOverlay = ({ activeChar }: KeyboardOverlayProps) => {
     return (
         <div className="keyboard-overlay">
             <div className="keyboard-grid">
-                {Object.entries(KEY_MAP).map(([char, pos]) => {
+                {(Object.entries(KEY_MAP) as [string, any][]).map(([char, pos]) => {
                     const isActive = char === activeCharLower
                     const isHome = ['f', 'j'].includes(char)
 
