@@ -66,6 +66,27 @@
     font-family: 'Inter', sans-serif;
 }
 
+/* EMERALD SENSORY: Deep Emerald */
+.theme-emerald {
+    --bg-color: #051a18;
+    /* Deep dark teal/black */
+    --text-color: #e0f2f1;
+    /* Soft mint white */
+    --accent-color: #34d399;
+    /* Emerald 400 */
+    --secondary-color: #059669;
+    /* Emerald 600 */
+    --error-color: #ef4444;
+    --glass-bg: rgba(34, 74, 71, 0.25);
+    /* #224A47 at low opacity */
+    --glass-border: rgba(52, 211, 153, 0.2);
+    /* Emerald border */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    text-shadow: 0 0 15px rgba(52, 211, 153, 0.1);
+}
+
 /* Apply variables to common elements if using them */
 .theme-cyberpunk .caret {
     background-color: var(--accent-color);
@@ -89,7 +110,13 @@
 .theme-cyberpunk .liquid-glass-card,
 .theme-dracula .liquid-glass-card,
 .theme-matrix .liquid-glass-card,
-.theme-nord .liquid-glass-card {
+.theme-nord .liquid-glass-card,
+.theme-emerald .liquid-glass-card {
     background: var(--glass-bg);
     border-color: var(--glass-border);
+}
+
+.theme-emerald .caret {
+    background-color: var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
 }
