@@ -1,0 +1,23 @@
+{
+    "version": "1.0.72",
+    "notes": "Hybrid Audio Engine & Fixes",
+    "pub_date": "2026-01-05T20:20:00Z",
+    "platforms": {
+        "darwin-aarch64": {
+            "signature": "CONTENT_OF_SIG_FILE",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.72/TypingPro_1.0.72_aarch64.dmg"
+        },
+        "darwin-x86_64": {
+            "signature": "CONTENT_OF_SIG_FILE",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.72/TypingPro_1.0.72_x64.dmg"
+        },
+        "linux-x86_64": {
+            "signature": "CONTENT_OF_SIG_FILE",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.72/typingpro_1.0.72_amd64.AppImage"
+        },
+        "windows-x86_64": {
+            "signature": "CONTENT_OF_SIG_FILE",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.72/TypingPro_1.0.72_x64-setup.exe"
+        }
+    }
+}

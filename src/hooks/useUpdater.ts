@@ -39,5 +39,10 @@ export const useUpdater = () => {
         checkUpdate(true)
     }, [])
 
-    return { updateAvailable, version, checkUpdate, checking }
+    return {
+        updateAvailable,
+        version,
+        manualCheck: () => checkUpdate(false),
+        checking
+    }
 }

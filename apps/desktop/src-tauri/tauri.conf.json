@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "1.0.72",
+  "version": "1.0.73",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -71,7 +71,7 @@
     },
     "updater": {
       "endpoints": [
-        "https://github.com/DeepEyeCrypto/TypingPro/releases/latest/download/latest.json"
+        "https://raw.githubusercontent.com/DeepEyeCrypto/TypingPro/master/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEExOEJBNjBEQUY5OEYwRUIKUldUcjhKaXZEYWFMb1had29SQTZibWtoTjN2cmJ6Z2xsczIwZlFLajFkN2VTRlE0RkpPK3V2clcK"
     }
