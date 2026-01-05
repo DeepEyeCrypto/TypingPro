@@ -54,24 +54,46 @@ export class AudioEngine {
     private preloadSounds() {
         SOUND_PROFILES.forEach(profile => {
             if (profile.type === 'file' && profile.path) {
-                // Determine source path
-                let src = profile.path
-                // If running in Tauri (not simple browser dev), use convertFileSrc for local assets if needed
-                // But for 'public' folder assets, standard path usually works in Vite dev.
-                // In production, resources might be needing specific handling.
-                // We'll try standard path first.
+                // Determine source path - Try multiple strategies
+                const paths = this.buildAssetPaths(profile.path)
 
                 const sound = new Howl({
-                    src: [src],
-                    volume: profile.volume * this.volume, // Initial volume
+                    src: paths,
+                    volume: profile.volume * this.volume,
                     preload: true,
-                    onload: () => console.log(`[Audio] Loaded: ${profile.id}`),
-                    onloaderror: (_id, err) => console.warn(`[Audio] Failed to load ${profile.id}:`, err)
+                    onload: () => {
+                        // Silent success for production
+                    },
+                    onloaderror: (_id, err) => {
+                        // Silently fail and fallback to synth
+                    }
                 })
                 this.soundCache.set(profile.id, sound)
             }
         })
     }
+
+    private buildAssetPaths(path: string): string[] {
+        const paths: string[] = []
+
+        // Strategy 1: Public folder (Vite dev)
+        paths.push(path)
+
+        // Strategy 2: Tauri asset protocol (Production)
+        try {
+            const assetPath = path.replace('/sounds/', 'sounds/')
+            const converted = convertFileSrc(assetPath, 'asset')
+            paths.push(converted)
+        } catch (e) {
+            // convertFileSrc not available (browser mode)
+        }
+
+        // Strategy 3: Alternative asset path
+        paths.push(path.replace('/sounds/', '/assets/sounds/'))
+
+        return paths
+    }
+
 
     public setMasterVolume(vol: number) {
         this.volume = vol / 100

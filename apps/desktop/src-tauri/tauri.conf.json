@@ -43,6 +43,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": [
+      "assets/sounds/**/*"
+    ],
     "macOS": {
       "dmg": {
         "background": "./icons/dmg-background.png",
