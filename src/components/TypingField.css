@@ -6,6 +6,14 @@
     user-select: none;
     cursor: text;
     transition: all 0.3s ease;
+
+    /* Layout Fixes */
+    max-width: 1000px;
+    margin: 0 auto 2rem auto;
+    text-align: center;
+    white-space: pre-wrap;
+    word-break: break-word;
+    padding: 0 2rem;
 }
 
 .char {
