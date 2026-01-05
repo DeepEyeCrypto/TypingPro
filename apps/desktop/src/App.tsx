@@ -18,6 +18,7 @@ import { useUpdater } from '../../../src/hooks/useUpdater'
 import { useLockdown } from '../../../src/hooks/useLockdown'
 
 import { SplashScreen } from '../../../src/components/SplashScreen'
+import { WhatsNewModal } from '../../../src/components/WhatsNewModal'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
@@ -113,6 +114,7 @@ const App: React.FC = () => {
           onClick={() => inputRef.current?.focus()}
         >
           <TitleBar />
+          <WhatsNewModal />
           <TopBar
             metrics={typing.metrics}
             mode={typing.currentLesson ? typing.currentLesson.stage : 'Curriculum'}

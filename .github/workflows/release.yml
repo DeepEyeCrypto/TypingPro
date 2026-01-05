@@ -70,12 +70,42 @@ jobs:
       - name: Version Sync
         run: node scripts/sync-tauri-version.cjs
 
+      # Build Changelog from Commits
+      - name: Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          configuration: |
+            {
+              "template": "# 🚀 What's New\n\n#{{CHANGELOG}}\n\n<details>\n<summary>Other Changes</summary>\n#{{UNCATEGORIZED}}\n</details>",
+              "categories": [
+                {
+                  "title": "## 🚀 Features",
+                  "labels": ["feat", "feature"]
+                },
+                {
+                  "title": "## 🐛 Bug Fixes",
+                  "labels": ["fix", "bug"]
+                },
+                {
+                  "title": "## ⚡ Performance",
+                  "labels": ["perf"]
+                },
+                {
+                  "title": "## 🛠 Improvements",
+                  "labels": ["chore", "refactor", "style", "docs", "test"]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # Build & Release (Tauri Action handles 'npm run build' via beforeBuildCommand)
       - uses: tauri-apps/tauri-action@v0
         with:
           tagName: v__VERSION__
           releaseName: 'TypingPro v__VERSION__'
-          releaseBody: 'Automated release from GitHub Actions'
+          releaseBody: '${{ steps.changelog.outputs.changelog }}'
           releaseDraft: true
           prerelease: false
           projectPath: 'apps/desktop'

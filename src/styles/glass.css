@@ -1,8 +1,27 @@
-/* Global Scrollbar Fix */
+/* Global Scrollbar Fix - Hidden by default */
 ::-webkit-scrollbar {
     display: none;
     width: 0;
     background: transparent;
+}
+
+/* Custom Visible Scrollbar for specific containers */
+.custom-scrollbar::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 body,
