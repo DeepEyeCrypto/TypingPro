@@ -1,7 +1,7 @@
 {
   "name": "typingpro-monorepo",
   "private": true,
-  "version": "1.0.76",
+  "version": "1.0.77",
   "workspaces": [
     "apps/*",
     "packages/*"
