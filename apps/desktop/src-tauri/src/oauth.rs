@@ -47,7 +47,7 @@ struct GithubUserResponse {
     avatar_url: Option<String>
 }
 
-pub async fn perform_google_login(app: AppHandle) -> Result<UserProfile, String> {
+pub async fn perform_google_login(_app: AppHandle) -> Result<UserProfile, String> {
     let (tx, rx): (async_channel::Sender<String>, async_channel::Receiver<String>) = async_channel::bounded(1);
     
     // Start listener on Rust side
@@ -80,7 +80,7 @@ pub async fn perform_google_login(app: AppHandle) -> Result<UserProfile, String>
     exchange_google_code(code).await
 }
 
-pub async fn perform_github_login(app: AppHandle) -> Result<UserProfile, String> {
+pub async fn perform_github_login(_app: AppHandle) -> Result<UserProfile, String> {
     let (tx, rx): (async_channel::Sender<String>, async_channel::Receiver<String>) = async_channel::bounded(1);
     
     let port = start_with_config(tauri_plugin_oauth::OauthConfig {

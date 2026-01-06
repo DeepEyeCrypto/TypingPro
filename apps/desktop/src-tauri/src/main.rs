@@ -11,6 +11,7 @@ use tauri::State;
 use engine::TypingEngine;
 use oauth::UserProfile;
 use commands::zen::toggle_zen_window;
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
 // use audio::AudioManager;
 
 struct AppState {
