@@ -87,13 +87,7 @@ fn main() {
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
             // Register global shortcut for Zen Mode (Cmd/Ctrl+Alt+T)
-            let app_handle = app.handle().clone();
-            app.global_shortcut().register(
-                "CmdOrCtrl+Alt+T",
-                move |_app, _shortcut, _event| {
-                    let _ = toggle_zen_window(app_handle.clone());
-                }
-            )?;
+            app.global_shortcut().register("CmdOrCtrl+Alt+T")?;
 
             Ok(())
         })
@@ -112,7 +106,21 @@ fn main() {
             // set_audio_volume,
             // toggle_audio
         ])
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, shortcut, event| {
+                    use tauri_plugin_global_shortcut::ShortcutState;
+                    if shortcut.matches(tauri_plugin_global_shortcut::Modifiers::empty(), tauri_plugin_global_shortcut::Code::KeyT) 
+                        && (shortcut.mods().contains(tauri_plugin_global_shortcut::Modifiers::CONTROL) 
+                            || shortcut.mods().contains(tauri_plugin_global_shortcut::Modifiers::META))
+                        && shortcut.mods().contains(tauri_plugin_global_shortcut::Modifiers::ALT)
+                        && event.state == ShortcutState::Pressed 
+                    {
+                        let _ = toggle_zen_window(app.clone());
+                    }
+                })
+                .build()
+        )
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_oauth::init())
