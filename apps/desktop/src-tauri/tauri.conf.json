@@ -61,6 +61,7 @@
       "icons/icon.ico"
     ],
     "macOS": {
+      "entitlements": "entitlements.plist",
       "dmg": {
         "background": "./icons/dmg-background.png",
         "windowSize": {
@@ -78,7 +79,7 @@
       }
     },
     "resources": [
-      "assets/**/*"
+      "assets/sounds/*"
     ]
   },
   "plugins": {

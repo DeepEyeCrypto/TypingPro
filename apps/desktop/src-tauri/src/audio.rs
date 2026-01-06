@@ -38,6 +38,11 @@ impl AudioManager {
                 .join("assets")
                 .join("sounds");
 
+            println!(
+                "Audio Manager Initialized. Looking for sounds at: {:?}",
+                resource_path
+            );
+
             // List of known sound files to preload and their cache keys
             let sound_mappings = vec![
                 ("mechanical", "mechanical.wav"),
