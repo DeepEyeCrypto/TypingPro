@@ -1,7 +1,7 @@
 {
   "name": "typingpro-monorepo",
   "private": true,
-  "version": "1.0.100",
+  "version": "1.0.101",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -25,6 +25,7 @@
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-store": "^2.4.1",
     "@tauri-apps/plugin-updater": "^2.9.0",
+    "firebase": "^12.7.0",
     "howler": "^2.2.4",
     "use-sound": "^5.0.0"
   }

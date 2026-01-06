@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { storeService } from '@src/services/store'
+import { userService, UserProfile } from '@src/services/userService'
 
 export interface User {
     id: string,
@@ -11,35 +12,55 @@ export interface User {
 
 interface AuthState {
     user: User | null,
+    profile: UserProfile | null, // Added profile
     token: string | null,
     isGuest: boolean,
-    setAuthenticated: (user: User, token?: string) => void,
+    isLoadingProfile: boolean, // Loading state for profile
+    setAuthenticated: (user: User, token?: string) => Promise<void>, // Made async
+    refreshProfile: () => Promise<void>,
     setGuest: () => void,
     logout: () => void,
     checkSession: () => Promise<boolean>
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
+    profile: null,
     token: null,
     isGuest: true,
+    isLoadingProfile: false,
 
-    setAuthenticated: (user, token = undefined) => {
-        set({ user, token: token || null, isGuest: false })
+    setAuthenticated: async (user, token = undefined) => {
+        set({ user, token: token || null, isGuest: false, isLoadingProfile: true })
         // Persist to Store
         storeService.setUserProfile(user)
         if (token) storeService.setAuthToken(token)
+
+        try {
+            const profile = await userService.getProfile(user.id)
+            set({ profile, isLoadingProfile: false })
+        } catch (e) {
+            console.error("Failed to load profile", e)
+            set({ isLoadingProfile: false })
+        }
+    },
+
+    refreshProfile: async () => {
+        const { user } = get()
+        if (user) {
+            const profile = await userService.getProfile(user.id)
+            set({ profile })
+        }
     },
 
     setGuest: () => {
-        set({ user: null, token: null, isGuest: true })
+        set({ user: null, profile: null, token: null, isGuest: true })
         storeService.clearAuth()
     },
 
     logout: () => {
-        set({ user: null, token: null, isGuest: true })
+        set({ user: null, profile: null, token: null, isGuest: true })
         storeService.clearAuth()
-        // Clear legacy local storage too
         localStorage.removeItem('auth_user')
         localStorage.removeItem('auth_token')
     },
@@ -49,7 +70,14 @@ export const useAuthStore = create<AuthState>((set) => ({
         const token = await storeService.getAuthToken()
 
         if (user) {
-            set({ user, token: token || null, isGuest: false })
+            set({ user, token: token || null, isGuest: false, isLoadingProfile: true })
+            // Fetch profile
+            try {
+                const profile = await userService.getProfile(user.id)
+                set({ profile, isLoadingProfile: false })
+            } catch (error) {
+                set({ isLoadingProfile: false })
+            }
             return true
         }
         return false

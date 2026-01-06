@@ -7,10 +7,16 @@ import { WeaknessAnalyzer } from '@src/services/weaknessAnalyzer'
 import { syncService } from '@src/services/syncService'
 import { useRustAudio } from '@src/hooks/useRustAudio'
 
+import { raceService } from '@src/services/raceService'
+import { useAuthStore } from '@src/stores/authStore'
+
 export const useTyping = () => {
     const { playTypingSound } = useRustAudio()
-    const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
+    const { user } = useAuthStore() // Get user to attach to race
+    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
+    const [challengerGhost, setChallengerGhost] = useState<{ charAndTime: { char: string, time: number }[] } | undefined>(undefined)
+
     const [metrics, setMetrics] = useState<TypingMetrics>({
         raw_wpm: 0,
         adjusted_wpm: 0,
@@ -37,7 +43,8 @@ export const useTyping = () => {
 
     const recordAttempt = useStatsStore((s: any) => s.recordAttempt)
 
-    // Initialization & Persistence
+    // ... (Initialization effects same as before) ...
+
     useEffect(() => {
         const savedUnlocked = localStorage.getItem('unlockedIds')
         const savedCompleted = localStorage.getItem('completedIds')
@@ -63,10 +70,10 @@ export const useTyping = () => {
     const graphDataRef = useRef<{ time: number, wpm: number, raw: number }[]>([])
     const metricsRef = useRef(metrics)
 
-    // Sync metricsRef for interval access
+    // Sync metricsRef
     useEffect(() => { metricsRef.current = metrics }, [metrics])
 
-    // Clear timer on unmount
+    // Clear timer
     useEffect(() => {
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current)
@@ -91,7 +98,7 @@ export const useTyping = () => {
         startIdleTimer()
     }, [isPaused, lastPauseStart, startIdleTimer])
 
-    // Real-Time Graph Sampling (1s interval)
+    // Graph Sampling
     useEffect(() => {
         let interval: NodeJS.Timeout
         if (view === 'typing' && !isPaused && startTime > 0) {
@@ -100,7 +107,7 @@ export const useTyping = () => {
                 if (elapsed > 0) {
                     graphDataRef.current.push({
                         time: Math.round(elapsed),
-                        wpm: Math.round(metricsRef.current.adjusted_wpm), // Net
+                        wpm: Math.round(metricsRef.current.adjusted_wpm),
                         raw: Math.round(metricsRef.current.raw_wpm)
                     })
                 }
@@ -112,17 +119,20 @@ export const useTyping = () => {
     // Ghost Replay Logic
     const currentReplayRef = useRef<{ char: string, time: number }[]>([])
 
-    // Get Best Replay for current lesson
+    // Preference: Challenger > Local Best
     const bestReplays = useStatsStore((s: any) => s.bestReplays)
     const ghostReplay = useMemo(() => {
         if (!currentLesson) return undefined
+        if (challengerGhost) return challengerGhost
+
         const data = bestReplays[currentLesson.id]
         if (!data) return undefined
-        return data  // Should match ReplayData interface
-    }, [currentLesson, bestReplays])
+        return data
+    }, [currentLesson, bestReplays, challengerGhost])
 
-    const startLesson = async (lesson: Lesson) => {
+    const startLesson = async (lesson: Lesson, ghostData?: { charAndTime: { char: string, time: number }[] }) => {
         setCurrentLesson(lesson)
+        setChallengerGhost(ghostData) // Set challenger if provided
         setInput('')
         setErrors({})
         setMetrics({ raw_wpm: 0, adjusted_wpm: 0, accuracy: 100, consistency: 100, is_bot: false, cheat_flags: '' })
@@ -134,7 +144,7 @@ export const useTyping = () => {
         setTotalPausedTime(0)
         setLastPauseStart(null)
         graphDataRef.current = []
-        currentReplayRef.current = [] // Reset replay recorder
+        currentReplayRef.current = []
 
         await startSession(lesson.text)
         setView('typing')
@@ -190,6 +200,28 @@ export const useTyping = () => {
             console.error('Failed to update weakness profile:', err)
         )
 
+        // 🔥 Save Race to Cloud (if logged in and speed > 10 wpm)
+        if (user && metrics.raw_wpm > 10) {
+            // 1. Save Replay
+            raceService.saveRace({
+                id: `${user.id}_${Date.now()}`,
+                uid: user.id || 'unknown',
+                username: user.name || 'Anonymous',
+                wpm: Math.round(netWpm),
+                accuracy: Math.round(metrics.accuracy),
+                timestamp: Date.now(),
+                replay: currentReplayRef.current,
+                lessonId: currentLesson.id
+            }).catch(e => console.error("Failed to save race", e))
+
+            // 2. Update Profile Stats (Leaderboard Sync)
+            // Import userService dynamically to avoid circular deps if any, 
+            // or just ensure import is at top. Assuming top import available.
+            import('@src/services/userService').then(({ userService }) => {
+                userService.updateStats(user.id, Math.round(netWpm))
+            }).catch(console.error)
+        }
+
         syncService.pushToCloud()
 
         // Gatekeeper rule: Accuracy == 100% AND Speed >= targetWPM (min 28)
@@ -208,10 +240,10 @@ export const useTyping = () => {
                 }
             }
         } else {
-            playErrorSound()
+            playTypingSound('error')
         }
         setShowResult(true)
-    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime])
+    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user])
 
     useEffect(() => {
         if (currentLesson && input.length === currentLesson.text.length && input.length > 0) {

@@ -1,0 +1,87 @@
+.user-search {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-search h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: #888;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.search-form input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    color: #fff;
+}
+
+.search-form button {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.result-item img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.result-item span {
+    flex: 1;
+    color: #fff;
+}
+
+.add-btn {
+    background: #00FF41;
+    color: #000;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-btn:hover {
+    transform: scale(1.1);
+}
+
+.sent-badge {
+    color: #00FF41;
+    font-size: 0.8rem;
+}
+
+.no-results {
+    color: #555;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+}

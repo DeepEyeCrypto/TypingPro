@@ -1,0 +1,111 @@
+.username-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.username-modal {
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(0, 255, 65, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
+}
+
+.username-modal h2 {
+    color: #fff;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+}
+
+.subtitle {
+    color: #888;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.input-group input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.1rem;
+    font-family: inherit;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #00FF41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+}
+
+.error-msg {
+    color: #ff4444;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #00FF41;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.submit-btn:disabled {
+    background: #333;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.submit-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 65, 0.3);
+}
+
+.user-preview {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    opacity: 0.6;
+}
+
+.user-preview img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,73 @@
+/* Emerald Glow - "The Matrix" / "Hacker" Aesthetic */
+.emerald-text {
+    color: #00FF41;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.3);
+    font-weight: 700;
+}
+
+.emerald-border {
+    border: 1px solid #00FF41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+}
+
+/* User Rank Badges */
+.rank-badge-1 {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
+}
+
+.rank-badge-2 {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.7));
+}
+
+.rank-badge-3 {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 0 5px rgba(205, 127, 50, 0.7));
+}
+
+/* Animated Glow for 100+ WPM */
+@keyframes neon-pulse {
+    0% {
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    }
+
+    50% {
+        text-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    100% {
+        text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    }
+}
+
+.wpm-elite {
+    animation: neon-pulse 2s infinite alternate;
+    color: #fff;
+}
+
+/* Glass Panel Enhancements */
+.social-dashboard.glass-panel {
+    background: rgba(10, 10, 10, 0.75) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Scrollbar Styling */
+.ranking-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ranking-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.ranking-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.ranking-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

@@ -19,6 +19,8 @@ import { useLockdown } from '../../../src/hooks/useLockdown'
 
 import { SplashScreen } from '../../../src/components/SplashScreen'
 import { WhatsNewModal } from '../../../src/components/WhatsNewModal'
+import { UsernameModal } from '../../../src/components/social/UsernameModal'
+import { SocialDashboard } from '../../../src/components/social/SocialDashboard'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
@@ -115,10 +117,13 @@ const App: React.FC = () => {
         >
           <TitleBar />
           <WhatsNewModal />
+          <UsernameModal />
+          <RankCelebration />
           <TopBar
             metrics={typing.metrics}
             mode={typing.currentLesson ? typing.currentLesson.stage : 'Curriculum'}
             onAnalyticsClick={() => typing.setView('analytics')}
+            onSocialClick={() => typing.setView('social')}
           />
 
           <main className="main-content">
@@ -130,6 +135,18 @@ const App: React.FC = () => {
               />
             ) : typing.view === 'analytics' ? (
               <AnalyticsDashboard onBack={() => typing.setView('selection')} />
+            ) : typing.view === 'social' ? (
+              <SocialDashboard
+                onBack={() => typing.setView('selection')}
+                onPlayGhost={(lessonId, ghostData) => {
+                  const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
+                  if (lesson) {
+                    typing.startLesson(lesson, ghostData)
+                  } else {
+                    console.error("Lesson not found for ghost replay:", lessonId)
+                  }
+                }}
+              />
             ) : (
               <TypingArea
                 targetText={typing.currentLesson?.text || ''}
