@@ -108,4 +108,6 @@ jobs:
           prerelease: false
           projectPath: 'apps/desktop'
           tauriScript: npm run tauri
+          includeUpdaterJson: true
+          updaterJsonKeepLatest: true
           args: --verbose --target ${{ matrix.target }}
