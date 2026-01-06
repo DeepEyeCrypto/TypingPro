@@ -104,7 +104,7 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'TypingPro v__VERSION__'
           releaseBody: '${{ steps.changelog.outputs.changelog }}'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           projectPath: 'apps/desktop'
           tauriScript: npm run tauri
