@@ -45,7 +45,7 @@ impl AudioManager {
 
             // List of known sound files to preload and their cache keys
             let sound_mappings = vec![
-                ("mechanical", "mechanical.wav"),
+                ("mechanical", "mechanical.mp3"),
                 ("backspace", "backspace.wav"),
                 ("error", "error.wav"),
                 ("click", "click.wav"),
