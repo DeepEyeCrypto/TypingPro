@@ -4,14 +4,14 @@
 mod engine;
 mod oauth;
 mod commands;
-mod audio;
+// mod audio;  // Temporarily disabled due to thread safety issues
 
 use std::sync::Mutex;
 use tauri::State;
 use engine::TypingEngine;
 use oauth::UserProfile;
 use commands::zen::toggle_zen_window;
-use audio::AudioManager;
+// use audio::AudioManager;
 
 struct AppState {
     engine: Mutex<TypingEngine>,
@@ -48,20 +48,21 @@ async fn github_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
     oauth::perform_github_login(app).await
 }
 
-#[tauri::command]
-fn play_typing_sound(audio: State<AudioManager>, sound_type: String) {
-    audio.play(&sound_type);
-}
-
-#[tauri::command]
-fn set_audio_volume(audio: State<AudioManager>, volume: f32) {
-    audio.set_volume(volume);
-}
-
-#[tauri::command]
-fn toggle_audio(audio: State<AudioManager>, enabled: bool) {
-    audio.set_enabled(enabled);
-}
+// Temporarily disabled - audio system needs thread safety fixes
+// #[tauri::command]
+// fn play_typing_sound(audio: State<AudioManager>, sound_type: String) {
+//     audio.play(&sound_type);
+// }
+//
+// #[tauri::command]
+// fn set_audio_volume(audio: State<AudioManager>, volume: f32) {
+//     audio.set_volume(volume);
+// }
+//
+// #[tauri::command]
+// fn toggle_audio(audio: State<AudioManager>, enabled: bool) {
+//     audio.set_enabled(enabled);
+// }
 
 use tauri::Manager;
 use window_vibrancy::{apply_vibrancy, apply_blur, NSVisualEffectMaterial};
@@ -69,7 +70,6 @@ use window_vibrancy::{apply_vibrancy, apply_blur, NSVisualEffectMaterial};
 mod logger;
 
 fn main() {
-    use tauri_plugin_global_shortcut::{Code, Modifiers, GlobalShortcutExt};
     tauri::Builder::default()
         .setup(|app| {
             // Initialize Logger
@@ -87,10 +87,9 @@ fn main() {
 
             // Register global shortcut for Zen Mode (Cmd/Ctrl+Alt+T)
             let app_handle = app.handle().clone();
-            app.global_shortcut().on_shortcut(
-                Modifiers::CONTROL | Modifiers::ALT,
-                Code::KeyT,
-                move |_app, _event| {
+            app.global_shortcut().register(
+                "CmdOrCtrl+Alt+T",
+                move |_app, _shortcut, _event| {
                     let _ = toggle_zen_window(app_handle.clone());
                 }
             )?;
@@ -100,7 +99,7 @@ fn main() {
         .manage(AppState {
             engine: Mutex::new(TypingEngine::new()),
         })
-        .manage(AudioManager::new())
+        // .manage(AudioManager::new())  // Disabled for now
         .invoke_handler(tauri::generate_handler![
             start_session,
             handle_keystroke,
@@ -108,9 +107,9 @@ fn main() {
             google_login,
             github_login,
             toggle_zen_window,
-            play_typing_sound,
-            set_audio_volume,
-            toggle_audio
+            // play_typing_sound,
+            // set_audio_volume,
+            // toggle_audio
         ])
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
