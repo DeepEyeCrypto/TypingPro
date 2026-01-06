@@ -1,23 +1,23 @@
 {
-    "version": "1.0.73",
-    "notes": "Hybrid Audio Engine & Fixes",
-    "pub_date": "2026-01-05T20:20:00Z",
+    "version": "1.0.79",
+    "notes": "🐛 Bug Fixes\n- Fixed all 4 CI platform builds by removing empty sound resources from tauri.conf.json\n\n🚀 Features\n- Elite Coaching Engine with AI-powered weakness analysis\n- Intelligent drill generator (60/20/20 algorithm)\n- Keystroke latency tracking and error pattern detection\n- Emerald Design System integration\n- Comprehensive word lists for 0-250 WPM progression",
+    "pub_date": "2026-01-06T03:48:00Z",
     "platforms": {
         "darwin-aarch64": {
-            "signature": "CONTENT_OF_SIG_FILE",
-            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.73/TypingPro_1.0.73_aarch64.dmg"
+            "signature": "",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.79/TypingPro_1.0.79_aarch64.dmg"
         },
         "darwin-x86_64": {
-            "signature": "CONTENT_OF_SIG_FILE",
-            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.73/TypingPro_1.0.73_x64.dmg"
+            "signature": "",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.79/TypingPro_1.0.79_x64.dmg"
         },
         "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcjhKaXZEYWFMb2ZDU2d3cmZ3MG5RT3dlckkraE5WYjVudnlSdFh1K1BJVzdUdTFMdDAzYVV3dGdHY1lBRjBTYWEzcnlyL2RmeDhtbmViU0RIZTk3ZUF2SHBwQ2pzZndnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY3NjI5OTI0CWZpbGU6VHlwaW5nUHJvXzEuMC43M19hbWQ2NC5BcHBJbWFnZQpFdnE0dnRvTkduZmRNNzRjdXJYRnBJVEJENS9hU3pRVGNvOVBBZ01UbGN0Z3kxb3BSZVZuMXRuMEI2dWpWd3lPUmU3WDY3NXpCM0hIVjNYVVRKNWhBZz09Cg==",
-            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.73/typingpro_1.0.73_amd64.AppImage"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcjhKaXZEYWFMb2NUMmhJTjZFNXR5WkpLVHAwcEJnUjU3SkxWRFBKWTB6bi9DT3JwbEVrKytwcDJJTW9UWUZIbEFnazVUUk8xT01waHJhRGc4N2Znb3Y4NDNBWkFnR0FRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY3NjQ2Njk3CWZpbGU6VHlwaW5nUHJvXzEuMC43OV9hbWQ2NC5BcHBJbWFnZQpkNng4V3k4MHpjZE9zcHl6Z21KUjhNU2F5SHRxRVdvZkwxTjBiSzFMMUJnS2NDU2Y4enpSNm5OS3J0ekNHUUdBQlcvdnpOck5rMFh1WDFvRnM0MldEdz09Cg==",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.79/TypingPro_1.0.79_amd64.AppImage"
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcjhKaXZEYWFMb2RGU2ZhNjlXNFZ4NkcrK2NXRktNbFN1UzVSQ0Q0NlBONGNiR01QV0dHNUJhdjJ6SjhreDNQcUFHajhkbi9RUmxpYi9kOVVtQjZ1SE9VcG9KekVCaGc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY3NjMwMDA5CWZpbGU6VHlwaW5nUHJvXzEuMC43M194NjQtc2V0dXAuZXhlCjNoanBIMHJ0TnZRVUdpc1NpYjFoQ05WMmxMcVNyL3NvQ3VBNjExSGJ2ZDRTYlBDK1dkeklXQ0s5TFB4Ti8zb1F4N1dOUmV6ZFBsN1FSU3RCR29QNENBPT0K",
-            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.73/TypingPro_1.0.73_x64-setup.exe"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUcjhKaXZEYWFMb2JuMDJHYjF1RDRjSE1wOFMvVFhEc0dtV3lqWjBzbUNuNXluMWVBSVUwdldqdnNIbkgyM2dZd2lTallEUHNhbTFaak16b1dKWVpWLzZGUHFUU2ZYVncwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY3NjQ2ODg5CWZpbGU6VHlwaW5nUHJvXzEuMC43OV94NjQtc2V0dXAuZXhlCnZ2bGYrZXBsbnRoMW9TUFZrTkVNVnplQ0F3YldIb0RMSTI0SFlwM0gxeDJlcTJqd1ZZQzRrY25iUmJ1YldaeVRwM1A5ZklzbXJFVDVMKzA3anVROUFBPT0K",
+            "url": "https://github.com/DeepEyeCrypto/TypingPro/releases/download/v1.0.79/TypingPro_1.0.79_x64-setup.exe"
         }
     }
 }
