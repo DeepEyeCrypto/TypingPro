@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Manager, WebviewWindow};
+use tauri::AppHandle;
 
 #[tauri::command]
 pub fn toggle_zen_window(app: AppHandle) -> Result<(), String> {

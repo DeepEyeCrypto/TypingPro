@@ -19,34 +19,30 @@ struct AppState {
 }
 
 #[tauri::command]
-fn start_session(state: State<AppState>, text: String) {
-    let mut engine = state.engine.lock().unwrap();
-    engine.start(text);
+fn start_session(state: State<AppState>) {
+    state.engine.lock().unwrap().start_session();
 }
 
 #[tauri::command]
-fn handle_keystroke(state: State<AppState>, key: String, timestamp: u64) -> Result<engine::TypingMetrics, String> {
-    let mut engine = state.engine.lock().unwrap();
-    let char = key.chars().next().ok_or("Invalid key")?;
-    Ok(engine.push_char(char, timestamp))
+fn handle_keystroke(char: String, state: State<AppState>) -> engine::TypingMetrics {
+    state.engine.lock().unwrap().handle_keystroke(&char)
 }
 
 #[tauri::command]
-fn complete_session(state: State<AppState>) -> engine::TypingMetrics {
-    let engine = state.engine.lock().unwrap();
-    engine.calculate_metrics()
+fn complete_session(state: State<AppState>) -> f32 {
+    state.engine.lock().unwrap().complete_session()
 }
 
 #[tauri::command]
-async fn google_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
+async fn google_login(_app: tauri::AppHandle) -> Result<UserProfile, String> {
     println!("Executing google_login command");
-    oauth::perform_google_login(app).await
+    oauth::perform_google_login(_app).await
 }
 
 #[tauri::command]
-async fn github_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
+async fn github_login(_app: tauri::AppHandle) -> Result<UserProfile, String> {
     println!("Executing github_login command");
-    oauth::perform_github_login(app).await
+    oauth::perform_github_login(_app).await
 }
 
 // Temporarily disabled - audio system needs thread safety fixes
@@ -66,7 +62,7 @@ async fn github_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
 // }
 
 use tauri::Manager;
-use window_vibrancy::{apply_vibrancy, apply_blur, NSVisualEffectMaterial};
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 mod logger;
 
@@ -110,8 +106,8 @@ fn main() {
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, shortcut, event| {
                     use tauri_plugin_global_shortcut::ShortcutState;
-                    // Tauri v2: Use description() to match the registered shortcut
-                    if shortcut.description().to_lowercase() == "cmdorctrl+alt+t" 
+                    // Tauri v2: Use to_string() to match the registered shortcut
+                    if shortcut.to_string().to_lowercase() == "cmdorctrl+alt+t" 
                         && event.state() == ShortcutState::Pressed 
                     {
                         let _ = toggle_zen_window(app.clone());

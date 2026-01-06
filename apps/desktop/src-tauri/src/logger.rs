@@ -1,7 +1,6 @@
 use log::LevelFilter;
 use simplelog::{Config, WriteLogger};
 use std::fs::File;
-use std::path::PathBuf;
 use tauri::{App, Manager, Runtime};
 
 pub fn init_logging<R: Runtime>(app: &App<R>) -> Result<(), String> {

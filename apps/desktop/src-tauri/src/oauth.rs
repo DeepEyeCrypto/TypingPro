@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use reqwest::header::{ACCEPT, USER_AGENT};
 use std::collections::HashMap;
 use tauri_plugin_oauth::start_with_config;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 // use tauri_plugin_shell::ShellExt;
 
 pub const GOOGLE_CLIENT_ID: &str = "62301411076-ivu6svrcuffanue275q30noq1nmjk4lv.apps.googleusercontent.com";
