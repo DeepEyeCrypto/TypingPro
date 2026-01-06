@@ -4,12 +4,14 @@
 mod engine;
 mod oauth;
 mod commands;
+mod audio;
 
 use std::sync::Mutex;
 use tauri::State;
 use engine::TypingEngine;
 use oauth::UserProfile;
 use commands::zen::toggle_zen_window;
+use audio::AudioManager;
 
 struct AppState {
     engine: Mutex<TypingEngine>,
@@ -44,6 +46,21 @@ async fn google_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
 async fn github_login(app: tauri::AppHandle) -> Result<UserProfile, String> {
     println!("Executing github_login command");
     oauth::perform_github_login(app).await
+}
+
+#[tauri::command]
+fn play_typing_sound(audio: State<AudioManager>, sound_type: String) {
+    audio.play(&sound_type);
+}
+
+#[tauri::command]
+fn set_audio_volume(audio: State<AudioManager>, volume: f32) {
+    audio.set_volume(volume);
+}
+
+#[tauri::command]
+fn toggle_audio(audio: State<AudioManager>, enabled: bool) {
+    audio.set_enabled(enabled);
 }
 
 use tauri::Manager;
@@ -83,13 +100,17 @@ fn main() {
         .manage(AppState {
             engine: Mutex::new(TypingEngine::new()),
         })
+        .manage(AudioManager::new())
         .invoke_handler(tauri::generate_handler![
             start_session,
             handle_keystroke,
             complete_session,
             google_login,
             github_login,
-            toggle_zen_window
+            toggle_zen_window,
+            play_typing_sound,
+            set_audio_volume,
+            toggle_audio
         ])
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_shell::init())

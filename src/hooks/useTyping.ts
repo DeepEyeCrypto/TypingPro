@@ -5,10 +5,10 @@ import { useStatsStore } from '@src/stores/statsStore'
 import { WeaknessAnalyzer } from '@src/services/weaknessAnalyzer'
 
 import { syncService } from '@src/services/syncService'
-import { useSoundEngine } from '@src/hooks/useSoundEngine'
+import { useRustAudio } from '@src/hooks/useRustAudio'
 
 export const useTyping = () => {
-    const { playTypingSound, playErrorSound } = useSoundEngine()
+    const { playTypingSound } = useRustAudio()
     const [view, setView] = useState<'selection' | 'typing' | 'analytics'>('selection')
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [metrics, setMetrics] = useState<TypingMetrics>({
@@ -227,7 +227,7 @@ export const useTyping = () => {
 
         if (e.key === 'Backspace') {
             setInput((prev: string) => prev.slice(0, -1))
-            playTypingSound('Backspace')
+            playTypingSound('backspace')
             return
         }
 
@@ -249,9 +249,9 @@ export const useTyping = () => {
                     ...prev,
                     [targetChar]: (prev[targetChar] || 0) + 1
                 }))
-                playErrorSound()
+                playTypingSound('error')
             } else {
-                playTypingSound(char)
+                playTypingSound('mechanical')
             }
 
             setTotalKeystrokes((prev: number) => prev + 1)
