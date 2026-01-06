@@ -64,7 +64,10 @@ async fn github_login(_app: tauri::AppHandle) -> Result<UserProfile, String> {
 // }
 
 use tauri::Manager;
+#[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+#[cfg(target_os = "windows")]
+use window_vibrancy::apply_blur;
 
 mod logger;
 
