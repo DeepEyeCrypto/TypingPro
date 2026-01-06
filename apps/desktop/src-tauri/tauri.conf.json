@@ -76,7 +76,10 @@
           "y": 210
         }
       }
-    }
+    },
+    "resources": [
+      "assets/**/*"
+    ]
   },
   "plugins": {
     "shell": {

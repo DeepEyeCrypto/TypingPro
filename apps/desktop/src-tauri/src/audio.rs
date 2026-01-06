@@ -1,82 +1,88 @@
 use rodio::{Decoder, OutputStream, Sink, Source};
 use std::collections::HashMap;
-use std::io::Cursor;
+use std::fs::File;
+use std::io::BufReader;
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use std::thread;
+use tauri::{AppHandle, Manager};
 
+pub enum AudioCommand {
+    Play(String),
+    SetVolume(f32),
+}
+
+#[derive(Clone)]
 pub struct AudioManager {
-    _stream: OutputStream,
-    stream_handle: rodio::OutputStreamHandle,
-    sound_buffers: HashMap<String, Vec<u8>>,
-    volume: Arc<Mutex<f32>>,
-    enabled: Arc<Mutex<bool>>,
+    sender: std::sync::mpsc::Sender<AudioCommand>,
 }
 
 impl AudioManager {
-    pub fn new() -> Self {
-        let (stream, stream_handle) = OutputStream::try_default().unwrap();
+    pub fn new(app_handle: AppHandle) -> Self {
+        let (sender, receiver) = std::sync::mpsc::channel();
 
-        // Pre-load sound files into memory
-        let mut sound_buffers = HashMap::new();
+        // Spawn a dedicated thread for audio to handle non-Send rodio types
+        thread::spawn(move || {
+            let (_stream, stream_handle) =
+                OutputStream::try_default().expect("Failed to get output stream");
+            let sink = Sink::try_new(&stream_handle).expect("Failed to create sink");
 
-        // Using minimal embedded placeholder WAV files
-        // User can replace these with actual sound files later
-        sound_buffers.insert("mechanical".to_string(), Self::generate_click_sound());
-        sound_buffers.insert("backspace".to_string(), Self::generate_backspace_sound());
-        sound_buffers.insert("error".to_string(), Self::generate_error_sound());
+            // Preload sounds into memory for low latency
+            let mut sound_cache: HashMap<String, Vec<u8>> = HashMap::new();
 
-        AudioManager {
-            _stream: stream,
-            stream_handle,
-            sound_buffers,
-            volume: Arc::new(Mutex::new(0.5)),
-            enabled: Arc::new(Mutex::new(true)),
-        }
-    }
+            // Resolve resources directory
+            let resource_path = app_handle
+                .path()
+                .resource_dir()
+                .unwrap_or_else(|_| PathBuf::from("."))
+                .join("assets")
+                .join("sounds");
 
-    fn generate_click_sound() -> Vec<u8> {
-        // Minimal WAV header + short click sound
-        // 44.1kHz, 16-bit, mono, ~10ms duration
-        include_bytes!("../sounds/click.wav").to_vec()
-    }
+            // List of known sound files to preload and their cache keys
+            let sound_mappings = vec![
+                ("mechanical", "mechanical.wav"),
+                ("backspace", "backspace.wav"),
+                ("error", "error.wav"),
+                ("click", "click.wav"),
+                ("success", "success.wav"),
+            ];
 
-    fn generate_backspace_sound() -> Vec<u8> {
-        include_bytes!("../sounds/backspace.wav").to_vec()
-    }
-
-    fn generate_error_sound() -> Vec<u8> {
-        include_bytes!("../sounds/error.wav").to_vec()
-    }
-
-    pub fn play(&self, sound_type: &str) {
-        if !*self.enabled.lock().unwrap() {
-            return;
-        }
-
-        if let Some(buffer) = self.sound_buffers.get(sound_type) {
-            let cursor = Cursor::new(buffer.clone());
-            if let Ok(source) = Decoder::new(cursor) {
-                let sink = Sink::try_new(&self.stream_handle).unwrap();
-                let volume = *self.volume.lock().unwrap();
-                sink.set_volume(volume);
-                sink.append(source);
-                sink.detach(); // Play in background, allow overlapping sounds
+            for (key, filename) in sound_mappings {
+                let path = resource_path.join(filename);
+                if path.exists() {
+                    if let Ok(bytes) = std::fs::read(&path) {
+                        sound_cache.insert(key.to_string(), bytes);
+                    }
+                } else {
+                    println!("Warning: Sound file not found: {:?}", path);
+                }
             }
-        }
+
+            while let Ok(command) = receiver.recv() {
+                match command {
+                    AudioCommand::Play(name) => {
+                        if let Some(data) = sound_cache.get(&name) {
+                            let cursor = std::io::Cursor::new(data.clone());
+                            if let Ok(source) = Decoder::new(cursor) {
+                                sink.append(source);
+                            }
+                        }
+                    }
+                    AudioCommand::SetVolume(vol) => {
+                        sink.set_volume(vol);
+                    }
+                }
+            }
+        });
+
+        AudioManager { sender }
+    }
+
+    pub fn play(&self, name: String) {
+        let _ = self.sender.send(AudioCommand::Play(name));
     }
 
     pub fn set_volume(&self, volume: f32) {
-        *self.volume.lock().unwrap() = volume.clamp(0.0, 1.0);
-    }
-
-    pub fn set_enabled(&self, enabled: bool) {
-        *self.enabled.lock().unwrap() = enabled;
-    }
-
-    pub fn get_volume(&self) -> f32 {
-        *self.volume.lock().unwrap()
-    }
-
-    pub fn is_enabled(&self) -> bool {
-        *self.enabled.lock().unwrap()
+        let _ = self.sender.send(AudioCommand::SetVolume(volume));
     }
 }
