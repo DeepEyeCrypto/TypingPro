@@ -50,7 +50,7 @@ The system now generates custom typing exercises based on YOUR specific weakness
 
 **Example Output:**
 
-```
+```text
 User has slow response on: Q, Z, X, P, ;
 
 Generated Drill:
@@ -106,7 +106,7 @@ Created comprehensive typing resources in `src/data/wordLists.ts`:
 
 ### **New Files Created:**
 
-```
+```text
 src/
 ├── services/
 │   └── weaknessAnalyzer.ts      [NEW] ← AI coaching logic
@@ -116,7 +116,7 @@ src/
 
 ### **Enhanced Files:**
 
-```
+```text
 src/utils/
 └── SmartLessonGenerator.ts       [UPDATED] ← Intelligent drill generation
 ```
@@ -191,9 +191,9 @@ weakness_profile: {
 
 ### **How Users Benefit:**
 
-**1. Type Normally**
+#### 1. Type Normally
 
-```
+```text
 User completes typing test
    ↓
 System tracks latency per keystroke
@@ -201,9 +201,9 @@ System tracks latency per keystroke
 Identifies: "Q = 250ms, Z = 310ms, P = 220ms"
 ```
 
-**2. Automatic Analysis**
+#### 2. Automatic Analysis
 
-```
+```text
 After 10 sessions analyzed
    ↓
 Profile shows: "Q, Z, P are consistently slow"
@@ -211,9 +211,9 @@ Profile shows: "Q, Z, P are consistently slow"
 Stored in Tauri Store
 ```
 
-**3. Targeted Practice**
+#### 3. Targeted Practice
 
-```
+```text
 User clicks "Smart Training"
    ↓
 System generates drill: 60% words with Q/Z/P
@@ -221,9 +221,9 @@ System generates drill: 60% words with Q/Z/P
 "quick quiz prize zip quest..."
 ```
 
-**4. Continuous Improvement**
+#### 4. Continuous Improvement
 
-```
+```text
 User practices weak keys
    ↓
 Next analysis shows improvement
@@ -387,7 +387,7 @@ All components styled with:
 
 ## 🏆 ACHIEVEMENT UNLOCKED
 
-**"The Foundation of Excellence"**
+### "The Foundation of Excellence"
 
 You've implemented the core AI coaching engine that transforms TypingPro from a static typing tool into an intelligent, adaptive learning system. Users will now receive personalized training that evolves with their progress.
 

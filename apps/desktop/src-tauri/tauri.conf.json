@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "1.0.79",
+  "version": "1.0.80",
   "identifier": "com.typingpro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -11,6 +11,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "TypingPro",
         "width": 1200,
         "height": 800,
@@ -22,6 +23,22 @@
         "titleBarStyle": "Overlay",
         "devtools": false,
         "additionalBrowserArgs": "--autoplay-policy=no-user-gesture-required"
+      },
+      {
+        "label": "zen",
+        "title": "TypingPro Zen",
+        "url": "zen.html",
+        "width": 700,
+        "height": 250,
+        "resizable": false,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "center": true,
+        "focus": true
       }
     ],
     "security": {

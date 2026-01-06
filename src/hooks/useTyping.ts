@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { startSession, handleKeystroke, TypingMetrics } from '@src/lib/tauri'
 import { CURRICULUM, Lesson } from '@src/data/lessons'
 import { useStatsStore } from '@src/stores/statsStore'
+import { WeaknessAnalyzer } from '@src/services/weaknessAnalyzer'
 
 import { syncService } from '@src/services/syncService'
 import { useSoundEngine } from '@src/hooks/useSoundEngine'
@@ -172,7 +173,23 @@ export const useTyping = () => {
 
         // Record stats including errors, graph data, and REPLAY data
         const replayData = { charAndTime: currentReplayRef.current }
+        const sessionResult = {
+            id: `${currentLesson.id}-${Date.now()}`,
+            lessonId: currentLesson.id,
+            wpm: metrics.raw_wpm,
+            accuracy: metrics.accuracy,
+            timestamp: Date.now(),
+            errors,
+            graphData: graphDataRef.current,
+            replayData
+        }
         recordAttempt(currentLesson.id, metrics.raw_wpm, metrics.accuracy, errors, graphDataRef.current, replayData)
+
+        // 🧠 AI COACHING: Update weakness profile with this session
+        WeaknessAnalyzer.updateProfileWithSession(sessionResult).catch(err =>
+            console.error('Failed to update weakness profile:', err)
+        )
+
         syncService.pushToCloud()
 
         // Gatekeeper rule: Accuracy == 100% AND Speed >= targetWPM (min 28)

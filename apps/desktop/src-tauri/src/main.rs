@@ -3,11 +3,13 @@
 
 mod engine;
 mod oauth;
+mod commands;
 
 use std::sync::Mutex;
 use tauri::State;
 use engine::TypingEngine;
 use oauth::UserProfile;
+use commands::zen::toggle_zen_window;
 
 struct AppState {
     engine: Mutex<TypingEngine>,
@@ -50,6 +52,7 @@ use window_vibrancy::{apply_vibrancy, apply_blur, NSVisualEffectMaterial};
 mod logger;
 
 fn main() {
+    use tauri_plugin_global_shortcut::{Code, Modifiers, GlobalShortcutExt};
     tauri::Builder::default()
         .setup(|app| {
             // Initialize Logger
@@ -65,6 +68,16 @@ fn main() {
             apply_blur(&window, Some((18, 18, 18, 125)))
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
+            // Register global shortcut for Zen Mode (Cmd/Ctrl+Alt+T)
+            let app_handle = app.handle().clone();
+            app.global_shortcut().on_shortcut(
+                Modifiers::CONTROL | Modifiers::ALT,
+                Code::KeyT,
+                move |_app, _event| {
+                    let _ = toggle_zen_window(app_handle.clone());
+                }
+            )?;
+
             Ok(())
         })
         .manage(AppState {
@@ -75,8 +88,10 @@ fn main() {
             handle_keystroke,
             complete_session,
             google_login,
-            github_login
+            github_login,
+            toggle_zen_window
         ])
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_oauth::init())

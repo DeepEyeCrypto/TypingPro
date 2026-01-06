@@ -39,30 +39,28 @@ export const LessonSelector = ({
 
           <div className="hero-card liquid-glass-card smart-training-card" style={{ background: 'rgba(25, 25, 35, 0.6)' }}>
             <div className="hero-info">
-              <span className="hero-label" style={{ color: '#00f0ff' }}>SMART TRAINING</span>
-              <h2 className="hero-lesson-title">Weakness Targeting</h2>
+              <span className="hero-label" style={{ color: '#00f0ff' }}>🧠 AI COACH</span>
+              <h2 className="hero-lesson-title">Intelligent Training</h2>
               <p className="hero-lesson-desc">
-                AI-generated lesson focusing on your top 5 trouble keys.
-                {Object.keys(useStatsStore.getState().characterErrors).length === 0 && " (Play more to calibrate)"}
+                AI-generated drill targeting your weak keys based on latency and error analysis.
               </p>
             </div>
-            <button className="hero-cta" onClick={() => {
-              const errors = useStatsStore.getState().characterErrors
-              const weakKeys = SmartLessonGenerator.getWeakKeys(errors)
-              const text = SmartLessonGenerator.generate(weakKeys, 40)
+            <button className="hero-cta" onClick={async () => {
+              const text = await SmartLessonGenerator.generateIntelligentDrill(50)
+              const title = await SmartLessonGenerator.getIntelligentDrillTitle()
 
-              const smartLesson: Lesson = {
-                id: 'smart-1',
-                title: 'Weakness Training',
-                description: `Focus on: ${weakKeys.join(', ').toUpperCase() || 'Random (No Data)'}`,
-                text: text,
+              const aiLesson: Lesson = {
+                id: 'ai-coach-drill',
+                title,
+                description: 'Personalized weakness targeting (60% weak + 20% bigrams + 20% flow)',
+                text,
                 targetWPM: 30,
                 focusFingers: ['All'],
-                stage: 'Smart'
+                stage: 'AI Coach'
               }
-              onSelect(smartLesson)
+              onSelect(aiLesson)
             }}>
-              Analyze & Train
+              Start AI Drill
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>

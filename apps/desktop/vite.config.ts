@@ -28,6 +28,12 @@ export default defineConfig({
     sourcemap: !!process.env.TAURI_DEBUG,
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        zen: path.resolve(__dirname, 'zen.html'),
+      },
+    },
     typescript: {
       ignoreBuildErrors: true
     }

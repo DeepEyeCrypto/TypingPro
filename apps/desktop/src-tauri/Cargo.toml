@@ -25,6 +25,7 @@ window-vibrancy = "0.7.1"
 log = "0.4.29"
 simplelog = "0.12.2"
 tauri-plugin-store = "2.0.0-rc.0"
+tauri-plugin-global-shortcut = "2.0.0-rc.0"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
