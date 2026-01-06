@@ -110,11 +110,9 @@ fn main() {
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, shortcut, event| {
                     use tauri_plugin_global_shortcut::ShortcutState;
-                    if shortcut.matches(tauri_plugin_global_shortcut::Modifiers::empty(), tauri_plugin_global_shortcut::Code::KeyT) 
-                        && (shortcut.mods().contains(tauri_plugin_global_shortcut::Modifiers::CONTROL) 
-                            || shortcut.mods().contains(tauri_plugin_global_shortcut::Modifiers::META))
-                        && shortcut.mods().contains(tauri_plugin_global_shortcut::Modifiers::ALT)
-                        && event.state == ShortcutState::Pressed 
+                    // Tauri v2: Use description() to match the registered shortcut
+                    if shortcut.description().to_lowercase() == "cmdorctrl+alt+t" 
+                        && event.state() == ShortcutState::Pressed 
                     {
                         let _ = toggle_zen_window(app.clone());
                     }
