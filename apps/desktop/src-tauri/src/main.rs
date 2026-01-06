@@ -19,18 +19,20 @@ struct AppState {
 }
 
 #[tauri::command]
-fn start_session(state: State<AppState>) {
-    state.engine.lock().unwrap().start_session();
+fn start_session(_state: State<AppState>) {
+    // state.engine.lock().unwrap().start_session();
 }
 
 #[tauri::command]
-fn handle_keystroke(char: String, state: State<AppState>) -> engine::TypingMetrics {
-    state.engine.lock().unwrap().handle_keystroke(&char)
+fn handle_keystroke(_app: tauri::AppHandle, _char: String) -> Result<String, String> {
+    // TODO: Implement typing logic
+    Ok(format!("Key received: {}", _char))
 }
 
 #[tauri::command]
-fn complete_session(state: State<AppState>) -> f32 {
-    state.engine.lock().unwrap().complete_session()
+fn complete_session(_state: State<AppState>) -> f32 {
+    // state.engine.lock().unwrap().complete_session()
+    0.0
 }
 
 #[tauri::command]
