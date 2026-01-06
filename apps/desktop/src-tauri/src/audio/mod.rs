@@ -66,14 +66,29 @@ impl AudioManager {
             while let Ok(command) = receiver.recv() {
                 match command {
                     AudioCommand::Play(name) => {
+                        eprintln!("[AUDIO] Request to play: {}", name);
                         if let Some(data) = sound_cache.get(&name) {
+                            eprintln!("[AUDIO] Found bytes for: {} (Size: {})", name, data.len());
                             let cursor = std::io::Cursor::new(data.clone());
-                            if let Ok(source) = Decoder::new(cursor) {
-                                sink.append(source);
+                            match Decoder::new(cursor) {
+                                Ok(source) => {
+                                    if sink.empty() {
+                                        eprintln!("[AUDIO] Sink is empty, appending new source");
+                                    }
+                                    sink.append(source);
+                                    if sink.is_paused() {
+                                        sink.play();
+                                    }
+                                    eprintln!("[AUDIO] Playback started for {}", name);
+                                }
+                                Err(e) => eprintln!("[AUDIO] Failed to decode WAV: {}", e),
                             }
+                        } else {
+                            eprintln!("[AUDIO] ERROR: Sound '{}' not found in cache", name);
                         }
                     }
                     AudioCommand::SetVolume(vol) => {
+                        eprintln!("[AUDIO] Setting volume to {}", vol);
                         sink.set_volume(vol);
                     }
                 }
