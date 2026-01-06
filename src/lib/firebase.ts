@@ -1,6 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
+
+console.log("FIREBASE: Loading Module...");
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,6 +13,33 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+let app: any = null;
+let db: Firestore;
+let auth: Auth;
+
+try {
+    // Check for critical keys
+    if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+        console.error("FIREBASE: Missing API Key or Project ID in env vars!", firebaseConfig);
+        throw new Error("Missing Firebase Config");
+    }
+
+    console.log("FIREBASE: Initializing...");
+    app = initializeApp(firebaseConfig);
+    console.log("FIREBASE: App Initialized");
+
+    db = getFirestore(app);
+    console.log("FIREBASE: Firestore Initialized");
+
+    auth = getAuth(app);
+    console.log("FIREBASE: Auth Initialized");
+
+} catch (e) {
+    console.error("FIREBASE CRITICAL FAILURE:", e);
+    // CRASH PREVENTION: Mock exports so imports don't explode
+    app = {} as any;
+    db = {} as Firestore;
+    auth = {} as Auth;
+}
+
+export { db, auth };

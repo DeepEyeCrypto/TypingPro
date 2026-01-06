@@ -37,9 +37,9 @@ export const RankCelebration = () => {
         setPrevWpm(profile.highest_wpm);
     }, [profile?.highest_wpm]);
 
-    if (!show || !newRank) return null;
+    if (!show || !newRank || !profile) return null;
 
-    const rankInfo = getRank(profile!.highest_wpm);
+    const rankInfo = getRank(profile.highest_wpm || 0);
 
     return (
         <div className="celebration-overlay">

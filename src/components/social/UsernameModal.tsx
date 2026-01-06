@@ -38,8 +38,9 @@ export const UsernameModal = () => {
             } else {
                 setError('Username already taken or invalid')
             }
-        } catch (e) {
-            setError('Failed to create profile')
+        } catch (e: any) {
+            console.error("Profile Creation Failed:", e);
+            setError('Error: ' + (e.message || 'Failed to create profile'));
         } finally {
             setIsSubmitting(false)
         }

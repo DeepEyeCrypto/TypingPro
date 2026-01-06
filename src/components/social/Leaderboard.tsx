@@ -78,7 +78,7 @@ export const Leaderboard: React.FC<Props> = ({ onPlayGhost }) => {
                                             {user.username}
                                         </span>
                                         {(() => {
-                                            const rank = getRank(user.highest_wpm);
+                                            const rank = getRank(user.highest_wpm || 0);
                                             return (
                                                 <span
                                                     className={`rank-badge ${rank.className || ''}`}

@@ -1,76 +1,75 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react'
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
-    children: ReactNode
+    children: ReactNode;
+    fallback?: ReactNode;
 }
 
 interface State {
-    hasError: boolean,
-    error: Error | null
+    hasError: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
     public state: State = {
-        hasError: false,
-        error: null
-    }
+        hasError: false
+    };
 
     public static getDerivedStateFromError(error: Error): State {
-        return { hasError: true, error }
+        return { hasError: true, error }; // Store error
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error('Uncaught error:', error, errorInfo)
+        console.error("Uncaught error:", error, errorInfo);
     }
 
     public render() {
         if (this.state.hasError) {
+            const err = (this.state as any).error; // Cast to access error
             return (
-                <div className="error-screen">
-                    <div className="error-content">
-                        <h1>System Alert</h1>
-                        <p>An unexpected exception has occurred in the typing engine core.</p>
-                        <pre>{this.state.error?.message}</pre>
-                        <button onClick={() => window.location.reload()}>Reboot Protocol</button>
-                    </div>
-                    <style>{`
-            .error-screen {
-              height: 100vh;
-              width: 100vw;
-              background: #000;
-              color: #ff4444;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-family: 'JetBrains Mono', monospace;
-              padding: 2rem;
-            }
-            .error-content {
-              max-width: 600px;
-              border: 0.5px solid #ff4444;
-              padding: 2rem;
-              background: rgba(255, 68, 68, 0.05);
-              border-radius: 8px;
-            }
-            h1 { font-size: 1.2rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1rem; }
-            p { color: #888; font-size: 0.8rem; margin-bottom: 1.5rem; }
-            pre { background: rgba(0,0,0,0.5); padding: 1rem; font-size: 0.7rem; color: #ff8888; overflow-x: auto; margin-bottom: 1.5rem; }
-            button {
-              background: #ff4444;
-              color: #000;
-              border: none;
-              padding: 0.75rem 1.5rem;
-              font-family: inherit;
-              font-weight: bold;
-              text-transform: uppercase;
-              cursor: pointer;
-              border-radius: 4px;
-            }
-          `}</style>
+                <div style={{
+                    color: '#ff5555',
+                    backgroundColor: '#1a0000',
+                    padding: '2rem',
+                    height: '100vh',
+                    width: '100vw',
+                    overflow: 'auto',
+                    fontFamily: 'monospace',
+                    zIndex: 99999,
+                    position: 'fixed',
+                    top: 0,
+                    left: 0
+                }}>
+                    <h1 style={{ borderBottom: '1px solid #ff5555', paddingBottom: '1rem' }}>APPLICATION CRASHED</h1>
+                    <h3 style={{ color: '#fff' }}>{err?.toString()}</h3>
+                    <pre style={{
+                        background: 'rgba(0,0,0,0.3)',
+                        padding: '1rem',
+                        borderRadius: '4px',
+                        whiteSpace: 'pre-wrap',
+                        color: '#aaa'
+                    }}>
+                        {err?.stack}
+                    </pre>
+                    <button
+                        onClick={() => window.location.reload()}
+                        style={{
+                            marginTop: '2rem',
+                            padding: '1rem 2rem',
+                            background: '#ff5555',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '1rem'
+                        }}
+                    >
+                        RELOAD APP
+                    </button>
+                    {this.props.fallback}
                 </div>
-            )
+            );
         }
 
-        return this.props.children
+        return this.props.children;
     }
 }

@@ -21,6 +21,7 @@ import { SplashScreen } from '../../../src/components/SplashScreen'
 import { WhatsNewModal } from '../../../src/components/WhatsNewModal'
 import { UsernameModal } from '../../../src/components/social/UsernameModal'
 import { SocialDashboard } from '../../../src/components/social/SocialDashboard'
+import { RankCelebration } from '../../../src/components/social/RankCelebration'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true

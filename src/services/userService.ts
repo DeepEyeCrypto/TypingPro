@@ -58,9 +58,10 @@ export const userService = {
             // Create profile
             await setDoc(doc(db, 'profiles', uid), profile);
             return true;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating profile:", error);
-            return false;
+            // THROW the error so UI can see "Permission Denied" etc.
+            throw new Error(error.message || "Unknown Firestore Error");
         }
     },
 
