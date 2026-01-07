@@ -22,6 +22,8 @@ import { WhatsNewModal } from '../../../src/components/WhatsNewModal'
 import { UsernameModal } from '../../../src/components/social/UsernameModal'
 import { SocialDashboard } from '../../../src/components/social/SocialDashboard'
 import { RankCelebration } from '../../../src/components/social/RankCelebration'
+import Lobby from '../../../src/components/social/Lobby'
+import DuelArena from '../../../src/components/social/DuelArena'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
@@ -147,6 +149,29 @@ const App: React.FC = () => {
                     console.error("Lesson not found for ghost replay:", lessonId)
                   }
                 }}
+                // Add navigation to Lobby
+                onNavigateToLobby={() => typing.setView('lobby')}
+              />
+            ) : typing.view === 'lobby' ? (
+              <Lobby
+                onBack={() => typing.setView('social')}
+                onMatchFound={(matchId) => {
+                  typing.setActiveMatchId(matchId)
+                  // Start a specific lesson for the duel? 
+                  // For MVP, just random lesson or lesson_1
+                  const duelLesson = CURRICULUM[0]; // TODO: Getting lesson from match data is better
+                  typing.startLesson(duelLesson);
+                  typing.setView('duel');
+                }}
+              />
+            ) : typing.view === 'duel' && typing.activeMatchId ? (
+              <DuelArena
+                matchId={typing.activeMatchId}
+                onBack={() => {
+                  typing.setActiveMatchId(null)
+                  typing.setView('social')
+                }}
+                typingProps={typing}
               />
             ) : (
               <TypingArea

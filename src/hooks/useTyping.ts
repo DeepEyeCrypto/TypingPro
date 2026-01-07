@@ -8,12 +8,14 @@ import { syncService } from '@src/services/syncService'
 import { useRustAudio } from '@src/hooks/useRustAudio'
 
 import { raceService } from '@src/services/raceService'
+import { liveRaceService } from '@src/services/liveRaceService';
 import { useAuthStore } from '@src/stores/authStore'
 
 export const useTyping = () => {
     const { playTypingSound } = useRustAudio()
     const { user } = useAuthStore() // Get user to attach to race
-    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social'>('selection')
+    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel'>('selection')
+    const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [challengerGhost, setChallengerGhost] = useState<{ charAndTime: { char: string, time: number }[] } | undefined>(undefined)
 
@@ -245,7 +247,7 @@ export const useTyping = () => {
     }, [input, currentLesson, handleResult])
 
     const onKeyDown = async (e: KeyboardEvent) => {
-        if (view !== 'typing' || !currentLesson || showResult) return
+        if ((view !== 'typing' && view !== 'duel') || !currentLesson || showResult) return
 
         // Resume timer on any interaction
         resumeTimer()
@@ -286,6 +288,18 @@ export const useTyping = () => {
             try {
                 const latestMetrics = await handleKeystroke(char, timestamp)
                 setMetrics(latestMetrics)
+
+                // ⚡️ REAL-TIME MULTIPLAYER SYNC
+                if (view === 'duel' && activeMatchId) {
+                    const progress = Math.min(100, Math.round(((input.length + 1) / currentLesson.text.length) * 100));
+                    liveRaceService.updateProgress(
+                        Math.round(latestMetrics.adjusted_wpm),
+                        input.length + 1,
+                        progress,
+                        false // isFinished handled in `handleResult`
+                    );
+                }
+
             } catch (err) {
                 console.error('Keystroke handling failed:', err)
             }
@@ -309,6 +323,8 @@ export const useTyping = () => {
         finalStats,
         errors,
         isPaused,
-        ghostReplay // Export ghost data for UI
+        ghostReplay, // Export ghost data for UI
+        activeMatchId,
+        setActiveMatchId
     }
 }

@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
 import { getAnalytics, Analytics } from 'firebase/analytics';
+import { getDatabase, Database } from 'firebase/database';
 
 console.log("FIREBASE: Loading Module...");
 
@@ -20,6 +21,7 @@ let app: any = null;
 let db: Firestore;
 let auth: Auth;
 let analytics: Analytics;
+let rtdb: Database;
 
 try {
     // Check for critical keys
@@ -43,6 +45,9 @@ try {
         console.log("FIREBASE: Analytics Initialized");
     }
 
+    rtdb = getDatabase(app);
+    console.log("FIREBASE: RTDB Initialized");
+
 } catch (e) {
     console.error("FIREBASE CRITICAL FAILURE:", e);
     // Explicitly set db/auth to undefined or a throw-proxy so usage is clear
@@ -61,7 +66,7 @@ try {
     auth = {} as Auth;
 }
 
-export { db, auth };
+export { db, auth, rtdb };
 
 export function getFirebaseDebugInfo() {
     return {

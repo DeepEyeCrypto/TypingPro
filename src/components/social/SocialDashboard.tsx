@@ -11,9 +11,10 @@ import { getProgressToNextRank, getRank } from '@src/utils/rankSystem';
 interface Props {
     onBack: () => void;
     onPlayGhost: (lessonId: string, ghostData: any) => void;
+    onNavigateToLobby: () => void;
 }
 
-export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost }) => {
+export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNavigateToLobby }) => {
     const { user, profile } = useAuthStore();
 
     if (!user) {
@@ -98,6 +99,14 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost }) => {
                     <FriendList />
                 </div>
                 <div className="search-sidebar">
+                    <div className="mb-4">
+                        <button
+                            onClick={onNavigateToLobby}
+                            className="w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg font-bold text-white shadow-lg transform hover:scale-105 transition-all text-xl tracking-wider border border-white/20"
+                        >
+                            ⚔️ START DUEL
+                        </button>
+                    </div>
                     <UserSearch />
                 </div>
             </div>
