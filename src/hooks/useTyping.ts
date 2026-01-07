@@ -37,25 +37,12 @@ export const useTyping = () => {
         totalKeystrokes: 0
     })
     const [errors, setErrors] = useState<Record<string, number>>({})
-    const [unlockedIds, setUnlockedIds] = useState<string[]>(['l1'])
-    const [completedIds, setCompletedIds] = useState<string[]>([])
     const [showResult, setShowResult] = useState(false)
-
-    const recordAttempt = useStatsStore((s: any) => s.recordAttempt)
+    const { unlockedIds, completedIds, setProgress, recordAttempt } = useStatsStore()
 
     // ... (Initialization effects same as before) ...
 
-    useEffect(() => {
-        const savedUnlocked = localStorage.getItem('unlockedIds')
-        const savedCompleted = localStorage.getItem('completedIds')
-        if (savedUnlocked) setUnlockedIds(JSON.parse(savedUnlocked))
-        if (savedCompleted) setCompletedIds(JSON.parse(savedCompleted))
-    }, [])
 
-    useEffect(() => {
-        localStorage.setItem('unlockedIds', JSON.stringify(unlockedIds))
-        localStorage.setItem('completedIds', JSON.stringify(completedIds))
-    }, [unlockedIds, completedIds])
 
     const activeChar = useMemo(() => {
         if (!currentLesson) return ''
@@ -229,21 +216,27 @@ export const useTyping = () => {
         const passed = Math.round(metrics.accuracy) === 100 && Math.round(metrics.raw_wpm) >= speedTarget
 
         if (passed) {
+            let nextCompleted = [...completedIds]
             if (!completedIds.includes(currentLesson.id)) {
-                setCompletedIds((prev: string[]) => [...prev, currentLesson.id])
+                nextCompleted.push(currentLesson.id)
             }
+
+            let nextUnlocked = [...unlockedIds]
             const currentIndex = CURRICULUM.findIndex((l: Lesson) => l.id === currentLesson.id)
+
             if (currentIndex < CURRICULUM.length - 1) {
                 const nextId = CURRICULUM[currentIndex + 1].id
                 if (!unlockedIds.includes(nextId)) {
-                    setUnlockedIds((prev: string[]) => [...prev, nextId])
+                    nextUnlocked.push(nextId)
                 }
             }
+
+            setProgress(nextUnlocked, nextCompleted)
         } else {
             playTypingSound('error')
         }
         setShowResult(true)
-    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user])
+    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress])
 
     useEffect(() => {
         if (currentLesson && input.length === currentLesson.text.length && input.length > 0) {

@@ -12,6 +12,8 @@ export interface UserProfile {
     avg_wpm: number;
     total_races: number;
     rank_points: number;
+    unlocked_lessons?: string[];
+    completed_lessons?: string[];
 }
 
 export const userService = {
@@ -92,6 +94,18 @@ export const userService = {
             }
         } catch (error) {
             console.error("Failed to update stats:", error);
+        }
+    },
+
+    async updateProgress(uid: string, unlocked: string[], completed: string[]): Promise<void> {
+        try {
+            const docRef = doc(db, 'profiles', uid);
+            await setDoc(docRef, {
+                unlocked_lessons: unlocked,
+                completed_lessons: completed
+            }, { merge: true });
+        } catch (error) {
+            console.error("Failed to update progress:", error);
         }
     }
 };

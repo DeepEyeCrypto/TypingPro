@@ -26,8 +26,11 @@ interface StatsState {
     sessionHistory: SessionResult[],
     characterErrors: Record<string, number>,
     bestReplays: Record<string, ReplayData>, // Best replay per lesson
+    unlockedIds: string[],
+    completedIds: string[],
     recordAttempt: (lessonId: string, wpm: number, accuracy: number, errors?: Record<string, number>, graphData?: { time: number, wpm: number, raw: number }[], replayData?: ReplayData) => void,
-    loadStats: (stats: Record<string, LessonStats>, history?: SessionResult[], errors?: Record<string, number>, replays?: Record<string, ReplayData>) => void
+    loadStats: (stats: Record<string, LessonStats>, history?: SessionResult[], errors?: Record<string, number>, replays?: Record<string, ReplayData>, unlocked?: string[], completed?: string[]) => void,
+    setProgress: (unlocked: string[], completed: string[]) => void
 }
 
 export const useStatsStore = create<StatsState>((set) => ({
@@ -35,6 +38,8 @@ export const useStatsStore = create<StatsState>((set) => ({
     sessionHistory: JSON.parse(localStorage.getItem('typing_history') || '[]'),
     characterErrors: JSON.parse(localStorage.getItem('typing_errors') || '{}'),
     bestReplays: JSON.parse(localStorage.getItem('typing_replays') || '{}'),
+    unlockedIds: JSON.parse(localStorage.getItem('unlockedIds') || '["l1"]'),
+    completedIds: JSON.parse(localStorage.getItem('completedIds') || '[]'),
 
     recordAttempt: (lessonId, wpm, accuracy, errors = {}, graphData = [], replayData) => set((state) => {
         // Update per-lesson bests
@@ -87,11 +92,19 @@ export const useStatsStore = create<StatsState>((set) => ({
         }
     }),
 
-    loadStats: (stats, history = [], errors = {}, replays = {}) => {
+    loadStats: (stats, history = [], errors = {}, replays = {}, unlocked = ['l1'], completed = []) => {
         localStorage.setItem('typing_stats', JSON.stringify(stats))
         localStorage.setItem('typing_history', JSON.stringify(history))
         localStorage.setItem('typing_errors', JSON.stringify(errors))
         localStorage.setItem('typing_replays', JSON.stringify(replays))
-        set({ lessonStats: stats, sessionHistory: history, characterErrors: errors, bestReplays: replays })
+        localStorage.setItem('unlockedIds', JSON.stringify(unlocked))
+        localStorage.setItem('completedIds', JSON.stringify(completed))
+        set({ lessonStats: stats, sessionHistory: history, characterErrors: errors, bestReplays: replays, unlockedIds: unlocked, completedIds: completed })
+    },
+
+    setProgress: (unlocked, completed) => {
+        localStorage.setItem('unlockedIds', JSON.stringify(unlocked))
+        localStorage.setItem('completedIds', JSON.stringify(completed))
+        set({ unlockedIds: unlocked, completedIds: completed })
     }
 }))
