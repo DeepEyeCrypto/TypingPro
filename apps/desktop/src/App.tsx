@@ -9,7 +9,7 @@ import { TopBar } from '../../../src/components/TopBar'
 import { TypingArea } from '../../../src/components/TypingArea'
 import { LessonSelector } from '../../../src/components/LessonSelector'
 import { GatekeeperModal } from '../../../src/components/GatekeeperModal'
-import { AnalyticsDashboard } from '../../../src/components/AnalyticsDashboard'
+import { AnalyticsDashboard } from '../../../src/components/analytics/AnalyticsDashboard'
 import { CURRICULUM } from '../../../src/data/lessons'
 import '../../../src/styles/glass.css'
 import '../../../src/styles/themes.css'
@@ -137,7 +137,20 @@ const App: React.FC = () => {
                 onSelect={typing.startLesson}
               />
             ) : typing.view === 'analytics' ? (
-              <AnalyticsDashboard onBack={() => typing.setView('selection')} />
+              <AnalyticsDashboard
+                onBack={() => typing.setView('selection')}
+                onStartDrill={(text) => {
+                  const drillLesson = {
+                    id: `drill-${Date.now()}`,
+                    title: 'AI Prescribed Drill',
+                    text: text,
+                    targetWPM: 0,
+                    stage: 'Drill',
+                    unlocks: []
+                  };
+                  typing.startLesson(drillLesson);
+                }}
+              />
             ) : typing.view === 'social' ? (
               <SocialDashboard
                 onBack={() => typing.setView('selection')}
