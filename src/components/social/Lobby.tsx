@@ -32,7 +32,7 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
             // 1. Join Queue
             // For MVP, just using avg WPM of 50 if stats not ready?
             // Ideally fetch from store.
-            await matchmakingService.joinQueue(user.username || "Unknown", user.avatar_url || "", 50);
+            await matchmakingService.joinQueue(user.name || "Unknown", user.avatar_url || "", 50);
 
             // 2. Listen
             matchmakingService.listenForMatch((matchId) => {
@@ -77,14 +77,14 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
             {!isSearching ? (
                 <button
                     onClick={handleFindMatch}
-                    className="px-8 py-3 bg-cyan-900/20 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all rounded uppercase tracking-wider"
+                    className="glass-button text-cyan-400 font-bold uppercase tracking-widest text-lg px-12 py-4"
                 >
                     Find Match
                 </button>
             ) : (
                 <button
                     onClick={handleCancel}
-                    className="mt-8 px-6 py-2 text-red-500/80 hover:text-red-400 text-sm border border-transparent hover:border-red-500/30 rounded transition-all"
+                    className="mt-8 glass-button text-red-400 hover:text-red-300 text-sm border-red-500/30 hover:border-red-500/80"
                 >
                     Cancel Search
                 </button>

@@ -102,7 +102,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                     <div className="mb-4">
                         <button
                             onClick={onNavigateToLobby}
-                            className="w-full py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg font-bold text-white shadow-lg transform hover:scale-105 transition-all text-xl tracking-wider border border-white/20"
+                            className="w-full py-4 glass-button text-cyan-400 font-bold text-xl tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.2)]"
                         >
                             ⚔️ START DUEL
                         </button>

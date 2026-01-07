@@ -77,7 +77,7 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
 
                 {/* 1. DeepEye Insight (Hero) */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white/5 border border-cyan-500/30 rounded-xl p-6 relative overflow-hidden group hover:border-cyan-500/50 transition-all">
+                    <div className="glass-panel p-6 relative overflow-hidden group">
                         {/* Scan Line Animation */}
                         {isAnalyzing && (
                             <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500/50 shadow-[0_0_15px_#22d3ee] animate-[scan_2s_ease-in-out_infinite]"></div>
@@ -110,7 +110,7 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
                                 {!isAnalyzing && !verdict && (
                                     <button
                                         onClick={askCoach}
-                                        className="mt-6 bg-cyan-900/30 border border-cyan-500/50 px-6 py-2 rounded text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all font-bold tracking-widest text-sm"
+                                        className="mt-6 glass-button text-cyan-400 font-bold tracking-widest text-sm"
                                     >
                                         [ INITIATE ANALYSIS ]
                                     </button>
@@ -123,14 +123,14 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
                     {verdict && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                             {verdict.recommended_drills.map((drill, idx) => (
-                                <div key={idx} className="bg-white/5 border border-white/10 p-4 rounded hover:bg-white/10 transition-colors flex flex-col justify-between">
+                                <div key={idx} className="glass-panel p-4 flex flex-col justify-between hover:border-cyan-500/30">
                                     <div>
                                         <h3 className="text-cyan-400 font-bold text-sm mb-1 line-clamp-1">{drill.title}</h3>
                                         <p className="text-white/50 text-xs mb-4 h-10 overflow-hidden">{drill.reason}</p>
                                     </div>
                                     <button
                                         onClick={() => onStartDrill(drill.text)}
-                                        className="w-full py-2 bg-white/5 hover:bg-cyan-500 hover:text-black border border-white/10 text-xs tracking-wider transition-all"
+                                        className="w-full py-2 glass-button text-xs tracking-wider"
                                     >
                                         START DRILL
                                     </button>
@@ -143,7 +143,7 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
                 {/* 2. Stats Column */}
                 <div className="space-y-6">
                     {/* Weakness Map List (Mini) */}
-                    <div className="bg-black/40 border border-white/10 rounded-xl p-6">
+                    <div className="glass-panel p-6">
                         <h3 className="text-white/50 text-xs uppercase mb-4 tracking-widest">Latency Hotspots</h3>
                         {profile ? (
                             <div className="space-y-3">
@@ -169,7 +169,7 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
                         )}
                     </div>
 
-                    <div className="bg-black/40 border border-white/10 rounded-xl p-6">
+                    <div className="glass-panel p-6">
                         <h3 className="text-white/50 text-xs uppercase mb-4 tracking-widest">Error Frequent</h3>
                         {profile ? (
                             <div className="space-y-3">

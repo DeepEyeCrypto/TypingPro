@@ -114,8 +114,8 @@ const App: React.FC = () => {
 
       {!isLoading && (
         <div
-          className={`main-layout theme-${theme} glass-root dynamic-bg`}
-          style={{ fontFamily: `'${fontFamily}', sans-serif` }}
+          className="main-layout glass-root"
+          style={{ fontFamily: `'Inter', sans-serif` }}
           onClick={() => inputRef.current?.focus()}
         >
           <TitleBar />

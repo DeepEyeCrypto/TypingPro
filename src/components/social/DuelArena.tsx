@@ -64,7 +64,8 @@ const DuelArena: React.FC<Props> = ({ matchId, onBack, typingProps }) => {
         <div className="w-full h-full flex flex-col">
 
             {/* Top Bar: The Stakes */}
-            <header className="h-20 border-b border-white/10 flex items-center px-8 justify-between bg-black/50 backdrop-blur-md">
+            {/* Top Bar: The Stakes */}
+            <header className="h-20 glass-panel border-b-0 rounded-none m-4 flex items-center px-8 justify-between">
 
                 {/* Player Status */}
                 <div className="flex items-center gap-4 text-cyan-400">
@@ -123,7 +124,7 @@ const DuelArena: React.FC<Props> = ({ matchId, onBack, typingProps }) => {
                 />
 
                 {/* Enemy Ghost View (Mini-map) */}
-                <div className="absolute bottom-8 right-8 w-64 h-32 bg-black/80 border border-red-500/30 rounded-lg p-2 opacity-80 pointer-events-none">
+                <div className="absolute bottom-8 right-8 w-64 h-32 glass-panel border-red-500/30 p-4 opacity-80 pointer-events-none">
                     <div className="text-red-500 text-[10px] uppercase mb-1 tracking-wider">Opponent Stream</div>
                     <div className="w-full h-full overflow-hidden text-red-500/50 text-xs break-all leading-tight font-mono">
                         {(typingProps.currentLesson?.text || '').substring(0, enemy.cursorIndex || 0)}

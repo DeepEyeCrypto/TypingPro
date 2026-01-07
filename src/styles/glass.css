@@ -1,146 +1,116 @@
-/* Global Scrollbar Fix - Hidden by default */
-::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    background: transparent;
-}
-
-/* Custom Visible Scrollbar for specific containers */
-.custom-scrollbar::-webkit-scrollbar {
-    display: block;
-    width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-body,
-html {
-    overflow: hidden;
-    /* Prevent double scrollbars */
-    height: 100%;
-    width: 100%;
-    margin: 0;
-}
+/* 🎨 LIQUID GLASS UI SYSTEM (2026) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root {
-    /* Premium Glass Variables (Teal/Void Edition) */
-    --glass-blur: 20px;
-    --glass-saturation: 180%;
-    --glass-bg: rgba(13, 43, 51, 0.3);
-    /* Top Bar Tint */
-    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-    --glass-glow: 0 0 50px rgba(0, 243, 255, 0.15);
+    /* Palette */
+    --obsidian: #050505;
+    --obsidian-depth: #000000;
+    --glass-surface: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.15);
 
-    /* Text & Accents */
-    --glass-text-primary: rgba(255, 255, 255, 0.95);
-    --glass-text-secondary: rgba(255, 255, 255, 0.6);
-    --neon-accent: #00f3ff;
+    --neon-cyan: #00f3ff;
+    --neon-purple: #bd00ff;
+
+    /* Metrics */
+    --blur-strength: 20px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
 }
 
-.glass-root {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 24px;
-    overflow: hidden;
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
-    border: var(--glass-border);
-    box-shadow: var(--glass-glow);
-    background: transparent !important;
-    will-change: backdrop-filter;
-}
-
-.dynamic-bg {
-    background: linear-gradient(135deg,
-            #0d1b1e 0%,
-            #03080a 100%);
-    background-size: 100% 100%;
-    /* No shift needed for 2-stop static gradient, or minimal */
-    /* animation: gradientShift 20s ease infinite; - Disabling animation for static depth request */
-    will-change: background-position;
-}
-
-/* Glass Utilites */
-.glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(0, 243, 255, 0.3);
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
-    transform: translateY(-2px);
-}
-
-.glass-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--glass-text-primary);
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.glass-btn:hover {
-    background: rgba(0, 243, 255, 0.1);
-    border-color: var(--neon-accent);
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-    text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
-}
-
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* Helper for elements inside */
-.glass-panel {
-    background: rgba(13, 43, 51, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 16px;
-}
-
-/* KILL ALL BLACK BACKGROUNDS */
-.keyboard-container,
-.key,
-.app-root,
+/* Base Typography */
 body {
-    background-color: transparent !important;
-    background-image: none !important;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--obsidian);
+    color: white;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* FORCE GLASS ON KEYS */
-.key {
-    background: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
+code,
+.mono,
+.data-display {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* 🖼️ THE LIQUID SHELL */
+.glass-root {
+    background: radial-gradient(circle at 50% 10%, rgba(0, 243, 255, 0.05), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(189, 0, 255, 0.03), transparent 40%),
+        var(--obsidian);
+    min-height: 100vh;
+    width: 100vw;
+}
+
+/* 🧊 GLASS COMPONENTS */
+.glass-panel {
+    background: var(--glass-surface);
+    backdrop-filter: blur(var(--blur-strength));
+    -webkit-backdrop-filter: blur(var(--blur-strength));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+    border-color: var(--glass-highlight);
+    box-shadow: 0 8px 40px rgba(0, 243, 255, 0.05);
+}
+
+/* 💧 LIQUID BUTTONS */
+.glass-button {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.glass-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Shimmer Overlay */
+.glass-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
+    transform: skewX(-25deg);
+    transition: 0.5s;
+}
+
+.glass-button:hover::after {
+    left: 150%;
+    transition: 0.7s ease-in-out;
+}
+
+/* ✨ UTILITIES */
+.text-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.text-neon {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+}
+
+.border-neon {
+    border-color: var(--neon-cyan) !important;
 }
