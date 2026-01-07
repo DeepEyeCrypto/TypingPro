@@ -1,8 +1,8 @@
 name: 'Release'
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -49,8 +49,20 @@ jobs:
       - name: install frontend dependencies
         run: npm install --include=dev --force
 
-      - name: Version Sync
-        run: node scripts/sync-tauri-version.cjs
+      # 🤖 AUTO-VERSIONING STRATEGY
+      - name: Generate Version Number
+        id: version
+        shell: bash
+        run: |
+          # Use run_number as patch version (e.g. 1.2.45)
+          # Adding 2000 to avoid conflicts with previous manual tags if needed, or just clean start
+          PATCH=$(( ${{ github.run_number }} ))
+          NEW_VERSION="1.2.$PATCH"
+          echo "Generated Version: $NEW_VERSION"
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Apply Version
+        run: node scripts/set-version.js ${{ steps.version.outputs.VERSION }}
 
       # Build Changelog from Commits
       - name: Build Changelog
@@ -82,7 +94,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build & Release (Tauri Action handles 'npm run build' via beforeBuildCommand)
+      # Build & Release
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,8 +122,8 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
-          tagName: v__VERSION__
-          releaseName: 'TypingPro v__VERSION__'
+          tagName: v${{ steps.version.outputs.VERSION }}
+          releaseName: 'TypingPro v${{ steps.version.outputs.VERSION }}'
           releaseBody: '${{ steps.changelog.outputs.changelog }}'
           releaseDraft: false
           prerelease: false
