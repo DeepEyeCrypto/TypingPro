@@ -94,9 +94,9 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
                                 <div className="text-white/80 min-h-[80px] leading-relaxed">
                                     {isAnalyzing ? (
                                         <span className="animate-pulse text-cyan-500/50 block mt-2">
-                                            > Extracting keystroke latency patterns...<br />
-                                            > correlating error spikes...<br />
-                                            > querying tactical database...
+                                            {'&gt;'} Extracting keystroke latency patterns...<br />
+                                            {'&gt;'} correlating error spikes...<br />
+                                            {'&gt;'} querying tactical database...
                                         </span>
                                     ) : verdict ? (
                                         <p className="typing-effect text-lg">{verdict.insight}</p>
