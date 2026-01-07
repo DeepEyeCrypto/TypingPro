@@ -44,8 +44,12 @@ try {
     // However, to prevent import crashes, we might need value.
     // Let's rely on the console.error being visible.
 
-    // BETTER FIX: Re-throw if critical.
-    throw e;
+    // REVERT: Do not throw, allow app to load cleanly (albeit broken social)
+    // throw e; 
+
+    app = {} as any;
+    db = {} as Firestore;
+    auth = {} as Auth;
 }
 
 export { db, auth };

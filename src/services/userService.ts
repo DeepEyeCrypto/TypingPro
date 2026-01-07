@@ -17,15 +17,9 @@ export interface UserProfile {
 }
 
 export const userService = {
-    async checkUsernameTaken(username: string): Promise<boolean> {
-        // Check reserved usernames collection
-        const docRef = doc(db, 'usernames', username.toLowerCase());
-        const snap = await getDoc(docRef);
-        return snap.exists();
-    },
-
     async getProfile(uid: string): Promise<UserProfile | null> {
         try {
+            if (!db || !db.type) return null; // Defensive check for mock db
             const docRef = doc(db, 'profiles', uid);
             const snap = await getDoc(docRef);
             return snap.exists() ? snap.data() as UserProfile : null;
@@ -36,6 +30,10 @@ export const userService = {
     },
 
     async createProfile(uid: string, username: string, avatarUrl: string): Promise<boolean> {
+        if (!db || !db.type) {
+            console.error("Firebase DB not initialized");
+            return false;
+        }
         const lowerName = username.toLowerCase();
 
         // Final check for uniqueness
@@ -69,6 +67,7 @@ export const userService = {
 
     async updateStats(uid: string, wpm: number): Promise<void> {
         try {
+            if (!db || !db.type) return;
             const docRef = doc(db, 'profiles', uid);
             const snap = await getDoc(docRef);
 
@@ -99,6 +98,7 @@ export const userService = {
 
     async updateProgress(uid: string, unlocked: string[], completed: string[]): Promise<void> {
         try {
+            if (!db || !db.type) return;
             const docRef = doc(db, 'profiles', uid);
             await setDoc(docRef, {
                 unlocked_lessons: unlocked,
@@ -107,5 +107,17 @@ export const userService = {
         } catch (error) {
             console.error("Failed to update progress:", error);
         }
-    }
+    },
+
+    async checkUsernameTaken(username: string): Promise<boolean> {
+        // Check reserved usernames collection
+        if (!db || !db.type) return false;
+        try {
+            const docRef = doc(db, 'usernames', username.toLowerCase());
+            const snap = await getDoc(docRef);
+            return snap.exists();
+        } catch (e) {
+            return false;
+        }
+    },
 };
