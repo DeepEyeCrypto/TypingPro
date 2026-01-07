@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
+import { getAnalytics, Analytics } from 'firebase/analytics';
 
 console.log("FIREBASE: Loading Module...");
 
@@ -8,14 +9,17 @@ const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
     projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 let app: any = null;
 let db: Firestore;
 let auth: Auth;
+let analytics: Analytics;
 
 try {
     // Check for critical keys
@@ -33,6 +37,11 @@ try {
 
     auth = getAuth(app);
     console.log("FIREBASE: Auth Initialized");
+
+    if (typeof window !== 'undefined' && firebaseConfig.measurementId) {
+        analytics = getAnalytics(app);
+        console.log("FIREBASE: Analytics Initialized");
+    }
 
 } catch (e) {
     console.error("FIREBASE CRITICAL FAILURE:", e);
