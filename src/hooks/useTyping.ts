@@ -58,6 +58,7 @@ export const useTyping = () => {
     const timerRef = useRef<NodeJS.Timeout | null>(null)
     const graphDataRef = useRef<{ time: number, wpm: number, raw: number }[]>([])
     const metricsRef = useRef(metrics)
+    const lastSyncTimeRef = useRef<number>(0) // ⚡️ Throttling Ref
 
     // Sync metricsRef
     useEffect(() => { metricsRef.current = metrics }, [metrics])
@@ -289,15 +290,19 @@ export const useTyping = () => {
                 const latestMetrics = await handleKeystroke(char, timestamp)
                 setMetrics(latestMetrics)
 
-                // ⚡️ REAL-TIME MULTIPLAYER SYNC
+                // ⚡️ REAL-TIME MULTIPLAYER SYNC (Throttled to 100ms)
                 if (view === 'duel' && activeMatchId) {
-                    const progress = Math.min(100, Math.round(((input.length + 1) / currentLesson.text.length) * 100));
-                    liveRaceService.updateProgress(
-                        Math.round(latestMetrics.adjusted_wpm),
-                        input.length + 1,
-                        progress,
-                        false // isFinished handled in `handleResult`
-                    );
+                    const now = Date.now();
+                    if (now - lastSyncTimeRef.current > 100) { // 10 updates/sec max
+                        const progress = Math.min(100, Math.round(((input.length + 1) / currentLesson.text.length) * 100));
+                        liveRaceService.updateProgress(
+                            Math.round(latestMetrics.adjusted_wpm),
+                            input.length + 1,
+                            progress,
+                            false
+                        );
+                        lastSyncTimeRef.current = now;
+                    }
                 }
 
             } catch (err) {

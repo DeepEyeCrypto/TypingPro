@@ -19,7 +19,7 @@ interface Props {
     onStartDrill: (text: string) => void;
 }
 
-export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) => {
+export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStartDrill }) => {
     const { sessionHistory, lessonStats } = useStatsStore();
     const [profile, setProfile] = useState<WeaknessProfile | null>(null);
     const [verdict, setVerdict] = useState<CoachVerdict | null>(null);
@@ -193,4 +193,4 @@ export const AnalyticsDashboard: React.FC<Props> = ({ onBack, onStartDrill }) =>
             </div>
         </div>
     );
-};
+}); // End memo

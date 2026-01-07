@@ -21,8 +21,7 @@
         "transparent": true,
         "decorations": true,
         "titleBarStyle": "Overlay",
-        "devtools": false,
-        "additionalBrowserArgs": "--autoplay-policy=no-user-gesture-required --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-hardware-overlays --disable-features=UseChromeOSDirectVideoDecoder --enable-features=VaapiVideoDecoder,Vulkan --enable-accelerated-2d-canvas --num-raster-threads=4"
+        "devtools": false
       },
       {
         "label": "zen",

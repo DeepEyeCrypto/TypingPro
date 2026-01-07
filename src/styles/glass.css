@@ -50,6 +50,9 @@ code,
     border-radius: var(--radius-lg);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* ⚡️ GPU Acceleration */
+    transform: translateZ(0);
+    will-change: transform, box-shadow, border-color;
 }
 
 .glass-panel:hover {
@@ -71,6 +74,9 @@ code,
     overflow: hidden;
     transition: all 0.3s ease;
     cursor: pointer;
+    /* ⚡️ Performance */
+    will-change: transform, background, box-shadow;
+    transform: translateZ(0);
 }
 
 .glass-button:hover {

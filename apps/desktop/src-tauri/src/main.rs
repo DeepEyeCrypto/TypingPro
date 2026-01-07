@@ -19,20 +19,26 @@ struct AppState {
 }
 
 #[tauri::command]
-fn start_session(_state: State<AppState>) {
-    // state.engine.lock().unwrap().start_session();
+fn start_session(text: String, state: State<AppState>) {
+    state.engine.lock().unwrap().start(text);
 }
 
 #[tauri::command]
-fn handle_keystroke(_app: tauri::AppHandle, _char: String) -> Result<String, String> {
-    // TODO: Implement typing logic
-    Ok(format!("Key received: {}", _char))
+fn handle_keystroke(_app: tauri::AppHandle, char_str: String, timestamp_ms: u64, state: State<AppState>) -> Result<engine::TypingMetrics, String> {
+    let mut engine = state.engine.lock().unwrap();
+    
+    // Parse the first char from string (frontend sends string)
+    if let Some(c) = char_str.chars().next() {
+        let metrics = engine.push_char(c, timestamp_ms);
+        Ok(metrics)
+    } else {
+        Err("Empty character received".to_string())
+    }
 }
 
 #[tauri::command]
-fn complete_session(_state: State<AppState>) -> f32 {
-    // state.engine.lock().unwrap().complete_session()
-    0.0
+fn complete_session(state: State<AppState>) -> engine::TypingMetrics {
+    state.engine.lock().unwrap().calculate_metrics()
 }
 
 #[tauri::command]
