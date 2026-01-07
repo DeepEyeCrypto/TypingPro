@@ -36,10 +36,16 @@ try {
 
 } catch (e) {
     console.error("FIREBASE CRITICAL FAILURE:", e);
-    // CRASH PREVENTION: Mock exports so imports don't explode
-    app = {} as any;
-    db = {} as Firestore;
-    auth = {} as Auth;
+    // Explicitly set db/auth to undefined or a throw-proxy so usage is clear
+    // But for existing code safety, we'll keep the mock but log louder.
+    // The issue is doc() expects a FirebaseFirestore instance. {} is not one.
+
+    // We should probably NOT export mock objects if they aren't functional.
+    // However, to prevent import crashes, we might need value.
+    // Let's rely on the console.error being visible.
+
+    // BETTER FIX: Re-throw if critical.
+    throw e;
 }
 
 export { db, auth };
