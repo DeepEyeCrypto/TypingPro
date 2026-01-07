@@ -53,3 +53,12 @@ try {
 }
 
 export { db, auth };
+
+export function getFirebaseDebugInfo() {
+    return {
+        apiKey: !!firebaseConfig.apiKey ? `Present (${firebaseConfig.apiKey.toString().substring(0, 4)}...)` : 'MISSING',
+        projectId: !!firebaseConfig.projectId ? `Present (${firebaseConfig.projectId})` : 'MISSING',
+        authDomain: !!firebaseConfig.authDomain ? 'Present' : 'MISSING',
+        initialized: !!app
+    };
+}

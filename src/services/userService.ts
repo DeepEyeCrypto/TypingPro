@@ -1,4 +1,4 @@
-import { db } from '@src/lib/firebase';
+import { db, getFirebaseDebugInfo } from '@src/lib/firebase';
 import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 export interface UserProfile {
@@ -31,8 +31,9 @@ export const userService = {
 
     async createProfile(uid: string, username: string, avatarUrl: string): Promise<boolean> {
         if (!db || !db.type) {
-            console.error("Firebase DB not initialized");
-            throw new Error("System Error: Database not connected. Please check internet or updates.");
+            const debug = getFirebaseDebugInfo();
+            console.error("Firebase DB not initialized", debug);
+            throw new Error(`System Error: Database not connected. (API: ${debug.apiKey}, PROJ: ${debug.projectId}). Please check internet/updates.`);
         }
         const lowerName = username.toLowerCase();
 
