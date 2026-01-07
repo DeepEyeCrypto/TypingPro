@@ -12,6 +12,15 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+.emerald-text {
+    color: #10b981 !important;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.wpm-elite {
+    font-weight: 800;
+}
+
 .rank-pulse {
     animation: rankPulse 2s infinite;
 }

@@ -5,8 +5,8 @@ use tauri_plugin_oauth::start_with_config;
 use tauri::AppHandle;
 // use tauri_plugin_shell::ShellExt;
 
-pub const GOOGLE_CLIENT_ID: &str = "62301411076-ivu6svrcuffanue275q30noq1nmjk4lv.apps.googleusercontent.com";
-pub const GOOGLE_CLIENT_SECRET: &str = "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";
+pub const GOOGLE_CLIENT_ID: &str = "296757654836-irh81sq9o83k5tbekb0fqpsol0koo97k.apps.googleusercontent.com";
+pub const GOOGLE_CLIENT_SECRET: &str = env!("TAURI_GOOGLE_CLIENT_SECRET");
 pub const GITHUB_CLIENT_ID: &str = "Ov23liOD0XVCGqACXDuG";
 pub const GITHUB_CLIENT_SECRET: &str = "6e16d13be4f231e4ae5eebfbc80fcf8d22870f79";
 pub const REDIRECT_URI: &str = "http://localhost:1420/auth";
@@ -59,7 +59,7 @@ pub async fn perform_google_login(_app: AppHandle) -> Result<UserProfile, String
     }).map_err(|e| e.to_string())?;
 
     let url = format!(
-        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri=http://localhost:{}/auth&response_type=code&scope=openid%20profile%20email",
+        "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri=http://localhost:{}/auth/google/callback&response_type=code&scope=openid%20profile%20email",
         GOOGLE_CLIENT_ID, port
     );
 
@@ -122,7 +122,8 @@ pub async fn exchange_google_code(code: String) -> Result<UserProfile, String> {
     params.insert("code", code);
     params.insert("client_id", GOOGLE_CLIENT_ID.to_string());
     params.insert("client_secret", GOOGLE_CLIENT_SECRET.to_string());
-    params.insert("redirect_uri", REDIRECT_URI.to_string());
+    // Use the exact redirect URI structure
+    params.insert("redirect_uri", format!("http://localhost:1420/auth/google/callback"));
     params.insert("grant_type", "authorization_code".to_string());
 
     let res = client.post("https://oauth2.googleapis.com/token")

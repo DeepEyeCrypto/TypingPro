@@ -101,10 +101,10 @@ jobs:
           VITE_FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
           VITE_API_URL: 'http://localhost:3001'
           VITE_GOOGLE_REDIRECT_URI: 'http://localhost:1420/auth/google/callback'
-          VITE_GITHUB_REDIRECT_URI: 'http://localhost:1420/auth/github/callback'
           # Backend Secrets
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          TAURI_GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
           GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
