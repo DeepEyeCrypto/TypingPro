@@ -32,7 +32,7 @@ export const userService = {
     async createProfile(uid: string, username: string, avatarUrl: string): Promise<boolean> {
         if (!db || !db.type) {
             console.error("Firebase DB not initialized");
-            return false;
+            throw new Error("System Error: Database not connected. Please check internet or updates.");
         }
         const lowerName = username.toLowerCase();
 
@@ -60,7 +60,6 @@ export const userService = {
             return true;
         } catch (error: any) {
             console.error("Error creating profile:", error);
-            // THROW the error so UI can see "Permission Denied" etc.
             throw new Error(error.message || "Unknown Firestore Error");
         }
     },

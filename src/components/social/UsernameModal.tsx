@@ -36,11 +36,11 @@ export const UsernameModal = () => {
             if (success) {
                 await refreshProfile()
             } else {
-                setError('Username already taken or invalid')
+                setError('Username already taken')
             }
         } catch (e: any) {
             console.error("Profile Creation Failed:", e);
-            setError('Error: ' + (e.message || 'Failed to create profile'));
+            setError(e.message || 'Failed to create profile');
         } finally {
             setIsSubmitting(false)
         }
