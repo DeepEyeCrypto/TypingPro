@@ -10,7 +10,11 @@ try {
 
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <ErrorBoundary fallback={<div style={{ color: 'red', padding: '50px', background: 'black', height: '100vh' }}>APPLICATION CRASHED. CHECK CONSOLE.</div>}>
+      <ErrorBoundary fallback={<div style={{ color: 'white', padding: '50px', background: '#050505', height: '100vh', zIndex: 9999, position: 'relative', fontFamily: 'sans-serif' }}>
+        <h1 style={{ color: '#ff4444' }}>APPLICATION ERROR</h1>
+        <p>The application encountered a critical error during startup.</p>
+        <button onClick={() => window.location.reload()} style={{ padding: '10px 20px', marginTop: '20px', cursor: 'pointer' }}>Reload Application</button>
+      </div>}>
         <App />
       </ErrorBoundary>
     </React.StrictMode>
