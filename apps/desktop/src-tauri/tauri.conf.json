@@ -41,7 +41,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src 'self' asset: https://asset.localhost data: blob: filesystem:; img-src 'self' asset: https://asset.localhost data: blob: filesystem: https://lh3.googleusercontent.com https://avatars.githubusercontent.com; connect-src 'self' https://* http://localhost:* ws://localhost:* https://api.github.com;"
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src 'self' asset: https://asset.localhost data: blob: filesystem:; img-src 'self' asset: https://asset.localhost data: blob: filesystem: https://lh3.googleusercontent.com https://avatars.githubusercontent.com; connect-src 'self' https://* http://localhost:* ws://localhost:* https://api.github.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;"
     }
   },
   "bundle": {
