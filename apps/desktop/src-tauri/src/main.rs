@@ -63,6 +63,15 @@ fn set_audio_volume(audio: State<AudioManager>, volume: f32) {
     audio.set_volume(volume);
 }
 
+#[tauri::command]
+async fn check_network_status() -> Result<String, String> {
+    use std::net::ToSocketAddrs;
+    match "google.com:80".to_socket_addrs() {
+        Ok(_) => Ok("Online".to_string()),
+        Err(e) => Err(format!("Offline: {}", e)),
+    }
+}
+
 use tauri::Manager;
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
@@ -107,7 +116,8 @@ fn main() {
             github_login,
             toggle_zen_window,
             play_typing_sound,
-            set_audio_volume
+            set_audio_volume,
+            check_network_status
         ])
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
