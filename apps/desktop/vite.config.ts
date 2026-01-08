@@ -4,6 +4,8 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
+  base: './', // Ensure relative paths for Tauri
+
 
   clearScreen: false,
   server: {
