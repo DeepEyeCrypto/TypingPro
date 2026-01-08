@@ -9,7 +9,7 @@ pub const GOOGLE_CLIENT_ID: &str = "296757654836-irh81sq9o83k5tbekb0fqpsol0koo97
 pub const GOOGLE_CLIENT_SECRET: &str = env!("TAURI_GOOGLE_CLIENT_SECRET");
 pub const GITHUB_CLIENT_ID: &str = "Ov23liOD0XVCGqACXDuG";
 pub const GITHUB_CLIENT_SECRET: &str = "6e16d13be4f231e4ae5eebfbc80fcf8d22870f79";
-pub const REDIRECT_URI: &str = "http://localhost:1420/auth";
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserProfile {

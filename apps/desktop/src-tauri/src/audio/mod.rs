@@ -1,9 +1,8 @@
-use rodio::{Decoder, OutputStream, Sink, Source};
+use rodio::{Decoder, OutputStream, Sink};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
+
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+
 use std::thread;
 use tauri::{AppHandle, Manager};
 
