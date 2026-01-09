@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.11] - 2026-01-09
+
+### Added
+
+- **Liquid Glass V5 UI**: Completely overhauled the `UsernameModal` with premium radial gradients, glowing hairline borders, and polished typography.
+- **Enhanced Diagnostics**: Improved error reporting in the `UsernameModal` to better identify missing production secrets.
+
+### Fixed
+
+- **Module Initialization**: Further refactored service layer to ensure no database calls occur during static module evaluation.
+
 ## [1.2.10] - 2026-01-09
 
 ### Fixed

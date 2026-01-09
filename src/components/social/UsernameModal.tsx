@@ -54,39 +54,51 @@ export const UsernameModal = () => {
     return (
         <div className="username-modal-overlay">
             <div className="username-modal">
-                <h2>Choose your identity</h2>
-                <p className="subtitle">Create a unique username to compete globally.</p>
+                <div className="modal-content">
+                    <h2>Choose your identity</h2>
+                    <p className="subtitle">Create a unique username to compete globally.</p>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => {
-                                setUsername(e.target.value)
-                                setError('')
-                            }}
-                            placeholder="Username"
-                            disabled={isSubmitting}
-                            autoFocus
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => {
+                                    setUsername(e.target.value)
+                                    setError('')
+                                }}
+                                placeholder="Username"
+                                disabled={isSubmitting}
+                                autoFocus
+                                autoComplete="off"
+                                spellCheck="false"
+                            />
+                        </div>
 
-                    {error && <div className="error-msg">{error}</div>}
+                        {error && (
+                            <div className="error-msg" role="alert" aria-live="polite">
+                                {error}
+                            </div>
+                        )}
 
-                    <button
-                        type="submit"
-                        className="submit-btn"
-                        disabled={isSubmitting || !username}
-                    >
-                        {isSubmitting ? 'Creating...' : 'Start Competing'}
-                    </button>
+                        <button
+                            type="submit"
+                            className="submit-btn"
+                            disabled={isSubmitting || !username}
+                        >
+                            {isSubmitting ? (
+                                <span className="loader-text">Creating...</span>
+                            ) : (
+                                'Start Competing'
+                            )}
+                        </button>
 
-                    <div className="user-preview">
-                        <img src={user.avatar_url} alt="You" />
-                        <span>{user.name}</span>
-                    </div>
-                </form>
+                        <div className="user-preview">
+                            <img src={user.avatar_url} alt="Profile Avatar" />
+                            <span>{user.name}</span>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )
