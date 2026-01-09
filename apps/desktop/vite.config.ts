@@ -25,11 +25,12 @@ export default defineConfig({
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
   build: {
-    target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari13',
+    target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari14',
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     sourcemap: !!process.env.TAURI_DEBUG,
     reportCompressedSize: false,
     chunkSizeWarningLimit: 2000,
+    cssCodeSplit: false, // Emergency Fix: Disable CSS splitting to avoid preload errors in Tauri
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),

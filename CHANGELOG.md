@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.9] - 2026-01-09
+
+### Fixed
+
+- **Critical Asset Loading**: Disabled CSS code splitting in the production build. This fixes the "Unable to preload CSS" error encountered in version 1.2.8, which was caused by WebKit failing to resolve dynamic CSS chunks through the Tauri custom protocol.
+- **Compatibility**: Modernized build target to Safari 14 to ensure better support for modern module loading and CSS preloading behaviors.
+
 ## [1.2.8] - 2026-01-09
 
 ### Fixed
