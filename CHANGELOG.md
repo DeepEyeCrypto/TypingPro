@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.7] - 2026-01-09
+
+### Fixed
+
+- **Username Creation**: Hardened profile creation logic with granular timeouts (5-8s) to prevent indefinite hanging on slow networks.
+- **Error Messages**: Improved UI feedback in the "Choose your identity" modal with more descriptive network error messages.
+- **Firebase Diagnostics**: Added project ID verification and initialization logging for easier production tracing.
+
 ## [0.0.5] - 2025-12-12
 
 ### Added
