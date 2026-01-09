@@ -18,10 +18,10 @@ const firebaseConfig = {
 };
 
 let app: any = null;
-let db: Firestore;
-let auth: Auth;
-let analytics: Analytics;
-let rtdb: Database;
+let db: Firestore = undefined as any;
+let auth: Auth = undefined as any;
+let analytics: Analytics = undefined as any;
+let rtdb: Database = undefined as any;
 
 try {
     // Check for critical keys
@@ -31,6 +31,7 @@ try {
     }
 
     console.log("FIREBASE: Initializing...");
+    console.log(`FIREBASE: Using Project ID: ${firebaseConfig.projectId}`);
     app = initializeApp(firebaseConfig);
     console.log("FIREBASE: App Initialized");
 

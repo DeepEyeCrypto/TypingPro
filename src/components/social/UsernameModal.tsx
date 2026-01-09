@@ -31,33 +31,21 @@ export const UsernameModal = () => {
         setIsSubmitting(true)
         setError('')
 
-        // 15 second timeout to prevent infinite hanging
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Request timed out. Please check your internet connection.")), 15000)
-        );
-
         try {
-            console.log("Attempting to create profile for:", username);
+            console.log("[UsernameModal] Attempting to create profile for:", username);
 
-            // Race the creation against the timeout
-            const success = await Promise.race([
-                userService.createProfile(user.id, username, user.avatar_url || ''),
-                timeoutPromise
-            ]) as boolean;
+            const success = await userService.createProfile(user.id, username, user.avatar_url || '');
 
             if (success) {
-                console.log("Profile created successfully!");
+                console.log("[UsernameModal] Profile created successfully!");
                 await refreshProfile()
             } else {
                 setError('Username already taken')
             }
         } catch (e: any) {
-            console.error("Profile Creation Failed:", e);
-            // Handle specific Firebase error codes if possible, or generic message
-            let msg = e.message || 'Failed to create profile';
-            if (msg.includes("permission-denied")) msg = "Access Denied. Check API permissions.";
-            if (msg.includes("unavailable")) msg = "Network unavailable. Try again.";
-            setError(msg);
+            console.error("[UsernameModal] Profile Creation Failed:", e);
+            // Service now returns descriptive errors, use them directly
+            setError(e.message || 'Failed to create profile. Try again.');
         } finally {
             setIsSubmitting(false)
         }
