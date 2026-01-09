@@ -50,20 +50,16 @@ try {
 
 } catch (e) {
     console.error("FIREBASE CRITICAL FAILURE:", e);
-    // Explicitly set db/auth to undefined or a throw-proxy so usage is clear
-    // But for existing code safety, we'll keep the mock but log louder.
-    // The issue is doc() expects a FirebaseFirestore instance. {} is not one.
+    if (typeof window !== 'undefined' && (window as any).debugLog) {
+        (window as any).debugLog(`FIREBASE INIT FAILED: ${e}`, 'ERROR');
+    }
 
-    // We should probably NOT export mock objects if they aren't functional.
-    // However, to prevent import crashes, we might need value.
-    // Let's rely on the console.error being visible.
-
-    // REVERT: Do not throw, allow app to load cleanly (albeit broken social)
-    // throw e; 
-
-    app = {} as any;
-    db = {} as Firestore;
-    auth = {} as Auth;
+    // CRITICAL FIX: Do NOT use {} as Firestore. This causes collection() to throw a confusing error.
+    // We'll leave them as undefined so subsequent guards can catch them, or provide a safe way to handle.
+    // Exporting them as undefined is safer than empty objects.
+    app = null;
+    (db as any) = null;
+    (auth as any) = null;
 }
 
 export { db, auth, rtdb };

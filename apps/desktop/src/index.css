@@ -5,13 +5,13 @@
 @tailwind utilities;
 
 :root {
-  background-color: #000000;
+  isolation: isolate;
+  height: 100%;
+  width: 100%;
+  background-color: #050505;
   color: #ffffff;
-  font-family:
-    'Inter',
-    system-ui,
-    -apple-system,
-    sans-serif;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 16px;

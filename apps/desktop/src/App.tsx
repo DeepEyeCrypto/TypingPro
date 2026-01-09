@@ -24,6 +24,7 @@ import { SocialDashboard } from '../../../src/components/social/SocialDashboard'
 import { RankCelebration } from '../../../src/components/social/RankCelebration'
 import Lobby from '../../../src/components/social/Lobby'
 import DuelArena from '../../../src/components/social/DuelArena'
+import { NetworkTest } from '../../../src/components/NetworkTest'
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
@@ -38,10 +39,8 @@ const App: React.FC = () => {
   // Auth & Session Initialization
   useEffect(() => {
     const initSession = async () => {
-      window.debugLog('App: Initializing session...');
       // 1. Check persistent store first
       const hasSession = await checkSession()
-      window.debugLog(`App: checkSession done (hasSession: ${!!hasSession})`);
 
       // 2. Handle specific OAuth Callbacks (Overwrites session if present)
       const handleAuth = async (urlStr: string) => {
@@ -51,16 +50,13 @@ const App: React.FC = () => {
           const path = url.pathname || url.hostname + url.pathname
 
           if (code) {
-            window.debugLog(`App: Auth code found, mapping provider...`);
             let provider: 'google' | 'github' | null = null
             if (path.includes('google')) provider = 'google'
             if (path.includes('github')) provider = 'github'
 
             if (provider) {
-              window.debugLog(`App: Finishing ${provider} auth...`);
               const userData = await invoke<any>(`${provider}_auth_finish`, { code })
               setAuthenticated(userData, userData.token)
-              window.debugLog(`App: Auth success for ${userData.email}`);
 
               syncService.pullFromCloud()
 
@@ -70,7 +66,6 @@ const App: React.FC = () => {
             }
           }
         } catch (err) {
-          window.debugLog(`App: Auth failed - ${err}`, 'ERROR');
           console.error('Auth failed:', err)
         }
       }
@@ -78,7 +73,6 @@ const App: React.FC = () => {
       await handleAuth(window.location.href)
 
       // 3. Deep Link Listener
-      window.debugLog('App: Setting up deep links...');
       import('@tauri-apps/plugin-deep-link').then(({ onOpenUrl }) => {
         onOpenUrl(async (urls) => {
           console.log('Deep link received:', urls)
@@ -90,18 +84,14 @@ const App: React.FC = () => {
           urls.forEach(handleAuth)
         })
       }).catch(e => {
-        window.debugLog(`App: Deep link init failed - ${e}`, 'WARN');
         console.error('Deep link init failed:', e)
       })
 
-      // 4. Initial Sync if logged in
       if (useAuthStore.getState().user) {
-        window.debugLog('App: User logged in, pulling from cloud...');
         syncService.pullFromCloud()
       }
 
       // Done loading
-      window.debugLog('App: Initialization complete, removing splash...');
       setTimeout(() => setIsLoading(false), 500) // Small buffer for splash smoothness
     }
 
@@ -130,6 +120,7 @@ const App: React.FC = () => {
           onClick={() => inputRef.current?.focus()}
         >
           <TitleBar />
+          <NetworkTest />
           <WhatsNewModal />
           <UsernameModal />
           <RankCelebration />
