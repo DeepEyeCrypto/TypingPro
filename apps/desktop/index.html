@@ -8,9 +8,39 @@
 </head>
 
 <body>
-  <div id="debug-anchor"
-    style="height: 10px; background: red; position: fixed; top: 0; left: 0; width: 100vw; z-index: 99999; pointer-events: none;">
+  <div id="debug-console"
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 180px; background: rgba(0,0,0,0.95); color: #00ff41; font-family: monospace; font-size: 11px; overflow-y: auto; z-index: 100000; padding: 15px; border-bottom: 3px solid #ff0000; pointer-events: none; box-sizing: border-box; display: flex; flex-direction: column-reverse; line-height: 1.4;">
+    <div id="debug-log-inner"></div>
   </div>
+
+  <script>
+    (function() {
+      const logger = document.getElementById('debug-log-inner');
+      window.debugLog = function(msg, type = 'INFO') {
+        const entry = document.createElement('div');
+        entry.textContent = `[${new Date().toLocaleTimeString()}] [${type}] ${msg}`;
+        if (type === 'ERROR') entry.style.color = '#ff4444';
+        if (type === 'WARN') entry.style.color = '#ffaa00';
+        logger.appendChild(entry);
+        console.log(`[BOOTSTRAP] ${msg}`);
+      };
+
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        window.debugLog(`CRASH: ${msg} (at ${url}:${lineNo}:${columnNo})`, 'ERROR');
+        if (error && error.stack) {
+          window.debugLog(`STACK: ${error.stack.split('\\n').slice(0,3).join(' | ')}`, 'ERROR');
+        }
+        return false;
+      };
+
+      window.onunhandledrejection = function(event) {
+        window.debugLog(`PROMISE REJECTION: ${event.reason}`, 'ERROR');
+      };
+
+      window.debugLog('HTML Bootstrap Complete - Waiting for JS entry point...');
+    })();
+  </script>
+
   <div id="root"></div>
 
   <script type="module" src="src/main.tsx"></script>
