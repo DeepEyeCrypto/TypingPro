@@ -38,7 +38,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: '#050505',
+            background: '#1a1a1a',
             color: '#fff',
             zIndex: 9999,
             opacity: opacity,
