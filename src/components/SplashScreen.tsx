@@ -72,7 +72,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                 </div>
 
                 <div style={{ marginTop: '1rem', fontSize: '0.7rem', color: '#444' }}>
-                    v1.0.66 [RUST::CORE::ACTIVE]
+                    v1.2.1 [RUST::CORE::ACTIVE] (SAFE_MODE)
                 </div>
             </div>
         </div>

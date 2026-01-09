@@ -72,6 +72,20 @@ async fn check_network_status() -> Result<String, String> {
     }
 }
 
+#[tauri::command]
+async fn test_connection() -> Result<String, String> {
+    use std::time::Duration;
+    let client = reqwest::Client::new();
+    let res = client
+        .get("https://httpbin.org/ip")
+        .timeout(Duration::from_secs(5))
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    
+    Ok(res.text().await.map_err(|e| e.to_string())?)
+}
+
 use tauri::Manager;
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
@@ -88,9 +102,9 @@ fn main() {
 
             let window = app.get_webview_window("main").unwrap();
 
-            #[cfg(target_os = "macos")]
-            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
-                .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+            // #[cfg(target_os = "macos")]
+            // apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
+            //     .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
 
             #[cfg(target_os = "windows")]
             apply_blur(&window, Some((18, 18, 18, 125)))
@@ -117,7 +131,8 @@ fn main() {
             toggle_zen_window,
             play_typing_sound,
             set_audio_volume,
-            check_network_status
+            check_network_status,
+            test_connection
         ])
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
