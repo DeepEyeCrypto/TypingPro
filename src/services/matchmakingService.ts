@@ -31,8 +31,16 @@ export interface Match {
 }
 
 class MatchmakingService {
-    private queueRef = collection(db, 'matchmaking_queue');
-    private matchesRef = collection(db, 'matches');
+    private get queueRef() {
+        if (!db) throw new Error("Database not initialized");
+        return collection(db, 'matchmaking_queue');
+    }
+
+    private get matchesRef() {
+        if (!db) throw new Error("Database not initialized");
+        return collection(db, 'matches');
+    }
+
     private unsubscribeQueue: (() => void) | null = null;
     private unsubscribeMatch: (() => void) | null = null;
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.10] - 2026-01-09
+
+### Fixed
+
+- **Startup Logic**: Fixed a "Expected first argument to collection() to be a CollectionReference" crash occurring during module evaluation. Refactored `matchmakingService.ts` to use lazy getters for collection references, ensuring the database is fully initialized before being accessed.
+- **Initialization Resilience**: Improved dependency ordering to ensure services aren't initialized before their data providers.
+
 ## [1.2.9] - 2026-01-09
 
 ### Fixed
