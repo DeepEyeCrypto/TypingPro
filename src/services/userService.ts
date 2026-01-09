@@ -28,7 +28,7 @@ const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promi
 export const userService = {
     async getProfile(uid: string): Promise<UserProfile | null> {
         try {
-            if (!db || !db.type) return null;
+            if (!db) return null;
             const docRef = doc(db, 'profiles', uid);
             // 5 second timeout for getting profile
             const snap = await withTimeout(getDoc(docRef), 5000, "GetProfile Timeout");
@@ -40,7 +40,7 @@ export const userService = {
     },
 
     async createProfile(uid: string, username: string, avatarUrl: string): Promise<boolean> {
-        if (!db || !db.type) {
+        if (!db) {
             const debug = getFirebaseDebugInfo();
             console.error("Firebase DB not initialized", debug);
             throw new Error(`System Error: Database not connected. (API: ${debug.apiKey}, PROJ: ${debug.projectId}). Please check internet/updates.`);
@@ -91,7 +91,7 @@ export const userService = {
 
     async updateStats(uid: string, wpm: number): Promise<void> {
         try {
-            if (!db || !db.type) return;
+            if (!db) return;
             const docRef = doc(db, 'profiles', uid);
             const snap = await getDoc(docRef);
 
@@ -118,7 +118,7 @@ export const userService = {
 
     async updateProgress(uid: string, unlocked: string[], completed: string[]): Promise<void> {
         try {
-            if (!db || !db.type) return;
+            if (!db) return;
             const docRef = doc(db, 'profiles', uid);
             await setDoc(docRef, {
                 unlocked_lessons: unlocked,
@@ -130,7 +130,7 @@ export const userService = {
     },
 
     async checkUsernameTaken(username: string): Promise<boolean> {
-        if (!db || !db.type) return false;
+        if (!db) return false;
         try {
             const docRef = doc(db, 'usernames', username.toLowerCase());
             const snap = await getDoc(docRef);

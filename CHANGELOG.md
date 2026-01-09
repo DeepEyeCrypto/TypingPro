@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.8] - 2026-01-09
+
+### Fixed
+
+- **Emergency Startup Fix**: Hardened `main.tsx` with dynamic module loading and a robust error diagnostic overlay to prevent silent black screens.
+- **Service Logic**: Corrected an invalid Firestore object guard in `userService.ts` that was causing authentication and profile lookups to fail in production environments.
+- **UI Resilience**: Added a `Suspense` and `ErrorBoundary` hierarchy to ensure the UI remains predictable even during component failures.
+
 ## [1.2.7] - 2026-01-09
 
 ### Fixed
