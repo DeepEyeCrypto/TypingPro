@@ -1,6 +1,6 @@
 {
   "productName": "TypingPro",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "identifier": "com.typingpro.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -20,10 +20,10 @@
         "resizable": true,
         "fullscreen": false,
         "center": true,
-        "transparent": false,
+        "transparent": true,
         "decorations": true,
         "titleBarStyle": "Overlay",
-        "devtools": false
+        "devtools": true
       },
       {
         "label": "zen",
@@ -34,7 +34,7 @@
         "resizable": false,
         "fullscreen": false,
         "decorations": false,
-        "transparent": false,
+        "transparent": true,
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "visible": false,
