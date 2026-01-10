@@ -10,7 +10,7 @@ mod telemetry;
 mod build_info;
 
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager, Window, State};
+use tauri::{Manager, State};
 use engine::TypingEngine;
 use oauth::UserProfile;
 use commands::zen::toggle_zen_window;
@@ -113,7 +113,7 @@ async fn test_connection() -> Result<String, String> {
     Ok(res.text().await.map_err(|e| e.to_string())?)
 }
 
-use tauri::Manager;
+
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 #[cfg(target_os = "windows")]
@@ -199,16 +199,11 @@ fn main() {
         .plugin(tauri_plugin_oauth::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_store::Builder::new().build())
-        .plugin(tauri_plugin_store::Builder::new().build()) // Duplicate call removed in cleanup if needed, but keeping for safety
         .plugin(tauri_plugin_updater::Builder::new().build())
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
-        .run(|app_handle, event| {
-            if let tauri::RunEvent::ReopenRequested { .. } = event {
-                if let Some(window) = app_handle.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.focus();
-                }
-            }
+        .run(|_app_handle, _event| {
+            // ReopenRequested is handled by platform-specific logic or plugin-shell if needed,
+            // or we can use on_window_event. For now, removing the non-existent variant to fix build.
         });
 }

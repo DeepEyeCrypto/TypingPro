@@ -1,8 +1,7 @@
-use discord_presence::{client::Event, Client as DiscordClient};
+use discord_presence::Client as DiscordClient;
 use lazy_static::lazy_static;
 use log::{error, info};
 use std::sync::Mutex;
-use tauri::AppHandle;
 
 lazy_static! {
     static ref DISCORD_CLIENT: Mutex<Option<DiscordClient>> = Mutex::new(None);
