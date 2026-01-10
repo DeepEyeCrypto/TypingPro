@@ -3,6 +3,9 @@ import { useStatsStore } from '../../stores/statsStore';
 import { WeaknessAnalyzer, WeaknessProfile } from '../../services/weaknessAnalyzer';
 import { coachService, CoachVerdict } from '../../services/coachService';
 import { useTyping } from '../../hooks/useTyping';
+import { Card } from '../ui/Card';
+import { StatDisplay } from '../ui/StatDisplay';
+import { Button } from '../ui/Button';
 
 // Icons
 const EyeIcon = ({ pulsed = false }: { pulsed?: boolean }) => (
@@ -59,135 +62,203 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
     };
 
     return (
-        <div className="w-full h-full bg-[#050505] text-white p-8 overflow-y-auto font-mono">
+        <div className="w-full h-full text-white/90 p-8 overflow-y-auto animate-in fade-in duration-500">
             {/* Header */}
-            <header className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
-                <div className="flex items-center gap-4">
-                    <button onClick={onBack} className="text-white/50 hover:text-white transition-colors">
-                        ← BACK
-                    </button>
-                    <h1 className="text-2xl font-bold tracking-wider text-cyan-400">TACTICAL ANALYSIS</h1>
+            <header className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
+                <div className="flex items-center gap-6">
+                    <Button variant="ghost" size="sm" onClick={onBack} className="text-white/40 hover:text-white">
+                        ← BACK_TO_STRATEGY
+                    </Button>
+                    <div className="h-4 w-px bg-white/10"></div>
+                    <h1 className="text-xl font-bold tracking-[0.2em] text-white uppercase">
+                        Tactical <span className="text-hacker">Analysis</span>
+                    </h1>
                 </div>
-                <div className="text-xs text-white/30">
-                    DEEPEYE v1.2 // CONNECTED
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-hacker/10 border border-hacker/20">
+                        <div className="w-1.5 h-1.5 rounded-full bg-hacker animate-pulse"></div>
+                        <span className="text-[10px] font-bold text-hacker tracking-widest uppercase">Biometric_Feed_Live</span>
+                    </div>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 {/* 1. DeepEye Insight (Hero) */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="glass-panel p-6 relative overflow-hidden group">
+                <div className="lg:col-span-3 space-y-8">
+                    <Card
+                        className="relative overflow-hidden p-8 bg-midnight/40"
+                    >
                         {/* Scan Line Animation */}
                         {isAnalyzing && (
-                            <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500/50 shadow-[0_0_15px_#22d3ee] animate-[scan_2s_ease-in-out_infinite]"></div>
+                            <div className="absolute top-0 left-0 w-full h-1 bg-hacker/50 shadow-[0_0_20px_#00ffc3] animate-[scan_2s_ease-in-out_infinite]"></div>
                         )}
 
-                        <div className="flex items-start gap-6">
+                        <div className="flex items-start gap-8">
                             <EyeIcon pulsed={isAnalyzing} />
 
-                            <div className="flex-1">
-                                <h2 className="text-lg font-bold text-cyan-400 mb-2">
-                                    {isAnalyzing ? "ANALYZING BIOMETRICS..." : verdict ? verdict.identify_habit : "COACH STATUS: STANDBY"}
+                            <div className="flex-1 space-y-4">
+                                <h2 className="text-xs font-black text-hacker uppercase tracking-[0.3em]">
+                                    {isAnalyzing ? "Processing_Micro_Latency..." : "Intelligence_Briefing"}
                                 </h2>
 
-                                <div className="text-white/80 min-h-[80px] leading-relaxed">
+                                <div className="min-h-[100px]">
                                     {isAnalyzing ? (
-                                        <span className="animate-pulse text-cyan-500/50 block mt-2">
-                                            {'&gt;'} Extracting keystroke latency patterns...<br />
-                                            {'&gt;'} correlating error spikes...<br />
-                                            {'&gt;'} querying tactical database...
-                                        </span>
+                                        <div className="space-y-2 font-mono text-sm text-hacker/60">
+                                            <div className="flex items-center gap-2">
+                                                <span className="animate-pulse">_</span>
+                                                <span>Extracting keystroke velocity curves...</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 delay-700 animate-in fade-in fill-mode-both">
+                                                <span className="animate-pulse">_</span>
+                                                <span>Calculating error-distribution entropy...</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 delay-1000 animate-in fade-in fill-mode-both">
+                                                <span className="animate-pulse">_</span>
+                                                <span>Synchronizing with tactical database...</span>
+                                            </div>
+                                        </div>
                                     ) : verdict ? (
-                                        <p className="typing-effect text-lg">{verdict.insight}</p>
+                                        <div className="space-y-4">
+                                            <h3 className="text-2xl font-bold tracking-tight text-white leading-tight">
+                                                {verdict.identify_habit}
+                                            </h3>
+                                            <p className="text-lg text-white/60 leading-relaxed font-medium">
+                                                {verdict.insight}
+                                            </p>
+                                        </div>
                                     ) : (
-                                        <p className="text-white/40 italic">
-                                            "I can analyze your last {sessionHistory.length} sessions to identify subtle mechanical weaknesses invisible to the naked eye."
-                                        </p>
+                                        <div className="space-y-4">
+                                            <h3 className="text-2xl font-bold text-white/40 italic leading-tight">
+                                                AI_COACHING_STANDBY
+                                            </h3>
+                                            <p className="text-white/30 text-lg leading-relaxed">
+                                                Analyze your last {sessionHistory.length} sessions to uncover mechanical patterns and optimize your muscle memory through deep-learning heuristics.
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
 
                                 {!isAnalyzing && !verdict && (
-                                    <button
-                                        onClick={askCoach}
-                                        className="mt-6 glass-button text-cyan-400 font-bold tracking-widest text-sm"
-                                    >
-                                        [ INITIATE ANALYSIS ]
-                                    </button>
+                                    <div className="pt-6 border-t border-white/5">
+                                        <Button
+                                            onClick={askCoach}
+                                            variant="primary"
+                                        >
+                                            INITIATE_TACTICAL_SCAN
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </Card>
 
-                    {/* Drills Section (Only shows if verdict exists) */}
+                    {/* Drills Section */}
                     {verdict && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300 fill-mode-both">
                             {verdict.recommended_drills.map((drill, idx) => (
-                                <div key={idx} className="glass-panel p-4 flex flex-col justify-between hover:border-cyan-500/30">
-                                    <div>
-                                        <h3 className="text-cyan-400 font-bold text-sm mb-1 line-clamp-1">{drill.title}</h3>
-                                        <p className="text-white/50 text-xs mb-4 h-10 overflow-hidden">{drill.reason}</p>
+                                <Card
+                                    key={idx}
+                                    className="p-6 flex flex-col justify-between group hover:border-hacker/30"
+                                >
+                                    <div className="space-y-3">
+                                        <div className="w-8 h-8 rounded bg-hacker/5 border border-hacker/10 flex items-center justify-center">
+                                            <span className="text-[10px] font-bold text-hacker">0{idx + 1}</span>
+                                        </div>
+                                        <h3 className="text-sm font-bold text-white tracking-wide group-hover:text-hacker transition-colors">
+                                            {drill.title}
+                                        </h3>
+                                        <p className="text-xs text-white/40 leading-relaxed line-clamp-3">
+                                            {drill.reason}
+                                        </p>
                                     </div>
-                                    <button
-                                        onClick={() => onStartDrill(drill.text)}
-                                        className="w-full py-2 glass-button text-xs tracking-wider"
-                                    >
-                                        START DRILL
-                                    </button>
-                                </div>
+                                    <div className="mt-6">
+                                        <Button
+                                            onClick={() => onStartDrill(drill.text)}
+                                            variant="secondary"
+                                            size="sm"
+                                            className="w-full"
+                                        >
+                                            START_DRILL
+                                        </Button>
+                                    </div>
+                                </Card>
                             ))}
                         </div>
                     )}
                 </div>
 
                 {/* 2. Stats Column */}
-                <div className="space-y-6">
-                    {/* Weakness Map List (Mini) */}
-                    <div className="glass-panel p-6">
-                        <h3 className="text-white/50 text-xs uppercase mb-4 tracking-widest">Latency Hotspots</h3>
+                <div className="space-y-8">
+                    {/* Weakness Map List */}
+                    <Card className="p-6 space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Hotspots</h3>
+                            <span className="text-[10px] font-bold text-hacker bg-hacker/10 px-2 py-0.5 rounded">LATENCY</span>
+                        </div>
+
                         {profile ? (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {profile.slowKeys.slice(0, 5).map(k => (
-                                    <div key={k.key} className="flex justify-between items-center text-sm">
-                                        <div className="flex items-center gap-3">
-                                            <span className="w-6 h-6 flex items-center justify-center bg-red-900/50 border border-red-500/30 rounded text-red-400 font-bold">
-                                                {k.key.toUpperCase()}
+                                    <div key={k.key} className="space-y-2">
+                                        <div className="flex justify-between items-center text-[10px] font-bold">
+                                            <span className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-white uppercase">
+                                                KEY_{k.key.toUpperCase()}
                                             </span>
-                                            <div className="w-24 h-1 bg-white/10 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-red-500"
-                                                    style={{ width: `${Math.min(100, (k.avgLatency / 300) * 100)}%` }}
-                                                ></div>
+                                            <span className="text-white/40 tabular-nums tracking-widest">{Math.round(k.avgLatency)}ms</span>
+                                        </div>
+                                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-hacker transition-all duration-1000"
+                                                style={{ width: `${Math.min(100, (k.avgLatency / 300) * 100)}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
+                                <div className="w-10 h-10 rounded-full border border-dashed border-white/10 flex items-center justify-center">
+                                    <span className="text-white/10">?</span>
+                                </div>
+                                <p className="text-[10px] font-bold text-white/20 tracking-widest uppercase">Waiting_For_Data</p>
+                            </div>
+                        )}
+                    </Card>
+
+                    <Card className="p-6 space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Frequent_Errors</h3>
+                            <span className="text-[10px] font-bold text-warn bg-warn/10 px-2 py-0.5 rounded text-rose-400">PRECISION</span>
+                        </div>
+
+                        {profile ? (
+                            <div className="space-y-5">
+                                {profile.errorProneKeys.slice(0, 5).map(k => (
+                                    <div key={k.key} className="flex items-center justify-between group">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 flex items-center justify-center bg-rose-500/5 border border-rose-500/20 rounded text-rose-400 font-black text-xs group-hover:bg-rose-500/20 transition-colors">
+                                                {k.key.toUpperCase()}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-bold text-white/60">ERROR_RATE</span>
+                                                <span className="text-xs font-black text-white tabular-nums">{k.errorRate.toFixed(1)}%</span>
                                             </div>
                                         </div>
-                                        <span className="text-white/40 tabular-nums">{Math.round(k.avgLatency)}ms</span>
+                                        <div className="h-6 w-px bg-white/5"></div>
+                                        <div className="text-[10px] font-bold text-rose-400/50 uppercase tracking-tighter">Critical</div>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-white/30 text-xs">No data available.</div>
-                        )}
-                    </div>
-
-                    <div className="glass-panel p-6">
-                        <h3 className="text-white/50 text-xs uppercase mb-4 tracking-widest">Error Frequent</h3>
-                        {profile ? (
-                            <div className="space-y-3">
-                                {profile.errorProneKeys.slice(0, 5).map(k => (
-                                    <div key={k.key} className="flex justify-between items-center text-sm">
-                                        <div className="flex items-center gap-3">
-                                            <span className="w-6 h-6 flex items-center justify-center bg-amber-900/50 border border-amber-500/30 rounded text-amber-400 font-bold">
-                                                {k.key.toUpperCase()}
-                                            </span>
-                                            <span className="text-white/60 text-xs">{k.errorRate.toFixed(1)}% Error Rate</span>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
+                                <div className="w-10 h-10 rounded-full border border-dashed border-white/10 flex items-center justify-center">
+                                    <span className="text-white/10">!</span>
+                                </div>
+                                <p className="text-[10px] font-bold text-white/20 tracking-widest uppercase">Clean_Record</p>
                             </div>
-                        ) : (
-                            <div className="text-white/30 text-xs">No data.</div>
                         )}
-                    </div>
+                    </Card>
                 </div>
 
             </div>

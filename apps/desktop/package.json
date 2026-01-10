@@ -1,7 +1,7 @@
 {
   "name": "@typingpro/desktop",
   "private": true,
-  "version": "1.2.40",
+  "version": "1.2.41",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,6 +22,7 @@
     "@tauri-apps/plugin-store": "^2.4.1",
     "@tauri-apps/plugin-updater": "^2.9.0",
     "firebase": "^12.7.0",
+    "framer-motion": "^12.25.0",
     "howler": "^2.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

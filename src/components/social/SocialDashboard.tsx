@@ -9,9 +9,9 @@ import { getProgressToNextRank, getRank } from '@src/utils/rankSystem';
 import { RankBadge } from '../RankBadge';
 import { ReleaseHub } from './ReleaseHub';
 import { HyperAnalytics } from './HyperAnalytics';
-import './SocialDashboard.css';
-import './Visuals.css';
-import './RankStyles.css';
+import { Card } from '../ui/Card';
+import { StatDisplay } from '../ui/StatDisplay';
+import { Button } from '../ui/Button';
 
 interface Props {
     onBack: () => void;
@@ -49,74 +49,113 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
     }
 
     return (
-        <div className="social-dashboard glass-panel">
-            <header className="social-header">
-                <button onClick={onBack} className="back-btn">← Back</button>
-                <div className="header-title">
-                    <h1>Community Hub</h1>
-                    <span className="live-badge">● LIVE</span>
+        <div className="w-full h-full text-white/90 p-8 overflow-y-auto animate-in fade-in duration-500">
+            {/* Header */}
+            <header className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
+                <div className="flex items-center gap-6">
+                    <Button variant="ghost" size="sm" onClick={onBack} className="text-white/40 hover:text-white">
+                        ← RETURN_TO_DASHBOARD
+                    </Button>
+                    <div className="h-4 w-px bg-white/10"></div>
+                    <h1 className="text-xl font-bold tracking-[0.2em] text-white uppercase">
+                        Community <span className="text-hacker">Hub</span>
+                    </h1>
+                </div>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-hacker/10 border border-hacker/20">
+                        <div className="w-1.5 h-1.5 rounded-full bg-hacker animate-pulse"></div>
+                        <span className="text-[10px] font-bold text-hacker tracking-widest uppercase">Social_Net_Active</span>
+                    </div>
                 </div>
             </header>
 
-            <div className="profile-card">
-                <img src={profile?.avatar_url || user.avatar_url} alt="Avatar" className="profile-avatar" />
-                <div className="profile-info">
-                    <h2 className="username">@{profile?.username || '...'}</h2>
-                    <div className="stats-grid">
-                        <div className="stat-box">
-                            <label>Highest WPM</label>
-                            <span className={`value ${(profile?.highest_wpm || 0) >= 100 ? 'wpm-elite emerald-text' : 'em-text'}`}>
-                                {profile?.highest_wpm || 0}
-                            </span>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Profile Overview (Hero) */}
+                <Card className="lg:col-span-4 p-8 bg-midnight/40 relative overflow-hidden group">
+                    <div className="flex items-center gap-10">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-hacker/20 rounded-full blur-2xl group-hover:bg-hacker/30 transition-all duration-700"></div>
+                            <img
+                                src={profile?.avatar_url || user.avatar_url || ''}
+                                alt="Avatar"
+                                className="w-24 h-24 rounded-full border-2 border-hacker/30 relative z-10 object-cover"
+                            />
                         </div>
-                        <div className="stat-box">
-                            <label>Avg WPM</label>
-                            <span className="value">{profile?.avg_wpm || 0}</span>
-                        </div>
-                        <div className="stat-box">
-                            <label>Races</label>
-                            <span className="value">{profile?.total_races || 0}</span>
-                        </div>
-                        <div className="stat-box">
-                            <label>Rank Points</label>
-                            <span className="value">{profile?.rank_points || 0}</span>
-                        </div>
-                    </div>
+                        <div className="flex-1 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <h2 className="text-2xl font-black text-white tracking-tight uppercase">
+                                        @{profile?.username || '...'}
+                                    </h2>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-bold text-hacker px-2 py-0.5 bg-hacker/10 rounded uppercase tracking-widest">
+                                            {getRank(profile?.highest_wpm || 0).label}
+                                        </span>
+                                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Operational_Status: Optimal</span>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <Button
+                                        onClick={onNavigateToLobby}
+                                        variant="primary"
+                                        className="shadow-[0_0_20px_rgba(0,255,195,0.15)]"
+                                    >
+                                        ENTER_LOBBY_XP
+                                    </Button>
+                                    <Button onClick={handleStartDuel} variant="secondary">
+                                        QUICK_DUEL_1V1
+                                    </Button>
+                                </div>
+                            </div>
 
-                    {/* Rank System Integration */}
-                    <div className="mt-4">
-                        <RankBadge
-                            wpm={profile?.highest_wpm || 0}
-                            progress={getProgressToNextRank(profile?.highest_wpm || 0).percent}
-                        />
+                            <div className="grid grid-cols-4 gap-6">
+                                <StatDisplay label="MAX_WPM" value={profile?.highest_wpm || 0} color="hacker" trend="up" />
+                                <StatDisplay label="AVG_SPEED" value={profile?.avg_wpm || 0} />
+                                <StatDisplay label="TOTAL_RACES" value={profile?.total_races || 0} />
+                                <StatDisplay label="RANK_POINTS" value={profile?.rank_points || 0} subValue="pts" />
+                            </div>
+
+                            <div className="pt-6 border-t border-white/5">
+                                <RankBadge
+                                    wpm={profile?.highest_wpm || 0}
+                                    progress={getProgressToNextRank(profile?.highest_wpm || 0).percent}
+                                />
+                            </div>
+                        </div>
                     </div>
+                </Card>
+
+                {/* Social Grid */}
+                <div className="lg:col-span-3 space-y-8">
+                    <Card className="p-0 overflow-hidden bg-transparent border-none">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xs font-black text-white/30 uppercase tracking-[0.3em]">Global_Leaderboard</h3>
+                        </div>
+                        <Leaderboard onPlayGhost={onPlayGhost} />
+                    </Card>
+                </div>
+
+                <div className="space-y-8">
+                    <Card className="p-6 space-y-6">
+                        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Active_Contacts</h3>
+                        <FriendList />
+                    </Card>
+
+                    <Card className="p-6 space-y-6">
+                        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Discovery</h3>
+                        <UserSearch />
+                    </Card>
                 </div>
             </div>
 
-            <div className="social-grid">
-                <div className="leaderboard-panel">
-                    <Leaderboard onPlayGhost={onPlayGhost} />
-                </div>
-                <div className="main-feed">
-                    <FriendList />
-                </div>
-                <div className="search-sidebar">
-                    <div className="mb-4">
-                        <button
-                            onClick={handleStartDuel}
-                            className="w-full py-4 glass-button text-cyan-400 font-bold text-xl tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.2)]"
-                        >
-                            ⚔️ START DUEL
-                        </button>
-                    </div>
-                    <UserSearch />
-                </div>
-            </div>
-            <div className="phase-5-container">
-                <div className="release-hub-section">
+            {/* Bottom Tech Section */}
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/5 pt-12">
+                <div className="space-y-4">
+                    <h3 className="text-[10px] font-black text-hacker uppercase tracking-[0.4em]">System_Release_Notes</h3>
                     <ReleaseHub />
                 </div>
-                <div className="analytics-section">
+                <div className="space-y-4">
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Hyper_Analytics_Cloud</h3>
                     <HyperAnalytics />
                 </div>
             </div>

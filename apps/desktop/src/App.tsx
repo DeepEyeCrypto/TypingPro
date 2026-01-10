@@ -5,12 +5,13 @@ import { useAuthStore } from '../../../src/stores/authStore'
 import { useTyping } from '../../../src/hooks/useTyping'
 import { useSettingsStore } from '../../../src/stores/settingsStore'
 import { syncService } from '../../../src/services/syncService'
-import { TopBar } from '../../../src/components/TopBar'
 import { TypingArea } from '../../../src/components/TypingArea'
+import { TypingTestPage } from '../../../src/components/pages/TypingTestPage'
 import { LessonSelector } from '../../../src/components/LessonSelector'
 import { GatekeeperModal } from '../../../src/components/GatekeeperModal'
 import { AnalyticsDashboard } from '../../../src/components/analytics/AnalyticsDashboard'
-import { CURRICULUM } from '../../../src/data/lessons'
+import { CURRICULUM, Lesson } from '../../../src/data/lessons'
+import { getRankForWPM } from '../../../src/services/rankSystem'
 import '../../../src/styles/glass.css'
 import '../../../src/styles/themes.css'
 import { TitleBar } from '../../../src/components/TitleBar'
@@ -25,6 +26,19 @@ import { RankCelebration } from '../../../src/components/social/RankCelebration'
 import Lobby from '../../../src/components/social/Lobby'
 import { DuelArena } from '../../../src/components/social/DuelArena'
 import { NetworkTest } from '../../../src/components/NetworkTest'
+
+// NEW UI PRIMITIVES
+import { AppShell } from '../../../src/components/layout/AppShell'
+import { SideNav } from '../../../src/components/layout/SideNav'
+import { TopBar as ModernTopBar } from '../../../src/components/layout/TopBar'
+import { Button } from '../../../src/components/ui/Button'
+
+// ICONS for SideNav
+const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>;
+const TestIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const AnalyticsIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>;
+const SocialIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
+const SettingsIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
@@ -114,92 +128,121 @@ const App: React.FC = () => {
       {isLoading && <SplashScreen onComplete={() => setIsLoading(false)} />}
 
       {!isLoading && (
-        <div
-          className="main-layout glass-root"
-          style={{ fontFamily: `'Inter', sans-serif` }}
-          onClick={() => inputRef.current?.focus()}
+        <AppShell
+          activeView={typing.view}
+          sidebar={
+            <SideNav
+              items={[
+                { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
+                { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
+                { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
+                { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => { }, active: false },
+              ]}
+              footer={
+                <div className="flex flex-col items-center space-y-4">
+                  {user ? (
+                    <div className="w-8 h-8 rounded-full border border-hacker/30 overflow-hidden">
+                      <img src={user.avatar_url || ''} alt="User" />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10" />
+                  )}
+                </div>
+              }
+            />
+          }
+          topbar={
+            <ModernTopBar
+              title="TYPINGPRO EXPERT ENGINE"
+              stats={{
+                wpm: Math.round(typing.metrics.adjusted_wpm),
+                accuracy: Math.round(typing.metrics.accuracy),
+                rank: useAuthStore.getState().profile
+                  ? getRankForWPM(useAuthStore.getState().profile?.avg_wpm || 0).name
+                  : 'UNRANKED'
+              }}
+              actions={
+                <div className="flex items-center space-x-2">
+                  <NetworkTest />
+                  {user && <Button variant="ghost" size="sm" onClick={() => useAuthStore.getState().logout()}>LOGOUT</Button>}
+                </div>
+              }
+            />
+          }
         >
           <TitleBar />
-          <NetworkTest />
           <WhatsNewModal />
           <UsernameModal />
           <RankCelebration />
-          <TopBar
-            metrics={typing.metrics}
-            mode={typing.currentLesson ? typing.currentLesson.stage : 'Curriculum'}
-            onAnalyticsClick={() => typing.setView('analytics')}
-            onSocialClick={() => typing.setView('social')}
-          />
 
-          <main className="main-content">
-            {typing.view === 'selection' ? (
-              <LessonSelector
-                unlockedIds={typing.unlockedIds}
-                completedIds={typing.completedIds}
-                onSelect={typing.startLesson}
-              />
-            ) : typing.view === 'analytics' ? (
-              <AnalyticsDashboard
-                onBack={() => typing.setView('selection')}
-                onStartDrill={(text) => {
-                  const drillLesson = {
-                    id: `drill-${Date.now()}`,
-                    title: 'AI Prescribed Drill',
-                    text: text,
-                    targetWPM: 0,
-                    stage: 'Drill',
-                    unlocks: []
-                  };
-                  typing.startLesson(drillLesson);
-                }}
-              />
-            ) : typing.view === 'social' ? (
-              <SocialDashboard
-                onBack={() => typing.setView('selection')}
-                onPlayGhost={(lessonId, ghostData) => {
-                  const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
-                  if (lesson) {
-                    typing.startLesson(lesson, ghostData)
-                  } else {
-                    console.error("Lesson not found for ghost replay:", lessonId)
-                  }
-                }}
-                // Add navigation to Lobby
-                onNavigateToLobby={() => typing.setView('lobby')}
-              />
-            ) : typing.view === 'lobby' ? (
-              <Lobby
-                onBack={() => typing.setView('social')}
-                onMatchFound={(matchId) => {
-                  typing.setActiveMatchId(matchId)
-                  // Start a specific lesson for the duel? 
-                  // For MVP, just random lesson or lesson_1
-                  const duelLesson = CURRICULUM[0]; // TODO: Getting lesson from match data is better
-                  typing.startLesson(duelLesson);
-                  typing.setView('duel');
-                }}
-              />
-            ) : typing.view === 'duel' && typing.activeMatchId ? (
-              <DuelArena
-                matchId={typing.activeMatchId}
-                onBack={() => {
-                  typing.setActiveMatchId(null)
-                  typing.setView('social')
-                }}
-                typingProps={typing}
-              />
-            ) : (
-              <TypingArea
-                targetText={typing.currentLesson?.text || ''}
-                input={typing.input}
-                activeChar={typing.activeChar}
-                onBack={() => typing.setView('selection')}
-                onKeyDown={(e) => typing.onKeyDown(e.nativeEvent)} // Pass event handler
-                isPaused={typing.isPaused}
-                ghostReplay={typing.ghostReplay}
-              />
-            )}
-          </main>
+          {typing.view === 'selection' ? (
+            <LessonSelector
+              unlockedIds={typing.unlockedIds}
+              completedIds={typing.completedIds}
+              onSelect={typing.startLesson}
+            />
+          ) : typing.view === 'analytics' ? (
+            <AnalyticsDashboard
+              onBack={() => typing.setView('selection')}
+              onStartDrill={(text) => {
+                const drillLesson: any = {
+                  id: `drill-${Date.now()}`,
+                  title: 'AI Prescribed Drill',
+                  description: 'Dynamic correction based on your recent errors.',
+                  text: text,
+                  targetWPM: 0,
+                  focusFingers: [],
+                  stage: 'Drill',
+                  unlocks: []
+                };
+                typing.startLesson(drillLesson);
+              }}
+            />
+          ) : typing.view === 'social' ? (
+            <SocialDashboard
+              onBack={() => typing.setView('selection')}
+              onPlayGhost={(lessonId, ghostData) => {
+                const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
+                if (lesson) {
+                  typing.startLesson(lesson, ghostData)
+                } else {
+                  console.error("Lesson not found for ghost replay:", lessonId)
+                }
+              }}
+              onNavigateToLobby={() => typing.setView('lobby')}
+            />
+          ) : typing.view === 'lobby' ? (
+            <Lobby
+              onBack={() => typing.setView('social')}
+              onMatchFound={(matchId) => {
+                typing.setActiveMatchId(matchId)
+                const duelLesson = CURRICULUM[0];
+                typing.startLesson(duelLesson);
+                typing.setView('duel');
+              }}
+            />
+          ) : typing.view === 'duel' && typing.activeMatchId ? (
+            <DuelArena
+              duelId={typing.activeMatchId}
+              onEnd={() => {
+                typing.setActiveMatchId(null)
+                typing.setView('social')
+              }}
+            />
+          ) : (
+            <TypingTestPage
+              targetText={typing.currentLesson?.text || ''}
+              input={typing.input}
+              active={!typing.isPaused}
+              onKeyDown={(e) => typing.onKeyDown(e.nativeEvent)}
+              stats={{
+                wpm: Math.round(typing.metrics.adjusted_wpm),
+                accuracy: Math.round(typing.metrics.accuracy),
+                rawKpm: Math.round(typing.metrics.raw_wpm * 5)
+              }}
+              onReset={() => typing.retryLesson()}
+            />
+          )}
 
           {typing.showResult && typing.currentLesson && (
             <GatekeeperModal
@@ -227,53 +270,7 @@ const App: React.FC = () => {
               }}
             />
           )}
-
-          <footer className="status-bar">
-            <span>TypingPro v2.0 // Focus Protocol: Active</span>
-          </footer>
-
-          <style>{`
-            .main-layout {
-              height: 100vh;
-              width: 100vw;
-              display: flex;
-              flex-direction: column;
-              overflow: hidden;
-              position: relative;
-              transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-                          color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                          backdrop-filter 0.5s ease;
-              backdrop-filter: blur(0px);
-            }
-            
-            /* ... existing styles ... */
-            .theme-classic { background-color: #050505; color: #d1d0c5; }
-            .theme-glass { background-color: #000000; color: #ffffff; }
-            .theme-high-contrast { background-color: #ffffff; color: #000000; }
-            
-            .theme-high-contrast .status-bar { border-color: #eeeeee; color: #666666; }
-            .theme-high-contrast .top-bar { border-color: #eeeeee; }
-
-            .main-content {
-              flex: 1;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 64px 5% 32px 5%;
-            }
-            .status-bar {
-              height: 32px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 0.5rem;
-              text-transform: uppercase;
-              letter-spacing: 0.5em;
-              color: #222222;
-              border-top: 0.5px solid rgba(255, 255, 255, 0.03);
-            }
-          `}</style>
-        </div>
+        </AppShell>
       )}
     </>
   )

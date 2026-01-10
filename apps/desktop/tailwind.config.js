@@ -11,6 +11,8 @@ export default {
                 'neon-cyan': '#00f3ff',
                 'neon-red': '#ff003c',
                 'midnight': '#050505',
+                'midnight-surface': '#0a0a0f', // Dark surface variant
+                'hacker': '#00ff41', // Primary accent green
                 'glass-bg': 'rgba(255, 255, 255, 0.03)',
                 'glass-border': 'rgba(255, 255, 255, 0.08)',
                 // Emerald Design System
