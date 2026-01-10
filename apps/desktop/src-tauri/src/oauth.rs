@@ -5,16 +5,24 @@ use tauri_plugin_oauth::start_with_config;
 use tauri::AppHandle;
 // use tauri_plugin_shell::ShellExt;
 
-pub const GOOGLE_CLIENT_ID: &str = "296757654836-irh81sq9o83k5tbekb0fqpsol0koo97k.apps.googleusercontent.com";
-pub const GITHUB_CLIENT_ID: &str = "Ov23liOD0XVCGqACXDuG";
-pub const GITHUB_CLIENT_SECRET: &str = "6e16d13be4f231e4ae5eebfbc80fcf8d22870f79";
+pub fn get_google_client_id() -> String {
+    std::env::var("GOOGLE_CLIENT_ID")
+        .unwrap_or_else(|_| "GOOGLE_CLIENT_ID_MISSING".to_string())
+}
+
+pub fn get_github_client_id() -> String {
+    std::env::var("GITHUB_CLIENT_ID")
+        .unwrap_or_else(|_| "GITHUB_CLIENT_ID_MISSING".to_string())
+}
+
+pub fn get_github_client_secret() -> String {
+    std::env::var("GITHUB_CLIENT_SECRET")
+        .unwrap_or_else(|_| "GITHUB_CLIENT_SECRET_MISSING".to_string())
+}
 
 pub fn get_google_client_secret() -> String {
     std::env::var("TAURI_GOOGLE_CLIENT_SECRET")
-        .unwrap_or_else(|_| {
-            eprintln!("WARNING: TAURI_GOOGLE_CLIENT_SECRET environment variable is missing!");
-            "MISSING_GOOGLE_CLIENT_SECRET".to_string()
-        })
+        .unwrap_or_else(|_| "GOOGLE_CLIENT_SECRET_MISSING".to_string())
 }
 
 
@@ -67,7 +75,7 @@ pub async fn perform_google_login(_app: AppHandle) -> Result<UserProfile, String
 
     let url = format!(
         "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri=http://localhost:{}/auth/google/callback&response_type=code&scope=openid%20profile%20email",
-        GOOGLE_CLIENT_ID, port
+        get_google_client_id(), port
     );
 
     // Open browser
@@ -102,7 +110,7 @@ pub async fn perform_github_login(_app: AppHandle) -> Result<UserProfile, String
     // EXACT URL structure requested by user
     let url = format!(
         "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&scope=user:email",
-        GITHUB_CLIENT_ID, redirect_uri
+        get_github_client_id(), redirect_uri
     );
 
     println!("DEBUG: Opening GitHub Auth URL: {}", url);
@@ -127,7 +135,7 @@ pub async fn exchange_google_code(code: String) -> Result<UserProfile, String> {
     
     let mut params = HashMap::new();
     params.insert("code", code);
-    params.insert("client_id", GOOGLE_CLIENT_ID.to_string());
+    params.insert("client_id", get_google_client_id());
     params.insert("client_secret", get_google_client_secret());
     // Use the exact redirect URI structure
     params.insert("redirect_uri", format!("http://localhost:1420/auth/google/callback"));
@@ -160,8 +168,8 @@ pub async fn exchange_github_code(code: String, redirect_uri: String) -> Result<
     
     let mut params = HashMap::new();
     params.insert("code", code);
-    params.insert("client_id", GITHUB_CLIENT_ID.to_string());
-    params.insert("client_secret", GITHUB_CLIENT_SECRET.to_string());
+    params.insert("client_id", get_github_client_id());
+    params.insert("client_secret", get_github_client_secret());
     params.insert("redirect_uri", redirect_uri);
 
     let res = client.post("https://github.com/login/oauth/access_token")
