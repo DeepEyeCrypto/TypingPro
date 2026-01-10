@@ -5,6 +5,7 @@
 @layer base {
     body {
         @apply bg-midnight text-white antialiased overflow-hidden;
+
         font-family: 'Inter', sans-serif;
     }
 }

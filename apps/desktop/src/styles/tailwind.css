@@ -5,6 +5,7 @@
 @layer base {
     body {
         @apply bg-midnight text-white antialiased overflow-hidden;
+
         font-family: 'Inter', sans-serif;
     }
 }
@@ -16,6 +17,7 @@
 
     .hacker-border {
         @apply border border-hacker/30;
+
         box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
     }
 }
