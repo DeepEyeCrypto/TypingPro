@@ -7,11 +7,12 @@ export const UsernameModal = () => {
     const { user, profile, isLoadingProfile, refreshProfile } = useAuthStore()
     const [username, setUsername] = useState('')
     const [error, setError] = useState('')
+    const [isSkipped, setIsSkipped] = useState(false)
     const [isChecking, setIsChecking] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    // Only show if user is logged in, profile loaded (and missing), and not loading
-    if (!user || isLoadingProfile || profile) return null
+    // Only show if user is logged in, profile loaded (and missing), not loading, AND not skipped
+    if (!user || isLoadingProfile || profile || isSkipped) return null
 
     const validateUsername = (value: string) => {
         if (value.length < 3) return 'Username too short (min 3)'
@@ -91,6 +92,15 @@ export const UsernameModal = () => {
                             ) : (
                                 'Start Competing'
                             )}
+                        </button>
+
+                        <button
+                            type="button"
+                            className="skip-btn"
+                            onClick={() => setIsSkipped(true)}
+                            disabled={isSubmitting}
+                        >
+                            Setup Later
                         </button>
 
                         <div className="user-preview">
