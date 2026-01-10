@@ -88,40 +88,115 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: radial-gradient(circle at center, rgba(13, 13, 13, 0.8), rgba(0, 0, 0, 0.95));
     z-index: 10000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.5s;
+    backdrop-filter: blur(20px);
+    animation: celebrateFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.celebration-content {
+    text-align: center;
+    padding: 3rem;
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.celebration-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 }
 
 .levelup-title {
-    font-size: 4rem;
-    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    font-size: 5rem;
+    font-weight: 900;
     color: #fff;
     text-transform: uppercase;
-    margin-bottom: 1rem;
-    animation: slideUp 0.5s ease-out;
+    letter-spacing: 4px;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.5));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: celebrateTitle 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
 }
 
 .levelup-rank {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    animation: slideUp 0.7s ease-out;
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: celebrateSlideUp 0.8s 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .levelup-btn {
-    padding: 1rem 3rem;
-    font-size: 1.2rem;
-    background: white;
-    color: black;
+    padding: 1.2rem 4rem;
+    font-size: 1rem;
+    background: #fff;
+    color: #000;
     border: none;
-    border-radius: 50px;
+    border-radius: 100px;
     cursor: pointer;
-    font-weight: bold;
-    animation: fadeIn 1s ease-out;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: celebrateFadeIn 1s 0.8s ease forwards;
+}
+
+.levelup-btn:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes celebrateFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes celebrateTitle {
+    from {
+        transform: scale(0.8) translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes celebrateSlideUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {

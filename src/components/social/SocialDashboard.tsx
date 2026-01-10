@@ -6,6 +6,7 @@ import { UserSearch } from './UserSearch';
 import { FriendList } from './FriendList';
 import { Leaderboard } from './Leaderboard';
 import { getProgressToNextRank, getRank } from '@src/utils/rankSystem';
+import { RankBadge } from '../RankBadge';
 import { ReleaseHub } from './ReleaseHub';
 import { HyperAnalytics } from './HyperAnalytics';
 import './SocialDashboard.css';
@@ -82,32 +83,13 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                         </div>
                     </div>
 
-                    {/* Rank Progress Bar */}
-                    {(() => {
-                        const progress = getProgressToNextRank(profile?.highest_wpm || 0);
-                        const currentRank = getRank(profile?.highest_wpm || 0);
-                        return progress.nextLabel ? (
-                            <div className="rank-progress-container">
-                                <div className="progress-header">
-                                    <span>Current: <span style={{ color: currentRank.color }}>{currentRank.label}</span></span>
-                                    <span>Next: {progress.nextLabel} ({progress.needed} WPM more)</span>
-                                </div>
-                                <div className="progress-track">
-                                    <div
-                                        className="progress-fill"
-                                        style={{
-                                            width: `${progress.percent}%`,
-                                            background: `linear-gradient(90deg, ${currentRank.color}, #fff)`
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="rank-progress-container" style={{ textAlign: 'center', color: '#00ffff' }}>
-                                🏆 MAX RANK ACHIEVED: DIAMOND
-                            </div>
-                        );
-                    })()}
+                    {/* Rank System Integration */}
+                    <div className="mt-4">
+                        <RankBadge
+                            wpm={profile?.highest_wpm || 0}
+                            progress={getProgressToNextRank(profile?.highest_wpm || 0).percent}
+                        />
+                    </div>
                 </div>
             </div>
 

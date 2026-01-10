@@ -5,6 +5,8 @@ import { TypingMetrics } from '@src/lib/tauri'
 import { useAuthStore } from '@src/stores/authStore'
 import { useUpdater } from '@src/hooks/useUpdater'
 import { syncService } from '@src/services/syncService'
+import { getProgressToNextRank } from '@src/utils/rankSystem'
+import { RankBadge } from './RankBadge'
 import { AccountAvatar } from './AccountAvatar'
 import { SyncIndicator } from './SyncIndicator'
 import { SettingsPanel } from './SettingsPanel'
@@ -59,9 +61,14 @@ export const TopBar = ({ metrics, mode, onAnalyticsClick, onSocialClick }: TopBa
       <div className="top-bar-right flex items-center gap-2">
         <SyncIndicator />
 
-        {/* User Profile */}
+        {/* User Profile / Auth Icons */}
         {user ? (
-          <div className="user-profile">
+          <div className="user-profile flex items-center gap-3">
+            <RankBadge
+              wpm={user.highest_wpm || 0}
+              progress={getProgressToNextRank(user.highest_wpm || 0).percent}
+              compact
+            />
             <AccountAvatar />
             <button className="auth-btn logout" onClick={logout} title="Logout">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,7 +80,6 @@ export const TopBar = ({ metrics, mode, onAnalyticsClick, onSocialClick }: TopBa
           </div>
         ) : (
           <div className="auth-icons">
-            {/* ... existing auth icons ... */}
             <button
               className="auth-btn"
               onClick={() => handleLogin('google')}

@@ -4,6 +4,7 @@ import { UserProfile } from '@src/services/userService';
 import { useAuthStore } from '@src/stores/authStore';
 import { raceService } from '@src/services/raceService';
 import { getRank } from '@src/utils/rankSystem';
+import { RankBadge } from '../RankBadge';
 import './RankStyles.css';
 
 interface Props {
@@ -73,21 +74,15 @@ export const Leaderboard: React.FC<Props> = ({ onPlayGhost }) => {
                             <div className="col-user flex-user">
                                 <img src={user.avatar_url} alt={user.username} />
                                 <div className="user-info">
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <span className={user.highest_wpm >= 100 ? 'wpm-elite emerald-text' : ''}>
                                             {user.username}
                                         </span>
-                                        {(() => {
-                                            const rank = getRank(user.highest_wpm || 0);
-                                            return (
-                                                <span
-                                                    className={`rank-badge ${rank.className || ''}`}
-                                                    style={{ background: rank.color, color: rank.label === 'Diamond' || rank.label === 'Silver' ? '#000' : '#fff' }}
-                                                >
-                                                    {rank.label}
-                                                </span>
-                                            );
-                                        })()}
+                                        <RankBadge
+                                            wpm={user.highest_wpm || 0}
+                                            progress={0}
+                                            compact
+                                        />
                                     </div>
                                     {!isMe && (
                                         <button

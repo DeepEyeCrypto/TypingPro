@@ -1,55 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '@src/stores/authStore';
-import { getRank, RankTier } from '@src/utils/rankSystem';
+import { getRank, RankInfo } from '@src/utils/rankSystem';
 import './RankStyles.css';
 import { useRustAudio } from '@src/hooks/useRustAudio';
 
 export const RankCelebration = () => {
     const { profile } = useAuthStore();
-    const { playTypingSound } = useRustAudio(); // Assuming we have a 'success' or 'level-up' sound mapped
+    const { playTypingSound } = useRustAudio();
     const [show, setShow] = useState(false);
-    const [newRank, setNewRank] = useState<RankTier | null>(null);
-    const [prevWpm, setPrevWpm] = useState<number>(0);
+    const [celebrationData, setCelebrationData] = useState<RankInfo | null>(null);
+    const lastRankLabel = useRef<string | null>(null);
 
     useEffect(() => {
         if (!profile) return;
 
-        // Initial load - don't celebrate
-        if (prevWpm === 0) {
-            setPrevWpm(profile.highest_wpm);
+        const currentRank = getRank(profile.highest_wpm || 0);
+
+        // Initial load to set baseline
+        if (lastRankLabel.current === null) {
+            lastRankLabel.current = currentRank.label;
             return;
         }
 
-        const oldRank = getRank(prevWpm);
-        const currentRank = getRank(profile.highest_wpm);
-
-        if (profile.highest_wpm > prevWpm && currentRank.label !== oldRank.label) {
-            // LEVEL UP!
-            setNewRank(currentRank.label);
+        // Detect Rank Change
+        if (currentRank.label !== lastRankLabel.current) {
+            setCelebrationData(currentRank);
             setShow(true);
-            playTypingSound('error'); // Placeholder for now, ideally 'success'
+            playTypingSound('mechanical'); // Placeholder for level-up sound
 
-            // Auto hide after 5s
-            const timer = setTimeout(() => setShow(false), 5000);
-            return () => clearTimeout(timer);
+            lastRankLabel.current = currentRank.label;
         }
-
-        setPrevWpm(profile.highest_wpm);
     }, [profile?.highest_wpm]);
 
-    if (!show || !newRank || !profile) return null;
-
-    const rankInfo = getRank(profile.highest_wpm || 0);
+    if (!show || !celebrationData || !profile) return null;
 
     return (
-        <div className="celebration-overlay">
-            <h1 className="levelup-title">Rank Up!</h1>
-            <div className="levelup-rank" style={{ color: rankInfo.color }}>
-                {newRank} Tier Unlocked
+        <div className="celebration-overlay" onClick={() => setShow(false)}>
+            <div className="celebration-content" onClick={e => e.stopPropagation()}>
+                <h1 className="levelup-title">Rank Up!</h1>
+                <div className="levelup-rank" style={{
+                    color: celebrationData.color,
+                    textShadow: `0 0 20px ${celebrationData.color}66`
+                }}>
+                    {celebrationData.label} Tier
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '2rem' }}>
+                    Your performance has elevated you to a new tier.
+                </p>
+                <button className="levelup-btn" onClick={() => setShow(false)}>
+                    Continue
+                </button>
             </div>
-            <button className="levelup-btn" onClick={() => setShow(false)}>
-                Awesome!
-            </button>
         </div>
     );
 };
