@@ -1,5 +1,18 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import { SmartLessonGenerator } from '@src/utils/SmartLessonGenerator'
+
+interface ZenCharProps {
+    char: string;
+    state: 'pending' | 'correct' | 'error';
+}
+
+const ZenChar = memo(({ char, state }: ZenCharProps) => {
+    return (
+        <span className={state}>
+            {char}
+        </span>
+    );
+});
 
 export const ZenOverlay = () => {
     const [text, setText] = useState('')
@@ -34,26 +47,31 @@ export const ZenOverlay = () => {
     return (
         <div className="zen-container" onKeyDown={handleKeyDown} tabIndex={0}>
             <div className="zen-text">
-                {text.split(' ').map((word, wordIdx) => (
-                    <span key={wordIdx} className="zen-word">
-                        {word.split('').map((char, charIdx) => {
-                            const totalIdx = text.substring(0, text.indexOf(word)).length + charIdx + wordIdx
-                            const inputChar = input[totalIdx]
-                            return (
-                                <span
-                                    key={charIdx}
-                                    className={
-                                        inputChar === undefined ? '' :
-                                            inputChar === char ? 'correct' : 'error'
-                                    }
-                                >
-                                    {char}
-                                </span>
-                            )
-                        })}
-                        {wordIdx < text.split(' ').length - 1 && ' '}
-                    </span>
-                ))}
+                {text.split(' ').map((word, wordIdx) => {
+                    // pre-calculate prefix length for the word
+                    const prefixLength = text.split(' ').slice(0, wordIdx).join(' ').length + (wordIdx > 0 ? 1 : 0);
+
+                    return (
+                        <span key={wordIdx} className="zen-word">
+                            {word.split('').map((char, charIdx) => {
+                                const totalIdx = prefixLength + charIdx
+                                const inputChar = input[totalIdx]
+                                let state: 'pending' | 'correct' | 'error' = 'pending'
+                                if (inputChar !== undefined) {
+                                    state = inputChar === char ? 'correct' : 'error'
+                                }
+                                return (
+                                    <ZenChar
+                                        key={charIdx}
+                                        char={char}
+                                        state={state}
+                                    />
+                                )
+                            })}
+                            {wordIdx < text.split(' ').length - 1 && ' '}
+                        </span>
+                    )
+                })}
             </div>
             {isComplete && <div className="zen-complete">✓ Complete!</div>}
             <div className="zen-hint">Press Cmd/Ctrl+Alt+T to close</div>

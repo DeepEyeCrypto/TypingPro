@@ -12,9 +12,35 @@ interface TypingFieldProps {
     ghostReplay?: ReplayData
 }
 
+interface CharacterProps {
+    char: string;
+    state: 'pending' | 'correct' | 'incorrect';
+    isGhost: boolean;
+    isCaret: boolean;
+    caretStyle: string;
+}
+
+const Character = React.memo(({ char, state, isGhost, isCaret, caretStyle }: CharacterProps) => {
+    return (
+        <span className={`char ${state} ${isGhost ? 'ghost-active' : ''}`}>
+            {char === ' ' ? '\u00A0' : char}
+            {isCaret && <div className={`caret blinking caret-${caretStyle}`} />}
+            {isGhost && <div className={`caret caret-${caretStyle}`} style={{ opacity: 0.3, background: 'cyan', boxShadow: '0 0 10px cyan' }} />}
+        </span>
+    );
+});
+
 export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, ghostReplay }: TypingFieldProps) => {
     const { fontSize, caretStyle } = useSettingsStore()
     const inputRef = useRef<HTMLInputElement>(null)
+
+    // LOCAL BUFFER for sub-1ms feedback
+    const [localInput, setLocalInput] = useState(input)
+
+    // Synchronize local input when global input changes (e.g. on reset or pause)
+    useEffect(() => {
+        setLocalInput(input)
+    }, [input])
 
     // Ghost Logic
     const [ghostIndex, setGhostIndex] = useState(0)
@@ -69,6 +95,8 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
     // Fix dependency loop: remove ghostIndex from dep array and use ref for current index tracking?
     // Actually, setGhostIndex triggers re-render, which re-runs effect.
     // Standard Loop Pattern:
+    // OPTIMIZED GHOST LOGIC (O(1) approach)
+    const ghostIndexRef = useRef(0)
     useEffect(() => {
         if (!active || !ghostReplay || isPaused) {
             if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
@@ -76,28 +104,35 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
         }
 
         // Reset if starting fresh
-        if (input.length === 0) {
+        if (localInput.length === 0) {
             startTimeRef.current = Date.now()
+            ghostIndexRef.current = 0
             setGhostIndex(0)
         }
 
         const loop = () => {
-            const elapsed = Date.now() - (startTimeRef.current || Date.now())
-            let newIndex = 0
-            // Simple linear scan (fast enough for < 500 chars)
-            for (let i = 0; i < ghostReplay.charAndTime.length; i++) {
-                if (ghostReplay.charAndTime[i].time <= elapsed) {
-                    newIndex = i + 1
-                } else {
-                    break
-                }
+            if (!startTimeRef.current) return
+            const elapsed = Date.now() - startTimeRef.current
+
+            // Incrementally find the next index instead of scanning everything
+            let changed = false
+            while (
+                ghostIndexRef.current < ghostReplay.charAndTime.length &&
+                ghostReplay.charAndTime[ghostIndexRef.current].time <= elapsed
+            ) {
+                ghostIndexRef.current++
+                changed = true
             }
-            setGhostIndex(newIndex)
+
+            if (changed) {
+                setGhostIndex(ghostIndexRef.current)
+            }
+
             animationFrameRef.current = requestAnimationFrame(loop)
         }
         loop()
         return () => { if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current) }
-    }, [active, isPaused, ghostReplay, input.length === 0]) // Reset on input 0
+    }, [active, isPaused, ghostReplay, localInput.length === 0])
 
     // Auto-Focus Logic
     useEffect(() => {
@@ -127,28 +162,34 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
                 className="hidden-input-field"
                 style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
                 autoFocus
-                onKeyDown={onKeyDown}
+                onKeyDown={(e) => {
+                    // Immediate local update for backspace or single keys
+                    if (e.key === 'Backspace' && localInput.length > 0) {
+                        setLocalInput(prev => prev.slice(0, -1))
+                    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+                        setLocalInput(prev => prev + e.key)
+                    }
+                    onKeyDown(e)
+                }}
                 onChange={() => { }}
                 value=""
             />
 
             {targetText.split('').map((char: string, i: number) => {
                 let state: 'pending' | 'correct' | 'incorrect' = 'pending'
-                if (i < input.length) {
-                    state = input[i] === char ? 'correct' : 'incorrect'
+                if (i < localInput.length) {
+                    state = localInput[i] === char ? 'correct' : 'incorrect'
                 }
 
                 return (
-                    <span key={i} className={`char ${state} ${i === ghostIndex && active ? 'ghost-active' : ''}`}>
-                        {char === ' ' ? '\u00A0' : char}
-                        {i === input.length && active && (
-                            <div className={`caret blinking caret-${caretStyle}`} />
-                        )}
-                        {/* Ghost Cursor */}
-                        {i === ghostIndex && active && ghostReplay && (
-                            <div className={`caret caret-${caretStyle}`} style={{ opacity: 0.3, background: 'cyan', boxShadow: '0 0 10px cyan' }} />
-                        )}
-                    </span>
+                    <Character
+                        key={i}
+                        char={char}
+                        state={state}
+                        isGhost={i === ghostIndex}
+                        isCaret={i === localInput.length && active}
+                        caretStyle={caretStyle}
+                    />
                 )
             })}
 

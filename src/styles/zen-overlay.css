@@ -1,8 +1,12 @@
 .zen-container {
     width: 100vw;
     height: 100vh;
-    background: rgba(34, 74, 71, 0.95);
-    backdrop-filter: blur(20px);
+    background: rgba(18, 18, 18, 0.98);
+    /* Deepened for less transparency cost */
+    backdrop-filter: blur(12px);
+    /* Reduced blur radius for perf */
+    will-change: transform, opacity;
+    transform: translateZ(0);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -20,6 +24,8 @@
     text-align: center;
     line-height: 1.6;
     max-width: 90%;
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .zen-word {
@@ -32,7 +38,7 @@
 
 .zen-text span.correct {
     color: #00f0ff;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
 }
 
 .zen-text span.error {

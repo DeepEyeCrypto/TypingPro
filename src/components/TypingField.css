@@ -5,7 +5,10 @@
     letter-spacing: -0.02em;
     user-select: none;
     cursor: text;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease;
+    will-change: transform;
+    transform: translateZ(0);
+    /* Force GPU layer */
 
     /* Layout Fixes */
     max-width: 1000px;
@@ -19,21 +22,26 @@
 
 .char {
     position: relative;
-    transition: color 0.15s ease;
+    transition: color 0.1s ease;
     opacity: 0.5;
+    will-change: color;
+    display: inline-block;
+    /* Better for layer promotion */
+    transform: translateZ(0);
     /* Pending chars */
 }
 
 .char.correct {
     color: #eeeeee;
     opacity: 1;
-    text-shadow: 0 0 10px rgba(238, 238, 238, 0.5);
+    /* Reduced text-shadow for performance */
+    text-shadow: 0 0 5px rgba(238, 238, 238, 0.3);
 }
 
 .char.incorrect {
     color: #ff3333;
     opacity: 1;
-    text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+    text-shadow: 0 0 5px rgba(255, 51, 51, 0.3);
 }
 
 .caret {
@@ -45,8 +53,9 @@
     background-color: #00ff41;
     /* Hacker Green */
     box-shadow: 0 0 8px #00ff41;
-    animation: blink 1s infinite;
     z-index: 10;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
 .caret-block {
@@ -79,6 +88,7 @@
 }
 
 @keyframes blink {
+
     0%,
     100% {
         opacity: 1;
