@@ -9,7 +9,7 @@
 
     /* Layout Fixes */
     max-width: 1000px;
-    margin: 0 auto 2rem auto;
+    margin: 0 auto 2rem;
     text-align: center;
     white-space: pre-wrap;
     word-break: break-word;
@@ -78,7 +78,6 @@
 }
 
 @keyframes blink {
-
     0%,
     100% {
         opacity: 1;

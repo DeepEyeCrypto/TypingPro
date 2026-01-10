@@ -78,6 +78,19 @@
     border: 1px solid rgba(255, 68, 68, 0.4);
 }
 
+.result-item .label {
+    font-size: 0.65rem;
+    color: #444444;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+.result-item .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: #888888;
+}
+
 .result-item {
     display: flex;
     justify-content: space-between;
@@ -93,19 +106,6 @@
 
 .result-item.fail .value {
     color: #ff4444;
-}
-
-.result-item .label {
-    font-size: 0.65rem;
-    color: #444444;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-}
-
-.result-item .value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1rem;
-    color: #888888;
 }
 
 .failure-hint {

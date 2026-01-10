@@ -13,6 +13,7 @@
     --error-color: #ff003c;
     --glass-bg: rgba(11, 12, 21, 0.7);
     --glass-border: rgba(0, 240, 255, 0.2);
+
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Space Mono', monospace;
@@ -29,6 +30,7 @@
     --error-color: #ff5555;
     --glass-bg: rgba(40, 42, 54, 0.8);
     --glass-border: rgba(189, 147, 249, 0.2);
+
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'JetBrains Mono', monospace;
@@ -45,6 +47,7 @@
     /* Pure Red breakdown */
     --glass-bg: rgba(0, 20, 0, 0.85);
     --glass-border: rgba(0, 255, 65, 0.3);
+
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Courier New', monospace;
@@ -61,6 +64,7 @@
     --error-color: #bf616a;
     --glass-bg: rgba(46, 52, 64, 0.8);
     --glass-border: rgba(136, 192, 208, 0.2);
+
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Inter', sans-serif;

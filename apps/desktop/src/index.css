@@ -12,6 +12,7 @@
   color: #ffffff;
   overflow: hidden;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 16px;

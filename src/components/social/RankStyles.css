@@ -84,10 +84,7 @@
 /* Celebration Overlay */
 .celebration-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: radial-gradient(circle at center, rgba(13, 13, 13, 0.8), rgba(0, 0, 0, 0.95));
     z-index: 10000;
     display: flex;

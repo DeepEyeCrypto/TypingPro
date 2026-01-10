@@ -99,14 +99,14 @@
     font-weight: bold;
 }
 
+.challenge-btn:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
 .challenge-btn:hover:not(:disabled) {
     background: #FF0055;
     color: white;
-}
-
-.challenge-btn:disabled {
-    opacity: 0.5;
-    cursor: waiting;
 }
 
 .leaderboard-loading {
