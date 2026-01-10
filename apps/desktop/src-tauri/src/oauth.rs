@@ -6,9 +6,16 @@ use tauri::AppHandle;
 // use tauri_plugin_shell::ShellExt;
 
 pub const GOOGLE_CLIENT_ID: &str = "296757654836-irh81sq9o83k5tbekb0fqpsol0koo97k.apps.googleusercontent.com";
-pub const GOOGLE_CLIENT_SECRET: &str = env!("TAURI_GOOGLE_CLIENT_SECRET");
 pub const GITHUB_CLIENT_ID: &str = "Ov23liOD0XVCGqACXDuG";
 pub const GITHUB_CLIENT_SECRET: &str = "6e16d13be4f231e4ae5eebfbc80fcf8d22870f79";
+
+pub fn get_google_client_secret() -> String {
+    std::env::var("TAURI_GOOGLE_CLIENT_SECRET")
+        .unwrap_or_else(|_| {
+            eprintln!("WARNING: TAURI_GOOGLE_CLIENT_SECRET environment variable is missing!");
+            "MISSING_GOOGLE_CLIENT_SECRET".to_string()
+        })
+}
 
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -121,7 +128,7 @@ pub async fn exchange_google_code(code: String) -> Result<UserProfile, String> {
     let mut params = HashMap::new();
     params.insert("code", code);
     params.insert("client_id", GOOGLE_CLIENT_ID.to_string());
-    params.insert("client_secret", GOOGLE_CLIENT_SECRET.to_string());
+    params.insert("client_secret", get_google_client_secret());
     // Use the exact redirect URI structure
     params.insert("redirect_uri", format!("http://localhost:1420/auth/google/callback"));
     params.insert("grant_type", "authorization_code".to_string());
