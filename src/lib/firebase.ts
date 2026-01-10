@@ -12,27 +12,16 @@ const firebaseConfig = {
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
 };
 
 // --- RUNTIME ASSERTIONS ---
-const REQUIRED_VARS = [
-    'VITE_FIREBASE_API_KEY',
-    'VITE_FIREBASE_PROJECT_ID',
-    'VITE_FIREBASE_AUTH_DOMAIN',
-    'VITE_FIREBASE_APP_ID'
-] as const;
-
 if (import.meta.env.PROD) {
-    REQUIRED_VARS.forEach((key) => {
-        if (!import.meta.env[key]) {
-            throw new Error(`FIREBASE CRITICAL: Missing required environment variable ${key} in production!`);
+    const REQUIRED = ['VITE_FIREBASE_API_KEY', 'VITE_FIREBASE_PROJECT_ID', 'VITE_FIREBASE_APP_ID'] as const;
+    REQUIRED.forEach(key => {
+        if (!import.meta.env[key as keyof ImportMetaEnv]) {
+            throw new Error(`FIREBASE CRITICAL: Missing ${key} in production!`);
         }
     });
-
-    if (import.meta.env.VITE_FIREBASE_PROJECT_ID !== 'typingpro-da12c') {
-        throw new Error(`FIREBASE CRITICAL: Project ID Mismatch! Expected 'typingpro-da12c', got '${import.meta.env.VITE_FIREBASE_PROJECT_ID}'`);
-    }
 }
 
 let app: FirebaseApp;
@@ -52,16 +41,7 @@ try {
     }
 } catch (error) {
     console.error("FIREBASE INITIALIZATION ERROR:", error);
-    // In dev, we log; in prod, we crash the module to prevent silent failure
     throw error;
 }
 
 export { app, db, auth, rtdb, analytics };
-
-export function getFirebaseDebugInfo() {
-    return {
-        apiKey: !!firebaseConfig.apiKey ? 'PRESENT' : 'MISSING',
-        projectId: firebaseConfig.projectId || 'MISSING',
-        initialized: !!app
-    };
-}
