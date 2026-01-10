@@ -12,7 +12,10 @@
     margin: 0 auto 2rem;
     text-align: center;
     white-space: pre-wrap;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    /* Legacy support for older browsers */
+    word-break: normal;
     padding: 0 2rem;
 }
 
@@ -78,6 +81,7 @@
 }
 
 @keyframes blink {
+
     0%,
     100% {
         opacity: 1;
