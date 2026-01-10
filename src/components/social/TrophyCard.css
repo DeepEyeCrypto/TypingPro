@@ -1,0 +1,158 @@
+.trophy-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.trophy-card {
+    width: 500px;
+    height: 350px;
+    background: rgba(10, 15, 20, 0.8);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 0.5px solid rgba(0, 240, 255, 0.3);
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(0, 240, 255, 0.05);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+}
+
+.trophy-brand {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+}
+
+.trophy-badge-container {
+    margin-top: 10px;
+}
+
+.rank-badge-large {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px currentColor;
+}
+
+.rank-badge-large.diamond {
+    color: #00ffff;
+}
+
+.rank-badge-large.emerald {
+    color: #10b981;
+}
+
+.rank-badge-large.gold {
+    color: #ffd700;
+}
+
+.trophy-title {
+    margin-top: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #00f0ff;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.trophy-metrics {
+    display: flex;
+    gap: 50px;
+    margin-top: 25px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.metric .val {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(180deg, #fff, #00f0ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.metric .lab {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    margin-top: -5px;
+}
+
+.trophy-streak {
+    margin-top: 25px;
+    background: rgba(0, 240, 255, 0.1);
+    border: 0.5px solid rgba(0, 240, 255, 0.2);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #00f0ff;
+}
+
+.trophy-footer {
+    position: absolute;
+    bottom: 20px;
+    width: calc(100% - 60px);
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.user-tag {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.verified-check {
+    color: #00f0ff;
+    font-weight: 700;
+}
+
+.download-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 240, 255, 0.05));
+    border: 0.5px solid rgba(0, 240, 255, 0.4);
+    border-radius: 8px;
+    color: #00f0ff;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    background: rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    transform: translateY(-2px);
+}

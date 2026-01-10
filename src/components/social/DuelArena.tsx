@@ -1,141 +1,117 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { liveRaceService, RaceState } from '../../services/liveRaceService';
-import { useAuthStore } from '../../stores/authStore';
-import { TypingArea } from '../TypingArea';
+import React, { useState, useEffect } from 'react';
+import { useAuthStore } from '@src/stores/authStore';
+import { friendService } from '@src/services/friendService';
+import { db } from '@src/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import './DuelArena.css';
 
 interface Props {
-    matchId: string;
-    onBack: () => void;
-    // Pass typing props from useTyping hook
-    typingProps: any;
+    duelId: string;
+    onEnd: () => void;
 }
 
-const DuelArena: React.FC<Props> = ({ matchId, onBack, typingProps }) => {
-    const { user } = useAuthStore();
+import { invoke } from '@tauri-apps/api/core';
 
-    // State
-    const [raceState, setRaceState] = useState<RaceState | null>(null);
-    const [opponentId, setOpponentId] = useState<string | null>(null);
-    const hasJoined = useRef(false);
+export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
+    const { profile, user } = useAuthStore();
+    const [duelData, setDuelData] = useState<any>(null);
+    const [input, setInput] = useState('');
+    const [myProgress, setMyProgress] = useState(0);
+    const [text, setText] = useState('The quick brown fox jumps over the lazy dog.'); // Example text
 
-    // Init Protocol
     useEffect(() => {
-        if (!matchId || !user || hasJoined.current) return;
-        hasJoined.current = true;
+        if (!duelId) return;
 
-        liveRaceService.joinRace(matchId, {
-            onStateChange: (newState) => {
-                setRaceState(newState);
-
-                // Identify Opponent
-                const pIds = Object.keys(newState.players || {});
-                const op = pIds.find(id => id !== user.id);
-                if (op) setOpponentId(op);
-            },
-            onFinish: (winnerId) => {
-                // Handle Finish
+        const unsub = onSnapshot(doc(db, 'active_duels', duelId), (doc) => {
+            if (doc.exists()) {
+                setDuelData(doc.data());
             }
         });
 
-        return () => {
-            liveRaceService.leaveRace();
-            hasJoined.current = false;
+        // Initialize Discord Presence for Duel
+        invoke('update_presence', {
+            state: 'In 1v1 Duel',
+            details: `Vs Opponent | Text: ${text.substring(0, 10)}...`
+        });
+
+        const handleGlobalKeyDown = (e: KeyboardEvent) => {
+            if (e.key.length === 1) {
+                handleKeystroke(e.key);
+            }
         };
-    }, [matchId, user]);
 
-    // Handle Race Completion via typing hook
-    useEffect(() => {
-        if (typingProps.showResult && raceState) {
-            liveRaceService.updateProgress(
-                typingProps.metrics.adjusted_wpm,
-                typingProps.currentLesson?.text.length || 0,
-                100,
-                true
-            );
+        window.addEventListener('keydown', handleGlobalKeyDown);
+
+        return () => {
+            unsub();
+            window.removeEventListener('keydown', handleGlobalKeyDown);
+        };
+    }, [duelId, input, text]);
+
+    const handleKeystroke = async (char: string) => {
+        const nextInput = input + char;
+        if (text.startsWith(nextInput)) {
+            setInput(nextInput);
+            const progress = (nextInput.length / text.length) * 100;
+            const wpm = Math.floor((nextInput.length / 5) / (1 / 60)); // Placeholder
+
+            setMyProgress(progress);
+            const role = user?.id === duelData?.challenger ? 'challenger' : 'opponent';
+            await friendService.updateDuelProgress(duelId, role, progress, wpm);
+
+            if (nextInput === text) {
+                // Handle victory
+                invoke('update_presence', { state: 'Victory!', details: 'Won a 1v1 Duel' });
+            }
         }
-    }, [typingProps.showResult]);
+    };
 
-    if (!raceState || !user) return <div className="text-white">Loading Arena...</div>;
-
-    const me = raceState.players[user.id] || { progress: 0, wpm: 0 };
-    const enemy = opponentId ? raceState.players[opponentId] : { progress: 0, wpm: 0, cursorIndex: 0 };
+    const myWpm = user?.id === duelData?.challenger ? duelData?.challengerWPM : duelData?.opponentWPM;
+    const oppWpm = user?.id === duelData?.challenger ? duelData?.opponentWPM : duelData?.challengerWPM;
+    const oppProgress = user?.id === duelData?.challenger ? duelData?.opponentProgress : duelData?.challengerProgress;
 
     return (
-        <div className="w-full h-full flex flex-col">
+        <div className="duel-arena-overlay">
+            <div className="duel-header">
+                <div className="match-badge">MATCH POINT</div>
+                <div className="duel-timer">LIVE</div>
+            </div>
 
-            {/* Top Bar: The Stakes */}
-            {/* Top Bar: The Stakes */}
-            <header className="h-20 glass-panel border-b-0 rounded-none m-4 flex items-center px-8 justify-between">
-
-                {/* Player Status */}
-                <div className="flex items-center gap-4 text-cyan-400">
-                    <div className="w-10 h-10 rounded bg-cyan-900/50 flex items-center justify-center border border-cyan-500/50">
-                        P1
+            <div className="duel-split-container">
+                <div className="duel-section player-me">
+                    <div className="player-info">
+                        <img src={profile?.avatar_url} alt="Me" className="mini-avatar" />
+                        <span>{profile?.username} (You)</span>
+                        <div className="intensity-bar-v">
+                            <div className="fill" style={{ height: `${(myWpm || 0) / 1.5}%` }}></div>
+                            <label>{myWpm || 0} WPM</label>
+                        </div>
                     </div>
-                    <div>
-                        <div className="text-xl font-bold">{Math.round(me.wpm || 0)} WPM</div>
-                        <div className="text-xs opacity-70">YOU</div>
-                    </div>
-                </div>
-
-                {/* Progress Visual */}
-                <div className="flex-1 mx-12 max-w-2xl relative">
-                    <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden relative">
-                        {/* My Bar (From Left) */}
-                        <div
-                            className="absolute top-0 left-0 h-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.6)] transition-all duration-300"
-                            style={{ width: `${me.progress || 0}%` }}
-                        ></div>
-                    </div>
-                    {/* Enemy Bar below */}
-                    <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden relative mt-1">
-                        <div
-                            className="absolute top-0 left-0 h-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6)] transition-all duration-300"
-                            style={{ width: `${enemy.progress || 0}%` }}
-                        ></div>
+                    <div className="typing-zone-mini glass-panel">
+                        {/* Interactive typing input would emit handleProgress */}
+                        <div className="progress-indicator" style={{ width: `${myProgress}%` }}></div>
                     </div>
                 </div>
 
-                {/* Enemy Status */}
-                <div className="flex items-center gap-4 text-red-500">
-                    <div className="text-right">
-                        <div className="text-xl font-bold">{Math.round(enemy.wpm || 0)} WPM</div>
-                        <div className="text-xs opacity-70">OPPONENT</div>
+                <div className="duel-divider"></div>
+
+                <div className="duel-section player-opponent">
+                    <div className="player-info">
+                        <div className="intensity-bar-v opponent">
+                            <div className="fill" style={{ height: `${(oppWpm || 0) / 1.5}%` }}></div>
+                            <label>{oppWpm || 0} WPM</label>
+                        </div>
+                        <span>Opponent</span>
+                        <img src="https://via.placeholder.com/40" alt="Opponent" className="mini-avatar" />
                     </div>
-                    <div className="w-10 h-10 rounded bg-red-900/50 flex items-center justify-center border border-red-500/50">
-                        P2
-                    </div>
-                </div>
-            </header>
-
-
-            {/* Main Arena */}
-            <main className="flex-1 flex items-center justify-center relative p-8">
-
-                {/* Re-use the existing TypingArea, but wrapped for Duel */}
-                <TypingArea
-                    targetText={typingProps.currentLesson?.text || ''}
-                    input={typingProps.input}
-                    activeChar={typingProps.activeChar}
-                    onBack={onBack}
-                    onKeyDown={(e) => typingProps.onKeyDown(e.nativeEvent)}
-                    isPaused={typingProps.isPaused}
-                    ghostReplay={typingProps.ghostReplay}
-                />
-
-                {/* Enemy Ghost View (Mini-map) */}
-                <div className="absolute bottom-8 right-8 w-64 h-32 glass-panel border-red-500/30 p-4 opacity-80 pointer-events-none">
-                    <div className="text-red-500 text-[10px] uppercase mb-1 tracking-wider">Opponent Stream</div>
-                    <div className="w-full h-full overflow-hidden text-red-500/50 text-xs break-all leading-tight font-mono">
-                        {(typingProps.currentLesson?.text || '').substring(0, enemy.cursorIndex || 0)}
-                        <span className="animate-pulse text-red-500">_</span>
+                    <div className="typing-zone-mini glass-panel ghost">
+                        <div className="progress-indicator opponent" style={{ width: `${oppProgress || 0}%` }}></div>
+                        <span className="ghost-text">Typing...</span>
                     </div>
                 </div>
+            </div>
 
-            </main>
-
+            <button onClick={onEnd} className="forfeit-btn">Forfeit Duel</button>
         </div>
     );
 };
-
-export default DuelArena;

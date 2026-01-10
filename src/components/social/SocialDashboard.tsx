@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuthStore } from '@src/stores/authStore';
-import './SocialDashboard.css';
+import { friendService } from '@src/services/friendService';
+import { DuelArena } from './DuelArena';
 import { UserSearch } from './UserSearch';
 import { FriendList } from './FriendList';
 import { Leaderboard } from './Leaderboard';
+import { getProgressToNextRank, getRank } from '@src/utils/rankSystem';
+import { ReleaseHub } from './ReleaseHub';
+import { HyperAnalytics } from './HyperAnalytics';
+import './SocialDashboard.css';
 import './Visuals.css';
 import './RankStyles.css';
-import { getProgressToNextRank, getRank } from '@src/utils/rankSystem';
 
 interface Props {
     onBack: () => void;
@@ -16,6 +20,18 @@ interface Props {
 
 export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNavigateToLobby }) => {
     const { user, profile } = useAuthStore();
+    const [activeDuelId, setActiveDuelId] = useState<string | null>(null);
+
+    const handleStartDuel = async () => {
+        if (!user) return;
+        const friends = await friendService.getFriends(user.id);
+        if (friends.length > 0) {
+            const duelId = await friendService.createDuelChallenge(user.id, friends[0].uid);
+            setActiveDuelId(duelId);
+        } else {
+            alert("No friends online to duel! Try adding some friends first.");
+        }
+    };
 
     if (!user) {
         return (
@@ -25,6 +41,10 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                 <button onClick={onBack} className="back-btn">← Back</button>
             </div>
         )
+    }
+
+    if (activeDuelId) {
+        return <DuelArena duelId={activeDuelId} onEnd={() => setActiveDuelId(null)} />;
     }
 
     return (
@@ -101,13 +121,21 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                 <div className="search-sidebar">
                     <div className="mb-4">
                         <button
-                            onClick={onNavigateToLobby}
+                            onClick={handleStartDuel}
                             className="w-full py-4 glass-button text-cyan-400 font-bold text-xl tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.2)]"
                         >
                             ⚔️ START DUEL
                         </button>
                     </div>
                     <UserSearch />
+                </div>
+            </div>
+            <div className="phase-5-container">
+                <div className="release-hub-section">
+                    <ReleaseHub />
+                </div>
+                <div className="analytics-section">
+                    <HyperAnalytics />
                 </div>
             </div>
         </div>

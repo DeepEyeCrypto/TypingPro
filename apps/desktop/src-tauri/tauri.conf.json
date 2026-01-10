@@ -64,6 +64,7 @@
     "macOS": {
       "entitlements": "Entitlements.plist",
       "signingIdentity": null,
+      "activationPolicy": "Regular",
       "dmg": {
         "background": "./icons/dmg-background.png",
         "windowSize": {

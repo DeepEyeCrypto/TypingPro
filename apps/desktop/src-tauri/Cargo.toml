@@ -28,6 +28,7 @@ tauri-plugin-store = "2.0.0-rc.0"
 tauri-plugin-global-shortcut = "2.0.0-rc.0"
 rodio = "0.17"
 lazy_static = "1.4"
+discord-presence = "0.4"
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

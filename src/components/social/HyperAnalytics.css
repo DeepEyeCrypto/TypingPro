@@ -1,0 +1,157 @@
+.hyper-analytics {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+    height: 100%;
+}
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.analytics-header h2 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.summary-pills {
+    display: flex;
+    gap: 12px;
+}
+
+.pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+}
+
+.pill label {
+    font-size: 8px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+}
+
+.pill span {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.section-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #00f0ff;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.heatmap-container {
+    flex: 1;
+}
+
+.keyboard-visualizer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    perspective: 1000px;
+}
+
+.key-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    transform: rotateX(10deg);
+}
+
+.key-cap {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.key-char {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.key-val {
+    font-size: 7px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: -2px;
+}
+
+.fatigue-engine {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.fatigue-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.fatigue-header label {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+}
+
+.engine-status {
+    font-size: 8px;
+    font-weight: 800;
+    color: #10b981;
+    letter-spacing: 1px;
+}
+
+.fatigue-gauge {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gauge-track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+    transition: width 0.5s ease;
+}
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 1px;
+}

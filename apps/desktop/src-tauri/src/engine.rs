@@ -40,6 +40,10 @@ impl TypingEngine {
         self.calculate_metrics()
     }
 
+    pub fn get_last_timestamp(&self) -> u64 {
+        *self.timestamps.last().unwrap_or(&0)
+    }
+
     pub fn calculate_metrics(&self) -> TypingMetrics {
         if self.timestamps.len() < 2 {
             return TypingMetrics {

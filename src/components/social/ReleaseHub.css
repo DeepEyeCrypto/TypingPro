@@ -1,0 +1,130 @@
+.release-hub {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+    height: 100%;
+}
+
+.hub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hub-header h2 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.env-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(0, 240, 255, 0.05);
+    border: 0.5px solid rgba(0, 240, 255, 0.2);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #00f0ff;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.pulse-green {
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+}
+
+.pulse-amber {
+    background: #f59e0b;
+    box-shadow: 0 0 10px #f59e0b;
+}
+
+.version-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.version-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.version-stat label {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+}
+
+.version-stat .val {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.version-stat .hash {
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.8;
+}
+
+.changelog-preview {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.changelog-preview h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: #00f0ff;
+    margin-bottom: 15px;
+}
+
+.changelog-preview ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.changelog-preview li {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bullet {
+    color: #00f0ff;
+}
+
+.hub-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.verified-badge {
+    font-size: 9px;
+    font-weight: 800;
+    color: #10b981;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}

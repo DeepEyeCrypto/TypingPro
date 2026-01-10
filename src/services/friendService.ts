@@ -98,12 +98,40 @@ export const friendService = {
         if (friendIds.length === 0) return [];
 
         // Fetch actual profiles (Firestore 'in' query supports max 10, need batching for production)
-        // For now, simple Promise.all
         const promises = friendIds.map(fid => getDoc(doc(db, 'profiles', fid)));
         const docs = await Promise.all(promises);
 
         return docs
             .filter(d => d.exists())
             .map(d => d.data() as UserProfile);
+    },
+
+    // --- PHASE 4: DUELS & MATCHMAKING ---
+
+    async createDuelChallenge(fromUid: string, toUid: string): Promise<string> {
+        const duelId = `${Date.now()}_${fromUid}`;
+        const duelRef = doc(db, 'active_duels', duelId);
+
+        await setDoc(duelRef, {
+            id: duelId,
+            challenger: fromUid,
+            opponent: toUid,
+            status: 'pending',
+            timestamp: serverTimestamp()
+        });
+
+        return duelId;
+    },
+
+    async updateDuelProgress(duelId: string, uid: string, progress: number, wpm: number): Promise<void> {
+        const duelRef = doc(db, 'active_duels', duelId);
+        const updateKey = uid === 'challenger' ? 'challengerProgress' : 'opponentProgress';
+        const wpmKey = uid === 'challenger' ? 'challengerWPM' : 'opponentWPM';
+
+        await updateDoc(duelRef, {
+            [updateKey]: progress,
+            [wpmKey]: wpm,
+            lastUpdate: Date.now()
+        });
     }
 };
