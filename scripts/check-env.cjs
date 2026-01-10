@@ -18,9 +18,11 @@ console.log("\n🚀 [BUILD GUARD] Validating environment variables...");
 
 let missing = [];
 
+const isCI = !!process.env.GITHUB_ACTIONS;
+
 REQUIRED_VARS.forEach(v => {
-    // Check process.env (for CI)
-    if (!process.env[v]) {
+    const val = process.env[v];
+    if (!val || val.trim() === "") {
         missing.push(v);
     }
 });
