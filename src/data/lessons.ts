@@ -278,5 +278,197 @@ export const CURRICULUM: Lesson[] = [
         targetWPM: 40,
         focusFingers: ['All'],
         stage: 'Mixed'
+    },
+    // ─────────────────────────────────────────
+    // PHASE 3: SPEED BUILDING (l31-l38)
+    // ─────────────────────────────────────────
+    {
+        id: 'l31',
+        title: 'Common Words I',
+        description: 'Top 50 most frequent English words.',
+        text: 'the be to of and a in that have I it for not on with he as you do at this but his by from they we say her she or an will my one all would there their what so up out if about who get which go me when make can like time no just him know take people into year your good some could them see other than then now look only come its over think also back after use two how our work first well way even new want because any these give day most us',
+        targetWPM: 45,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l32',
+        title: 'Common Words II',
+        description: 'Top 100 words mixed practice.',
+        text: 'find give day more made may part after back little only round man year came show every good me give our under name very just form great think say help low line before turn cause same mean differ move right boy old too does tell sentence set three want air well also play small end put home read hand port large spell add even land here must big high such follow act why ask men change went light kind off need house picture try us again animal point mother world near build self earth father',
+        targetWPM: 48,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l33',
+        title: 'Short Sentences I',
+        description: 'Simple declarative sentences.',
+        text: 'The sun rises in the east. Birds fly south for winter. Water flows downhill naturally. Time waits for no one. Practice makes perfect daily. Books open new worlds. Music soothes the soul. Friends make life better. Dreams fuel our ambitions. Learning never stops growing.',
+        targetWPM: 50,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l34',
+        title: 'Short Sentences II',
+        description: 'Sentences with punctuation practice.',
+        text: 'Can you help me? Yes, I can! Where are you going? I am going home. When will you return? I will return soon. What do you need? I need your support. How did it happen? It happened suddenly, without warning.',
+        targetWPM: 50,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l35',
+        title: 'Speed Burst: 15 Seconds',
+        description: 'Quick burst typing for accuracy.',
+        text: 'quick brown fox jumps over lazy dog pack my box with five dozen liquor jugs how vexingly quick daft zebras jump',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l36',
+        title: 'Speed Burst: 30 Seconds',
+        description: 'Extended burst for rhythm.',
+        text: 'the five boxing wizards jump quickly sphinx of black quartz judge my vow how quickly daft jumping zebras vex pack my red box with five dozen quality jugs watch jeopardy alex trebek is a great quiz show host',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l37',
+        title: 'Rhythm Building',
+        description: 'Consistent pace development.',
+        text: 'type type type flow flow flow speed speed speed fast fast fast quick quick quick smooth smooth smooth steady steady steady rhythm rhythm rhythm practice practice practice',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    {
+        id: 'l38',
+        title: 'Speed Gate Exam',
+        description: 'Prove 55+ WPM to unlock Fluency.',
+        text: 'Speed is nothing without accuracy. The key to typing fast is to type correctly first and then gradually increase your pace. Your fingers will remember the patterns, and soon you will fly across the keyboard without thinking.',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Speed'
+    },
+    // ─────────────────────────────────────────
+    // PHASE 4: FLUENCY (l39-l45)
+    // ─────────────────────────────────────────
+    {
+        id: 'l39',
+        title: 'Paragraph: Technology',
+        description: 'Sustained typing with tech content.',
+        text: 'Technology has transformed the way we live and work. From smartphones to artificial intelligence, innovations continue to reshape our daily experiences. The digital age has brought unprecedented connectivity, allowing people across the globe to communicate instantly and share ideas freely.',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    {
+        id: 'l40',
+        title: 'Paragraph: Nature',
+        description: 'Flowing prose about the natural world.',
+        text: 'The forest awakens at dawn with a symphony of birdsong. Dewdrops glisten on spider webs like tiny diamonds catching the first rays of sunlight. A gentle breeze rustles through the leaves, carrying the fresh scent of pine and earth. Nature reminds us to slow down and appreciate the simple beauty around us.',
+        targetWPM: 58,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    {
+        id: 'l41',
+        title: 'Numbers in Context',
+        description: 'Typing numbers within sentences.',
+        text: 'The meeting is scheduled for 10:30 AM on December 15, 2026. Please bring 3 copies of the 25-page report. The budget is $45,000 with a 12% contingency. Our team of 8 developers completed 147 tasks in just 90 days.',
+        targetWPM: 50,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    {
+        id: 'l42',
+        title: 'Symbols & Special Characters',
+        description: 'Email, URLs, and common symbols.',
+        text: 'Contact us at support@typingpro.app or visit https://typingpro.app for more info. Use code SAVE20 for 20% off! Price: $99.99 (was $149.99). Terms & conditions apply. Copyright © 2026 TypingPro. All rights reserved.',
+        targetWPM: 45,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    {
+        id: 'l43',
+        title: 'Mixed Content: Email',
+        description: 'Professional email typing practice.',
+        text: 'Dear Mr. Johnson, Thank you for your inquiry regarding our services. I am pleased to inform you that we can accommodate your request for the project starting on March 1st. Please find attached the proposal with detailed pricing and timeline. Best regards, Sarah Thompson, Senior Account Manager',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    {
+        id: 'l44',
+        title: 'Mixed Content: Report',
+        description: 'Business report excerpt.',
+        text: 'Q3 2026 Performance Summary: Revenue increased by 23% year-over-year, reaching $4.5 million. Customer acquisition cost decreased from $85 to $62, a 27% improvement. Net Promoter Score improved to 72, up from 65 in Q2. Key initiatives for Q4 include expanding to 3 new markets and launching version 2.0 of our flagship product.',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    {
+        id: 'l45',
+        title: 'Fluency Gate Exam',
+        description: 'Prove 60+ WPM to unlock Mastery.',
+        text: 'Fluency in typing is like fluency in a language. It requires consistent practice, patience, and the willingness to push beyond your comfort zone. As you develop muscle memory, your fingers will dance across the keys effortlessly. The goal is not just speed, but the seamless flow of thought to text.',
+        targetWPM: 60,
+        focusFingers: ['All'],
+        stage: 'Fluency'
+    },
+    // ─────────────────────────────────────────
+    // PHASE 5: MASTERY (l46-l48)
+    // ─────────────────────────────────────────
+    {
+        id: 'l46',
+        title: 'Professional: Legal Text',
+        description: 'Formal legal document typing.',
+        text: 'WHEREAS, the parties hereto desire to enter into this Agreement for the purposes set forth herein; NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties agree as follows:',
+        targetWPM: 55,
+        focusFingers: ['All'],
+        stage: 'Mastery'
+    },
+    {
+        id: 'l47',
+        title: 'Technical: Code Comments',
+        description: 'Programming documentation style.',
+        text: '// Initialize the application state with default values const initState = { user: null, isLoading: true, error: null }; // Handle async data fetching with proper error boundaries async function fetchData(url) { try { const response = await fetch(url); return response.json(); } catch (err) { console.error(err); } }',
+        targetWPM: 50,
+        focusFingers: ['All'],
+        stage: 'Mastery'
+    },
+    {
+        id: 'l48',
+        title: 'Mastery Gate Exam',
+        description: 'Prove 70+ WPM to unlock Professional.',
+        text: 'Mastery is the result of deliberate practice over time. Every keystroke builds upon the last, creating neural pathways that transform conscious effort into automatic execution. The journey from novice to expert requires dedication, but the rewards—both in productivity and confidence—are immeasurable. You are now ready for the professional tier.',
+        targetWPM: 70,
+        focusFingers: ['All'],
+        stage: 'Mastery'
+    },
+    // ─────────────────────────────────────────
+    // PHASE 6: PROFESSIONAL (l49-l50)
+    // ─────────────────────────────────────────
+    {
+        id: 'l49',
+        title: 'Competitive Ready',
+        description: 'Race-level speed and accuracy.',
+        text: 'The quick brown fox jumps over the lazy dog near the riverbank where wildflowers bloom in vibrant colors during the warm summer months. Pack my box with five dozen liquor jugs before the guests arrive for the evening celebration. How vexingly quick daft zebras jump through the golden savanna at twilight.',
+        targetWPM: 80,
+        focusFingers: ['All'],
+        stage: 'Pro'
+    },
+    {
+        id: 'l50',
+        title: 'Certification Test',
+        description: 'Official TypingPro proficiency exam.',
+        text: 'This is your final certification test. Type with precision and confidence. Every word matters. Every keystroke counts. You have trained for this moment. Trust your fingers. Flow with the rhythm. Let the words pour from your mind to the screen without hesitation. You are a professional typist. Prove it now.',
+        targetWPM: 90,
+        focusFingers: ['All'],
+        stage: 'Pro'
     }
 ]
