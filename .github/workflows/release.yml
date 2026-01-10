@@ -49,6 +49,12 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: install dependencies
+        run: npm install
+
+      - name: lint css
+        run: npm run lint:css
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:

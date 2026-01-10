@@ -17,7 +17,7 @@ export const RANKS: Rank[] = [
     {
         name: 'Bronze',
         minWPM: 0,
-        maxWPM: 40,
+        maxWPM: 39,
         accentColor: '#CD7F32',
         soundTheme: 'basic',
         level: 1,
@@ -25,8 +25,8 @@ export const RANKS: Rank[] = [
     },
     {
         name: 'Silver',
-        minWPM: 41,
-        maxWPM: 80,
+        minWPM: 40,
+        maxWPM: 79,
         accentColor: '#C0C0C0',
         soundTheme: 'soft',
         level: 2,
@@ -34,8 +34,8 @@ export const RANKS: Rank[] = [
     },
     {
         name: 'Gold',
-        minWPM: 81,
-        maxWPM: 120,
+        minWPM: 80,
+        maxWPM: 119,
         accentColor: '#FFD700',
         soundTheme: 'crisp',
         level: 3,
@@ -43,8 +43,8 @@ export const RANKS: Rank[] = [
     },
     {
         name: 'Platinum',
-        minWPM: 121,
-        maxWPM: 160,
+        minWPM: 120,
+        maxWPM: 159,
         accentColor: '#E5E4E2',
         soundTheme: 'mechanical',
         level: 4,
@@ -52,38 +52,20 @@ export const RANKS: Rank[] = [
     },
     {
         name: 'Diamond',
-        minWPM: 161,
-        maxWPM: 200,
+        minWPM: 160,
+        maxWPM: 199,
         accentColor: '#B9F2FF',
         soundTheme: 'premium',
         level: 5,
         icon: '💠'
     },
     {
-        name: 'Master',
-        minWPM: 201,
-        maxWPM: 250,
-        accentColor: '#FF10F0',
-        soundTheme: 'elite',
-        level: 6,
-        icon: '⭐'
-    },
-    {
-        name: 'Grandmaster',
-        minWPM: 251,
-        maxWPM: 300,
-        accentColor: '#8A2BE2',
-        soundTheme: 'legendary',
-        level: 7,
-        icon: '👑'
-    },
-    {
         name: 'Radiant',
-        minWPM: 301,
+        minWPM: 200,
         maxWPM: 999,
         accentColor: '#FF6EC7',
         soundTheme: 'divine',
-        level: 8,
+        level: 6,
         icon: '✨'
     },
 ]
@@ -121,4 +103,14 @@ export const getWPMToNextRank = (wpm: number): number => {
     const currentRank = getRankForWPM(wpm)
     const nextRank = getNextRank(currentRank)
     return nextRank ? nextRank.minWPM - wpm : 0
+}
+
+/**
+ * Calculate XP (Elo-Lite) for a race session
+ * XP = (WPM * (Accuracy/100)) * (1 + StreakMultiplier)
+ */
+export const calculateXP = (wpm: number, accuracy: number, streak: number = 0): number => {
+    const baseXP = wpm * (accuracy / 100)
+    const multiplier = 1 + (streak * 0.1) // 10% bonus per streak point
+    return Math.round(baseXP * multiplier)
 }

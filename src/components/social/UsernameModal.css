@@ -164,29 +164,30 @@
         opacity: 1;
         transform: scale(1) translateY(0);
     }
+}
 
-    .skip-btn {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.4);
-        padding: 1rem;
-        border-radius: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 1rem;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
+.skip-btn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
 
-    .skip-btn:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.08);
-        color: rgba(255, 255, 255, 0.8);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
+.skip-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+}
 
-    .skip-btn:disabled {
-        opacity: 0.5;
-        cursor: default;
-    }
+.skip-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

@@ -208,7 +208,7 @@ export const useTyping = () => {
             // Import userService dynamically to avoid circular deps if any, 
             // or just ensure import is at top. Assuming top import available.
             import('@src/services/userService').then(({ userService }) => {
-                userService.updateStats(user.id, Math.round(netWpm))
+                userService.updateStats(user.id, Math.round(netWpm), Math.round(metrics.accuracy))
             }).catch(console.error)
         }
 

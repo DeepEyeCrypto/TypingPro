@@ -43,7 +43,7 @@ export const userService = {
         if (!db) {
             const debug = getFirebaseDebugInfo();
             console.error("Firebase DB not initialized", debug);
-            throw new Error(`System Error: Database not connected. (API: ${debug.apiKey}, PROJ: ${debug.projectId}). Please check internet/updates.`);
+            throw new Error(`System Error: Database not connected. (HAS_KEY: ${debug.hasApiKey}, PROJ: ${debug.projectId}). Please check internet/updates.`);
         }
         const lowerName = username.toLowerCase();
 
@@ -89,7 +89,7 @@ export const userService = {
         }
     },
 
-    async updateStats(uid: string, wpm: number): Promise<void> {
+    async updateStats(uid: string, wpm: number, accuracy: number): Promise<void> {
         try {
             if (!db) return;
             const docRef = doc(db, 'profiles', uid);
@@ -103,12 +103,15 @@ export const userService = {
                 const oldTotalWpm = (data.avg_wpm || 0) * (data.total_races || 0);
                 const newAvg = Math.round((oldTotalWpm + wpm) / newTotalRaces);
 
+                const { calculateXP } = await import('./rankSystem');
+                const earnedXP = calculateXP(wpm, accuracy);
+
                 await setDoc(docRef, {
                     ...data,
                     total_races: newTotalRaces,
                     highest_wpm: newHighest,
                     avg_wpm: newAvg,
-                    rank_points: (newHighest * 10) + newTotalRaces
+                    rank_points: (data.rank_points || 0) + earnedXP
                 }, { merge: true });
             }
         } catch (error) {
