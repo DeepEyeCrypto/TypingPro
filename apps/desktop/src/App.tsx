@@ -23,7 +23,7 @@ import { UsernameModal } from '../../../src/components/social/UsernameModal'
 import { SocialDashboard } from '../../../src/components/social/SocialDashboard'
 import { RankCelebration } from '../../../src/components/social/RankCelebration'
 import Lobby from '../../../src/components/social/Lobby'
-import DuelArena from '../../../src/components/social/DuelArena'
+import { DuelArena } from '../../../src/components/social/DuelArena'
 import { NetworkTest } from '../../../src/components/NetworkTest'
 
 const App: React.FC = () => {
@@ -229,7 +229,7 @@ const App: React.FC = () => {
           )}
 
           <footer className="status-bar">
-            <span>DeepEyeSniper v2.0 // Focus Protocol: Active</span>
+            <span>TypingPro v2.0 // Focus Protocol: Active</span>
           </footer>
 
           <style>{`
