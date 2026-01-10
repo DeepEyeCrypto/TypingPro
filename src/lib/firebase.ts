@@ -29,6 +29,10 @@ if (import.meta.env.PROD) {
             throw new Error(`FIREBASE CRITICAL: Missing required environment variable ${key} in production!`);
         }
     });
+
+    if (import.meta.env.VITE_FIREBASE_PROJECT_ID !== 'typingpro-da12c') {
+        throw new Error(`FIREBASE CRITICAL: Project ID Mismatch! Expected 'typingpro-da12c', got '${import.meta.env.VITE_FIREBASE_PROJECT_ID}'`);
+    }
 }
 
 let app: FirebaseApp;
