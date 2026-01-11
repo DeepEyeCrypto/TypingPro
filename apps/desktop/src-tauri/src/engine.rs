@@ -80,11 +80,19 @@ impl TypingEngine {
         }
 
         // Gross WPM: (All typed entries / 5) / Time (min)
-        let gross_wpm = (total_chars as f64 / 5.0) / duration_mins;
+        let gross_wpm = if duration_mins > 0.0001 {
+            (total_chars as f64 / 5.0) / duration_mins
+        } else {
+            0.0
+        };
 
         // Net WPM: Gross WPM - (Uncorrected Errors / Time (min))
         // This is the standard "Accuracy Penalty" logic.
-        let penalty = uncorrected_errors as f64 / duration_mins;
+        let penalty = if duration_mins > 0.0001 {
+            uncorrected_errors as f64 / duration_mins
+        } else {
+            0.0
+        };
         let net_wpm = f64::max(gross_wpm - penalty, 0.0);
 
         let accuracy = if total_chars > 0 {
@@ -97,23 +105,24 @@ impl TypingEngine {
         let mut intervals = Vec::new();
         for i in 1..self.timestamps.len() {
             // Filter out potential crazy outliers if needed, currently raw
-            intervals.push((self.timestamps[i] - self.timestamps[i - 1]) as f64);
+            let interval = (self.timestamps[i] - self.timestamps[i - 1]) as f64;
+            if interval > 0.0 {
+                // Ignore 0ms intervals to prevent skew
+                intervals.push(interval);
+            }
         }
 
         let consistency = if !intervals.is_empty() {
             let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
-            let variance = intervals
-                .iter()
-                .map(|&i| (i - avg_interval).powi(2))
-                .sum::<f64>()
-                / intervals.len() as f64;
 
-            let std_dev = variance.sqrt();
-            // CV based consistency map (lower variance -> higher score)
-            // A perfect consistency is 100. We penalize by variation.
-            // Using a simpler heuristic: 100 - (CV * 100)
-            // CV = std_dev / mean
             if avg_interval > 0.0 {
+                let variance = intervals
+                    .iter()
+                    .map(|&i| (i - avg_interval).powi(2))
+                    .sum::<f64>()
+                    / intervals.len() as f64;
+
+                let std_dev = variance.sqrt();
                 let cv = std_dev / avg_interval;
                 (100.0 - (cv * 100.0)).clamp(0.0, 100.0)
             } else {

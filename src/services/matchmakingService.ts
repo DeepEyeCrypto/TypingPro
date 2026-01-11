@@ -10,8 +10,10 @@ import {
     doc,
     getDocs,
     limit,
-    orderBy
+    orderBy,
+    setDoc
 } from 'firebase/firestore';
+import { CURRICULUM } from '@src/data/lessons';
 
 export interface MatchmakingRequest {
     uid: string;
@@ -38,10 +40,9 @@ class MatchmakingService {
 
     private get matchesRef() {
         if (!db) throw new Error("Database not initialized");
-        return collection(db, 'matches');
+        return collection(db, 'active_duels');
     }
 
-    private unsubscribeQueue: (() => void) | null = null;
     private unsubscribeMatch: (() => void) | null = null;
 
     /**
@@ -50,7 +51,6 @@ class MatchmakingService {
     async joinQueue(username: string, avatarUrl: string, wpmAverage: number): Promise<string> {
         if (!auth.currentUser) throw new Error("Must be logged in");
 
-        // Remove any existing queue entries for this user
         await this.leaveQueue();
 
         const request: MatchmakingRequest = {
@@ -77,7 +77,58 @@ class MatchmakingService {
 
         const promises = snapshot.docs.map(d => deleteDoc(d.ref));
         await Promise.all(promises);
-        console.log("MATCHMAKING: Left queue");
+    }
+
+    /**
+     * Client-side matching logic:
+     * Try to find another user in queue and create a match doc.
+     */
+    async findAndCreateMatch(myUsername: string, myAvatar: string): Promise<string | null> {
+        if (!auth.currentUser) return null;
+
+        // 1. Get everyone in the queue (limited to avoid huge fetches)
+        const q = query(this.queueRef, orderBy("timestamp", "asc"), limit(2));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.docs.length >= 2) {
+            const docs = snapshot.docs;
+            const meDoc = docs.find(d => d.data().uid === auth.currentUser?.uid);
+            const otherDoc = docs.find(d => d.data().uid !== auth.currentUser?.uid);
+
+            if (meDoc && otherDoc) {
+                // I'm one of the first two! Host strategy.
+                const other = otherDoc.data() as MatchmakingRequest;
+
+                // Pick a random lesson text (prefer Pro/Speed lessons)
+                const suitableLessons = CURRICULUM.filter(l => l.text.length > 100);
+                const randomLesson = suitableLessons[Math.floor(Math.random() * suitableLessons.length)];
+
+                const duelId = `match_${Date.now()}_${auth.currentUser.uid}`;
+                const matchData = {
+                    id: duelId,
+                    challenger: auth.currentUser.uid,
+                    opponent: other.uid,
+                    challengerName: myUsername,
+                    opponentName: other.username,
+                    challengerAvatar: myAvatar,
+                    opponentAvatar: other.avatarUrl,
+                    status: 'in_progress', // Matchmade duels start immediately
+                    type: 'matchmade',
+                    text: randomLesson.text,
+                    timestamp: serverTimestamp(),
+                    players: [auth.currentUser.uid, other.uid] // For easy querying
+                };
+
+                await setDoc(doc(db, 'active_duels', duelId), matchData);
+
+                // Cleanup queue
+                await deleteDoc(meDoc.ref);
+                await deleteDoc(otherDoc.ref);
+
+                return duelId;
+            }
+        }
+        return null;
     }
 
     /**
@@ -86,38 +137,18 @@ class MatchmakingService {
     listenForMatch(onMatchFound: (matchId: string) => void) {
         if (!auth.currentUser) return;
 
-        // Listen for matches where user is player1 or player2
-        // Note: Firestore OR queries can be tricky, might need two listeners or a unified 'players' array field
-        // For MVP, we'll try a simple query for now.
-
-        // Strategy: The backend function usually creates the match. 
-        // Since we don't have Cloud Functions, we use a Client-Side "Host" strategy?
-        // OR: We use the simpler "First in queue gets picked" logic client-side.
-
-        // simpler client-side logic:
-        // 1. Join Queue.
-        // 2. Watch Queue. If I see someone else, I match with them.
-        // 3. Create Match doc.
-        // 4. Delete both from queue.
-
-        // This is complex without a trusted server. 
-        // For simplicity in this demo, we'll assume a "Host" creates the match.
-        // Let's listen to the `matches` collection where we are listed.
-
-        const q1 = query(this.matchesRef, where("player1.uid", "==", auth.currentUser.uid), where("status", "==", "waiting"));
-        const q2 = query(this.matchesRef, where("player2.uid", "==", auth.currentUser.uid), where("status", "==", "waiting"));
-
-        // merging listeners is messy. let's just allow users to query regularly.
-        // actually onSnapshot is best.
-
-        this.unsubscribeMatch = onSnapshot(query(this.matchesRef,
+        // Listen for active_duels where I am a player
+        const q = query(
+            collection(db, 'active_duels'),
             where("players", "array-contains", auth.currentUser.uid),
+            where("status", "==", "in_progress"),
             orderBy("timestamp", "desc"),
             limit(1)
-        ), (snapshot) => {
+        );
+
+        this.unsubscribeMatch = onSnapshot(q, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
-                    console.log("MATCHMAKING: Match found!", change.doc.id);
                     onMatchFound(change.doc.id);
                 }
             });

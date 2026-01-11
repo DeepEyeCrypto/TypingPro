@@ -135,41 +135,48 @@
     }
 }
 
-.social-grid {
-    display: flex;
-    gap: 2rem;
-    flex: 1;
+@media (max-width: 1024px) {
+    .social-dashboard {
+        padding: 1.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .social-grid {
+        flex-direction: column;
+    }
+
+    .leaderboard-panel,
+    .search-sidebar {
+        width: 100%;
+    }
+
+    .phase-5-container {
+        grid-template-columns: 1fr;
+    }
 }
 
-.leaderboard-panel {
-    width: 350px;
-    display: flex;
-    flex-direction: column;
-}
+@media (max-width: 768px) {
+    .profile-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1.5rem;
+    }
 
-.main-feed {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+    .username {
+        font-size: 1.5rem;
+    }
 
-.search-sidebar {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 
-.phase-5-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-top: 2rem;
-    min-height: 400px;
-}
-
-.release-hub-section,
-.analytics-section {
-    display: flex;
-    flex-direction: column;
+    .social-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 }

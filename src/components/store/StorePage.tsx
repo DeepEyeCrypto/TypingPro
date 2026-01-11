@@ -32,9 +32,10 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
     const [selectedCategory, setSelectedCategory] = useState<CosmeticCategory>('theme');
     const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null);
 
-    // Get keystones from auth store (you'll need to add this to your authStore)
-    const keystones = useAuthStore(state => state.profile?.keystones ?? 0);
-    const ownedCosmetics = useAuthStore(state => state.profile?.owned_cosmetics ?? []);
+    // Get keystones from auth store with safe defaults
+    const profile = useAuthStore(state => state.profile);
+    const keystones = profile?.keystones ?? 0;
+    const ownedCosmetics = profile?.owned_cosmetics ?? [];
 
     const ownedSlugs = useMemo(() => new Set(ownedCosmetics), [ownedCosmetics]);
     const filteredCosmetics = useMemo(
@@ -98,8 +99,8 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCategory === cat
-                                ? 'bg-hacker text-midnight'
-                                : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                            ? 'bg-hacker text-midnight'
+                            : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
                             }`}
                     >
                         {CATEGORY_LABELS[cat]}

@@ -13,29 +13,37 @@ interface AppShellProps {
  */
 export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, activeView }) => {
     return (
-        <div className="flex h-screen w-screen bg-midnight overflow-hidden select-none">
-            {/* SIDEBAR AREA */}
-            <aside className="h-full border-r border-white/5 bg-midnight-surface/50 backdrop-blur-md z-50">
-                {sidebar}
+        <div
+            className="flex h-screen w-screen bg-cover bg-center overflow-hidden select-none"
+            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop")' }}
+        >
+            {/* AMBIENT OVERLAY */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-0" />
+
+            {/* FLOATING SIDEBAR */}
+            <aside className="fixed left-6 top-1/2 -translate-y-1/2 z-50 h-[85vh]">
+                <div className="h-full bg-black/40 backdrop-blur-2xl border border-white/10 rounded-full py-4 px-2 shadow-2xl flex flex-col justify-center">
+                    {sidebar}
+                </div>
             </aside>
 
-            {/* CONTENT AREA */}
-            <main className="flex-1 flex flex-col min-w-0">
-                <header className="h-14 border-b border-white/5 bg-midnight-surface/30 backdrop-blur-sm z-40">
+            {/* MAIN GLASS WINDOW */}
+            <main className="relative z-10 flex-1 flex flex-col min-w-0 h-[92vh] my-auto mr-8 ml-32 bg-midnight/60 backdrop-blur-3xl border border-white/10 rounded-[40px] shadow-2xl overflow-hidden ring-1 ring-white/5">
+                <header className="h-16 shrink-0 border-b border-white/5 bg-white/5 flex items-center px-6">
                     {topbar}
                 </header>
 
-                <section className="flex-1 overflow-auto relative p-6">
+                <section className="flex-1 overflow-auto relative p-6 custom-scrollbar">
                     <div className="max-w-7xl mx-auto h-full">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={activeView}
-                                initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 1.02, y: -10 }}
+                                initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+                                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
                                 transition={{
-                                    duration: 0.3,
-                                    ease: [0.23, 1, 0.32, 1] // Custom ease-out expo 
+                                    duration: 0.4,
+                                    ease: [0.22, 1, 0.36, 1]
                                 }}
                                 className="h-full"
                             >

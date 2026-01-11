@@ -1,0 +1,15 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#000"/>
+  <circle cx="50" cy="50" r="1.5" fill="white"/>
+  <circle cx="350" cy="80" r="1.5" fill="white"/>
+  <circle cx="200" cy="250" r="2" fill="white"/>
+  <circle cx="120" cy="150" r="1" fill="white"/>
+  <defs>
+    <radialGradient id="nebula" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#nebula)"/>
+  <text x="50%" y="50%" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#e9d5ff" font-weight="bold" letter-spacing="4">GALAXY</text>
+</svg>

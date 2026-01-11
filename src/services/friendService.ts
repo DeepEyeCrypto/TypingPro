@@ -1,7 +1,20 @@
-import { db } from '@src/lib/firebase';
+import { db, auth } from '../lib/firebase';
+import { CURRICULUM } from '@src/data/lessons';
 import {
-    collection, doc, getDoc, getDocs, setDoc, updateDoc,
-    query, where, serverTimestamp, deleteDoc, limit
+    collection,
+    addDoc,
+    query,
+    where,
+    getDocs,
+    deleteDoc,
+    setDoc,
+    doc,
+    updateDoc,
+    onSnapshot,
+    serverTimestamp,
+    getDoc,
+    orderBy,
+    limit
 } from 'firebase/firestore';
 import { UserProfile } from './userService';
 
@@ -109,29 +122,133 @@ export const friendService = {
     // --- PHASE 4: DUELS & MATCHMAKING ---
 
     async createDuelChallenge(fromUid: string, toUid: string): Promise<string> {
-        const duelId = `${Date.now()}_${fromUid}`;
+        // Pick random text
+        const suitableLessons = CURRICULUM.filter(l => l.text.length > 100);
+        const randomLesson = suitableLessons[Math.floor(Math.random() * suitableLessons.length)];
+
+        // Get names/avatars for the duel doc (optimization)
+        let fromName = 'Typist';
+        let fromAvatar = '';
+        let toName = 'Opponent';
+        let toAvatar = '';
+
+        try {
+            const [fromSnap, toSnap] = await Promise.all([
+                getDoc(doc(db, 'profiles', fromUid)),
+                getDoc(doc(db, 'profiles', toUid))
+            ]);
+            if (fromSnap.exists()) {
+                fromName = fromSnap.data().username;
+                fromAvatar = fromSnap.data().avatar_url;
+            }
+            if (toSnap.exists()) {
+                toName = toSnap.data().username;
+                toAvatar = toSnap.data().avatar_url;
+            }
+        } catch (e) {
+            console.error("Error fetching profiles for duel:", e);
+        }
+
+        const duelId = `direct_${Date.now()}_${fromUid}`;
         const duelRef = doc(db, 'active_duels', duelId);
 
         await setDoc(duelRef, {
             id: duelId,
             challenger: fromUid,
             opponent: toUid,
+            challengerName: fromName,
+            challengerAvatar: fromAvatar,
+            opponentName: toName,
+            opponentAvatar: toAvatar,
             status: 'pending',
-            timestamp: serverTimestamp()
+            type: 'direct',
+            text: randomLesson.text,
+            timestamp: serverTimestamp(),
+            players: [fromUid, toUid],
+            challengerProgress: 0,
+            opponentProgress: 0,
+            challengerWPM: 0,
+            opponentWPM: 0
         });
 
         return duelId;
     },
 
-    async updateDuelProgress(duelId: string, uid: string, progress: number, wpm: number): Promise<void> {
+    async updateDuelProgress(duelId: string, role: 'challenger' | 'opponent', progress: number, wpm: number): Promise<void> {
         const duelRef = doc(db, 'active_duels', duelId);
-        const updateKey = uid === 'challenger' ? 'challengerProgress' : 'opponentProgress';
-        const wpmKey = uid === 'challenger' ? 'challengerWPM' : 'opponentWPM';
+        const updateKey = role === 'challenger' ? 'challengerProgress' : 'opponentProgress';
+        const wpmKey = role === 'challenger' ? 'challengerWPM' : 'opponentWPM';
 
         await updateDoc(duelRef, {
             [updateKey]: progress,
             [wpmKey]: wpm,
             lastUpdate: Date.now()
+        });
+    },
+
+    async acceptDuel(duelId: string): Promise<void> {
+        const duelRef = doc(db, 'active_duels', duelId);
+        await updateDoc(duelRef, {
+            status: 'in_progress',
+            startTime: Date.now()
+        });
+    },
+
+    async rejectDuel(duelId: string): Promise<void> {
+        const duelRef = doc(db, 'active_duels', duelId);
+        await updateDoc(duelRef, {
+            status: 'rejected'
+        });
+    },
+
+    async finalizeDuel(duelId: string, winnerUid: string, loserUid: string): Promise<void> {
+        const duelRef = doc(db, 'active_duels', duelId);
+        await updateDoc(duelRef, {
+            status: 'finished',
+            winnerUid,
+            loserUid,
+            endTime: Date.now()
+        });
+
+        // Update stats for both
+        import('./userService').then(({ userService }) => {
+            userService.getProfile(winnerUid).then(p => {
+                if (p) {
+                    const current = p.duel_stats || { wins: 0, losses: 0 };
+                    userService.updateAchievements(winnerUid, { duel_stats: { ...current, wins: current.wins + 1 } });
+                }
+            });
+            userService.getProfile(loserUid).then(p => {
+                if (p) {
+                    const current = p.duel_stats || { wins: 0, losses: 0 };
+                    userService.updateAchievements(loserUid, { duel_stats: { ...current, losses: current.losses + 1 } });
+                }
+            });
+        });
+    },
+
+    listenToIncomingRequests(myUid: string, callback: (requests: FriendRequest[]) => void) {
+        const q = query(
+            collection(db, 'friend_requests'),
+            where('toUid', '==', myUid),
+            where('status', '==', 'pending')
+        );
+        return onSnapshot(q, (snapshot) => {
+            const requests = snapshot.docs.map(doc => doc.data() as FriendRequest);
+            callback(requests);
+        });
+    },
+
+    listenToIncomingDuels(myUid: string, callback: (duels: any[]) => void) {
+        const q = query(
+            collection(db, 'active_duels'),
+            where('opponent', '==', myUid),
+            where('status', '==', 'pending'),
+            limit(1)
+        );
+        return onSnapshot(q, (snapshot) => {
+            const duels = snapshot.docs.map(doc => doc.data());
+            callback(duels);
         });
     }
 };

@@ -12,6 +12,9 @@ import { GatekeeperModal } from '../../../src/components/GatekeeperModal'
 import { AnalyticsDashboard } from '../../../src/components/analytics/AnalyticsDashboard'
 import { CURRICULUM, Lesson } from '../../../src/data/lessons'
 import { getRankForWPM } from '../../../src/services/rankSystem'
+import { friendService } from '../../../src/services/friendService'
+import { userService } from '../../../src/services/userService'
+import { matchmakingService } from '../../../src/services/matchmakingService'
 import '../../../src/styles/glass.css'
 import '../../../src/styles/themes.css'
 import { TitleBar } from '../../../src/components/TitleBar'
@@ -32,6 +35,7 @@ import { AppShell } from '../../../src/components/layout/AppShell'
 import { SideNav } from '../../../src/components/layout/SideNav'
 import { TopBar as ModernTopBar } from '../../../src/components/layout/TopBar'
 import { Button } from '../../../src/components/ui/Button'
+import { AuthButtons } from '../../../src/components/AuthButtons'
 
 // WARM GLASS DASHBOARD
 import { DashboardPage } from '../../../src/components/dashboard/DashboardPage'
@@ -39,6 +43,9 @@ import { StorePage } from '../../../src/components/store/StorePage'
 
 // GAMIFICATION
 import { GamificationPage } from '../../../src/components/gamification/GamificationPage'
+import { CertificationPage } from '../../../src/components/certification/CertificationPage'
+import { AchievementToast } from '../../../src/components/gamification/AchievementToast'
+import { useAchievementStore } from '../../../src/stores/achievementStore'
 
 // ICONS for SideNav
 const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>;
@@ -52,11 +59,13 @@ const TrophyIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentCol
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
+  const [isSyncing, setIsSyncing] = React.useState(false)
 
   useLockdown() // Enforce UI Security
   const { user, setAuthenticated, checkSession } = useAuthStore()
   const { theme, fontFamily } = useSettingsStore()
   const typing = useTyping()
+  const { unlockedBadges, streak: streakData, certifications, keystones } = useAchievementStore()
   useUpdater() // Initialize auto-updater check
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -82,7 +91,9 @@ const App: React.FC = () => {
               const userData = await invoke<any>(`${provider}_auth_finish`, { code })
               setAuthenticated(userData, userData.token)
 
-              syncService.pullFromCloud()
+              setIsSyncing(true)
+              await syncService.pullFromCloud()
+              setIsSyncing(false)
 
               if (window.location.protocol.startsWith('http')) {
                 window.history.replaceState({}, document.title, '/')
@@ -122,6 +133,75 @@ const App: React.FC = () => {
     initSession()
   }, []) // Run once on mount
 
+  // 📡 SOCIAL HEARTBEAT: Listen for requests and duels
+  useEffect(() => {
+    if (!user?.id) return
+
+    const unsubRequests = friendService.listenToIncomingRequests(user.id, (requests) => {
+      // Find new requests that weren't there before (simple comparison by length or ID)
+      const lastCount = parseInt(localStorage.getItem('last_req_count') || '0')
+      if (requests.length > lastCount) {
+        const newest = requests[0]
+        useAchievementStore.getState().addNotification({
+          title: 'New Friend Request',
+          message: `@${newest.fromUsername} wants to connect!`,
+          icon: '👤',
+          reward: 0
+        })
+      }
+      localStorage.setItem('last_req_count', requests.length.toString())
+    })
+
+    const unsubDuels = friendService.listenToIncomingDuels(user.id, (duels) => {
+      if (duels.length > 0) {
+        const newest = duels[0]
+        const notified = sessionStorage.getItem(`duel_notified_${newest.id}`)
+        if (!notified) {
+          useAchievementStore.getState().addNotification({
+            title: newest.type === 'matchmade' ? 'Match Found!' : 'Duel Challenged!',
+            message: newest.type === 'matchmade' ? 'Arena is ready for combat.' : `@${newest.challengerName || 'Someone'} challenged you!`,
+            icon: '⚔️',
+            reward: 0,
+            actionLabel: 'ACCEPT',
+            onAction: async () => {
+              await friendService.acceptDuel(newest.id);
+              typing.setActiveMatchId(newest.id);
+              typing.setView('duel');
+            }
+          })
+          sessionStorage.setItem(`duel_notified_${newest.id}`, 'true')
+        }
+      }
+    })
+
+    // 📡 MATCHMAKING LISTENER
+    const unsubMatch = matchmakingService.listenForMatch((matchId) => {
+      const notified = sessionStorage.getItem(`match_notified_${matchId}`);
+      if (!notified) {
+        typing.setActiveMatchId(matchId);
+        typing.setView('duel');
+        sessionStorage.setItem(`match_notified_${matchId}`, 'true');
+      }
+    });
+
+    return () => {
+      unsubRequests()
+      unsubDuels()
+      unsubMatch()
+    }
+  }, [user?.id, typing.setView, typing.setActiveMatchId])
+
+  // 💓 PRESENCE HEARTBEAT: Update last_seen every 5 mins
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const update = () => userService.updatePresence(user.id).catch(console.error);
+    update(); // Initial
+
+    const interval = setInterval(update, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user?.id])
+
   // Focus management
   useEffect(() => {
     if (!isLoading && typing.view === 'typing') {
@@ -142,12 +222,13 @@ const App: React.FC = () => {
           activeView={typing.view}
           sidebar={
             <SideNav
+              syncing={isSyncing}
               items={[
                 { id: 'dashboard', icon: <HomeIcon />, label: 'Dashboard', onClick: () => typing.setView('dashboard'), active: typing.view === 'dashboard' },
                 { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
                 { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
                 { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
-                { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' },
+                { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' || typing.view === 'certification' },
                 { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
                 { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => { }, active: false },
               ]}
@@ -177,7 +258,7 @@ const App: React.FC = () => {
               actions={
                 <div className="flex items-center space-x-2">
                   <NetworkTest />
-                  {user && <Button variant="ghost" size="sm" onClick={() => useAuthStore.getState().logout()}>LOGOUT</Button>}
+                  <AuthButtons />
                 </div>
               }
             />
@@ -187,15 +268,16 @@ const App: React.FC = () => {
           <WhatsNewModal />
           <UsernameModal />
           <RankCelebration />
+          <AchievementToast />
 
           {typing.view === 'dashboard' ? (
             <DashboardPage
               username={user?.displayName?.split(' ')[0] || 'Typist'}
               wpm={Math.round(typing.metrics.adjusted_wpm)}
               accuracy={typing.metrics.accuracy}
-              keystones={useAuthStore.getState().profile?.keystones || 0}
-              streak={useAuthStore.getState().profile?.streak || 0}
-              bestWpm={useAuthStore.getState().profile?.best_wpm || 0}
+              keystones={keystones}
+              streak={streakData.current_streak}
+              bestWpm={useAuthStore.getState().profile?.highest_wpm || 0}
               rank={getRankForWPM(useAuthStore.getState().profile?.avg_wpm || 0).name}
               level={Math.floor((useAuthStore.getState().profile?.avg_wpm || 0) / 10) + 1}
               currentLesson={{
@@ -215,20 +297,31 @@ const App: React.FC = () => {
           ) : typing.view === 'achievements' ? (
             <GamificationPage
               userStats={{
-                best_wpm: Math.round(typing.metrics.adjusted_wpm),
-                perfect_sessions: 0,
-                current_streak: 0,
-                longest_streak: 0,
+                best_wpm: useAuthStore.getState().profile?.highest_wpm || 0,
+                perfect_sessions: useAchievementStore.getState().perfectSessions,
+                current_streak: streakData.current_streak,
+                longest_streak: streakData.longest_streak,
                 lessons_completed: typing.completedIds.length,
-                total_keystrokes: 0,
+                total_keystrokes: useAchievementStore.getState().totalKeystrokes,
               }}
-              unlockedBadgeIds={[]}
-              streakData={{
-                current_streak: 0,
-                longest_streak: 0,
-              }}
-              challengeProgress={{}}
+              unlockedBadgeIds={unlockedBadges}
+              streakData={streakData}
+              earnedCertifications={certifications}
+              challengeProgress={useAchievementStore.getState().challengeProgress}
               onBack={() => typing.setView('dashboard')}
+              onCertificationAttempt={() => typing.setView('certification')}
+            />
+          ) : typing.view === 'certification' ? (
+            <CertificationPage
+              userId={user?.id || 'guest'}
+              username={user?.name || 'Typist'}
+              earnedCertifications={certifications}
+              onCertificationEarned={(cert, reward) => {
+                useAchievementStore.getState().addCertification(cert);
+                useAchievementStore.getState().addKeystones(reward);
+                syncService.pushToCloud();
+              }}
+              onBack={() => typing.setView('achievements')}
             />
           ) : typing.view === 'selection' ? (
             <LessonSelector
@@ -271,8 +364,6 @@ const App: React.FC = () => {
               onBack={() => typing.setView('social')}
               onMatchFound={(matchId) => {
                 typing.setActiveMatchId(matchId)
-                const duelLesson = CURRICULUM[0];
-                typing.startLesson(duelLesson);
                 typing.setView('duel');
               }}
             />

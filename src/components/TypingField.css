@@ -11,13 +11,18 @@
     /* Force GPU layer */
 
     /* Layout Fixes */
-    max-width: 1000px;
-    margin: 0 auto 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
     text-align: center;
     white-space: pre-wrap;
     overflow-wrap: break-word;
     word-break: normal;
-    padding: 0 2rem;
+    padding: 0 1rem;
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
 }
 
 .char {
@@ -32,16 +37,17 @@
 }
 
 .char.correct {
-    color: #eeeeee;
+    color: #ffffff;
     opacity: 1;
-    /* Reduced text-shadow for performance */
-    text-shadow: 0 0 5px rgba(238, 238, 238, 0.3);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    font-weight: 500;
 }
 
 .char.incorrect {
-    color: #ff3333;
+    color: #ff4444;
     opacity: 1;
-    text-shadow: 0 0 5px rgba(255, 51, 51, 0.3);
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+    text-decoration: underline wavy rgba(255, 68, 68, 0.6);
 }
 
 .caret {
@@ -88,6 +94,7 @@
 }
 
 @keyframes blink {
+
     0%,
     100% {
         opacity: 1;

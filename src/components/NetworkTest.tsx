@@ -20,31 +20,18 @@ export const NetworkTest: React.FC = () => {
     }, []);
 
     return (
-        <div style={{
-            position: 'fixed',
-            bottom: '40px',
-            right: '20px',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(10px)',
-            border: '0.5px solid rgba(255,255,255,0.1)',
-            fontSize: '0.7rem',
-            zIndex: 10000,
-            color: status === 'online' ? '#00ff41' : status === 'offline' ? '#ff4444' : '#888',
-            fontFamily: 'monospace',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-        }}>
-            <span>{status === 'online' ? '✅ Online' : status === 'offline' ? '❌ Offline' : '📡 Testing...'}</span>
+        <div className={`
+            flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border 
+            ${status === 'online' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                status === 'offline' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                    'bg-white/5 border-white/10 text-white/40'}
+            text-[10px] uppercase font-bold tracking-wider
+        `}>
+            <div className={`w-1.5 h-1.5 rounded-full ${status === 'online' ? 'bg-green-400 shadow-[0_0_8px_rgba(0,255,65,0.5)]' : status === 'offline' ? 'bg-red-400' : 'bg-gray-400 animate-pulse'}`} />
+            <span>{status === 'online' ? 'NET' : status === 'offline' ? 'OFFLINE' : 'CONNECTING'}</span>
+
             {status === 'online' && ping !== null && (
-                <span style={{
-                    opacity: 0.8,
-                    fontSize: '0.65rem',
-                    borderLeft: '1px solid rgba(255,255,255,0.2)',
-                    paddingLeft: '8px'
-                }}>
+                <span className="opacity-50 border-l border-current pl-2 ml-1 font-mono">
                     {ping}ms
                 </span>
             )}

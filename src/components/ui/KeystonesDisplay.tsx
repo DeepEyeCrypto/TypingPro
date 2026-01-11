@@ -1,9 +1,4 @@
-// ═══════════════════════════════════════════════════════════════════
-// KEYSTONES DISPLAY - Animated currency indicator
-// ═══════════════════════════════════════════════════════════════════
-
 import React from 'react';
-import { motion } from 'framer-motion';
 
 interface KeystonesDisplayProps {
     amount: number;
@@ -31,27 +26,38 @@ export const KeystonesDisplay: React.FC<KeystonesDisplayProps> = ({
     return (
         <div className={`relative flex items-center gap-2 bg-midnight-surface/50 rounded-lg ${sizeClasses[size]}`}>
             <span className={`${iconSizes[size]}`}>💎</span>
-            <motion.span
+            <span
                 key={amount}
-                initial={{ scale: 1.2, color: '#00ff41' }}
-                animate={{ scale: 1, color: '#ffffff' }}
-                transition={{ duration: 0.3 }}
-                className="font-bold font-mono"
+                className="font-bold font-mono text-white animate-pulse-green"
             >
                 {amount.toLocaleString()}
-            </motion.span>
+            </span>
 
             {showChange !== undefined && showChange !== 0 && (
-                <motion.span
-                    initial={{ opacity: 1, y: 0 }}
-                    animate={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 1.5 }}
-                    className={`absolute -top-5 right-0 text-sm font-bold ${showChange > 0 ? 'text-hacker' : 'text-red-400'
+                <span
+                    className={`absolute -top-5 right-0 text-sm font-bold animate-float-up ${showChange > 0 ? 'text-hacker' : 'text-red-400'
                         }`}
                 >
                     {showChange > 0 ? '+' : ''}{showChange}
-                </motion.span>
+                </span>
             )}
+
+            <style>{`
+                @keyframes pulse-green {
+                    0% { transform: scale(1.2); color: #00ff41; }
+                    100% { transform: scale(1); color: #ffffff; }
+                }
+                .animate-pulse-green {
+                    animation: pulse-green 0.3s ease-out;
+                }
+                @keyframes float-up {
+                    0% { opacity: 1; transform: translateY(0); }
+                    100% { opacity: 0; transform: translateY(-20px); }
+                }
+                .animate-float-up {
+                    animation: float-up 1.5s ease-out forwards;
+                }
+            `}</style>
         </div>
     );
 };

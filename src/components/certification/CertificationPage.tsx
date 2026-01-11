@@ -68,11 +68,25 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
             const newCert = createUserCertification(userId, completedTest);
             if (newCert) {
                 onCertificationEarned?.(newCert, tierInfo.keystones_reward);
+
+                // Global Report: Certification
+                import('../../services/activityService').then(({ activityService }) => {
+                    import('../../stores/authStore').then(({ useAuthStore }) => {
+                        const avatarUrl = useAuthStore.getState().user?.avatar_url || '';
+                        activityService.reportEvent({
+                            type: 'certification',
+                            userId,
+                            username,
+                            avatarUrl,
+                            data: { tier: activeTest.tier }
+                        });
+                    });
+                });
             }
         }
 
         setActiveTest(null);
-    }, [activeTest, userId, onCertificationEarned]);
+    }, [activeTest, userId, username, onCertificationEarned]);
 
     const handleTestCancel = useCallback(() => {
         setActiveTest(null);

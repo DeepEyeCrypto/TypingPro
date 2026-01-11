@@ -1,5 +1,8 @@
 import { db, getFirebaseDebugInfo } from '@src/lib/firebase';
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import {
+    doc, getDoc, getDocs, setDoc, query, where,
+    collection, limit, updateDoc
+} from 'firebase/firestore';
 
 export interface UserProfile {
     uid: string;
@@ -14,6 +17,21 @@ export interface UserProfile {
     rank_points: number;
     unlocked_lessons?: string[];
     completed_lessons?: string[];
+    // New Gamification Fields
+    unlocked_badges?: string[];
+    streak?: {
+        current: number;
+        longest: number;
+        last_date: string | null;
+    };
+    certifications?: any[];
+    keystones?: number;
+    total_keystrokes?: number;
+    perfect_sessions?: number;
+    challenge_progress?: Record<string, any>;
+    last_seen?: number;
+    duel_stats?: { wins: number; losses: number };
+    owned_cosmetics?: string[];
 }
 
 const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> => {
@@ -66,7 +84,15 @@ export const userService = {
                 highest_wpm: 0,
                 avg_wpm: 0,
                 total_races: 0,
-                rank_points: 0
+                rank_points: 0,
+                unlocked_badges: [],
+                streak: {
+                    current: 0,
+                    longest: 0,
+                    last_date: null
+                },
+                certifications: [],
+                keystones: 0
             };
 
             // Reserve username first (8s timeout)
@@ -130,6 +156,18 @@ export const userService = {
         } catch (error) {
             console.error("Failed to update progress:", error);
         }
+    },
+
+    async updateAchievements(uid: string, data: Partial<UserProfile>): Promise<void> {
+        if (!db) { console.error("Firebase DB not initialized for updateAchievements"); return; }
+        const userRef = doc(db, 'profiles', uid);
+        await updateDoc(userRef, data);
+    },
+
+    async updatePresence(uid: string): Promise<void> {
+        if (!db) { console.error("Firebase DB not initialized for updatePresence"); return; }
+        const userRef = doc(db, 'profiles', uid);
+        await updateDoc(userRef, { last_seen: Date.now() });
     },
 
     async checkUsernameTaken(username: string): Promise<boolean> {

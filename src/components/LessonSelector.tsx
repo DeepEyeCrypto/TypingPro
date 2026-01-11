@@ -26,7 +26,7 @@ export const LessonSelector = ({
       {/* Dashboard Hero Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Next Lesson Card */}
-        <Card className="p-8 bg-midnight/40 relative overflow-hidden group">
+        <Card className="p-8 bg-black/20 border-white/5 backdrop-blur-md relative overflow-hidden group hover:border-white/10 transition-colors">
           <div className="absolute top-0 right-0 p-4">
             <span className="text-[10px] font-black text-hacker opacity-20 uppercase tracking-[0.5em]">Sequence_Next</span>
           </div>
@@ -119,25 +119,25 @@ export const LessonSelector = ({
                   disabled={!isUnlocked}
                   onClick={() => onSelect(lesson)}
                   className={`
-                    group text-left p-6 rounded-xl border transition-all duration-300 relative overflow-hidden
+                    group text-left p-6 rounded-xl border transition-all duration-300 relative overflow-hidden backdrop-blur-sm
                     ${isUnlocked
-                      ? 'bg-midnight/30 border-white/5 hover:border-hacker/30 cursor-pointer'
-                      : 'bg-black/40 border-white/5 opacity-50 cursor-not-allowed'}
+                      ? 'bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/20 cursor-pointer shadow-lg hover:shadow-[0_0_20px_rgba(0,255,65,0.05)]'
+                      : 'bg-black/20 border-white/5 opacity-30 cursor-not-allowed grayscale'}
                   `}
                 >
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className={`text-[10px] font-black tracking-widest ${isUnlocked ? 'text-hacker/60' : 'text-white/20'}`}>
+                      <span className={`text-[10px] font-black tracking-widest ${isUnlocked ? 'text-neon-cyan/80' : 'text-white/20'}`}>
                         {lesson.id.toUpperCase()}
                       </span>
                       {isCompleted ? (
-                        <div className="w-5 h-5 rounded-full bg-hacker/20 flex items-center justify-center border border-hacker/30">
-                          <svg className="w-3 h-3 text-hacker" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-5 h-5 rounded-full bg-neon-cyan/20 flex items-center justify-center border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,243,255,0.3)]">
+                          <svg className="w-3 h-3 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
                       ) : !isUnlocked && (
-                        <svg className="w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                       )}

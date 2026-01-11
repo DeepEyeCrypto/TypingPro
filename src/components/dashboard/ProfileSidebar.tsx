@@ -42,69 +42,75 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
     return (
         <div className="wg-sidebar">
             {/* Profile Card */}
-            <div className="wg-profile-card">
+            <div className="bg-black/20 border border-white/5 backdrop-blur-md rounded-2xl p-5 shadow-lg">
                 {/* User Info */}
                 <div className="flex items-center gap-3 mb-4">
                     <div
-                        className="wg-profile-avatar bg-gradient-to-br from-[#00ff41] to-[#00aa66] flex items-center justify-center text-midnight text-lg font-bold"
+                        className="w-12 h-12 rounded-full border border-neon-cyan/50 p-0.5"
                     >
                         {avatarUrl ? (
                             <img src={avatarUrl} alt={username} className="w-full h-full object-cover rounded-full" />
                         ) : (
-                            username.charAt(0).toUpperCase()
+                            <div className="w-full h-full bg-linear-to-br from-neon-cyan to-neon-purple rounded-full flex items-center justify-center font-bold text-black">{username.charAt(0).toUpperCase()}</div>
                         )}
                     </div>
                     <div>
-                        <h3 className="font-bold text-white">{username}</h3>
-                        <p className="text-sm text-white/60">@{handle}</p>
+                        <h3 className="font-bold text-white tracking-wide">{username}</h3>
+                        <p className="text-xs text-white/40 font-mono">@{handle}</p>
                     </div>
-                    <button className="ml-auto text-white/40 hover:text-white">⋯</button>
+                    <button className="ml-auto text-white/40 hover:text-white transition-colors">⋯</button>
                 </div>
 
                 {/* Stats Row */}
-                <div className="wg-profile-stats">
-                    <div>
-                        <div className="wg-profile-stat-value">{bestWpm}</div>
-                        <div className="wg-profile-stat-label">Best WPM</div>
+                <div className="grid grid-cols-3 gap-2 py-4 border-y border-white/5">
+                    <div className="text-center">
+                        <div className="text-lg font-bold text-white font-mono">{bestWpm}</div>
+                        <div className="text-[10px] uppercase text-white/40 tracking-wider">Best WPM</div>
                     </div>
-                    <div>
-                        <div className="wg-profile-stat-value text-[#00ff41]">{rank}</div>
-                        <div className="wg-profile-stat-label">Rank</div>
+                    <div className="text-center border-l border-white/5">
+                        <div className="text-lg font-bold text-neon-cyan font-mono">{rank}</div>
+                        <div className="text-[10px] uppercase text-white/40 tracking-wider">Rank</div>
                     </div>
-                    <div>
-                        <div className="wg-profile-stat-value">Lv.{level}</div>
-                        <div className="wg-profile-stat-label">Level</div>
+                    <div className="text-center border-l border-white/5">
+                        <div className="text-lg font-bold text-white font-mono">Lv.{level}</div>
+                        <div className="text-[10px] uppercase text-white/40 tracking-wider">Level</div>
                     </div>
                 </div>
 
                 {/* Keystones Balance */}
-                <div className="flex items-center justify-center gap-2 py-3">
-                    <span className="text-xl">💎</span>
-                    <span className="text-lg font-bold text-white">{keystones.toLocaleString()}</span>
-                    <span className="text-xs text-white/50">Keystones</span>
+                <div className="flex items-center justify-center gap-2 pt-4">
+                    <span className="text-lg animate-pulse">💎</span>
+                    <span className="text-lg font-bold text-white font-mono">{keystones.toLocaleString()}</span>
+                    <span className="text-xs text-white/50 uppercase tracking-wider">Keystones</span>
                 </div>
             </div>
 
             {/* Calendar Card */}
-            <div className="wg-profile-card">
+            <div className="bg-black/20 border border-white/5 backdrop-blur-md rounded-2xl p-5 shadow-lg">
                 <div className="wg-calendar">
                     <div className="wg-calendar-header">
-                        <span className="text-sm font-semibold text-white">{currentMonth}</span>
+                        <span className="text-xs font-bold text-white/60 uppercase tracking-widest">{currentMonth}</span>
                         <div className="flex gap-2">
-                            <button className="text-white/40 hover:text-white text-xs">‹</button>
-                            <button className="text-white/40 hover:text-white text-xs">›</button>
+                            <button className="text-white/40 hover:text-white text-xs transition-colors">‹</button>
+                            <button className="text-white/40 hover:text-white text-xs transition-colors">›</button>
                         </div>
                     </div>
 
-                    <div className="wg-calendar-grid">
+                    <div className="wg-calendar-grid mt-4">
                         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                            <div key={day} className="text-white/40 text-xs py-1">{day}</div>
+                            <div key={day} className="text-white/20 text-[10px] font-bold text-center py-1">{day}</div>
                         ))}
                         {calendarDays.map((day, i) => (
                             <div
                                 key={i}
-                                className={`wg-calendar-day ${day === today.getDate() ? 'today' : ''
-                                    } ${day ? '' : 'opacity-0'}`}
+                                className={`
+                                    h-7 flex items-center justify-center text-xs rounded transition-all
+                                    ${day === today.getDate()
+                                        ? 'bg-neon-cyan/20 text-neon-cyan font-bold shadow-[0_0_10px_rgba(0,243,255,0.2)]'
+                                        : day ? 'text-white/60 hover:bg-white/5' : ''
+                                    } 
+                                    ${day ? '' : 'opacity-0'}
+                                `}
                             >
                                 {day || ''}
                             </div>
@@ -114,47 +120,47 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
             </div>
 
             {/* Daily Challenges */}
-            <div className="wg-profile-card">
-                <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm font-semibold text-white">Daily Challenges</span>
-                    <button className="text-xs text-[#00ff41] hover:text-[#00d4aa]">view all</button>
+            <div className="bg-black/20 border border-white/5 backdrop-blur-md rounded-2xl p-5 shadow-lg">
+                <div className="flex justify-between items-center mb-4">
+                    <span className="text-xs font-bold text-white/60 uppercase tracking-widest">Daily Challenges</span>
+                    <button className="text-[10px] text-neon-cyan hover:text-neon-cyan/80 transition-colors uppercase font-bold tracking-wider">View All</button>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                     {challenges.length > 0 ? (
                         challenges.map((challenge, i) => (
-                            <div key={i} className="wg-challenge-card">
-                                <div className="wg-challenge-icon bg-gradient-to-br from-[#00ff41] to-[#00aa66] flex items-center justify-center">
-                                    <span className="text-white">🎯</span>
+                            <div key={i} className="flex gap-3 items-center p-2 rounded-lg bg-white/5 border border-white/5">
+                                <div className="w-8 h-8 rounded bg-gradient-to-br from-neon-green/20 to-neon-green/10 flex items-center justify-center text-neon-green border border-neon-green/20">
+                                    <span className="text-sm">🎯</span>
                                 </div>
-                                <div className="wg-challenge-info">
-                                    <div className="wg-challenge-title">{challenge.title}</div>
-                                    <div className="wg-challenge-desc">{challenge.desc}</div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-bold text-white truncate">{challenge.title}</div>
+                                    <div className="text-[10px] text-white/40 truncate">{challenge.desc}</div>
                                 </div>
-                                <div className="wg-challenge-reward">+{challenge.reward}💎</div>
+                                <div className="text-xs font-mono font-bold text-neon-yellow">+{challenge.reward}💎</div>
                             </div>
                         ))
                     ) : (
                         <>
-                            <div className="wg-challenge-card">
-                                <div className="wg-challenge-icon bg-gradient-to-br from-[#00ff41] to-[#00aa66] flex items-center justify-center">
-                                    <span className="text-white">⚡</span>
+                            <div className="flex gap-3 items-center p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+                                <div className="w-8 h-8 rounded bg-neon-green/10 flex items-center justify-center text-neon-green border border-neon-green/20 group-hover:border-neon-green/40 transition-colors">
+                                    <span className="text-sm">⚡</span>
                                 </div>
-                                <div className="wg-challenge-info">
-                                    <div className="wg-challenge-title">Speed Burst</div>
-                                    <div className="wg-challenge-desc">Achieve 50 WPM in any test</div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-bold text-white">Speed Burst</div>
+                                    <div className="text-[10px] text-white/40">Achieve 50 WPM</div>
                                 </div>
-                                <div className="wg-challenge-reward">+15💎</div>
+                                <div className="text-xs font-mono font-bold text-neon-yellow">+15💎</div>
                             </div>
-                            <div className="wg-challenge-card">
-                                <div className="wg-challenge-icon bg-gradient-to-br from-[#00d4aa] to-[#009988] flex items-center justify-center">
-                                    <span className="text-white">🎯</span>
+                            <div className="flex gap-3 items-center p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+                                <div className="w-8 h-8 rounded bg-neon-purple/10 flex items-center justify-center text-neon-purple border border-neon-purple/20 group-hover:border-neon-purple/40 transition-colors">
+                                    <span className="text-sm">🎯</span>
                                 </div>
-                                <div className="wg-challenge-info">
-                                    <div className="wg-challenge-title">Perfect Accuracy</div>
-                                    <div className="wg-challenge-desc">100% accuracy in any lesson</div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-bold text-white">Perfect Accuracy</div>
+                                    <div className="text-[10px] text-white/40">100% accuracy</div>
                                 </div>
-                                <div className="wg-challenge-reward">+20💎</div>
+                                <div className="text-xs font-mono font-bold text-neon-yellow">+20💎</div>
                             </div>
                         </>
                     )}

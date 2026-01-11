@@ -13,14 +13,27 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
     const { user } = useAuthStore();
 
     useEffect(() => {
+        let interval: any;
+        if (isSearching) {
+            interval = setInterval(async () => {
+                if (user) {
+                    const matchId = await matchmakingService.findAndCreateMatch(user.name || "Typist", user.avatar_url || "");
+                    if (matchId) {
+                        onMatchFound(matchId);
+                    }
+                }
+            }, 3000);
+        }
+
         return () => {
+            if (interval) clearInterval(interval);
             // Cleanup on unmount
             if (isSearching) {
                 matchmakingService.leaveQueue();
                 matchmakingService.stopListening();
             }
         };
-    }, [isSearching]);
+    }, [isSearching, user]);
 
     const handleFindMatch = async () => {
         if (!user) return;

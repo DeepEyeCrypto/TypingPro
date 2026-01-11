@@ -7,7 +7,7 @@ interface TypingFieldProps {
     targetText: string,
     input: string,
     active: boolean,
-    onKeyDown: (e: any) => void,
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void,
     isPaused?: boolean,
     ghostReplay?: ReplayData
 }
@@ -155,6 +155,12 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
         }
     }, [active])
 
+    // Memoize text splitting to avoid O(N) split on every render
+    const textChars = React.useMemo(() => targetText.split(''), [targetText]);
+
+    // Optimize Ghost Logic - use ref to avoid state thrashing if possible or accept re-renders
+    // Using existing logic but ensure we don't do heavy computation
+
     return (
         <div className="typing-field" style={{ fontSize: `${fontSize}px` }} onClick={() => inputRef.current?.focus()}>
             <input
@@ -175,7 +181,9 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
                 value=""
             />
 
-            {targetText.split('').map((char: string, i: number) => {
+            {textChars.map((char: string, i: number) => {
+                // Optimization: Memoize the state calculation?
+                // Actually, simple comparison is fast. The key is React.memo on Character.
                 let state: 'pending' | 'correct' | 'incorrect' = 'pending'
                 if (i < localInput.length) {
                     state = localInput[i] === char ? 'correct' : 'incorrect'

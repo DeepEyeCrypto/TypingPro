@@ -8,7 +8,7 @@ import { Leaderboard } from './Leaderboard';
 import { getProgressToNextRank, getRank } from '@src/utils/rankSystem';
 import { RankBadge } from '../RankBadge';
 import { ReleaseHub } from './ReleaseHub';
-import { HyperAnalytics } from './HyperAnalytics';
+import { ActivityFeed } from './ActivityFeed';
 import { Card } from '../ui/Card';
 import { StatDisplay } from '../ui/StatDisplay';
 import { Button } from '../ui/Button';
@@ -155,8 +155,8 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                     <ReleaseHub />
                 </div>
                 <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Hyper_Analytics_Cloud</h3>
-                    <HyperAnalytics />
+                    <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Global_Activity_Pulse</h3>
+                    <ActivityFeed />
                 </div>
             </div>
         </div>

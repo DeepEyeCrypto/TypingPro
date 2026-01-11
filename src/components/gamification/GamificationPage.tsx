@@ -58,7 +58,7 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
     const unlockedCount = badgesWithProgress.filter(b => b.unlocked).length;
 
     return (
-        <div className="min-h-full p-6">
+        <div className="min-h-full pt-4 px-6 pb-8">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
@@ -188,8 +188,7 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                 <CertificationTiers
                     earnedCertifications={earnedCertifications}
                     onAttempt={(tier) => {
-                        // Navigate to certification test (handled by parent)
-                        console.log('Attempt certification:', tier);
+                        onCertificationAttempt?.(tier);
                     }}
                     onViewCertificate={(cert) => {
                         console.log('View certificate:', cert);

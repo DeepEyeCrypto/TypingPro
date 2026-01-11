@@ -4,10 +4,12 @@
 
 :root {
     /* Base Colors - DARK HACKER */
-    --wg-bg-main: #0a0a0f;
-    --wg-bg-card: rgba(15, 15, 25, 0.85);
-    --wg-bg-card-solid: #0f0f19;
-    --wg-bg-card-hover: rgba(20, 20, 35, 0.95);
+    --wg-bg-main: transparent;
+    /* Was #0a0a0f */
+    --wg-bg-card: rgba(15, 15, 25, 0.4);
+    /* More transparent */
+    --wg-bg-card-solid: rgba(15, 15, 25, 0.6);
+    --wg-bg-card-hover: rgba(30, 30, 50, 0.5);
     --wg-bg-sidebar: #0a0a0f;
     --wg-bg-sidebar-light: #12121f;
 
@@ -339,11 +341,10 @@
 /* Dashboard Grid Layout */
 .wg-dashboard {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 340px;
     gap: var(--wg-gap);
-    min-height: 100vh;
-    background: var(--wg-bg-main);
-    padding: var(--wg-padding);
+    /* Removed min-height and padding/bg to fit in AppShell */
+    width: 100%;
 }
 
 .wg-main-content {
@@ -386,5 +387,25 @@
 
     .wg-content-row {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .wg-dashboard {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .wg-stats-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .wg-main-content {
+        gap: 12px;
+    }
+
+    .wg-card {
+        padding: 16px;
     }
 }

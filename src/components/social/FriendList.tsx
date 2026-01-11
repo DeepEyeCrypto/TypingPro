@@ -9,35 +9,32 @@ export const FriendList = () => {
     const [requests, setRequests] = useState<FriendRequest[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const refreshData = async () => {
-        if (!profile) return;
-        setLoading(true);
-        try {
-            const [friendsData, requestsData] = await Promise.all([
-                friendService.getFriends(profile.uid),
-                friendService.getIncomingRequests(profile.uid)
-            ]);
-            setFriends(friendsData);
-            setRequests(requestsData);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        refreshData();
+        if (!profile) return;
+
+        // 1. Fetch friends once (or we could also use onSnapshot here if we wanted)
+        friendService.getFriends(profile.uid).then(setFriends).finally(() => setLoading(false));
+
+        // 2. Real-time requests
+        const unsub = friendService.listenToIncomingRequests(profile.uid, (data) => {
+            setRequests(data);
+        });
+
+        return () => unsub();
     }, [profile]);
 
     const handleAccept = async (id: string) => {
         await friendService.acceptFriendRequest(id);
-        refreshData();
+        // Re-fetch friends list since subcollection changed
+        if (profile) {
+            const updatedFriends = await friendService.getFriends(profile.uid);
+            setFriends(updatedFriends);
+        }
     };
 
     const handleReject = async (id: string) => {
         await friendService.rejectFriendRequest(id);
-        refreshData();
+        // Requests will auto-update via listener
     };
 
     if (loading) return (
@@ -70,7 +67,11 @@ export const FriendList = () => {
                             <div key={friend.uid} className="group flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-hacker/30 hover:bg-white/10 transition-all duration-300">
                                 <div className="relative">
                                     <img src={friend.avatar_url} alt={friend.username} className="w-10 h-10 rounded-full border border-white/10" />
-                                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-hacker border-2 border-midnight"></div>
+                                    {friend.last_seen && (Date.now() - friend.last_seen < 10 * 60 * 1000) ? (
+                                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-hacker border-2 border-midnight"></div>
+                                    ) : (
+                                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-white/20 border-2 border-midnight"></div>
+                                    )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="text-sm font-bold text-white truncate group-hover:text-hacker transition-colors">

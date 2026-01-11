@@ -103,7 +103,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         <button className="text-sm text-[#00ff41] hover:text-[#00d4aa]">view all</button>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[
                             { name: 'Home Row', desc: 'Foundation training', icon: '🏠', color: 'from-[#00ff41] to-[#00aa66]' },
                             { name: 'Speed Building', desc: 'Increase your pace', icon: '⚡', color: 'from-[#00d4aa] to-[#009988]' },

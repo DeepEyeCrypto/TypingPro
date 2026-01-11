@@ -10,11 +10,16 @@ import { useRustAudio } from '@src/hooks/useRustAudio'
 import { raceService } from '@src/services/raceService'
 import { liveRaceService } from '@src/services/liveRaceService';
 import { useAuthStore } from '@src/stores/authStore'
+import { useAchievementStore } from '@src/stores/achievementStore'
+import { checkBadgeEligibility } from '@src/services/badgeService'
+import { updateStreak } from '@src/services/streakService'
+import { generateDailyChallenges, updateChallengeProgress } from '@src/services/challengeService'
+import { activityService } from '@src/services/activityService'
 
 export const useTyping = () => {
     const { playTypingSound } = useRustAudio()
     const { user } = useAuthStore() // Get user to attach to race
-    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel' | 'dashboard' | 'store' | 'achievements'>('selection')
+    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel' | 'dashboard' | 'store' | 'achievements' | 'certification'>('selection')
     const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [challengerGhost, setChallengerGhost] = useState<{ charAndTime: { char: string, time: number }[] } | undefined>(undefined)
@@ -41,6 +46,19 @@ export const useTyping = () => {
     const [errors, setErrors] = useState<Record<string, number>>({})
     const [showResult, setShowResult] = useState(false)
     const { unlockedIds, completedIds, setProgress, recordAttempt } = useStatsStore()
+    const {
+        unlockedBadges,
+        streak: localStreak,
+        unlockBadge,
+        updateStreak: setLocalStreak,
+        addKeystones,
+        totalKeystrokes: totalCumulativeKeystrokes,
+        perfectSessions,
+        challengeProgress,
+        incrementStats,
+        updateChallengeProgress: setChallengeProgress,
+        addNotification
+    } = useAchievementStore()
 
     // ... (Initialization effects same as before) ...
 
@@ -148,7 +166,7 @@ export const useTyping = () => {
         }
     }
 
-    const handleResult = useCallback(() => {
+    const handleResult = useCallback(async () => {
         if (!currentLesson) return
         if (timerRef.current) clearTimeout(timerRef.current)
 
@@ -191,12 +209,13 @@ export const useTyping = () => {
         )
 
         // 🔥 Save Race to Cloud (if logged in and speed > 10 wpm)
-        if (user && metrics.raw_wpm > 10) {
+        const currentUser = useAuthStore.getState().user;
+        if (currentUser && metrics.raw_wpm > 10) {
             // 1. Save Replay
             raceService.saveRace({
-                id: `${user.id}_${Date.now()}`,
-                uid: user.id || 'unknown',
-                username: user.name || 'Anonymous',
+                id: `${currentUser.id}_${Date.now()}`,
+                uid: currentUser.id || 'unknown',
+                username: currentUser.name || 'Anonymous',
                 wpm: Math.round(netWpm),
                 accuracy: Math.round(metrics.accuracy),
                 timestamp: Date.now(),
@@ -208,11 +227,98 @@ export const useTyping = () => {
             // Import userService dynamically to avoid circular deps if any, 
             // or just ensure import is at top. Assuming top import available.
             import('@src/services/userService').then(({ userService }) => {
-                userService.updateStats(user.id, Math.round(netWpm), Math.round(metrics.accuracy))
+                userService.updateStats(currentUser.id, Math.round(netWpm), Math.round(metrics.accuracy))
             }).catch(console.error)
         }
 
-        syncService.pushToCloud()
+        // 🏆 Achievements: Update Streak & Stats
+        const nextStreak = updateStreak(localStreak);
+
+        if (nextStreak.current_streak !== localStreak.current_streak) {
+            setLocalStreak(nextStreak);
+
+            // Global Report: Streak Milestone
+            if (currentUser && nextStreak.current_streak > 0 && nextStreak.current_streak % 7 === 0) {
+                activityService.reportEvent({
+                    type: 'streak',
+                    userId: currentUser.id,
+                    username: currentUser.name || 'Typist',
+                    avatarUrl: currentUser.avatar_url || '',
+                    data: { days: nextStreak.current_streak }
+                });
+            }
+        }
+
+        const isPerfect = metrics.accuracy === 100;
+        incrementStats(totalKeystrokes, isPerfect);
+
+        // Global Report: Record Breaking Speed
+        if (currentUser && Math.round(metrics.raw_wpm) > (useAuthStore.getState().profile?.highest_wpm || 0)) {
+            activityService.reportEvent({
+                type: 'record',
+                userId: currentUser.id,
+                username: currentUser.name || 'Typist',
+                avatarUrl: currentUser.avatar_url || '',
+                data: { wpm: Math.round(metrics.raw_wpm) }
+            });
+        }
+
+        // 🎯 Daily Challenges: Update progress
+        const today = new Date().toISOString().split('T')[0];
+        const dailyChallenges = generateDailyChallenges(today);
+        dailyChallenges.forEach(challenge => {
+            const currentProg = challengeProgress[challenge.id] || {
+                challenge_id: challenge.id,
+                progress: 0,
+                completed: false,
+                target: challenge.requirement.target
+            };
+            const nextProg = updateChallengeProgress(challenge, currentProg, {
+                wpm: Math.round(metrics.raw_wpm),
+                accuracy: metrics.accuracy,
+                duration: timeTaken
+            });
+            if (nextProg.progress !== currentProg.progress || nextProg.completed !== currentProg.completed) {
+                setChallengeProgress(challenge.id, nextProg);
+                if (nextProg.completed && !currentProg.completed) {
+                    addKeystones(challenge.reward_keystones);
+                }
+            }
+        });
+
+        // 🥇 Badges: Check eligibility using CUMULATIVE stats
+        const eligibleBadges = checkBadgeEligibility({
+            best_wpm: Math.round(metrics.raw_wpm),
+            perfect_sessions: perfectSessions + (isPerfect ? 1 : 0),
+            current_streak: nextStreak.current_streak,
+            longest_streak: nextStreak.longest_streak,
+            lessons_completed: completedIds.length,
+            total_keystrokes: totalCumulativeKeystrokes + totalKeystrokes
+        }, unlockedBadges);
+
+        eligibleBadges.forEach(badge => {
+            unlockBadge(badge.id);
+            if (badge.keystones_reward) {
+                addKeystones(badge.keystones_reward);
+            }
+            addNotification({
+                title: 'Achievement Unlocked',
+                message: badge.name,
+                icon: badge.icon,
+                reward: badge.keystones_reward
+            });
+
+            // Global Report: Badge Unlock
+            if (currentUser) {
+                activityService.reportEvent({
+                    type: 'badge',
+                    userId: currentUser.id,
+                    username: currentUser.name || 'Typist',
+                    avatarUrl: currentUser.avatar_url || '',
+                    data: { badgeName: badge.name }
+                });
+            }
+        });
 
         // Gatekeeper rule: Accuracy == 100% AND Speed >= targetWPM (min 28)
         const speedTarget = Math.max(28, currentLesson.targetWPM)
@@ -235,11 +341,21 @@ export const useTyping = () => {
             }
 
             setProgress(nextUnlocked, nextCompleted)
+            try {
+                await syncService.pushToCloud()
+            } catch (e) {
+                console.error("Session sync failed:", e)
+            }
         } else {
             playTypingSound('error')
+            try { // Even if gatekeeper fails, try to sync other stats
+                await syncService.pushToCloud()
+            } catch (e) {
+                console.error("Session sync failed (gatekeeper fail):", e)
+            }
         }
         setShowResult(true)
-    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress])
+    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playTypingSound])
 
     useEffect(() => {
         if (currentLesson && input.length === currentLesson.text.length && input.length > 0) {
@@ -271,7 +387,11 @@ export const useTyping = () => {
                 currentReplayRef.current.push({ char, time: relativeTime })
             }
 
-            // Track error locally
+            // 1. IMMEDIATE VISUAL FEEDBACK (0ms latency path)
+            setTotalKeystrokes((prev: number) => prev + 1)
+            setInput((prev: string) => prev + char)
+
+            // Local error tracking for immediate feedback
             if (char !== targetChar) {
                 setErrors((prev: Record<string, number>) => ({
                     ...prev,
@@ -282,32 +402,40 @@ export const useTyping = () => {
                 playTypingSound('mechanical')
             }
 
-            setTotalKeystrokes((prev: number) => prev + 1)
-            setInput((prev: string) => prev + char)
-
-
-            try {
-                const latestMetrics = await handleKeystroke(char, timestamp)
-                setMetrics(latestMetrics)
-
-                // ⚡️ REAL-TIME MULTIPLAYER SYNC (Throttled to 100ms)
-                if (view === 'duel' && activeMatchId) {
-                    const now = Date.now();
-                    if (now - lastSyncTimeRef.current > 100) { // 10 updates/sec max
-                        const progress = Math.min(100, Math.round(((input.length + 1) / currentLesson.text.length) * 100));
-                        liveRaceService.updateProgress(
-                            Math.round(latestMetrics.adjusted_wpm),
-                            input.length + 1,
-                            progress,
-                            false
-                        );
-                        lastSyncTimeRef.current = now;
+            // 2. LOGIC / SCORING PATH (Async, non-blocking)
+            // Fire and forget - don't await for UI update
+            handleKeystroke(char, timestamp)
+                .then(latestMetrics => {
+                    // SAFETY SHIELD DOCTOR 🛡️
+                    // Ensure backend never crashes UI with NaN
+                    const safeMetrics: TypingMetrics = {
+                        ...latestMetrics,
+                        raw_wpm: Number.isFinite(latestMetrics.raw_wpm) ? latestMetrics.raw_wpm : 0,
+                        adjusted_wpm: Number.isFinite(latestMetrics.adjusted_wpm) ? latestMetrics.adjusted_wpm : 0,
+                        accuracy: Number.isFinite(latestMetrics.accuracy) ? latestMetrics.accuracy : 100,
+                        consistency: Number.isFinite(latestMetrics.consistency) ? latestMetrics.consistency : 100
                     }
-                }
 
-            } catch (err) {
-                console.error('Keystroke handling failed:', err)
-            }
+                    // Only update metrics state if it changed significantly to avoid render thrashing?
+                    // For now, update every time but it's decoupled from the input render
+                    setMetrics(safeMetrics)
+
+                    // ⚡️ REAL-TIME MULTIPLAYER SYNC (Throttled to 100ms)
+                    if (view === 'duel' && activeMatchId) {
+                        const now = Date.now();
+                        if (now - lastSyncTimeRef.current > 100) { // 10 updates/sec max
+                            const progress = Math.min(100, Math.round(((input.length + 1) / currentLesson.text.length) * 100));
+                            liveRaceService.updateProgress(
+                                Math.round(safeMetrics.adjusted_wpm),
+                                input.length + 1,
+                                progress,
+                                false
+                            );
+                            lastSyncTimeRef.current = now;
+                        }
+                    }
+                })
+                .catch(err => console.error('Keystroke handling failed:', err))
         }
     }
 
