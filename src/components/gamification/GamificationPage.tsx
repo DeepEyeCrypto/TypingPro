@@ -12,6 +12,8 @@ import { getBadgesWithProgress, UserStats } from '../../services/badgeService';
 import { generateDailyChallenges } from '../../services/challengeService';
 import { LeaderboardEntry, LeaderboardPeriod } from '../../types/leaderboards';
 import { DailyChallenge, UserChallengeProgress } from '../../types/challenges';
+import { CertificationTiers } from '../certification/CertificationTiers';
+import { UserCertification } from '../../types/certifications';
 
 interface GamificationPageProps {
     userStats: UserStats;
@@ -22,6 +24,10 @@ interface GamificationPageProps {
         last_practice_date?: string;
     };
     challengeProgress: Record<string, UserChallengeProgress>;
+    earnedCertifications?: UserCertification[];
+    userId?: string;
+    username?: string;
+    onCertificationAttempt?: (tier: string) => void;
     onBack?: () => void;
 }
 
@@ -30,9 +36,12 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
     unlockedBadgeIds,
     streakData,
     challengeProgress,
+    earnedCertifications = [],
+    userId = '',
+    username = 'Typist',
     onBack,
 }) => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'badges' | 'leaderboard'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'badges' | 'leaderboard' | 'certifications'>('overview');
     const [leaderboardPeriod, setLeaderboardPeriod] = useState<LeaderboardPeriod>('weekly');
     const [dailyChallenges] = useState<DailyChallenge[]>(() => generateDailyChallenges());
 
@@ -66,7 +75,7 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
 
                 {/* Tab navigation */}
                 <div className="flex gap-2">
-                    {(['overview', 'badges', 'leaderboard'] as const).map(tab => (
+                    {(['overview', 'badges', 'certifications', 'leaderboard'] as const).map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -171,6 +180,20 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                     entries={leaderboardEntries}
                     period={leaderboardPeriod}
                     onPeriodChange={setLeaderboardPeriod}
+                />
+            )}
+
+            {/* Certifications Tab */}
+            {activeTab === 'certifications' && (
+                <CertificationTiers
+                    earnedCertifications={earnedCertifications}
+                    onAttempt={(tier) => {
+                        // Navigate to certification test (handled by parent)
+                        console.log('Attempt certification:', tier);
+                    }}
+                    onViewCertificate={(cert) => {
+                        console.log('View certificate:', cert);
+                    }}
                 />
             )}
         </div>
