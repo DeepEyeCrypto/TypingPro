@@ -33,12 +33,18 @@ import { SideNav } from '../../../src/components/layout/SideNav'
 import { TopBar as ModernTopBar } from '../../../src/components/layout/TopBar'
 import { Button } from '../../../src/components/ui/Button'
 
+// WARM GLASS DASHBOARD
+import { DashboardPage } from '../../../src/components/dashboard/DashboardPage'
+import { StorePage } from '../../../src/components/store/StorePage'
+
 // ICONS for SideNav
 const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>;
 const TestIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const AnalyticsIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>;
 const SocialIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
 const SettingsIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+const HomeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
+const StoreIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>;
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
@@ -133,9 +139,11 @@ const App: React.FC = () => {
           sidebar={
             <SideNav
               items={[
+                { id: 'dashboard', icon: <HomeIcon />, label: 'Dashboard', onClick: () => typing.setView('dashboard'), active: typing.view === 'dashboard' },
                 { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
                 { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
                 { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
+                { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
                 { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => { }, active: false },
               ]}
               footer={
@@ -175,7 +183,31 @@ const App: React.FC = () => {
           <UsernameModal />
           <RankCelebration />
 
-          {typing.view === 'selection' ? (
+          {typing.view === 'dashboard' ? (
+            <DashboardPage
+              username={user?.displayName?.split(' ')[0] || 'Typist'}
+              wpm={Math.round(typing.metrics.adjusted_wpm)}
+              accuracy={typing.metrics.accuracy}
+              keystones={useAuthStore.getState().profile?.keystones || 0}
+              streak={useAuthStore.getState().profile?.streak || 0}
+              bestWpm={useAuthStore.getState().profile?.best_wpm || 0}
+              rank={getRankForWPM(useAuthStore.getState().profile?.avg_wpm || 0).name}
+              level={Math.floor((useAuthStore.getState().profile?.avg_wpm || 0) / 10) + 1}
+              currentLesson={{
+                title: CURRICULUM[typing.unlockedIds.length - 1]?.title || 'Home Row: F & J',
+                stage: CURRICULUM[typing.unlockedIds.length - 1]?.stage || 'Home Row',
+                targetWpm: CURRICULUM[typing.unlockedIds.length - 1]?.targetWPM || 28,
+                index: typing.completedIds.length,
+                total: CURRICULUM.length,
+              }}
+              onStartLesson={() => {
+                const nextLesson = CURRICULUM[typing.unlockedIds.length - 1] || CURRICULUM[0];
+                typing.startLesson(nextLesson);
+              }}
+            />
+          ) : typing.view === 'store' ? (
+            <StorePage onBack={() => typing.setView('dashboard')} />
+          ) : typing.view === 'selection' ? (
             <LessonSelector
               unlockedIds={typing.unlockedIds}
               completedIds={typing.completedIds}
