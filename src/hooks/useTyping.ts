@@ -109,7 +109,8 @@ export const useTyping = () => {
     // Graph Sampling
     useEffect(() => {
         let interval: NodeJS.Timeout
-        if (view === 'typing' && !isPaused && startTime > 0) {
+        // CRITICAL FIX: Stop sampling if result is showing to prevent infinite timer
+        if (view === 'typing' && !isPaused && startTime > 0 && !showResult) {
             interval = setInterval(() => {
                 const elapsed = (Date.now() - startTime - totalPausedTime) / 1000
                 if (elapsed > 0) {
@@ -122,7 +123,7 @@ export const useTyping = () => {
             }, 1000)
         }
         return () => clearInterval(interval)
-    }, [view, isPaused, startTime, totalPausedTime])
+    }, [view, isPaused, startTime, totalPausedTime, showResult])
 
     // Ghost Replay Logic
     const currentReplayRef = useRef<{ char: string, time: number }[]>([])
@@ -320,10 +321,12 @@ export const useTyping = () => {
             }
         });
 
-        // Gatekeeper status: Accuracy == 100% AND Speed >= targetWPM (min 28)
-        // Used for Medals / Completion Status, but NOT for unlocking next level (UNLOCK_ALL active)
-        const speedTarget = Math.max(28, currentLesson.targetWPM)
-        const passed = Math.round(metrics.accuracy) === 100 && Math.round(metrics.raw_wpm) >= speedTarget
+        // Gatekeeper status: FORCE PASS (LOGIC REFACTOR)
+        // User Requirement: "Always treat the session as COMPLETED or PASSED"
+        // We remove the conditional failure check.
+        // const speedTarget = Math.max(28, currentLesson.targetWPM) 
+        // const passed = Math.round(metrics.accuracy) === 100 && Math.round(metrics.raw_wpm) >= speedTarget
+        const passed = true;
 
         // Update Completed IDs only
         let nextCompleted = [...completedIds]
@@ -341,9 +344,7 @@ export const useTyping = () => {
             console.error("Session sync failed:", e)
         }
 
-        if (!passed) {
-            playTypingSound('error')
-        }
+        // if (!passed) { playTypingSound('error') } // Removed error sound on finish
         setShowResult(true)
     }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playTypingSound])
 

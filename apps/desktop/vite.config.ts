@@ -42,6 +42,8 @@ export default defineConfig({
         zen: path.resolve(__dirname, 'zen.html'),
       },
     },
+    outDir: 'dist',
+    emptyOutDir: true,
     typescript: {
       ignoreBuildErrors: true
     }

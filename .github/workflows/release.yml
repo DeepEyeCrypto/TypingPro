@@ -82,35 +82,33 @@ jobs:
       - name: Apply Version
         run: node scripts/set-version.js ${{ steps.version.outputs.VERSION }}
 
-      # Build Changelog from Commits
-      - name: Build Changelog
+      # Build Changelog from Commits (Native Git Method)
+      - name: Generate Changelog
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@v5
-        with:
-          configuration: |
-            {
-              "template": "# 🚀 What's New\n\n#{{CHANGELOG}}\n\n<details>\n<summary>Other Changes</summary>\n#{{UNCATEGORIZED}}\n</details>",
-              "categories": [
-                {
-                  "title": "## 🚀 Features",
-                  "labels": ["feat", "feature"]
-                },
-                {
-                  "title": "## 🐛 Bug Fixes",
-                  "labels": ["fix", "bug"]
-                },
-                {
-                  "title": "## ⚡ Performance",
-                  "labels": ["perf"]
-                },
-                {
-                  "title": "## 🛠 Improvements",
-                  "labels": ["chore", "refactor", "style", "docs", "test"]
-                }
-              ]
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          # Try to get the last tag, if none, get the first commit hash
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          if [ -z "$LAST_TAG" ]; then
+            echo "No previous tags found. Generating full history."
+            LOG_RANGE="HEAD"
+            HEADER="Initial Release"
+          else
+            echo "Last Tag: $LAST_TAG"
+            LOG_RANGE="$LAST_TAG..HEAD"
+            HEADER="Changes since $LAST_TAG"
+          fi
+          
+          # Write to GITHUB_OUTPUT using multiline syntax
+          {
+            echo "changelog<<EOF"
+            echo "## 🚀 $HEADER"
+            echo ""
+            git log $LOG_RANGE --pretty=format:"- %s (%h)" --no-merges
+            echo ""
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       - name: Verify Environment
         run: node scripts/check-env.cjs --env=production

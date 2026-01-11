@@ -15,7 +15,7 @@ export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, a
     return (
         <div
             className="flex h-screen w-screen bg-cover bg-center overflow-hidden select-none"
-            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop")' }}
+            style={{ backgroundImage: 'url("/8DE38A64-A816-45C7-B624-DD45B2F7EA9A.JPG")' }}
         >
             {/* AMBIENT OVERLAY */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-0" />

@@ -32,8 +32,9 @@ body {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: rgba(10, 10, 10, 0.8);
-  /* BLUE DEBUGGING BACKGROUND */
+  background-color: #1a1a2e;
+  /* Fallback for black screen */
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
