@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { CURRICULUM } from '@src/data/lessons'
 
 export interface ReplayData {
     charAndTime: { char: string, time: number }[] // Time relative to start
@@ -38,7 +39,7 @@ export const useStatsStore = create<StatsState>((set) => ({
     sessionHistory: JSON.parse(localStorage.getItem('typing_history') || '[]'),
     characterErrors: JSON.parse(localStorage.getItem('typing_errors') || '{}'),
     bestReplays: JSON.parse(localStorage.getItem('typing_replays') || '{}'),
-    unlockedIds: JSON.parse(localStorage.getItem('unlockedIds') || '["l1"]'),
+    unlockedIds: CURRICULUM.map(l => l.id), // UNLOCK_ALL: Always unlock everything by default
     completedIds: JSON.parse(localStorage.getItem('completedIds') || '[]'),
 
     recordAttempt: (lessonId, wpm, accuracy, errors = {}, graphData = [], replayData) => set((state) => {

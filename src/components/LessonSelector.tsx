@@ -116,44 +116,37 @@ export const LessonSelector = ({
               return (
                 <button
                   key={lesson.id}
-                  disabled={!isUnlocked}
                   onClick={() => onSelect(lesson)}
                   className={`
                     group text-left p-6 rounded-xl border transition-all duration-300 relative overflow-hidden backdrop-blur-sm
-                    ${isUnlocked
-                      ? 'bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/20 cursor-pointer shadow-lg hover:shadow-[0_0_20px_rgba(0,255,65,0.05)]'
-                      : 'bg-black/20 border-white/5 opacity-30 cursor-not-allowed grayscale'}
+                    bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/20 cursor-pointer shadow-lg hover:shadow-[0_0_20px_rgba(0,255,65,0.05)]
                   `}
                 >
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className={`text-[10px] font-black tracking-widest ${isUnlocked ? 'text-neon-cyan/80' : 'text-white/20'}`}>
+                      <span className={`text-[10px] font-black tracking-widest text-white/20 group-hover:text-neon-cyan/80 transition-colors`}>
                         {lesson.id.toUpperCase()}
                       </span>
-                      {isCompleted ? (
+                      {isCompleted && (
                         <div className="w-5 h-5 rounded-full bg-neon-cyan/20 flex items-center justify-center border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,243,255,0.3)]">
                           <svg className="w-3 h-3 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
-                      ) : !isUnlocked && (
-                        <svg className="w-4 h-4 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
                       )}
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className={`font-bold transition-colors ${isUnlocked ? 'text-white group-hover:text-hacker' : 'text-white/30'}`}>
+                      <h3 className={`font-bold transition-colors text-white group-hover:text-hacker`}>
                         {lesson.title}
                       </h3>
-                      <p className={`text-[10px] leading-relaxed line-clamp-2 ${isUnlocked ? 'text-white/40' : 'text-white/10'}`}>
+                      <p className={`text-[10px] leading-relaxed line-clamp-2 text-white/40`}>
                         {lesson.description}
                       </p>
                     </div>
 
                     <div className="pt-2">
-                      <span className={`text-[9px] font-bold ${isUnlocked ? 'text-white/20' : 'text-white/10'}`}>
+                      <span className={`text-[9px] font-bold text-white/20`}>
                         TARGET: {lesson.targetWPM} WPM
                       </span>
                     </div>

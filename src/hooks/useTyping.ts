@@ -320,39 +320,29 @@ export const useTyping = () => {
             }
         });
 
-        // Gatekeeper rule: Accuracy == 100% AND Speed >= targetWPM (min 28)
+        // Gatekeeper status: Accuracy == 100% AND Speed >= targetWPM (min 28)
+        // Used for Medals / Completion Status, but NOT for unlocking next level (UNLOCK_ALL active)
         const speedTarget = Math.max(28, currentLesson.targetWPM)
         const passed = Math.round(metrics.accuracy) === 100 && Math.round(metrics.raw_wpm) >= speedTarget
 
-        if (passed) {
-            let nextCompleted = [...completedIds]
-            if (!completedIds.includes(currentLesson.id)) {
-                nextCompleted.push(currentLesson.id)
-            }
+        // Update Completed IDs only
+        let nextCompleted = [...completedIds]
+        if (passed && !completedIds.includes(currentLesson.id)) {
+            nextCompleted.push(currentLesson.id)
+        }
 
-            let nextUnlocked = [...unlockedIds]
-            const currentIndex = CURRICULUM.findIndex((l: Lesson) => l.id === currentLesson.id)
+        // UNLOCK_ALL: We do not modify unlockedIds as it's static full list now.
+        // Just sync progress (completion update)
+        setProgress(unlockedIds, nextCompleted)
 
-            if (currentIndex < CURRICULUM.length - 1) {
-                const nextId = CURRICULUM[currentIndex + 1].id
-                if (!unlockedIds.includes(nextId)) {
-                    nextUnlocked.push(nextId)
-                }
-            }
+        try {
+            await syncService.pushToCloud()
+        } catch (e) {
+            console.error("Session sync failed:", e)
+        }
 
-            setProgress(nextUnlocked, nextCompleted)
-            try {
-                await syncService.pushToCloud()
-            } catch (e) {
-                console.error("Session sync failed:", e)
-            }
-        } else {
+        if (!passed) {
             playTypingSound('error')
-            try { // Even if gatekeeper fails, try to sync other stats
-                await syncService.pushToCloud()
-            } catch (e) {
-                console.error("Session sync failed (gatekeeper fail):", e)
-            }
         }
         setShowResult(true)
     }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playTypingSound])

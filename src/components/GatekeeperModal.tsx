@@ -121,7 +121,7 @@ export const GatekeeperModal = ({
           <button onClick={onClose} className="btn-secondary">
             {passed ? 'Manual Select' : 'Retry Protocol'}
           </button>
-          {passed && onNext && (
+          {onNext && (
             <button onClick={onNext} className="btn-primary">
               Next Lesson
             </button>
