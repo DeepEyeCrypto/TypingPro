@@ -73,8 +73,8 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                         {/* Grid lines */}
                         <defs>
                             <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stopColor="rgba(255, 127, 80, 0.3)" />
-                                <stop offset="100%" stopColor="rgba(255, 127, 80, 0)" />
+                                <stop offset="0%" stopColor="rgba(0, 255, 65, 0.3)" />
+                                <stop offset="100%" stopColor="rgba(0, 255, 65, 0)" />
                             </linearGradient>
                         </defs>
 
@@ -85,7 +85,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                         <path
                             d={pathD}
                             fill="none"
-                            stroke="#ff7f50"
+                            stroke="#00ff41"
                             strokeWidth="2"
                             strokeLinecap="round"
                         />
@@ -97,8 +97,8 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                                     cx={point.x}
                                     cy={point.y}
                                     r="3"
-                                    fill="white"
-                                    stroke="#ff7f50"
+                                    fill="#0a0a0f"
+                                    stroke="#00ff41"
                                     strokeWidth="2"
                                 />
                                 {i === points.length - 1 && (
@@ -109,13 +109,13 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                                             width="24"
                                             height="14"
                                             rx="4"
-                                            fill="#ff7f50"
+                                            fill="#00ff41"
                                         />
                                         <text
                                             x={point.x}
                                             y={point.y - 10}
                                             textAnchor="middle"
-                                            fill="white"
+                                            fill="#0a0a0f"
                                             fontSize="6"
                                             fontWeight="bold"
                                         >
