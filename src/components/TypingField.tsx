@@ -28,94 +28,56 @@ const Character = React.memo(({ char, state, isGhost, isCaret, caretStyle }: Cha
             {isGhost && <div className={`caret caret-${caretStyle}`} style={{ opacity: 0.3, background: 'cyan', boxShadow: '0 0 10px cyan' }} />}
         </span>
     );
+}, (prev, next) => {
+    // Custom comparison for max speed
+    return prev.state === next.state &&
+        prev.isCaret === next.isCaret &&
+        prev.isGhost === next.isGhost &&
+        prev.char === next.char &&
+        prev.caretStyle === next.caretStyle;
 });
 
-export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, ghostReplay }: TypingFieldProps) => {
+export const TypingField = React.memo(({ targetText, input, active, onKeyDown, isPaused, ghostReplay }: TypingFieldProps) => {
     const { fontSize, caretStyle } = useSettingsStore()
     const inputRef = useRef<HTMLInputElement>(null)
 
-    // LOCAL BUFFER for sub-1ms feedback
+    // LOCAL BUFFER for sub-1ms feedback: Uncontrolled State
+    // We only sync from props on reset or explicit change
     const [localInput, setLocalInput] = useState(input)
 
-    // Synchronize local input when global input changes (e.g. on reset or pause)
+    // Synchronize local input only if it deviates significantly or is reset
+    // The heuristic is: if prop input is empty but local is not, it's a reset.
     useEffect(() => {
-        setLocalInput(input)
+        if (input !== localInput) {
+            setLocalInput(input)
+        }
     }, [input])
 
-    // Ghost Logic
+    // ... (Ghost Logic Omitted for brevity, assume optimized loops exist or are preserved) ...
+    // Note: In a full refactor, we'd move ghost logic to a separate hook to keep this clean.
+    // For now, retaining existing logic but ensuring it doesn't block.
+    // Re-inserting the optimized ghost logic from previous view:
+    const ghostIndexRef = useRef(0)
     const [ghostIndex, setGhostIndex] = useState(0)
     const startTimeRef = useRef<number | null>(null)
     const animationFrameRef = useRef<number | null>(null)
 
     useEffect(() => {
         if (!active || !ghostReplay || isPaused) {
-            setGhostIndex(0)
-            startTimeRef.current = null
             if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
             return
         }
-
-        if (startTimeRef.current === null) {
-            startTimeRef.current = Date.now()
-        }
-
-        const updateGhost = () => {
-            if (!startTimeRef.current || !ghostReplay) return
-            const elapsed = Date.now() - startTimeRef.current
-
-            // Find current index based on elapsed time matching replay timestamps
-            // Replay data is sorted by time.
-            // We want the last index where replay[i].time <= elapsed
-            // Optimization: Start specific search from current ghostIndex?
-            let newIndex = ghostIndex
-            for (let i = ghostIndex; i < ghostReplay.charAndTime.length; i++) {
-                if (ghostReplay.charAndTime[i].time <= elapsed) {
-                    newIndex = i + 1 // Cursor is AFTER the char
-                } else {
-                    break
-                }
-            }
-
-            if (newIndex !== ghostIndex) {
-                setGhostIndex(newIndex)
-            }
-
-            if (newIndex < ghostReplay.charAndTime.length) {
-                animationFrameRef.current = requestAnimationFrame(updateGhost)
-            }
-        }
-
-        animationFrameRef.current = requestAnimationFrame(updateGhost)
-
-        return () => {
-            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
-        }
-    }, [active, ghostReplay, isPaused, ghostIndex]) // Dep on ghostIndex might cause loop, better to use ref for logic
-
-    // Fix dependency loop: remove ghostIndex from dep array and use ref for current index tracking?
-    // Actually, setGhostIndex triggers re-render, which re-runs effect.
-    // Standard Loop Pattern:
-    // OPTIMIZED GHOST LOGIC (O(1) approach)
-    const ghostIndexRef = useRef(0)
-    useEffect(() => {
-        if (!active || !ghostReplay || isPaused) {
-            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
-            return
-        }
-
-        // Reset if starting fresh
         if (localInput.length === 0) {
             startTimeRef.current = Date.now()
             ghostIndexRef.current = 0
-            setGhostIndex(0)
+            setGhostIndex(0) // Sync state for render
         }
 
         const loop = () => {
             if (!startTimeRef.current) return
             const elapsed = Date.now() - startTimeRef.current
-
-            // Incrementally find the next index instead of scanning everything
             let changed = false
+            // Fast forward check
             while (
                 ghostIndexRef.current < ghostReplay.charAndTime.length &&
                 ghostReplay.charAndTime[ghostIndexRef.current].time <= elapsed
@@ -123,28 +85,23 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
                 ghostIndexRef.current++
                 changed = true
             }
-
-            if (changed) {
-                setGhostIndex(ghostIndexRef.current)
-            }
-
+            if (changed) setGhostIndex(ghostIndexRef.current)
             animationFrameRef.current = requestAnimationFrame(loop)
         }
         loop()
         return () => { if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current) }
     }, [active, isPaused, ghostReplay, localInput.length === 0])
 
-    // Auto-Focus Logic
+    const focusInput = useCallback(() => {
+        if (active && inputRef.current) inputRef.current.focus({ preventScroll: true })
+    }, [active])
+
     useEffect(() => {
-        const focusInput = () => {
-            if (active && inputRef.current) {
-                inputRef.current.focus({ preventScroll: true })
-            }
-        }
         focusInput()
         const handleGlobalClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement
-            const isInteractive = target.closest('button') || target.closest('a') || target.closest('input') || target.closest('.settings-panel')
+            // Expanded interactive check
+            const isInteractive = target.closest('button') || target.closest('a') || target.closest('input') || target.closest('.settings-panel') || target.closest('.modal-overlay')
             if (!isInteractive) focusInput()
         }
         window.addEventListener('click', handleGlobalClick)
@@ -153,16 +110,13 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
             window.removeEventListener('click', handleGlobalClick)
             window.removeEventListener('focus', focusInput)
         }
-    }, [active])
+    }, [focusInput])
 
     // Memoize text splitting to avoid O(N) split on every render
     const textChars = React.useMemo(() => targetText.split(''), [targetText]);
 
-    // Optimize Ghost Logic - use ref to avoid state thrashing if possible or accept re-renders
-    // Using existing logic but ensure we don't do heavy computation
-
     return (
-        <div className="typing-field" style={{ fontSize: `${fontSize}px` }} onClick={() => inputRef.current?.focus()}>
+        <div className="typing-field" style={{ fontSize: `${fontSize}px` }} onClick={focusInput}>
             <input
                 ref={inputRef}
                 className="hidden-input-field"
@@ -170,6 +124,7 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
                 autoFocus
                 onKeyDown={(e) => {
                     // Immediate local update for backspace or single keys
+                    // logic echoes useTyping but happens 0ms locally
                     if (e.key === 'Backspace' && localInput.length > 0) {
                         setLocalInput(prev => prev.slice(0, -1))
                     } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
@@ -179,11 +134,14 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
                 }}
                 onChange={() => { }}
                 value=""
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
             />
 
             {textChars.map((char: string, i: number) => {
-                // Optimization: Memoize the state calculation?
-                // Actually, simple comparison is fast. The key is React.memo on Character.
+                // Derived state for child
                 let state: 'pending' | 'correct' | 'incorrect' = 'pending'
                 if (i < localInput.length) {
                     state = localInput[i] === char ? 'correct' : 'incorrect'
@@ -208,4 +166,4 @@ export const TypingField = ({ targetText, input, active, onKeyDown, isPaused, gh
             )}
         </div>
     )
-}
+});
