@@ -15,10 +15,10 @@ interface StatsCardProps {
 }
 
 const colorMap = {
-    orange: { bg: '#fff7ed', icon: '#ff7f50', gradient: 'from-orange-400 to-orange-500' },
-    teal: { bg: '#f0fdfa', icon: '#4ecdc4', gradient: 'from-teal-400 to-teal-500' },
-    green: { bg: '#f0fdf4', icon: '#2ecc71', gradient: 'from-green-400 to-green-500' },
-    purple: { bg: '#faf5ff', icon: '#9b59b6', gradient: 'from-purple-400 to-purple-500' },
+    green: { bg: 'rgba(0, 255, 65, 0.1)', icon: '#00ff41', gradient: 'from-green-400 to-green-500' },
+    teal: { bg: 'rgba(0, 212, 170, 0.1)', icon: '#00d4aa', gradient: 'from-teal-400 to-teal-500' },
+    purple: { bg: 'rgba(170, 0, 255, 0.1)', icon: '#aa00ff', gradient: 'from-purple-400 to-purple-500' },
+    orange: { bg: 'rgba(255, 170, 0, 0.1)', icon: '#ffaa00', gradient: 'from-amber-400 to-amber-500' },
 };
 
 export const StatsCard: React.FC<StatsCardProps> = ({
@@ -26,7 +26,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
     value,
     label,
     unit,
-    color = 'orange',
+    color = 'green',
     visual = 'none',
     progress = 0,
 }) => {

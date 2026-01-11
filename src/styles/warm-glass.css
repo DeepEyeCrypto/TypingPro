@@ -1,35 +1,37 @@
 /* ═══════════════════════════════════════════════════════════════════
-   WARM GLASS THEME - Inspired by Modern Fitness Dashboard
+   HACKER GLASS THEME - Dark + Green + Fitness Layout Structure
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
-    /* Base Colors */
-    --wg-bg-main: #f5f0eb;
-    --wg-bg-card: rgba(255, 255, 255, 0.85);
-    --wg-bg-card-solid: #ffffff;
-    --wg-bg-card-hover: rgba(255, 255, 255, 0.95);
-    --wg-bg-sidebar: #1a1a2e;
-    --wg-bg-sidebar-light: #252542;
+    /* Base Colors - DARK HACKER */
+    --wg-bg-main: #0a0a0f;
+    --wg-bg-card: rgba(15, 15, 25, 0.85);
+    --wg-bg-card-solid: #0f0f19;
+    --wg-bg-card-hover: rgba(20, 20, 35, 0.95);
+    --wg-bg-sidebar: #0a0a0f;
+    --wg-bg-sidebar-light: #12121f;
 
-    /* Accents */
-    --wg-accent-primary: #ff7f50;
-    --wg-accent-secondary: #4ecdc4;
-    --wg-accent-success: #2ecc71;
-    --wg-accent-warning: #f39c12;
-    --wg-accent-danger: #e74c3c;
-    --wg-accent-purple: #9b59b6;
+    /* Accents - HACKER GREEN */
+    --wg-accent-primary: #00ff41;
+    --wg-accent-secondary: #00d4aa;
+    --wg-accent-success: #00ff41;
+    --wg-accent-warning: #ffaa00;
+    --wg-accent-danger: #ff4444;
+    --wg-accent-purple: #aa00ff;
 
-    /* Text */
-    --wg-text-primary: #1a1a2e;
-    --wg-text-secondary: #6b7280;
-    --wg-text-muted: #9ca3af;
+    /* Text - LIGHT ON DARK */
+    --wg-text-primary: #ffffff;
+    --wg-text-secondary: #a0a0a0;
+    --wg-text-muted: #606060;
     --wg-text-light: #ffffff;
+    --wg-text-accent: #00ff41;
 
     /* Effects */
-    --wg-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-    --wg-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --wg-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
-    --wg-shadow-glow: 0 0 20px rgba(255, 127, 80, 0.3);
+    --wg-shadow-sm: 0 2px 8px rgba(0, 255, 65, 0.05);
+    --wg-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --wg-shadow-hover: 0 8px 30px rgba(0, 255, 65, 0.15);
+    --wg-shadow-glow: 0 0 20px rgba(0, 255, 65, 0.4);
+    --wg-border-glow: 1px solid rgba(0, 255, 65, 0.2);
 
     /* Radius */
     --wg-radius-sm: 8px;

@@ -46,7 +46,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
                 {/* User Info */}
                 <div className="flex items-center gap-3 mb-4">
                     <div
-                        className="wg-profile-avatar bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-lg font-bold"
+                        className="wg-profile-avatar bg-gradient-to-br from-[#00ff41] to-[#00aa66] flex items-center justify-center text-midnight text-lg font-bold"
                     >
                         {avatarUrl ? (
                             <img src={avatarUrl} alt={username} className="w-full h-full object-cover rounded-full" />
@@ -68,7 +68,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
                         <div className="wg-profile-stat-label">Best WPM</div>
                     </div>
                     <div>
-                        <div className="wg-profile-stat-value text-yellow-400">{rank}</div>
+                        <div className="wg-profile-stat-value text-[#00ff41]">{rank}</div>
                         <div className="wg-profile-stat-label">Rank</div>
                     </div>
                     <div>
@@ -117,14 +117,14 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
             <div className="wg-profile-card">
                 <div className="flex justify-between items-center mb-3">
                     <span className="text-sm font-semibold text-white">Daily Challenges</span>
-                    <button className="text-xs text-orange-400 hover:text-orange-300">view all</button>
+                    <button className="text-xs text-[#00ff41] hover:text-[#00d4aa]">view all</button>
                 </div>
 
                 <div className="space-y-2">
                     {challenges.length > 0 ? (
                         challenges.map((challenge, i) => (
                             <div key={i} className="wg-challenge-card">
-                                <div className="wg-challenge-icon bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                                <div className="wg-challenge-icon bg-gradient-to-br from-[#00ff41] to-[#00aa66] flex items-center justify-center">
                                     <span className="text-white">🎯</span>
                                 </div>
                                 <div className="wg-challenge-info">
@@ -137,7 +137,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
                     ) : (
                         <>
                             <div className="wg-challenge-card">
-                                <div className="wg-challenge-icon bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                                <div className="wg-challenge-icon bg-gradient-to-br from-[#00ff41] to-[#00aa66] flex items-center justify-center">
                                     <span className="text-white">⚡</span>
                                 </div>
                                 <div className="wg-challenge-info">
@@ -147,7 +147,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
                                 <div className="wg-challenge-reward">+15💎</div>
                             </div>
                             <div className="wg-challenge-card">
-                                <div className="wg-challenge-icon bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
+                                <div className="wg-challenge-icon bg-gradient-to-br from-[#00d4aa] to-[#009988] flex items-center justify-center">
                                     <span className="text-white">🎯</span>
                                 </div>
                                 <div className="wg-challenge-info">

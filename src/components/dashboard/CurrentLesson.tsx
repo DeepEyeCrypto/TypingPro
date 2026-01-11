@@ -29,7 +29,7 @@ export const CurrentLesson: React.FC<CurrentLessonProps> = ({
             <div
                 className="h-40 rounded-t-[20px] flex items-center justify-center"
                 style={{
-                    background: 'linear-gradient(135deg, #ff7f50 0%, #ff6b3d 50%, #e55a2b 100%)',
+                    background: 'linear-gradient(135deg, #00ff41 0%, #00d4aa 50%, #00aa66 100%)',
                 }}
             >
                 <div className="text-center text-white">
@@ -62,7 +62,7 @@ export const CurrentLesson: React.FC<CurrentLessonProps> = ({
                         className="h-full rounded-full transition-all duration-500"
                         style={{
                             width: `${progress}%`,
-                            background: 'linear-gradient(90deg, #ff7f50, #ff6b3d)',
+                            background: 'linear-gradient(90deg, #00ff41, #00d4aa)',
                         }}
                     />
                 </div>

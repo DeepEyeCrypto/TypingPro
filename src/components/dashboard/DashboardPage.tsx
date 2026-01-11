@@ -43,10 +43,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <div className="wg-main-content">
                 {/* Header */}
                 <div className="mb-2">
-                    <h1 className="text-2xl font-bold text-gray-800">
-                        {greeting}, <span className="text-orange-500">{username}</span> 👋
+                    <h1 className="text-2xl font-bold text-white">
+                        {greeting}, <span className="text-[#00ff41]">{username}</span> 👋
                     </h1>
-                    <p className="text-gray-500 text-sm">Let's practice some typing today</p>
+                    <p className="text-white/50 text-sm">Let's practice some typing today</p>
                 </div>
 
                 {/* Stats Row */}
@@ -56,7 +56,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         value={wpm}
                         unit="WPM"
                         label="Current Speed"
-                        color="orange"
+                        color="green"
                         visual="bar"
                     />
                     <StatsCard
@@ -99,23 +99,24 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 {/* Lesson Categories */}
                 <div>
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold text-gray-800">Training Modules</h2>
-                        <button className="text-sm text-orange-500 hover:text-orange-600">view all</button>
+                        <h2 className="text-lg font-semibold text-white">Training Modules</h2>
+                        <button className="text-sm text-[#00ff41] hover:text-[#00d4aa]">view all</button>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4">
                         {[
-                            { name: 'Home Row', desc: 'Foundation training', icon: '🏠', color: 'from-orange-400 to-orange-500' },
-                            { name: 'Speed Building', desc: 'Increase your pace', icon: '⚡', color: 'from-teal-400 to-teal-500' },
-                            { name: 'Fluency', desc: 'Long-form practice', icon: '📝', color: 'from-purple-400 to-purple-500' },
+                            { name: 'Home Row', desc: 'Foundation training', icon: '🏠', color: 'from-[#00ff41] to-[#00aa66]' },
+                            { name: 'Speed Building', desc: 'Increase your pace', icon: '⚡', color: 'from-[#00d4aa] to-[#009988]' },
+                            { name: 'Fluency', desc: 'Long-form practice', icon: '📝', color: 'from-[#aa00ff] to-[#7700bb]' },
                         ].map((module, i) => (
+
                             <div key={i} className="wg-card p-4 flex gap-4 items-center cursor-pointer">
                                 <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${module.color} flex items-center justify-center text-2xl`}>
                                     {module.icon}
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-gray-800">{module.name}</h3>
-                                    <p className="text-xs text-gray-500">{module.desc}</p>
+                                    <h3 className="font-semibold text-white">{module.name}</h3>
+                                    <p className="text-xs text-white/50">{module.desc}</p>
                                 </div>
                             </div>
                         ))}
