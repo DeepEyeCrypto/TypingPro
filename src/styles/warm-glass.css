@@ -1,0 +1,388 @@
+/* ═══════════════════════════════════════════════════════════════════
+   WARM GLASS THEME - Inspired by Modern Fitness Dashboard
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* Base Colors */
+    --wg-bg-main: #f5f0eb;
+    --wg-bg-card: rgba(255, 255, 255, 0.85);
+    --wg-bg-card-solid: #ffffff;
+    --wg-bg-card-hover: rgba(255, 255, 255, 0.95);
+    --wg-bg-sidebar: #1a1a2e;
+    --wg-bg-sidebar-light: #252542;
+
+    /* Accents */
+    --wg-accent-primary: #ff7f50;
+    --wg-accent-secondary: #4ecdc4;
+    --wg-accent-success: #2ecc71;
+    --wg-accent-warning: #f39c12;
+    --wg-accent-danger: #e74c3c;
+    --wg-accent-purple: #9b59b6;
+
+    /* Text */
+    --wg-text-primary: #1a1a2e;
+    --wg-text-secondary: #6b7280;
+    --wg-text-muted: #9ca3af;
+    --wg-text-light: #ffffff;
+
+    /* Effects */
+    --wg-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --wg-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --wg-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+    --wg-shadow-glow: 0 0 20px rgba(255, 127, 80, 0.3);
+
+    /* Radius */
+    --wg-radius-sm: 8px;
+    --wg-radius-md: 12px;
+    --wg-radius-lg: 16px;
+    --wg-radius-xl: 20px;
+    --wg-radius-full: 9999px;
+
+    /* Spacing */
+    --wg-gap: 16px;
+    --wg-padding: 20px;
+}
+
+/* Warm Glass Card */
+.wg-card {
+    background: var(--wg-bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--wg-radius-xl);
+    box-shadow: var(--wg-shadow-card);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+}
+
+.wg-card:hover {
+    background: var(--wg-bg-card-hover);
+    box-shadow: var(--wg-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* Stats Card Specific */
+.wg-stats-card {
+    padding: var(--wg-padding);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.wg-stats-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--wg-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.wg-stats-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--wg-text-primary);
+    font-family: 'Inter', sans-serif;
+}
+
+.wg-stats-label {
+    font-size: 12px;
+    color: var(--wg-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Progress Visualization */
+.wg-progress-ring {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.wg-progress-ring svg {
+    transform: rotate(-90deg);
+}
+
+.wg-progress-ring .track {
+    stroke: #e5e7eb;
+    fill: none;
+}
+
+.wg-progress-ring .progress {
+    stroke: var(--wg-accent-success);
+    fill: none;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+/* Chart Container */
+.wg-chart-container {
+    padding: var(--wg-padding);
+    height: 280px;
+}
+
+.wg-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.wg-chart-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--wg-text-primary);
+}
+
+.wg-chart-dropdown {
+    background: var(--wg-bg-card-solid);
+    border: 1px solid #e5e7eb;
+    border-radius: var(--wg-radius-sm);
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--wg-text-secondary);
+    cursor: pointer;
+}
+
+/* Sidebar Profile */
+.wg-profile-card {
+    background: var(--wg-bg-sidebar);
+    border-radius: var(--wg-radius-xl);
+    padding: var(--wg-padding);
+    color: var(--wg-text-light);
+}
+
+.wg-profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--wg-radius-full);
+    object-fit: cover;
+    border: 2px solid var(--wg-accent-primary);
+}
+
+.wg-profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+    padding: 16px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wg-profile-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--wg-text-light);
+}
+
+.wg-profile-stat-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+/* Calendar */
+.wg-calendar {
+    padding: 12px 0;
+}
+
+.wg-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.wg-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.wg-calendar-day {
+    padding: 6px;
+    border-radius: var(--wg-radius-sm);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.wg-calendar-day.active {
+    background: var(--wg-accent-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.wg-calendar-day.today {
+    background: var(--wg-accent-secondary);
+    color: var(--wg-text-primary);
+    font-weight: 600;
+}
+
+/* Lesson Card */
+.wg-lesson-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.wg-lesson-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--wg-radius-lg) var(--wg-radius-lg) 0 0;
+}
+
+.wg-lesson-content {
+    padding: var(--wg-padding);
+}
+
+.wg-lesson-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--wg-text-primary);
+    margin-bottom: 8px;
+}
+
+.wg-lesson-stats {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0;
+}
+
+.wg-lesson-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--wg-text-secondary);
+}
+
+.wg-lesson-stat strong {
+    color: var(--wg-accent-primary);
+    font-weight: 600;
+}
+
+/* Button */
+.wg-button {
+    background: var(--wg-accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--wg-radius-md);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wg-button:hover {
+    background: #ff6b3d;
+    box-shadow: var(--wg-shadow-glow);
+    transform: translateY(-1px);
+}
+
+.wg-button-ghost {
+    background: transparent;
+    color: var(--wg-text-primary);
+    border: 1px solid #e5e7eb;
+}
+
+.wg-button-ghost:hover {
+    background: var(--wg-bg-card);
+    box-shadow: none;
+}
+
+/* Challenge Card */
+.wg-challenge-card {
+    background: var(--wg-bg-sidebar-light);
+    border-radius: var(--wg-radius-md);
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.wg-challenge-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--wg-radius-sm);
+    overflow: hidden;
+}
+
+.wg-challenge-info {
+    flex: 1;
+}
+
+.wg-challenge-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wg-text-light);
+}
+
+.wg-challenge-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.wg-challenge-reward {
+    font-size: 12px;
+    color: var(--wg-accent-primary);
+    font-weight: 600;
+}
+
+/* Dashboard Grid Layout */
+.wg-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--wg-gap);
+    min-height: 100vh;
+    background: var(--wg-bg-main);
+    padding: var(--wg-padding);
+}
+
+.wg-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wg-gap);
+}
+
+.wg-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--wg-gap);
+}
+
+.wg-content-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: var(--wg-gap);
+}
+
+.wg-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wg-gap);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .wg-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .wg-sidebar {
+        display: none;
+    }
+
+    .wg-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wg-content-row {
+        grid-template-columns: 1fr;
+    }
+}
