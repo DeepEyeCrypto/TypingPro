@@ -7,15 +7,19 @@ interface AppShellProps {
     activeView?: string; // Add activeView to trigger transitions
 }
 
+import { useSettingsStore } from '../../stores/settingsStore';
+
 /**
  * AppShell: The master layout primitive for TypingPro.
  * It establishes a persistent Sidebar, a TopBar, and a scroll-locked MainContent area.
  */
 export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, activeView }) => {
+    const { backgroundImage } = useSettingsStore();
+
     return (
         <div
-            className="flex h-screen w-screen bg-cover bg-center overflow-hidden select-none"
-            style={{ backgroundImage: 'url("/8DE38A64-A816-45C7-B624-DD45B2F7EA9A.JPG")' }}
+            className="flex h-screen w-screen bg-cover bg-center overflow-hidden select-none transition-all duration-700 ease-in-out"
+            style={{ backgroundImage: `url("${backgroundImage}")` }}
         >
             {/* AMBIENT OVERLAY */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-0" />

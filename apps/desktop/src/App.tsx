@@ -1,4 +1,29 @@
-import React, { useEffect, useRef } from 'react'
+import { SettingsPage } from '../../../src/components/settings/SettingsPage' // Add Import
+
+// ... inside App component ...
+
+activeView = { typing.view }
+sidebar = {
+            < SideNav
+syncing = { isSyncing }
+items = {
+  [
+  { id: 'dashboard', icon: <HomeIcon />, label: 'Dashboard', onClick: () => typing.setView('dashboard'), active: typing.view === 'dashboard' },
+  { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
+  { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
+  { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
+  { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' || typing.view === 'certification' },
+  { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
+  { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => typing.setView('settings'), active: typing.view === 'settings' }, // Updated Handler
+              ]}
+
+// ... inside render switch ...
+
+          ) : typing.view === 'store' ? (
+  <StorePage onBack={() => typing.setView('dashboard')} />
+) : typing.view === 'settings' ? (
+  <SettingsPage onBack={() => typing.setView('dashboard')} />
+) : typing.view === 'achievements' ? (
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/core'
 import { useAuthStore } from '../../../src/stores/authStore'
