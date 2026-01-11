@@ -1,6 +1,7 @@
 import React from 'react'
 import { TypingField } from './TypingField'
 import { KeyboardOverlay } from './KeyboardOverlay'
+import { HandGuide } from './HandGuide'
 import { ReplayData } from '@src/stores/statsStore'
 import './TypingArea.css'
 
@@ -35,6 +36,7 @@ export const TypingArea = ({
             />
 
             <div className="visual-guide-area">
+                <HandGuide activeChar={activeChar} />
                 <KeyboardOverlay activeChar={activeChar} />
             </div>
 

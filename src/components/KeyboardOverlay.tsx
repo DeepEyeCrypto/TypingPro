@@ -13,8 +13,11 @@ export const KeyboardOverlay = ({ activeChar }: KeyboardOverlayProps) => {
         <div className="keyboard-overlay">
             <div className="keyboard-grid">
                 {(Object.entries(KEY_MAP) as [string, any][]).map(([char, pos]) => {
-                    const isActive = char === activeCharLower
-                    const isHome = ['f', 'j'].includes(char)
+                    // Handle special case for Space (mapping might have blank char)
+                    const isSpace = char === ' ' || char === 'space';
+                    const isActive = char === activeCharLower || (isSpace && activeChar === ' ');
+                    const isHome = ['f', 'j'].includes(char);
+                    const label = isSpace ? 'SPACE' : char;
 
                     return (
                         <div
@@ -23,10 +26,11 @@ export const KeyboardOverlay = ({ activeChar }: KeyboardOverlayProps) => {
                             data-char={char}
                             style={{
                                 left: `${pos.x}px`,
-                                top: `${pos.y}px`
+                                top: `${pos.y}px`,
+                                width: isSpace ? '300px' : '40px' // Dynamic width for Spacebar if position is center
                             }}
                         >
-                            {char === ' ' ? '' : char}
+                            {label}
                         </div>
                     )
                 })}

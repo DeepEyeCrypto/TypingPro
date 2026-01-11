@@ -1,61 +1,47 @@
 .hand-guide-container {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    padding-top: 20px;
+    width: 650px;
+    height: 250px;
+    margin: 0 auto;
+    overflow: visible;
     pointer-events: none;
-    z-index: 50;
-    width: 600px;
-    height: 200px;
+    /* Let clicks pass through to keyboard if overlapped */
 }
 
 .hand-svg {
     width: 100%;
     height: 100%;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.1));
 }
 
 .hand-outline {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.05);
-    stroke-width: 1.5;
+    transition: all 0.3s ease;
 }
 
-.finger-path {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 8;
-    stroke-linecap: round;
+.finger-group {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.finger-path {
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: all 0.2s ease;
+}
+
 .finger-path.active {
-    stroke: rgba(255, 255, 255, 0.4);
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+    stroke: #00ff41;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 5px #00ff41);
 }
 
 .finger-tip {
-    fill: rgba(255, 255, 255, 0.1);
-    transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    fill: rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
 }
 
 .finger-tip.active {
-    fill: #ffffff;
-    /* Glow effect for active finger tip */
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
-    animation: reach 0.3s ease-out;
-}
-
-/* Reach animation: slight scale and glow */
-@keyframes reach {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.2);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    fill: #00ff41;
+    r: 6px;
+    filter: drop-shadow(0 0 8px #00ff41);
 }
