@@ -14,7 +14,7 @@ import { useAuthStore } from '@src/stores/authStore'
 export const useTyping = () => {
     const { playTypingSound } = useRustAudio()
     const { user } = useAuthStore() // Get user to attach to race
-    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel'>('selection')
+    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel' | 'dashboard' | 'store' | 'achievements'>('selection')
     const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [challengerGhost, setChallengerGhost] = useState<{ charAndTime: { char: string, time: number }[] } | undefined>(undefined)
