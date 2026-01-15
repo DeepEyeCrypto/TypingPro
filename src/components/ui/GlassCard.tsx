@@ -1,16 +1,41 @@
+import React from 'react';
 import { SpotlightCard } from './SpotlightCard';
+import { useContrastText } from '../../hooks/useContrastText';
 
-export const GlassCard = ({ children, className = '' }: any) => {
+interface GlassCardProps {
+    children: React.ReactNode;
+    className?: string;
+    bgColor?: string; // Optional background color to determine text contrast
+}
+
+export const GlassCard: React.FC<GlassCardProps> = ({
+    children,
+    className = '',
+    bgColor
+}) => {
+    const { textColor } = useContrastText(bgColor || 'transparent');
+
     return (
-        <SpotlightCard className={`
-      relative overflow-hidden
-      bg-white/5 backdrop-blur-[60px] backdrop-saturate-200
-      shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),_inset_0_2px_15px_rgba(255,255,255,0.1),_0_25px_50px_-12px_rgba(0,0,0,0.5)]
-      border border-white/20
-      rounded-[40px]
-      gpu-accelerated
-      ${className}
-    `}>
+        <SpotlightCard
+            className={`
+                relative overflow-hidden
+                bg-white/5 backdrop-blur-[60px] backdrop-saturate-200
+                shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2),_inset_0_2px_15px_rgba(255,255,255,0.1),_0_25px_50px_-12px_rgba(0,0,0,0.5)]
+                border border-white/20
+                rounded-[40px]
+                gpu-accelerated
+                ${className}
+            `}
+            style={bgColor ? { '--card-bg': bgColor, color: textColor } as any : undefined}
+        >
+            {/* Background Tint if provided */}
+            {bgColor && (
+                <div
+                    className="absolute inset-0 z-0 opacity-20"
+                    style={{ backgroundColor: bgColor }}
+                />
+            )}
+
             {/* Prismatic Reflection Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-0" />
 
@@ -21,7 +46,7 @@ export const GlassCard = ({ children, className = '' }: any) => {
                 }}
             />
 
-            <div className="relative z-10">
+            <div className="relative z-10 h-full w-full" style={{ '--contrast-text': textColor } as any}>
                 {children}
             </div>
         </SpotlightCard>

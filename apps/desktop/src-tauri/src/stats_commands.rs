@@ -35,7 +35,7 @@ pub async fn save_session(
     let xp_gained = (wpm as f64 * accuracy * 0.1) as i64;
 
     // Transaction to save session and update user XP
-    let mut tx = db.pool.begin().await.map_err(|e| e.to_string())?;
+    let mut tx = db.pool.begin().await.map_err(|e: sqlx::Error| e.to_string())?;
 
     // 1. Insert Session
     sqlx::query(
@@ -49,7 +49,7 @@ pub async fn save_session(
     .bind(&mistakes)
     .execute(&mut *tx)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
     // 2. Update User XP (Upsert if user doesn't exist? Ideally user exists from Login)
     // Assuming User exists or we create them on the fly
@@ -60,16 +60,16 @@ pub async fn save_session(
     .bind(&user_id)
     .execute(&mut *tx)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
-    tx.commit().await.map_err(|e| e.to_string())?;
+    tx.commit().await.map_err(|e: sqlx::Error| e.to_string())?;
 
     Ok(format!("Session saved. XP Gained: {}", xp_gained))
 }
 
 #[tauri::command]
 pub async fn get_dashboard_stats(db: State<'_, Database>, user_id: String) -> Result<DashboardStats, String> {
-    let row = sqlx::query!(
+    let row = sqlx::query(
         r#"
         SELECT 
             AVG(wpm) as avg_wpm, 
@@ -77,26 +77,27 @@ pub async fn get_dashboard_stats(db: State<'_, Database>, user_id: String) -> Re
             COUNT(*) as total_sessions 
         FROM sessions 
         WHERE user_id = ?
-        "#,
-        user_id
+        "#
     )
+    .bind(&user_id)
     .fetch_one(&db.pool)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
-    let user = sqlx::query!(
-        "SELECT xp FROM users WHERE id = ?",
-        user_id
+    let user = sqlx::query(
+        "SELECT xp FROM users WHERE id = ?"
     )
+    .bind(&user_id)
     .fetch_optional(&db.pool)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
+    use sqlx::Row;
     Ok(DashboardStats {
-        avg_wpm: row.avg_wpm.unwrap_or(0.0),
-        max_wpm: row.max_wpm.unwrap_or(0).try_into().unwrap_or(0),
-        total_sessions: row.total_sessions,
-        total_xp: user.map(|u| u.xp.unwrap_or(0)).unwrap_or(0),
+        avg_wpm: row.get::<Option<f64>, _>("avg_wpm").unwrap_or(0.0),
+        max_wpm: row.get::<Option<i32>, _>("max_wpm").unwrap_or(0),
+        total_sessions: row.get::<i64, _>("total_sessions"),
+        total_xp: user.map(|u| u.get::<Option<i64>, _>("xp").unwrap_or(0)).unwrap_or(0),
     })
 }
 
@@ -118,7 +119,7 @@ pub async fn ensure_user(
     .bind(avatar_url)
     .execute(&db.pool)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
     Ok("User synced".to_string())
 }

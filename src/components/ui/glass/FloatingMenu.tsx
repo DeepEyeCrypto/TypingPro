@@ -15,6 +15,7 @@ interface FloatingMenuProps {
     onSelect: (id: string) => void;
     className?: string;
     title?: string;
+    bgColor?: string; // Optional background color
 }
 
 export const FloatingMenu: React.FC<FloatingMenuProps> = ({
@@ -22,7 +23,8 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
     activeId,
     onSelect,
     className = '',
-    title
+    title,
+    bgColor
 }) => {
     return (
         <GlassSurface
@@ -47,6 +49,7 @@ export const FloatingMenu: React.FC<FloatingMenuProps> = ({
                             icon={item.icon}
                             isActive={activeId === item.id}
                             onClick={onSelect}
+                            bgColor={bgColor}
                         />
                     ))}
                 </div>

@@ -29,6 +29,7 @@ export default {
                 'neon-cyan': 'rgba(255, 255, 255, 0.9)',
                 'glass-bg': 'rgba(255, 255, 255, 0.08)',
                 'glass-border': 'rgba(255, 255, 255, 0.12)',
+                'contrast-text': 'var(--contrast-text, #FFFFFF)',
             },
             borderRadius: {
                 'glass': '12px',

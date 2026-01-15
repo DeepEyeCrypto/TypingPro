@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSoundEngine } from '../../hooks/useSoundEngine';
+import { useContrastText } from '../../hooks/useContrastText';
 
 interface NavItem {
     id: string;
@@ -13,6 +14,7 @@ interface SideNavProps {
     items: NavItem[];
     footer?: React.ReactNode;
     syncing?: boolean;
+    bgColor?: string; // High-level background color detection
 }
 
 /* ICONS */
@@ -25,15 +27,18 @@ const VolumeX = ({ size = 20 }: { size?: number }) => (
 );
 
 // Explicitly NOT using GlassCard to allow full custom overrides for "Cleanest Glass" possible
-const SideNavComponent: React.FC<SideNavProps> = ({ items }) => {
+const SideNavComponent: React.FC<SideNavProps> = ({ items, bgColor = '#ffffff' }) => {
     const { toggleMute, isMuted } = useSoundEngine();
+    const { textColor } = useContrastText(bgColor);
 
     return (
-        <aside className="fixed left-4 top-1/2 -translate-y-1/2 z-50 h-[85vh] w-16 hidden md:block">
+        <aside className="fixed left-4 top-1/2 -translate-y-1/2 z-50 h-[85vh] w-16 hidden md:block" style={{ '--contrast-text': textColor } as any}>
             {/* The Visual Container - UNIFIED GLASS STYLE (CLONED FROM TOPBAR) */}
             <div className="w-full h-full rounded-full flex flex-col items-center py-8 justify-between
                 bg-white/15 backdrop-blur-[50px] border border-white/40 
-                shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)]">
+                shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)]"
+                style={{ color: textColor }}
+            >
 
                 {/* 1. NAVIGATION (Top) */}
                 <nav className="flex flex-col items-center gap-6 w-full pt-4">
@@ -42,9 +47,10 @@ const SideNavComponent: React.FC<SideNavProps> = ({ items }) => {
                             key={item.id}
                             onClick={item.onClick}
                             className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 shrink-0 ${item.active
-                                ? 'bg-white/20 text-neon-lime shadow-inner' // Active: subtle light + neon text
-                                : 'text-white/60 hover:text-white hover:bg-white/5'
+                                ? 'bg-white/20 shadow-inner' // Removal of hardcoded neon-lime for contrast
+                                : 'opacity-60 hover:opacity-100 hover:bg-white/5'
                                 }`}
+                            style={{ color: item.active ? 'var(--contrast-text)' : 'inherit' }}
                         >
                             {React.cloneElement(item.icon as React.ReactElement, { size: 20 })}
                         </button>
@@ -54,14 +60,14 @@ const SideNavComponent: React.FC<SideNavProps> = ({ items }) => {
                 {/* 2. SYSTEM ICONS (Bottom) */}
                 <div className="flex flex-col gap-6 items-center w-full pb-4">
                     {/* Volume Toggle */}
-                    <button onClick={toggleMute} className="w-10 h-10 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all" title={isMuted ? "Unmute" : "Mute"}>
+                    <button onClick={toggleMute} className="w-10 h-10 flex items-center justify-center rounded-xl opacity-50 hover:opacity-100 hover:bg-white/5 transition-all" title={isMuted ? "Unmute" : "Mute"}>
                         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                     </button>
                     {/* Settings */}
                     {items.find(i => i.id === 'settings') && (
                         <button
                             onClick={items.find(i => i.id === 'settings')?.onClick}
-                            className={`w-10 h-10 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all ${items.find(i => i.id === 'settings')?.active ? 'text-neon-lime' : ''}`}
+                            className={`w-10 h-10 flex items-center justify-center rounded-xl opacity-50 hover:opacity-100 hover:bg-white/5 transition-all ${items.find(i => i.id === 'settings')?.active ? 'opacity-100' : ''}`}
                         >
                             {React.cloneElement(items.find(i => i.id === 'settings')?.icon as React.ReactElement, { size: 20 })}
                         </button>

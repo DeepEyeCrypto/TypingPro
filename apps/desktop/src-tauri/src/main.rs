@@ -8,6 +8,7 @@ mod audio;
 mod presence;
 mod telemetry;
 mod build_info;
+mod lib;
 
 use std::sync::Mutex;
 use tauri::{Manager, State};
@@ -214,10 +215,8 @@ fn main() {
             update_presence,
             get_analytics_summary,
             reset_telemetry,
-            build_info::get_build_info,
-            stats_commands::save_session,
-            stats_commands::get_dashboard_stats,
-            stats_commands::ensure_user
+            stats_commands::ensure_user,
+            lib::contrast::contrast_get_text_color
         ])
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
