@@ -164,10 +164,49 @@ export const userService = {
         await updateDoc(userRef, data);
     },
 
-    async updatePresence(uid: string): Promise<void> {
+    async addCertification(uid: string, certification: { id: string, name: string, date: number, wpm: number, accuracy: number }): Promise<void> {
+        try {
+            if (!db) return;
+            const docRef = doc(db, 'profiles', uid);
+            const snap = await getDoc(docRef);
+
+            if (snap.exists()) {
+                const data = snap.data() as UserProfile;
+                let certifications = data.certifications || [];
+
+                // Check for existing certification by ID OR by better performance on same lesson
+                const existingIndex = certifications.findIndex((c: any) => c.id === certification.id);
+
+                if (existingIndex !== -1) {
+                    const existing = certifications[existingIndex];
+                    // Only update if the new one is better or the same but newer
+                    if (certification.wpm > existing.wpm || (certification.wpm === existing.wpm && certification.accuracy >= existing.accuracy)) {
+                        certifications[existingIndex] = certification;
+                    } else {
+                        // Already have a better or equal record
+                        return;
+                    }
+                } else {
+                    certifications.push(certification);
+                }
+
+                await setDoc(docRef, {
+                    ...data,
+                    certifications
+                }, { merge: true });
+            }
+        } catch (error) {
+            console.error("Failed to add certification:", error);
+        }
+    },
+
+    async updatePresence(uid: string, data?: { status: string, current_wpm?: number }): Promise<void> {
         if (!db) { console.error("Firebase DB not initialized for updatePresence"); return; }
         const userRef = doc(db, 'profiles', uid);
-        await updateDoc(userRef, { last_seen: Date.now() });
+        await updateDoc(userRef, {
+            last_seen: Date.now(),
+            ...data
+        });
     },
 
     async checkUsernameTaken(username: string): Promise<boolean> {

@@ -24,55 +24,41 @@ export const CurrentLesson: React.FC<CurrentLessonProps> = ({
     const progress = Math.round((currentLesson / totalLessons) * 100);
 
     return (
-        <div className="wg-card wg-lesson-card">
-            {/* Header Image/Gradient */}
-            <div
-                className="h-40 rounded-t-[20px] flex items-center justify-center"
-                style={{
-                    background: 'linear-gradient(135deg, #00ff41 0%, #00d4aa 50%, #00aa66 100%)',
-                }}
+        <div className="bg-white/5 backdrop-blur-[64px] border border-white/10 rounded-2xl lg:rounded-[3rem] p-6 lg:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 lg:gap-8 hover:bg-white/10 transition-all shadow-xl group text-white">
+            <div className="flex-1 space-y-4 lg:space-y-6 w-full lg:w-auto">
+                <div>
+                    <div className="flex items-center gap-3 mb-2 lg:mb-4">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        <span className="text-[10px] font-black opacity-30 tracking-[0.4em] uppercase">Deployment_Current</span>
+                    </div>
+                    <h2 className="text-2xl lg:text-4xl font-black tracking-tighter leading-none mb-1 lg:mb-2 uppercase">
+                        {title}
+                    </h2>
+                    <p className="text-[10px] lg:text-[12px] font-bold opacity-30 uppercase tracking-[0.2em]">
+                        {stage} Protocols // TARGET: {targetWpm} WPM
+                    </p>
+                </div>
+                <div className="space-y-2 lg:space-y-3">
+                    <div className="flex justify-between items-end">
+                        <span className="text-[10px] font-black opacity-20 uppercase tracking-widest">Efficiency_Index</span>
+                        <span className="text-sm font-black tabular-nums">{Math.round(progress)}%</span>
+                    </div>
+                    <div className="w-full h-1.5 lg:h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <div
+                            className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Assuming Button is a custom component you have, otherwise replace with a standard button */}
+            <button
+                onClick={onContinue}
+                className="wg-button w-full lg:w-auto !px-10 lg:!px-16 !py-3 lg:!py-5 !text-[10px] lg:!text-xs tracking-[0.3em] shadow-2xl group-hover:scale-105 transition-transform"
             >
-                <div className="text-center text-white">
-                    <span className="text-5xl">⌨️</span>
-                    <p className="mt-2 text-sm opacity-80">{stage}</p>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="wg-lesson-content">
-                <h3 className="wg-lesson-title">{title}</h3>
-
-                {/* Stats Row */}
-                <div className="wg-lesson-stats">
-                    <div className="wg-lesson-stat">
-                        <span>⚡</span>
-                        <strong>{targetWpm}</strong>
-                        <span>WPM Target</span>
-                    </div>
-                    <div className="wg-lesson-stat">
-                        <span>📊</span>
-                        <strong>{currentLesson}/{totalLessons}</strong>
-                        <span>Complete</span>
-                    </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
-                    <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                            width: `${progress}%`,
-                            background: 'linear-gradient(90deg, #00ff41, #00d4aa)',
-                        }}
-                    />
-                </div>
-
-                {/* Action Button */}
-                <button className="wg-button w-full justify-center" onClick={onContinue}>
-                    Continue Lesson
-                    <span>→</span>
-                </button>
-            </div>
+                RESUME_MISSION
+            </button>
         </div>
     );
 };

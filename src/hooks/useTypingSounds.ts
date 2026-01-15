@@ -1,10 +1,21 @@
-
 import { useCallback, useEffect, useRef } from 'react';
 import { soundManager } from '../utils/SoundManager';
+import { useSettingsStore } from '../stores/settingsStore';
 
 export const useTypingSounds = () => {
+    const { activeSoundProfileId, soundVolume, soundEnabled } = useSettingsStore();
     // We use a ref to track if we've initialized the sound engine listeners
     const initialized = useRef(false);
+
+    // Sync volume/mute
+    useEffect(() => {
+        soundManager.setVolume(soundEnabled ? soundVolume / 100 : 0);
+    }, [soundVolume, soundEnabled]);
+
+    // Sync Profile
+    useEffect(() => {
+        soundManager.loadProfile(activeSoundProfileId);
+    }, [activeSoundProfileId]);
 
     useEffect(() => {
         if (!initialized.current) {

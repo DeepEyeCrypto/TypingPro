@@ -1,6 +1,4 @@
-import { useRankProgression } from '@src/hooks/useRankProgression'
-import { RankBadge } from './RankBadge'
-import { getNextRank, getWPMToNextRank } from '@src/services/rankSystem'
+import { Card } from './ui/Card'
 import './ProgressDashboard.css'
 
 export const ProgressDashboard = () => {
@@ -40,66 +38,61 @@ export const ProgressDashboard = () => {
     const wpmToNext = getWPMToNextRank(averageWPM)
 
     return (
-        <div className="progress-dashboard">
+        <div className="progress-dashboard space-y-8">
             <div className="dashboard-header">
-                <h1>Your Progress</h1>
-                <p>Track your typing journey and advancement</p>
+                <h1 className="mono-text-interactive text-3xl font-bold mb-2 text-white">Your Progress</h1>
+                <p className="mono-text-interactive text-white/40">Track your typing journey and advancement</p>
             </div>
 
-            <div className="stats-grid">
+            <div className="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Rank Badge */}
-                <div className="stat-card rank-card">
-                    {currentRank && <RankBadge rank={currentRank} progress={progress} />}
-                    {nextRank && (
-                        <div className="next-rank-info">
-                            <div>Next: {nextRank.icon} {nextRank.name}</div>
-                            <div className="wpm-needed">+{wpmToNext} WPM needed</div>
-                        </div>
-                    )}
-                </div>
+                <Card className="rank-card md:col-span-2" title="Current Standing">
+                    <div className="flex items-center justify-between">
+                        {currentRank && <RankBadge rank={currentRank} progress={progress} />}
+                        {nextRank && (
+                            <div className="next-rank-info text-right">
+                                <div className="mono-text-interactive text-sm">Next: {nextRank.icon} {nextRank.name}</div>
+                                <div className="mono-text-interactive text-xs opacity-60">+{wpmToNext} WPM needed</div>
+                            </div>
+                        )}
+                    </div>
+                </Card>
 
                 {/* Average WPM */}
-                <div className="stat-card">
-                    <div className="stat-label">Average WPM</div>
-                    <div className="stat-value">{averageWPM}</div>
-                    <div className="stat-note">Last 10 sessions</div>
-                </div>
+                <Card title="Average WPM" subtitle="Last 10 sessions">
+                    <div className="text-4xl font-mono font-bold mono-text-interactive">{averageWPM}</div>
+                </Card>
 
                 {/* Peak WPM */}
-                <div className="stat-card">
-                    <div className="stat-label">Peak WPM</div>
-                    <div className="stat-value" style={{ color: '#00f0ff' }}>{peakWPM}</div>
-                    <div className="stat-note">All-time best</div>
-                </div>
+                <Card title="Peak WPM" subtitle="All-time best">
+                    <div className="text-4xl font-mono font-bold mono-text-interactive">{peakWPM}</div>
+                </Card>
 
                 {/* Total Sessions */}
-                <div className="stat-card">
-                    <div className="stat-label">Total Sessions</div>
-                    <div className="stat-value">{sessionHistory.length}</div>
-                    <div className="stat-note">Practice makes perfect</div>
-                </div>
+                <Card title="Total Sessions" subtitle="Practice makes perfect">
+                    <div className="text-4xl font-mono font-bold mono-text-interactive">{sessionHistory.length}</div>
+                </Card>
             </div>
 
             {/* 30-Day Chart */}
-            <div className="chart-container">
-                <h2>30-Day Progress</h2>
+            <Card title="30-Day Progress" subtitle="Average WPM per day">
                 {chartData.length > 0 ? (
-                    <div className="chart">
-                        <div className="chart-y-axis">
+                    <div className="chart flex gap-4 h-64 mt-4">
+                        <div className="chart-y-axis flex flex-col justify-between text-[10px] mono-text-interactive opacity-40 pr-3 border-r border-white/5">
                             <span>{maxWPM}</span>
                             <span>{Math.round(maxWPM / 2)}</span>
                             <span>0</span>
                         </div>
-                        <div className="chart-area">
+                        <div className="chart-area flex-1 flex items-end gap-1">
                             {chartData.map((point, idx) => {
                                 const height = (point.wpm / maxWPM) * 100
                                 return (
-                                    <div key={idx} className="chart-bar-container">
+                                    <div key={idx} className="chart-bar-container flex-1 h-full flex items-end">
                                         <div
-                                            className="chart-bar"
+                                            className="chart-bar w-full rounded-t-sm hover:bg-white transition-all cursor-pointer shadow-[0_0_10px_rgba(255,255,255,0.1)]"
                                             style={{
                                                 height: `${height}%`,
-                                                background: currentRank?.accentColor || '#00f0ff'
+                                                background: 'rgba(255, 255, 255, 0.2)'
                                             }}
                                             title={`${point.date}: ${point.wpm} WPM`}
                                         />
@@ -109,11 +102,11 @@ export const ProgressDashboard = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="chart-empty">
+                    <div className="chart-empty text-center py-20 mono-text-interactive opacity-40">
                         Complete more sessions to see your progress chart
                     </div>
                 )}
-            </div>
+            </Card>
         </div>
     )
 }

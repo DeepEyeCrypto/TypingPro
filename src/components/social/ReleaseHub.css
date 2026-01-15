@@ -14,9 +14,9 @@
 
 .hub-header h2 {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 800;
     letter-spacing: 3px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(0, 0, 0, 0.4);
     text-transform: uppercase;
     margin: 0;
 }
@@ -26,13 +26,13 @@
     align-items: center;
     gap: 8px;
     padding: 6px 12px;
-    background: rgba(0, 240, 255, 0.05);
-    border: 0.5px solid rgba(0, 240, 255, 0.2);
+    background: rgba(0, 0, 0, 0.03);
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 1px;
-    color: #00f0ff;
+    color: rgba(0, 0, 0, 0.6);
 }
 
 .dot {
@@ -41,14 +41,15 @@
     border-radius: 50%;
 }
 
-.pulse-green {
-    background: #10b981;
-    box-shadow: 0 0 10px #10b981;
+.pulse-cyan {
+    background: #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .pulse-amber {
-    background: #f59e0b;
-    box-shadow: 0 0 10px #f59e0b;
+    background: #000;
+    opacity: 0.4;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .version-grid {
@@ -65,33 +66,35 @@
 
 .version-stat label {
     font-size: 9px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.3);
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.3);
     text-transform: uppercase;
 }
 
 .version-stat .val {
     font-size: 13px;
-    font-weight: 600;
-    color: #fff;
+    font-weight: 800;
+    color: #000;
 }
 
 .version-stat .hash {
     font-family: 'JetBrains Mono', monospace;
-    opacity: 0.8;
+    opacity: 0.4;
 }
 
 .changelog-preview {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(0, 0, 0, 0.02);
     border-radius: 12px;
     padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .changelog-preview h3 {
     font-size: 11px;
-    font-weight: 700;
-    color: #00f0ff;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.6);
     margin-bottom: 15px;
+    text-transform: uppercase;
 }
 
 .changelog-preview ul {
@@ -105,14 +108,15 @@
 
 .changelog-preview li {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(0, 0, 0, 0.8);
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .bullet {
-    color: #00f0ff;
+    color: rgba(0, 0, 0, 0.4);
 }
 
 .hub-footer {
@@ -123,8 +127,8 @@
 
 .verified-badge {
     font-size: 9px;
-    font-weight: 800;
-    color: #10b981;
+    font-weight: 900;
+    color: #000;
     letter-spacing: 1px;
-    opacity: 0.8;
+    text-transform: uppercase;
 }

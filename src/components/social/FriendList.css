@@ -1,158 +1,53 @@
+/* 
+ * FRIEND LIST V5 - SOCIAL GRID
+ * Optimized for high-performance glass cards and status indicators
+ */
+
 .friend-section {
     display: flex;
+    flex-direction: column;
     gap: 2rem;
     flex: 1;
 }
 
-.friend-column {
-    flex: 1;
-}
-
-.requests-column {
-    width: 250px;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
-    padding-left: 2rem;
-}
-
-.section-title {
-    color: #888;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.count {
-    background: rgba(255, 255, 255, 0.1);
-    font-size: 0.75rem;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: #fff;
-}
-
-.count.pending {
-    background: #FF0055;
-}
-
-.friend-list {
+.friend-list-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
 }
 
-.friend-card {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.2s;
-    position: relative;
+/* Status Indicator Extensions */
+.status-ring.ring-active::after {
+    border-width: 2px;
 }
 
-.friend-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
+/* Specialized Badge for Live WPM */
+.live-wpm-badge {
+    background: rgba(0, 243, 255, 0.1);
+    border: 0.5px solid rgba(0, 243, 255, 0.2);
+    padding: 0 4px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--v5-accent);
+    animation: wpm-flicker 2s infinite;
 }
 
-.friend-card img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+@keyframes wpm-flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
-.friend-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.fname {
-    color: #fff;
-    font-weight: 500;
-}
-
-.fstat {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.status-dot {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
-.status-dot.online {
-    background: #00FF41;
-    box-shadow: 0 0 5px #00FF41;
-}
-
-/* Requests */
-.request-card {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.req-header {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
-}
-
-.req-header img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-
-.req-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.req-actions button {
-    flex: 1;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.accept-btn {
-    background: rgba(0, 255, 65, 0.2);
-    color: #00FF41;
-}
-
-.accept-btn:hover {
-    background: rgba(0, 255, 65, 0.3);
-}
-
-.reject-btn {
-    background: rgba(255, 0, 85, 0.2);
-    color: #FF0055;
-}
-
-.reject-btn:hover {
-    background: rgba(255, 0, 85, 0.3);
-}
-
-.empty-msg {
-    color: #444;
-    font-size: 0.9rem;
-    grid-column: 1 / -1;
-}
-
-.friend-loading {
-    color: #666;
-    padding: 2rem;
-    text-align: center;
+/* Responsive Overrides */
+@media (max-width: 768px) {
+    .friend-list-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -23,7 +23,7 @@ export const ReleaseHub: React.FC = () => {
             <div className="hub-header">
                 <h2>Release Intelligence</h2>
                 <div className="env-badge">
-                    <span className={`dot ${buildInfo?.env === 'Production' ? 'pulse-green' : 'pulse-amber'}`}></span>
+                    <span className={`dot ${buildInfo?.env === 'Production' ? 'pulse-cyan' : 'pulse-amber'}`}></span>
                     {buildInfo?.env || 'Detecting...'}
                 </div>
             </div>

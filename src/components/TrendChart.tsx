@@ -10,11 +10,11 @@ export const TrendChart = () => {
     // Show last 20 sessions
     const displayHistory = [...sessionHistory].reverse().slice(-20)
     const maxWPM = Math.max(...displayHistory.map(s => s.wpm), 60)
-    const baseColor = theme === 'glass' ? '#00f3ff' : '#00ff41'
+    const baseColor = '#ffffff'
 
     return (
-        <GlassCard className="p-6 h-[200px] flex flex-col hover:border-neon-cyan/50 transition-colors">
-            <span className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-4 font-bold">Performance Trend</span>
+        <GlassCard className="p-6 h-[200px] flex flex-col hover:border-white/30 transition-colors">
+            <span className="text-xs uppercase tracking-[0.2em] text-white/50 mb-4 font-bold">Performance Trend</span>
             <div className="flex items-end justify-between flex-1 gap-1">
                 {displayHistory.map((s, i) => (
                     <div
@@ -23,15 +23,16 @@ export const TrendChart = () => {
                         style={{
                             height: `${(s.wpm / maxWPM) * 100}%`,
                             backgroundColor: baseColor,
+                            opacity: 0.2
                         }}
                     >
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] bg-black border border-gray-800 p-1 rounded whitespace-nowrap z-50 pointer-events-none transition-opacity">
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] bg-white text-black border border-gray-800 p-1 rounded whitespace-nowrap z-50 pointer-events-none transition-opacity">
                             {Math.round(s.wpm)} WPM
                         </div>
                     </div>
                 ))}
                 {displayHistory.length === 0 && (
-                    <div className="w-full h-full flex items-center justify-center text-xs text-gray-700 uppercase tracking-widest">
+                    <div className="w-full h-full flex items-center justify-center text-xs text-white/40 uppercase tracking-widest">
                         No Data Recorded
                     </div>
                 )}

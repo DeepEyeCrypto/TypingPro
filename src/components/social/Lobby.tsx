@@ -70,14 +70,14 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full text-cyan-400 font-mono relative">
-            <button onClick={onBack} className="absolute top-8 left-8 text-sm hover:text-white uppercase tracking-widest opacity-50 hover:opacity-100">← Exit Lobby</button>
+        <div className="flex flex-col items-center justify-center h-full text-black font-mono relative">
+            <button onClick={onBack} className="absolute top-8 left-8 text-sm hover:underline uppercase tracking-widest opacity-50 hover:opacity-100 transition-all">← Exit Lobby</button>
             {/* Radar Animation Area */}
             <div className="relative w-64 h-64 mb-8 flex items-center justify-center">
                 {isSearching && (
                     <>
-                        <div className="absolute w-full h-full border border-cyan-500/30 rounded-full animate-ping opacity-20"></div>
-                        <div className="absolute w-48 h-48 border border-cyan-500/50 rounded-full animate-pulse"></div>
+                        <div className="absolute w-full h-full border border-black/10 rounded-full animate-ping opacity-20"></div>
+                        <div className="absolute w-48 h-48 border border-black/20 rounded-full animate-pulse"></div>
                     </>
                 )}
                 <div className="z-10 text-6xl">⚔️</div>
@@ -90,14 +90,14 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
             {!isSearching ? (
                 <button
                     onClick={handleFindMatch}
-                    className="glass-button text-cyan-400 font-bold uppercase tracking-widest text-lg px-12 py-4"
+                    className="glass-button text-black font-bold uppercase tracking-widest text-lg px-12 py-4 border-black/20 hover:bg-black/5"
                 >
                     Find Match
                 </button>
             ) : (
                 <button
                     onClick={handleCancel}
-                    className="mt-8 glass-button text-red-400 hover:text-red-300 text-sm border-red-500/30 hover:border-red-500/80"
+                    className="mt-8 glass-button text-black hover:text-black opacity-60 hover:opacity-100 text-sm border-black/30 hover:border-black/80"
                 >
                     Cancel Search
                 </button>

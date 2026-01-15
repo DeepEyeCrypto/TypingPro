@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-// PROGRESS CHART - Activity tracking chart for typing progress
+// PROGRESS CHART - High Fidelity Deep Glass Overhaul
 // ═══════════════════════════════════════════════════════════════════
 
 import React from 'react';
@@ -12,23 +12,22 @@ interface ProgressChartProps {
 
 export const ProgressChart: React.FC<ProgressChartProps> = ({
     data,
-    title = 'Typing Progress',
+    title = 'Session_Velocity_Telemetry',
     currentWpm = 0,
 }) => {
     // Default data if none provided
     const chartData = data || [
-        { day: 'Mon', wpm: 45 },
-        { day: 'Tue', wpm: 52 },
-        { day: 'Wed', wpm: 48 },
-        { day: 'Thu', wpm: 60 },
-        { day: 'Fri', wpm: 55 },
-        { day: 'Sat', wpm: 68 },
-        { day: 'Sun', wpm: 62 },
+        { day: 'MON', wpm: 45 },
+        { day: 'TUE', wpm: 52 },
+        { day: 'WED', wpm: 48 },
+        { day: 'THU', wpm: 60 },
+        { day: 'FRI', wpm: 55 },
+        { day: 'SAT', wpm: 68 },
+        { day: 'SUN', wpm: 62 },
     ];
 
     const maxWpm = Math.max(...chartData.map(d => d.wpm), 100);
 
-    // Create SVG path for smooth curve
     const points = chartData.map((d, i) => ({
         x: (i / (chartData.length - 1)) * 100,
         y: 100 - (d.wpm / maxWpm) * 80,
@@ -41,26 +40,24 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
         return `${acc} C ${cpX} ${prev.y}, ${cpX} ${point.y}, ${point.x} ${point.y}`;
     }, '');
 
-    // Area fill path
     const areaD = `${pathD} L 100 100 L 0 100 Z`;
 
     return (
-        <div className="wg-card wg-chart-container">
+        <div className="bg-white/5 backdrop-blur-[64px] border border-white/10 rounded-[3rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
             {/* Header */}
-            <div className="wg-chart-header">
-                <h3 className="wg-chart-title">{title}</h3>
-                <select className="wg-chart-dropdown">
-                    <option>Weekly</option>
-                    <option>Monthly</option>
-                    <option>All Time</option>
-                </select>
+            <div className="flex justify-between items-center mb-10">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white opacity-30">{title}</h3>
+                <div className="flex bg-white/5 border border-white/10 rounded-full p-1">
+                    <button className="px-4 py-1.5 rounded-full text-[8px] font-black bg-white/10 text-white uppercase tracking-widest shadow-xl">Weekly</button>
+                    <button className="px-4 py-1.5 rounded-full text-[8px] font-black text-white opacity-40 uppercase tracking-widest hover:opacity-100 transition-colors">Monthly</button>
+                </div>
             </div>
 
             {/* Chart */}
-            <div className="relative h-48">
+            <div className="relative h-64">
                 {/* Y-axis labels */}
-                <div className="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between text-xs text-gray-400">
-                    <span>100%</span>
+                <div className="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between text-[8px] font-black text-white opacity-20 tracking-tighter">
+                    <span>MAX</span>
                     <span>80%</span>
                     <span>60%</span>
                     <span>40%</span>
@@ -68,26 +65,26 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                 </div>
 
                 {/* Chart area */}
-                <div className="absolute left-10 right-0 top-0 bottom-8">
-                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-                        {/* Grid lines */}
+                <div className="absolute left-12 right-0 top-0 bottom-10">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
                         <defs>
-                            <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stopColor="rgba(0, 255, 65, 0.3)" />
-                                <stop offset="100%" stopColor="rgba(0, 255, 65, 0)" />
+                            <linearGradient id="chartGradientWhite" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor="rgba(255, 255, 255, 0.1)" />
+                                <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
                             </linearGradient>
                         </defs>
 
                         {/* Area fill */}
-                        <path d={areaD} fill="url(#chartGradient)" />
+                        <path d={areaD} fill="url(#chartGradientWhite)" className="transition-all duration-1000" />
 
                         {/* Line */}
                         <path
                             d={pathD}
                             fill="none"
-                            stroke="#00ff41"
-                            strokeWidth="2"
+                            stroke="rgba(255,255,255,0.3)"
+                            strokeWidth="1.5"
                             strokeLinecap="round"
+                            className="transition-all duration-1000"
                         />
 
                         {/* Data points */}
@@ -96,28 +93,26 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                                 <circle
                                     cx={point.x}
                                     cy={point.y}
-                                    r="3"
-                                    fill="#0a0a0f"
-                                    stroke="#00ff41"
-                                    strokeWidth="2"
+                                    r="2.5"
+                                    className="fill-white/10 stroke-white/20 stroke-1 transition-all hover:r-4 hover:fill-white/30"
                                 />
                                 {i === points.length - 1 && (
-                                    <g>
+                                    <g className="filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
                                         <rect
-                                            x={point.x - 12}
-                                            y={point.y - 20}
-                                            width="24"
-                                            height="14"
-                                            rx="4"
-                                            fill="#00ff41"
+                                            x={point.x - 10}
+                                            y={point.y - 18}
+                                            width="20"
+                                            height="12"
+                                            rx="6"
+                                            fill="white"
                                         />
                                         <text
                                             x={point.x}
                                             y={point.y - 10}
                                             textAnchor="middle"
-                                            fill="#0a0a0f"
+                                            fill="#000000"
                                             fontSize="6"
-                                            fontWeight="bold"
+                                            fontWeight="900"
                                         >
                                             {chartData[i].wpm}
                                         </text>
@@ -129,7 +124,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                 </div>
 
                 {/* X-axis labels */}
-                <div className="absolute left-10 right-0 bottom-0 flex justify-between text-xs text-gray-400">
+                <div className="absolute left-12 right-0 bottom-0 flex justify-between text-[8px] font-black text-white opacity-20 tracking-[0.2em]">
                     {chartData.map((d, i) => (
                         <span key={i}>{d.day}</span>
                     ))}

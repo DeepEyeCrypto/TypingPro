@@ -59,11 +59,11 @@ export const KEYSTONES_REWARDS = {
 
 // Cosmetic rarity tiers
 export const RARITY_COLORS = {
-    common: '#9ca3af',     // gray-400
-    uncommon: '#4ade80',   // green-400
-    rare: '#60a5fa',       // blue-400
-    epic: '#c084fc',       // purple-400
-    legendary: '#fbbf24',  // yellow-400
+    common: 'rgba(0,0,0,0.2)',
+    uncommon: 'rgba(0,0,0,0.4)',
+    rare: 'rgba(0,0,0,0.6)',
+    epic: 'rgba(0,0,0,0.8)',
+    legendary: '#000000',
 } as const;
 
 export type Rarity = keyof typeof RARITY_COLORS;

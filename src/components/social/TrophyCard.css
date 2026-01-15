@@ -9,20 +9,20 @@
 .trophy-card {
     width: 500px;
     height: 350px;
-    background: rgba(10, 15, 20, 0.8);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(25px) saturate(180%);
     -webkit-backdrop-filter: blur(25px) saturate(180%);
-    border: 0.5px solid rgba(0, 240, 255, 0.3);
-    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
     padding: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
     box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.5),
-        inset 0 0 20px rgba(0, 240, 255, 0.05);
-    color: #fff;
+        0 20px 80px rgba(0, 0, 0, 0.05),
+        inset 0 0 20px rgba(0, 0, 0, 0.02);
+    color: #000;
     font-family: 'Outfit', sans-serif;
     overflow: hidden;
 }
@@ -32,9 +32,9 @@
     top: 20px;
     left: 20px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 800;
     letter-spacing: 3px;
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
 }
 
@@ -49,32 +49,33 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 14px;
     letter-spacing: 1px;
-    text-shadow: 0 0 20px currentColor;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .rank-badge-large.diamond {
-    color: #00ffff;
+    color: #000;
 }
 
 .rank-badge-large.emerald {
-    color: #10b981;
+    color: #000;
+    opacity: 0.9;
 }
 
 .rank-badge-large.gold {
-    color: #ffd700;
+    color: #000;
+    opacity: 0.8;
 }
 
 .trophy-title {
     margin-top: 15px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 800;
     letter-spacing: 4px;
-    color: #00f0ff;
+    color: #000;
     text-transform: uppercase;
-    opacity: 0.8;
 }
 
 .trophy-metrics {
@@ -91,32 +92,29 @@
 
 .metric .val {
     font-size: 36px;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: -1px;
-    background: linear-gradient(180deg, #fff, #00f0ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #000;
 }
 
 .metric .lab {
     font-size: 9px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.3);
     letter-spacing: 2px;
     margin-top: -5px;
 }
 
 .trophy-streak {
     margin-top: 25px;
-    background: rgba(0, 240, 255, 0.1);
-    border: 0.5px solid rgba(0, 240, 255, 0.2);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     padding: 6px 14px;
     border-radius: 30px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 800;
     letter-spacing: 1px;
-    color: #00f0ff;
+    color: #000;
 }
 
 .trophy-footer {
@@ -126,33 +124,36 @@
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 800;
+    color: #000;
 }
 
 .user-tag {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(0, 0, 0, 0.4);
 }
 
 .verified-check {
-    color: #00f0ff;
-    font-weight: 700;
+    font-weight: 900;
+    color: #000;
 }
 
 .download-btn {
     padding: 12px 24px;
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 240, 255, 0.05));
-    border: 0.5px solid rgba(0, 240, 255, 0.4);
+    background: #000;
+    border: 1px solid #000;
     border-radius: 8px;
-    color: #00f0ff;
+    color: #fff;
     font-family: 'Outfit', sans-serif;
-    font-weight: 600;
+    font-weight: 800;
+    font-size: 0.85rem;
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.3s ease;
+    text-transform: uppercase;
 }
 
 .download-btn:hover {
-    background: rgba(0, 240, 255, 0.3);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    background: #222;
     transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }

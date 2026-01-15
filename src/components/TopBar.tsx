@@ -143,7 +143,7 @@ export const TopBar = ({ metrics, mode, onAnalyticsClick, onSocialClick }: TopBa
         </button>
 
         {/* Version Tag */}
-        <span className="text-[10px] text-white/40 ml-1 font-mono">{appVersion}</span>
+        <span className="text-[10px] text-white opacity-40 ml-1 font-mono">{appVersion}</span>
       </div>
 
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}

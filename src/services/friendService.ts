@@ -250,5 +250,29 @@ export const friendService = {
             const duels = snapshot.docs.map(doc => doc.data());
             callback(duels);
         });
+    },
+
+    listenToFriendsPresence(myUid: string, callback: (friends: UserProfile[]) => void) {
+        // First get the friend IDs from the subcollection
+        const q = query(collection(db, `profiles/${myUid}/friends`));
+
+        return onSnapshot(q, (snap) => {
+            const friendIds = snap.docs.map(d => d.id);
+            if (friendIds.length === 0) {
+                callback([]);
+                return;
+            }
+
+            // Sub-query for profiles (handling 'in' limit)
+            const profileQ = query(
+                collection(db, 'profiles'),
+                where('uid', 'in', friendIds.slice(0, 30))
+            );
+
+            return onSnapshot(profileQ, (pSnap) => {
+                const profiles = pSnap.docs.map(d => d.data() as UserProfile);
+                callback(profiles);
+            });
+        });
     }
 };

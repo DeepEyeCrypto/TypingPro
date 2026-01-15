@@ -11,9 +11,18 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ title, subtitle, children, className = '', action, glimmer = false }) => {
     return (
-        <div className={`bg-midnight-surface/40 backdrop-blur-md border border-white/5 rounded-2xl p-6 shadow-2xl relative overflow-hidden group will-change-transform ${className}`}>
-            {/* Subtle glow effect on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-hacker/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className={`
+            bg-white/10
+            backdrop-blur-[64px]
+            border border-white/10
+            rounded-[3rem] p-10
+            shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),inset_0_1px_1px_0_rgba(255,255,255,0.02)]
+            relative overflow-hidden group will-change-transform 
+            transition-all duration-500 hover:bg-white/5 hover:border-white/20 hover:translate-y-[-4px]
+            ${className}
+        `}>
+            {/* Minimal top highlight for depth */}
+            <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
 
             {/* Hardware-accelerated Glimmer Effect */}
             {glimmer && (
@@ -24,7 +33,7 @@ export const Card: React.FC<CardProps> = ({ title, subtitle, children, className
                     <div
                         className="absolute -inset-full w-[200%] h-[200%] rotate-45"
                         style={{
-                            background: 'linear-gradient(90deg, transparent, rgba(0,255,65,0.08), transparent)',
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent)',
                             animation: 'glimmer 3s ease-in-out infinite',
                             willChange: 'transform'
                         }}
@@ -33,10 +42,10 @@ export const Card: React.FC<CardProps> = ({ title, subtitle, children, className
             )}
 
             {(title || action) && (
-                <div className="flex items-center justify-between mb-6 relative z-10">
+                <div className="flex items-center justify-between mb-8 relative z-10">
                     <div>
-                        {title && <h3 className="text-white/90 font-bold text-lg tracking-tight">{title}</h3>}
-                        {subtitle && <p className="text-white/40 text-xs mt-1 uppercase tracking-widest font-medium">{subtitle}</p>}
+                        {title && <h3 className="text-white font-black text-2xl tracking-tight">{title}</h3>}
+                        {subtitle && <p className="text-white opacity-30 text-xs mt-2 uppercase tracking-[0.2em] font-black">{subtitle}</p>}
                     </div>
                     {action && <div>{action}</div>}
                 </div>
@@ -50,7 +59,7 @@ export const Card: React.FC<CardProps> = ({ title, subtitle, children, className
             <style>{`
                 @keyframes glimmer {
                     0% { transform: translateX(-100%) rotate(45deg); }
-                    50%, 100% { transform: translateX(100%) rotate(45deg); }
+                    100% { transform: translateX(100%) rotate(45deg); }
                 }
             `}</style>
         </div>

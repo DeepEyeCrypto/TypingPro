@@ -66,50 +66,39 @@ export const WhatsNewModal = () => {
     if (!isOpen || !release) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="liquid-glass-card max-w-2xl w-full max-h-[80vh] flex flex-col animate-in fade-in zoom-in-95 duration-300 transform overflow-hidden shadow-2xl border border-[color:var(--glass-border)]"
-                style={{ backgroundColor: 'var(--bg-color)' }}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-300 backdrop-blur-[50px]">
+            <div className="bg-white/15 backdrop-blur-[50px] max-w-2xl w-full max-h-[80vh] flex flex-col animate-in zoom-in-95 duration-300 transform overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)] border border-white/40 rounded-[2.5rem]">
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-[color:var(--glass-border)] bg-[color:var(--glass-bg)]">
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl">🚀</span>
+                <div className="flex items-center justify-between p-6 border-b border-black/5 bg-black/5">
+                    <div className="flex items-center gap-4">
+                        <span className="text-3xl filter grayscale">🚀</span>
                         <div>
-                            <h2 className="text-xl font-bold" style={{ color: 'var(--accent-color)' }}>What's New</h2>
-                            <p className="text-xs opacity-70">TypingPro {release.tag_name}</p>
+                            <h2 className="text-xl font-bold mono-text-interactive">What's New</h2>
+                            <p className="text-[10px] uppercase tracking-widest mono-text-interactive opacity-40">TypingPro {release.tag_name}</p>
                         </div>
                     </div>
                     <button
                         onClick={handleClose}
-                        className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                        className="p-2 rounded-full hover:bg-white/10 transition-colors mono-text-interactive opacity-60 hover:opacity-100"
                     >
                         ✕
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 overflow-y-auto custom-scrollbar">
-                    <div className="prose prose-invert max-w-none">
-                        {/* 
-                            Simple formatting for headers and lists since we don't have a markdown parser installed yet.
-                            In a real scenario, we'd use react-markdown. 
-                            For now, we display the raw text with whitespace preservation which is surprisingly readable for standard MD.
-                        */}
-                        <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed opacity-90" style={{ fontFamily: 'var(--font-family)' }}>
+                <div className="p-8 overflow-y-auto custom-scrollbar">
+                    <div className="prose max-w-none">
+                        <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed mono-text-interactive text-white opacity-80">
                             {release.body}
                         </pre>
                     </div>
                 </div>
 
-                {/* Footer */}
-                <div className="p-6 border-t border-[color:var(--glass-border)] bg-[color:var(--glass-bg)] flex justify-end">
+                <div className="p-6 border-t border-white/5 bg-white/5 flex justify-end">
                     <button
                         onClick={handleClose}
-                        className="px-6 py-2 rounded-lg font-medium transition-all transform hover:scale-105 active:scale-95"
-                        style={{
-                            backgroundColor: 'var(--accent-color)',
-                            color: 'var(--bg-color)'
-                        }}
+                        className="px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-105 active:scale-95 bg-white/10 hover:bg-white/20 border border-white/20 text-white shadow-sm"
                     >
                         Awesome!
                     </button>

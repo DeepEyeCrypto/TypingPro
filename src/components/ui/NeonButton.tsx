@@ -12,8 +12,8 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
     className = '',
     ...props
 }) => {
-    const shadowColor = variant === 'cyan' ? 'rgba(0, 243, 255, 0.5)' : 'rgba(255, 0, 60, 0.5)';
-    const baseColor = variant === 'cyan' ? '#00f3ff' : '#ff003c';
+    const shadowColor = variant === 'cyan' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)';
+    const baseColor = '#000000';
 
     return (
         <button

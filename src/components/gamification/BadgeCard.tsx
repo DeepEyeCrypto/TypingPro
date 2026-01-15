@@ -26,11 +26,11 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({
         relative p-4 rounded-xl border transition-all duration-300
         ${unlocked
                     ? 'bg-white/5 border-white/20'
-                    : 'bg-white/[0.02] border-white/10 opacity-60'
+                    : 'bg-white/[0.03] border-white/10 opacity-60'
                 }
       `}
             style={{
-                boxShadow: unlocked ? `0 0 20px ${rarityColor}40` : 'none',
+                boxShadow: unlocked ? `0 4px 12px rgba(255,255,255,0.05)` : 'none',
             }}
         >
             {/* Rarity indicator */}
@@ -48,7 +48,7 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({
             <h3 className="font-bold text-white text-sm text-center mb-1">
                 {badge.name}
             </h3>
-            <p className="text-white/50 text-xs text-center mb-2">
+            <p className="text-white opacity-50 text-xs text-center mb-2">
                 {badge.description}
             </p>
 
@@ -64,7 +64,7 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({
                             }}
                         />
                     </div>
-                    <div className="text-xs text-white/40 text-center mt-1">
+                    <div className="text-xs text-white opacity-40 text-center mt-1">
                         {progress}%
                     </div>
                 </div>
@@ -72,7 +72,7 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({
 
             {/* Keystones reward */}
             {unlocked && (
-                <div className="text-center text-xs text-[#00ff41] mt-2">
+                <div className="text-center text-xs text-white font-bold mt-2">
                     +{badge.keystones_reward} 💎
                 </div>
             )}

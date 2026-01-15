@@ -1,0 +1,116 @@
+.dev-hud-overlay {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 320px;
+    background: rgba(5, 5, 5, 0.85);
+    backdrop-filter: blur(24px);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 1.5rem;
+    z-index: 10000;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    pointer-events: all;
+    user-select: none;
+}
+
+.dev-hud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.75rem;
+}
+
+.hud-title {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.hud-version {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.6rem;
+}
+
+.hud-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.hud-track {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.track-label {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.track-data {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    font-size: 0.7rem;
+    color: #fff;
+}
+
+.track-data span {
+    display: flex;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.value {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.value.alert {
+    color: #ff3e3e;
+    text-shadow: 0 0 10px rgba(255, 62, 62, 0.5);
+}
+
+.value.safe {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.hex {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+}
+
+.hud-action-btn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.5rem;
+    font-size: 0.65rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+.hud-action-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hud-loading {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    padding: 1rem 0;
+}

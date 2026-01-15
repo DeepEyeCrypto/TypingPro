@@ -1,39 +1,17 @@
-import { SettingsPage } from '../../../src/components/settings/SettingsPage' // Add Import
-
-// ... inside App component ...
-
-activeView = { typing.view }
-sidebar = {
-            < SideNav
-syncing = { isSyncing }
-items = {
-  [
-  { id: 'dashboard', icon: <HomeIcon />, label: 'Dashboard', onClick: () => typing.setView('dashboard'), active: typing.view === 'dashboard' },
-  { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
-  { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
-  { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
-  { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' || typing.view === 'certification' },
-  { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
-  { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => typing.setView('settings'), active: typing.view === 'settings' }, // Updated Handler
-              ]}
-
-// ... inside render switch ...
-
-          ) : typing.view === 'store' ? (
-  <StorePage onBack={() => typing.setView('dashboard')} />
-) : typing.view === 'settings' ? (
-  <SettingsPage onBack={() => typing.setView('dashboard')} />
-) : typing.view === 'achievements' ? (
+import React, { useEffect, useRef } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/core'
 import { useAuthStore } from '../../../src/stores/authStore'
 import { useTyping } from '../../../src/hooks/useTyping'
 import { useSettingsStore } from '../../../src/stores/settingsStore'
+import { usePresenceStore } from '../../../src/stores/presenceStore'
+import { useSyncStore } from '../../../src/stores/syncStore'
 import { syncService } from '../../../src/services/syncService'
 import { TypingArea } from '../../../src/components/TypingArea'
 import { TypingTestPage } from '../../../src/components/pages/TypingTestPage'
 import { LessonSelector } from '../../../src/components/LessonSelector'
 import { GatekeeperModal } from '../../../src/components/GatekeeperModal'
+import { MissionResult } from '../../../src/components/dashboard/MissionResult'
 import { AnalyticsDashboard } from '../../../src/components/analytics/AnalyticsDashboard'
 import { CURRICULUM, Lesson } from '../../../src/data/lessons'
 import { getRankForWPM } from '../../../src/services/rankSystem'
@@ -54,6 +32,8 @@ import { RankCelebration } from '../../../src/components/social/RankCelebration'
 import Lobby from '../../../src/components/social/Lobby'
 import { DuelArena } from '../../../src/components/social/DuelArena'
 import { NetworkTest } from '../../../src/components/NetworkTest'
+import { useDevChord } from '../../../src/hooks/useDevChord'
+import { DevHud } from '../../../src/components/dev/DevHud'
 
 // NEW UI PRIMITIVES
 import { AppShell } from '../../../src/components/layout/AppShell'
@@ -61,10 +41,14 @@ import { SideNav } from '../../../src/components/layout/SideNav'
 import { TopBar as ModernTopBar } from '../../../src/components/layout/TopBar'
 import { Button } from '../../../src/components/ui/Button'
 import { AuthButtons } from '../../../src/components/AuthButtons'
+import { AuthPage } from '../../../src/pages/Auth'
+import { useAuth } from '../../../src/hooks/useAuth'
 
 // WARM GLASS DASHBOARD
 import { DashboardPage } from '../../../src/components/dashboard/DashboardPage'
 import { StorePage } from '../../../src/components/store/StorePage'
+import { SettingsPage } from '../../../src/components/settings/SettingsPage'
+import { ThemeToggle } from '../../../src/components/ThemeToggle'
 
 // GAMIFICATION
 import { GamificationPage } from '../../../src/components/gamification/GamificationPage'
@@ -73,7 +57,7 @@ import { AchievementToast } from '../../../src/components/gamification/Achieveme
 import { useAchievementStore } from '../../../src/stores/achievementStore'
 
 // ICONS for SideNav
-const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>;
+const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" /></svg>;
 const TestIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const AnalyticsIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>;
 const SocialIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
@@ -84,79 +68,38 @@ const TrophyIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentCol
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
-  const [isSyncing, setIsSyncing] = React.useState(false)
+  const { isSyncing } = useSyncStore()
 
-  useLockdown() // Enforce UI Security
-  const { user, setAuthenticated, checkSession } = useAuthStore()
+
+  // Init Hooks
+  useLockdown()
+  useAuth() // Initialize Auth Listeners (Deep Link)
+  const { user, isGuest, checkSession } = useAuthStore()
   const { theme, fontFamily } = useSettingsStore()
   const typing = useTyping()
   const { unlockedBadges, streak: streakData, certifications, keystones } = useAchievementStore()
-  useUpdater() // Initialize auto-updater check
+  useUpdater()
+  useDevChord()
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Auth & Session Initialization
   useEffect(() => {
     const initSession = async () => {
-      // 1. Check persistent store first
-      const hasSession = await checkSession()
-
-      // 2. Handle specific OAuth Callbacks (Overwrites session if present)
-      const handleAuth = async (urlStr: string) => {
-        try {
-          const url = new URL(urlStr)
-          const code = url.searchParams.get('code')
-          const path = url.pathname || url.hostname + url.pathname
-
-          if (code) {
-            let provider: 'google' | 'github' | null = null
-            if (path.includes('google')) provider = 'google'
-            if (path.includes('github')) provider = 'github'
-
-            if (provider) {
-              const userData = await invoke<any>(`${provider}_auth_finish`, { code })
-              setAuthenticated(userData, userData.token)
-
-              setIsSyncing(true)
-              await syncService.pullFromCloud()
-              setIsSyncing(false)
-
-              if (window.location.protocol.startsWith('http')) {
-                window.history.replaceState({}, document.title, '/')
-              }
-            }
-          }
-        } catch (err) {
-          console.error('Auth failed:', err)
-        }
-      }
-
-      await handleAuth(window.location.href)
-
-      // 3. Deep Link Listener
-      import('@tauri-apps/plugin-deep-link').then(({ onOpenUrl }) => {
-        onOpenUrl(async (urls) => {
-          console.log('Deep link received:', urls)
-          try {
-            await getCurrentWindow().setFocus()
-          } catch (e) {
-            console.error('Failed to focus window:', e)
-          }
-          urls.forEach(handleAuth)
-        })
-      }).catch(e => {
-        console.error('Deep link init failed:', e)
-      })
+      // 1. Check persistence
+      await checkSession()
 
       if (useAuthStore.getState().user) {
-        syncService.pullFromCloud()
+        await syncService.pullFromCloud()
       }
-
-      // Done loading
-      setTimeout(() => setIsLoading(false), 500) // Small buffer for splash smoothness
+      setTimeout(() => setIsLoading(false), 500)
     }
-
     initSession()
-  }, []) // Run once on mount
+  }, [])
+
+  // Protected Route Logic
+  if (!isLoading && !user && !isGuest) {
+    return <AuthPage />;
+  }
 
   // 📡 SOCIAL HEARTBEAT: Listen for requests and duels
   useEffect(() => {
@@ -216,16 +159,20 @@ const App: React.FC = () => {
     }
   }, [user?.id, typing.setView, typing.setActiveMatchId])
 
-  // 💓 PRESENCE HEARTBEAT: Update last_seen every 5 mins
+  // 💓 PRESENCE HEARTBEAT: Update every 30s
+  const { syncPresence, setStatus } = usePresenceStore()
   useEffect(() => {
     if (!user?.id) return;
 
-    const update = () => userService.updatePresence(user.id).catch(console.error);
-    update(); // Initial
+    // Set initial status to LOBBY
+    setStatus('LOBBY')
 
-    const interval = setInterval(update, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [user?.id])
+    const interval = setInterval(() => {
+      syncPresence().catch(console.error)
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [user?.id, syncPresence, setStatus])
 
   // Focus management
   useEffect(() => {
@@ -240,6 +187,22 @@ const App: React.FC = () => {
 
   return (
     <>
+      {/* 1. MESH GRADIENT BASE */}
+      <div className="fixed inset-0 bg-[radial-gradient(at_0%_0%,_hsla(253,16%,7%,1)_0,_transparent_50%),_radial-gradient(at_50%_0%,_hsla(225,39%,30%,1)_0,_transparent_50%),_radial-gradient(at_100%_0%,_hsla(339,49%,30%,1)_0,_transparent_50%)] pointer-events-none z-[-1]" />
+
+      {/* 2. AURORA ORBS (FLOATING COLORS) */}
+      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-40 animate-blob pointer-events-none z-[-1]" />
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-cyan-600 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-2000 pointer-events-none z-[-1]" />
+      <div className="fixed -bottom-8 left-20 w-[600px] h-[600px] bg-pink-600 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-4000 pointer-events-none z-[-1]" />
+
+      {/* GLOBAL FROSTED NOISE OVERLAY */}
+      <div
+        className="fixed inset-0 z-[9999] opacity-[0.03] pointer-events-none mix-blend-overlay"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+        }}
+      />
+
       {isLoading && <SplashScreen onComplete={() => setIsLoading(false)} />}
 
       {!isLoading && (
@@ -255,16 +218,17 @@ const App: React.FC = () => {
                 { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
                 { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' || typing.view === 'certification' },
                 { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
-                { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => { }, active: false },
+                { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => typing.setView('settings'), active: typing.view === 'settings' },
               ]}
               footer={
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-4 pb-2">
+                  <ThemeToggle />
                   {user ? (
-                    <div className="w-8 h-8 rounded-full border border-hacker/30 overflow-hidden">
+                    <div className="w-8 h-8 rounded-full border border-black/20 overflow-hidden">
                       <img src={user.avatar_url || ''} alt="User" />
                     </div>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10" />
+                    <div className="w-8 h-8 rounded-full bg-black/5 border border-black/10" />
                   )}
                 </div>
               }
@@ -294,6 +258,7 @@ const App: React.FC = () => {
           <UsernameModal />
           <RankCelebration />
           <AchievementToast />
+          <DevHud />
 
           {typing.view === 'dashboard' ? (
             <DashboardPage
@@ -316,9 +281,17 @@ const App: React.FC = () => {
                 const nextLesson = CURRICULUM[typing.unlockedIds.length - 1] || CURRICULUM[0];
                 typing.startLesson(nextLesson);
               }}
+              onStartMission={(lesson, targetWpm, minAcc) => {
+                typing.startMission(lesson, targetWpm, minAcc, ["STRICT_NO_BACKSPACE_MODE", "PERMANENT_FOCUS_LOCK"]);
+              }}
+              missionState={typing.missionState}
+              onDeployMission={typing.deployMission}
+              onResetMission={typing.resetMission}
             />
           ) : typing.view === 'store' ? (
             <StorePage onBack={() => typing.setView('dashboard')} />
+          ) : typing.view === 'settings' ? (
+            <SettingsPage onBack={() => typing.setView('dashboard')} />
           ) : typing.view === 'achievements' ? (
             <GamificationPage
               userStats={{
@@ -412,10 +385,32 @@ const App: React.FC = () => {
                 rawKpm: Math.round(typing.metrics.raw_wpm * 5)
               }}
               onReset={() => typing.retryLesson()}
+              missionData={{
+                isMission: typing.missionData.isMission,
+                targetWpm: typing.missionData.targetWpm,
+                minAccuracy: typing.missionData.minAccuracy,
+                stressLevel: typing.stressLevel
+              }}
             />
           )}
 
-          {typing.showResult && typing.currentLesson && (
+          {typing.showResult && typing.currentLesson && typing.missionState !== 'IDLE' ? (
+            <MissionResult
+              isOpen={typing.showResult}
+              state={(typing.missionState as 'SUCCESS' | 'FAILURE')}
+              wpm={typing.finalStats.netWpm}
+              accuracy={Math.round(typing.metrics.accuracy)}
+              failureReason={typing.failureReason}
+              onClose={() => {
+                typing.setShowResult(false);
+                typing.resetMission();
+                typing.setView('dashboard');
+              }}
+              onShare={() => {
+                console.log("Sharing Certification...");
+              }}
+            />
+          ) : typing.showResult && typing.currentLesson && (
             <GatekeeperModal
               stats={{
                 ...typing.finalStats,
@@ -436,7 +431,7 @@ const App: React.FC = () => {
                 typing.setShowResult(false)
                 const currentIndex = CURRICULUM.findIndex((l: any) => l.id === typing.currentLesson?.id)
                 if (currentIndex < CURRICULUM.length - 1) {
-                  typing.startLesson(CURRICULUM[currentIndex + 1])
+                  typing.startLesson(CURRICULUM[currentIndex + 1]);
                 }
               }}
             />

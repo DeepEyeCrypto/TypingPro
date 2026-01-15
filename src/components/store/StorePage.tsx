@@ -61,25 +61,31 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
     };
 
     const getRarityBorder = (rarity: Rarity) => {
-        const color = RARITY_COLORS[rarity];
-        return `border-2 border-[${color}]/30 hover:border-[${color}]/60`;
+        switch (rarity) {
+            case 'common': return 'border-2 border-white/5 hover:border-white/10';
+            case 'uncommon': return 'border-2 border-white/10 hover:border-white/20';
+            case 'rare': return 'border-2 border-white/20 hover:border-white/30';
+            case 'epic': return 'border-2 border-white/30 hover:border-white/40';
+            case 'legendary': return 'border-2 border-white/50 hover:border-white/80 shadow-[0_0_15px_rgba(255,255,255,0.1)]';
+            default: return 'border-2 border-white/5';
+        }
     };
 
     return (
-        <div className="w-full h-full bg-midnight text-white p-6 overflow-y-auto">
+        <div className="w-full h-full text-white p-6 overflow-y-auto">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-4">
                     {onBack && (
                         <button
                             onClick={onBack}
-                            className="text-white/50 hover:text-white transition-colors"
+                            className="text-white opacity-50 hover:opacity-100 transition-colors"
                         >
                             ← Back
                         </button>
                     )}
-                    <h1 className="text-2xl font-bold tracking-tight">
-                        <span className="text-hacker">💎</span> Cosmetics Store
+                    <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent uppercase italic">
+                        <span className="text-pink-500 mr-2">💎</span> Cosmetics_Store
                     </h1>
                 </div>
                 <KeystonesDisplay amount={keystones} size="lg" />
@@ -87,7 +93,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
 
             {/* Purchase Message Toast */}
             {purchaseMessage && (
-                <div className="fixed top-4 right-4 bg-hacker/20 border border-hacker/50 text-hacker px-4 py-2 rounded-lg z-50">
+                <div className="fixed top-4 right-4 bg-white border border-white/10 text-white px-4 py-2 rounded-lg z-50 shadow-xl">
                     {purchaseMessage}
                 </div>
             )}
@@ -98,9 +104,9 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                     <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCategory === cat
-                            ? 'bg-hacker text-midnight'
-                            : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${selectedCategory === cat
+                            ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.3)] border border-white/20'
+                            : 'bg-white/5 text-white opacity-40 hover:opacity-100 hover:bg-white/10 border border-white/10'
                             }`}
                     >
                         {CATEGORY_LABELS[cat]}
@@ -121,7 +127,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                             className={`p-4 transition-all ${getRarityBorder(cosmetic.rarity)}`}
                         >
                             {/* Preview Image */}
-                            <div className="aspect-square bg-midnight/50 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                            <div className="aspect-square bg-white/5 backdrop-blur-xl border border-white/30 rounded-[24px] mb-3 flex items-center justify-center overflow-hidden shadow-inner">
                                 {cosmetic.preview_url ? (
                                     <img
                                         src={cosmetic.preview_url}
@@ -143,14 +149,14 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                             </div>
 
                             {/* Item Info */}
-                            <h3 className="text-white font-bold truncate text-sm">{cosmetic.name}</h3>
+                            <h3 className="text-white font-bold truncate text-sm uppercase tracking-tight">{cosmetic.name}</h3>
                             <p
                                 className="text-xs uppercase tracking-wider font-bold"
                                 style={{ color: RARITY_COLORS[cosmetic.rarity] }}
                             >
                                 {cosmetic.rarity}
                             </p>
-                            <p className="text-white/40 text-xs mt-1 line-clamp-2">{cosmetic.description}</p>
+                            <p className="text-white opacity-40 text-xs mt-1 line-clamp-2">{cosmetic.description}</p>
 
                             {/* Price / Action Button */}
                             <div className="mt-3">
@@ -180,7 +186,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
 
             {/* Empty State */}
             {filteredCosmetics.length === 0 && (
-                <div className="text-center py-12 text-white/40">
+                <div className="text-center py-12 text-white opacity-40">
                     <p className="text-xl mb-2">No items available</p>
                     <p className="text-sm">Check back later for new cosmetics!</p>
                 </div>

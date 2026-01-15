@@ -18,6 +18,14 @@ export const ZenOverlay = () => {
     const [text, setText] = useState('')
     const [input, setInput] = useState('')
     const [isComplete, setIsComplete] = useState(false)
+    const containerRef = React.useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (containerRef.current) {
+            containerRef.current.focus()
+        }
+    }, [])
+
 
     useEffect(() => {
         loadDrill()
@@ -45,7 +53,14 @@ export const ZenOverlay = () => {
     }
 
     return (
-        <div className="zen-container" onKeyDown={handleKeyDown} tabIndex={0}>
+        <div
+            ref={containerRef}
+            className="zen-container"
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            onClick={() => containerRef.current?.focus()}
+        >
+
             <div className="zen-text">
                 {text.split(' ').map((word, wordIdx) => {
                     // pre-calculate prefix length for the word

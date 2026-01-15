@@ -11,7 +11,7 @@
 .hand-svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0 10px rgba(0, 255, 65, 0.1));
+    filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.1));
 }
 
 .hand-outline {
@@ -30,9 +30,9 @@
 }
 
 .finger-path.active {
-    stroke: #00ff41;
+    stroke: rgba(255, 255, 255, 0.9);
     stroke-width: 3;
-    filter: drop-shadow(0 0 5px #00ff41);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
 .finger-tip {
@@ -41,7 +41,8 @@
 }
 
 .finger-tip.active {
-    fill: #00ff41;
+    fill: rgba(255, 255, 255, 0.9);
+    stroke-width: 0;
     r: 6px;
-    filter: drop-shadow(0 0 8px #00ff41);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
 }

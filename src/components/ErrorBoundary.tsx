@@ -27,8 +27,9 @@ export class ErrorBoundary extends Component<Props, State> {
             const err = (this.state as any).error; // Cast to access error
             return (
                 <div style={{
-                    color: '#ff5555',
-                    backgroundColor: '#1a0000',
+                    color: '#000',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
                     padding: '2rem',
                     height: '100vh',
                     width: '100vw',
@@ -37,33 +38,40 @@ export class ErrorBoundary extends Component<Props, State> {
                     zIndex: 99999,
                     position: 'fixed',
                     top: 0,
-                    left: 0
+                    left: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center'
                 }}>
-                    <h1 style={{ borderBottom: '1px solid #ff5555', paddingBottom: '1rem' }}>APPLICATION CRASHED</h1>
-                    <h3 style={{ color: '#fff' }}>{err?.toString()}</h3>
+                    <h1 style={{ borderBottom: '2px solid rgba(0,0,0,0.1)', paddingBottom: '1rem', fontWeight: 900, letterSpacing: '0.5em', color: '#000' }}>SYSTEM_RECOVERY_MODE</h1>
+                    <h3 style={{ color: '#000', opacity: 0.8, marginTop: '2rem' }}>CRITICAL_FAILURE: {err?.toString()}</h3>
                     <pre style={{
-                        background: 'rgba(0,0,0,0.3)',
+                        background: 'rgba(0,0,0,0.05)',
                         padding: '1rem',
                         borderRadius: '4px',
                         whiteSpace: 'pre-wrap',
-                        color: '#aaa'
+                        color: 'rgba(0,0,0,0.6)'
                     }}>
                         {err?.stack}
                     </pre>
                     <button
                         onClick={() => window.location.reload()}
                         style={{
-                            marginTop: '2rem',
-                            padding: '1rem 2rem',
-                            background: '#ff5555',
-                            color: 'white',
-                            border: 'none',
+                            marginTop: '2.5rem',
+                            padding: '1.2rem 3rem',
+                            background: 'rgba(0,0,0,0.05)',
+                            color: '#000',
+                            border: '1px solid rgba(0,0,0,0.1)',
                             borderRadius: '4px',
                             cursor: 'pointer',
-                            fontSize: '1rem'
+                            fontSize: '0.8rem',
+                            fontWeight: 'bold',
+                            letterSpacing: '0.2em',
                         }}
                     >
-                        RELOAD APP
+                        INITIALIZE_REBOOT
                     </button>
                     {this.props.fallback}
                 </div>

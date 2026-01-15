@@ -29,9 +29,9 @@ export interface UserBadge {
 
 // Rarity colors for UI
 export const BADGE_RARITY_COLORS: Record<BadgeRarity, string> = {
-    common: '#9ca3af',
-    uncommon: '#00ff41',
-    rare: '#00d4aa',
-    epic: '#aa00ff',
-    legendary: '#ffd700',
+    common: 'rgba(0, 0, 0, 0.2)',
+    uncommon: 'rgba(0, 0, 0, 0.4)',
+    rare: 'rgba(0, 0, 0, 0.6)',
+    epic: 'rgba(0, 0, 0, 0.8)',
+    legendary: '#000000',
 };

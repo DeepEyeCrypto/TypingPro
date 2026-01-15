@@ -12,12 +12,12 @@
 
 @layer components {
     .glass-panel {
-        @apply bg-midnight-surface/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl;
+        @apply bg-midnight-surface bg-opacity-80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl;
     }
 
     .hacker-border {
-        @apply border border-hacker/30;
+        @apply border border-white border-opacity-30;
 
-        box-shadow: 0 0 10px rgba(0, 255, 65, 0.1);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     }
 }

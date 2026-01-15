@@ -10,11 +10,23 @@ pub struct TypingMetrics {
     pub cheat_flags: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TypingEngineDebugState {
+    pub metrics: TypingMetrics,
+    pub total_chars: usize,
+    pub last_latency: f64,
+    pub avg_latency: f64,
+    pub std_dev: f64,
+    pub unique_latencies: usize,
+    pub telemetry_buffer_size: usize,
+}
+
 pub struct TypingEngine {
     pub target_text: String,
     pub typed_chars: Vec<char>,
     pub timestamps: Vec<u64>,
     pub is_active: bool,
+    pub forced_bot: bool, // For debug purposes
 }
 
 impl TypingEngine {
@@ -24,6 +36,7 @@ impl TypingEngine {
             typed_chars: Vec::new(),
             timestamps: Vec::new(),
             is_active: false,
+            forced_bot: false,
         }
     }
 
@@ -51,14 +64,18 @@ impl TypingEngine {
                 net_wpm: 0.0,
                 accuracy: 100.0,
                 consistency: 100.0,
-                is_bot: false,
-                cheat_flags: String::new(),
+                is_bot: self.forced_bot,
+                cheat_flags: if self.forced_bot {
+                    "DEBUG_FORCE_TRIGGER".to_string()
+                } else {
+                    String::new()
+                },
             };
         }
 
+        // ... rest of the logic remains same, but we will merge the bot check
         let start_time = self.timestamps[0];
         let last_time = *self.timestamps.last().unwrap();
-        // Avoid division by zero if start == last
         let duration_mins = f64::max((last_time - start_time) as f64 / 60000.0, 0.0001);
 
         let total_chars = self.typed_chars.len();
@@ -74,20 +91,16 @@ impl TypingEngine {
                     uncorrected_errors += 1;
                 }
             } else {
-                // Extra characters typed are errors
                 uncorrected_errors += 1;
             }
         }
 
-        // Gross WPM: (All typed entries / 5) / Time (min)
         let gross_wpm = if duration_mins > 0.0001 {
             (total_chars as f64 / 5.0) / duration_mins
         } else {
             0.0
         };
 
-        // Net WPM: Gross WPM - (Uncorrected Errors / Time (min))
-        // This is the standard "Accuracy Penalty" logic.
         let penalty = if duration_mins > 0.0001 {
             uncorrected_errors as f64 / duration_mins
         } else {
@@ -101,27 +114,22 @@ impl TypingEngine {
             100.0
         };
 
-        // Consistency Calculation (Coefficient of Variation of Latency)
         let mut intervals = Vec::new();
         for i in 1..self.timestamps.len() {
-            // Filter out potential crazy outliers if needed, currently raw
             let interval = (self.timestamps[i] - self.timestamps[i - 1]) as f64;
             if interval > 0.0 {
-                // Ignore 0ms intervals to prevent skew
                 intervals.push(interval);
             }
         }
 
         let consistency = if !intervals.is_empty() {
             let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
-
             if avg_interval > 0.0 {
                 let variance = intervals
                     .iter()
                     .map(|&i| (i - avg_interval).powi(2))
                     .sum::<f64>()
                     / intervals.len() as f64;
-
                 let std_dev = variance.sqrt();
                 let cv = std_dev / avg_interval;
                 (100.0 - (cv * 100.0)).clamp(0.0, 100.0)
@@ -132,29 +140,37 @@ impl TypingEngine {
             100.0
         };
 
-        // Anti-Cheat Heuristics
-        let mut is_bot = false;
-        let mut cheat_flags = Vec::new();
+        let mut is_bot = self.forced_bot;
+        let mut cheat_flags = if self.forced_bot {
+            vec!["DEBUG_FORCE_TRIGGER".to_string()]
+        } else {
+            Vec::new()
+        };
 
-        // 1. Superhuman Speed (350+ NET WPM)
         if net_wpm > 350.0 {
             is_bot = true;
-            cheat_flags.push("SPEED_LIMIT_EXCEEDED");
+            cheat_flags.push("SPEED_LIMIT_EXCEEDED".to_string());
         }
 
-        // 2. Ultrasonic Typing (Avg Latency < 20ms) & Zero Variance (Std Dev < 2.0ms)
         if !intervals.is_empty() {
             let avg_interval = intervals.iter().sum::<f64>() / intervals.len() as f64;
 
-            // Ultrasonic
-            if avg_interval < 20.0 {
+            if avg_interval < 15.0 {
                 is_bot = true;
-                cheat_flags.push("ULTRASONIC_INPUT");
+                cheat_flags.push("ULTRASONIC_INPUT".to_string());
             }
 
-            // Zero Variance (Macro Detection)
-            // Std Dev is already calculated as variance.sqrt() logic but we need the raw std_dev here.
-            // Let's reuse or recalculate std_dev
+            let mut burst_count = 0;
+            for &interval in &intervals {
+                if interval < 5.0 {
+                    burst_count += 1;
+                }
+            }
+            if burst_count > 3 && self.typed_chars.len() > 10 {
+                is_bot = true;
+                cheat_flags.push("BURST_PACKET_DETECTED".to_string());
+            }
+
             let variance = intervals
                 .iter()
                 .map(|&i| (i - avg_interval).powi(2))
@@ -162,10 +178,20 @@ impl TypingEngine {
                 / intervals.len() as f64;
             let std_dev = variance.sqrt();
 
-            // Strict consistency check: If user typed > 10 chars and std_dev is insanely low (< 2ms)
-            if self.typed_chars.len() > 10 && std_dev < 2.0 {
+            if self.typed_chars.len() > 15 && std_dev < 1.5 {
                 is_bot = true;
-                cheat_flags.push("MACRO_DETECTED_ZERO_VARIANCE");
+                cheat_flags.push("MACRO_DETECTED_ZERO_VARIANCE".to_string());
+            }
+
+            if intervals.len() > 10 {
+                let mut unique_intervals = std::collections::HashSet::new();
+                for &i in &intervals {
+                    unique_intervals.insert((i * 10.0).round() as i32);
+                }
+                if unique_intervals.len() < 4 {
+                    is_bot = true;
+                    cheat_flags.push("INTERNAL_RHYTHM_VIOLATION".to_string());
+                }
             }
         }
 
@@ -177,6 +203,53 @@ impl TypingEngine {
             is_bot,
             cheat_flags: cheat_flags.join("|"),
         }
+    }
+
+    pub fn get_debug_state(&self) -> TypingEngineDebugState {
+        let metrics = self.calculate_metrics();
+
+        let mut intervals = Vec::new();
+        for i in 1..self.timestamps.len() {
+            let interval = (self.timestamps[i] - self.timestamps[i - 1]) as f64;
+            if interval > 0.0 {
+                intervals.push(interval);
+            }
+        }
+
+        let avg_latency = if !intervals.is_empty() {
+            intervals.iter().sum::<f64>() / intervals.len() as f64
+        } else {
+            0.0
+        };
+
+        let variance = if !intervals.is_empty() {
+            intervals
+                .iter()
+                .map(|&i| (i - avg_latency).powi(2))
+                .sum::<f64>()
+                / intervals.len() as f64
+        } else {
+            0.0
+        };
+
+        let mut unique_latencies = std::collections::HashSet::new();
+        for &i in &intervals {
+            unique_latencies.insert((i * 10.0).round() as i32);
+        }
+
+        TypingEngineDebugState {
+            metrics,
+            total_chars: self.typed_chars.len(),
+            last_latency: *intervals.last().unwrap_or(&0.0),
+            avg_latency,
+            std_dev: variance.sqrt(),
+            unique_latencies: unique_latencies.len(),
+            telemetry_buffer_size: self.timestamps.len(),
+        }
+    }
+
+    pub fn force_cheat(&mut self, state: bool) {
+        self.forced_bot = state;
     }
 }
 

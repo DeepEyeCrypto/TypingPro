@@ -30,7 +30,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     soundEnabled: localStorage.getItem('pref_sound') === 'true',
     soundVolume: Number(localStorage.getItem('pref_sound_volume')) || 50,
     activeSoundProfileId: localStorage.getItem('pref_sound_profile') || 'mechanical',
-    backgroundImage: localStorage.getItem('pref_bg_image') || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop',
+    backgroundImage: localStorage.getItem('pref_bg_image') || '',
 
     setTheme: (theme) => {
         localStorage.setItem('pref_theme', theme)

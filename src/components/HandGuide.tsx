@@ -83,7 +83,7 @@ const HandGuideContainer = React.memo(({ activeChar }: { activeChar: string }) =
                                 cx={home.x + (id.startsWith('R') ? 50 : 20)} // offset tweak for visual alignment
                                 cy={home.y}
                                 r={isActive ? 8 : 4}
-                                fill={isActive ? "#00ff41" : "rgba(255,255,255,0.1)"}
+                                fill={isActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.1)"}
                                 className="transition-all duration-200"
                             />
                             {isActive && (
@@ -92,7 +92,7 @@ const HandGuideContainer = React.memo(({ activeChar }: { activeChar: string }) =
                                     cy={home.y}
                                     r={15}
                                     fill="none"
-                                    stroke="#00ff41"
+                                    stroke="rgba(255,255,255,0.9)"
                                     strokeWidth="2"
                                     className="animate-ping opacity-50"
                                 />

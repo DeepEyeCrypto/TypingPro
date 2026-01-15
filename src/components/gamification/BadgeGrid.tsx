@@ -38,8 +38,8 @@ export const BadgeGrid: React.FC<BadgeGridProps> = ({ badges, onBadgeClick }) =>
             {/* Stats */}
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">Badges</h2>
-                <div className="text-sm text-white/60">
-                    <span className="text-[#00ff41]">{unlockedCount}</span>/{badges.length} Unlocked
+                <div className="text-sm text-white opacity-60">
+                    <span className="text-white font-bold">{unlockedCount}</span>/{badges.length} Unlocked
                 </div>
             </div>
 
@@ -52,8 +52,8 @@ export const BadgeGrid: React.FC<BadgeGridProps> = ({ badges, onBadgeClick }) =>
                         className={`
               px-4 py-2 rounded-lg text-sm font-medium transition-all
               ${selectedCategory === cat.id
-                                ? 'bg-[#00ff41]/20 text-[#00ff41] border border-[#00ff41]/30'
-                                : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+                                ? 'bg-white/20 text-white border border-white/30'
+                                : 'bg-white/5 text-white opacity-60 border border-white/10 hover:bg-black/10'
                             }
             `}
                     >
@@ -80,7 +80,7 @@ export const BadgeGrid: React.FC<BadgeGridProps> = ({ badges, onBadgeClick }) =>
             </div>
 
             {filteredBadges.length === 0 && (
-                <div className="text-center py-12 text-white/40">
+                <div className="text-center py-12 text-white opacity-40">
                     No badges in this category yet
                 </div>
             )}

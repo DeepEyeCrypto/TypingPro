@@ -28,26 +28,23 @@
 .char {
     position: relative;
     transition: color 0.1s ease;
-    opacity: 0.5;
+    @apply text-white opacity-20;
     will-change: color;
     display: inline-block;
-    /* Better for layer promotion */
     transform: translateZ(0);
-    /* Pending chars */
 }
 
 .char.correct {
-    color: #ffffff;
-    opacity: 1;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-    font-weight: 500;
+    @apply text-white opacity-100;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .char.incorrect {
-    color: #ff4444;
-    opacity: 1;
-    text-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
-    text-decoration: underline wavy rgba(255, 68, 68, 0.6);
+    @apply text-black bg-white opacity-100;
+    text-decoration: none;
+    font-weight: 900;
+    border-radius: 2px;
 }
 
 .caret {
@@ -56,9 +53,8 @@
     top: 5%;
     width: 2px;
     height: 90%;
-    background-color: #00ff41;
-    /* Hacker Green */
-    box-shadow: 0 0 8px #00ff41;
+    background-color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     z-index: 10;
     will-change: transform, opacity;
     transform: translateZ(0);
@@ -68,7 +64,7 @@
 
 .caret-block {
     width: 1ch;
-    background-color: rgba(0, 255, 65, 0.5);
+    background-color: rgba(255, 255, 255, 0.2);
     left: 0;
 }
 
@@ -84,14 +80,13 @@
     top: -40px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255, 165, 0, 0.2);
-    border: 1px solid rgba(255, 165, 0, 0.5);
-    color: #ffaa00;
-    padding: 2px 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    backdrop-filter: blur(4px);
+    @apply bg-black text-white border border-black/20 backdrop-blur-md shadow-xl;
+    padding: 4px 16px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
     animation: pulse 2s infinite;
 }
 

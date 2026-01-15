@@ -36,22 +36,22 @@
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* MATRIX: Green on Black */
+/* MATRIX: Pure Glass on Black */
 .theme-matrix {
     --bg-color: #000000;
-    --text-color: #008f11;
-    --accent-color: #00ff41;
-    /* Bright Green */
+    --text-color: #ffffff;
+    --accent-color: rgba(255, 255, 255, 0.9);
+    /* Neutral White */
     --secondary-color: #0d0208;
     --error-color: #ff0000;
     /* Pure Red breakdown */
     --glass-bg: rgba(0, 20, 0, 0.85);
-    --glass-border: rgba(0, 255, 65, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.2);
 
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Courier New', monospace;
-    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
 /* NORD: Ice Blue/Grey on Arctic Blue */

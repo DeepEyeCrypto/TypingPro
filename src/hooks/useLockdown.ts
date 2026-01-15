@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { invoke } from '@tauri-apps/api/core'
+import { useDevStore } from '../stores/devStore'
 
 /**
  * useLockdown Hook
@@ -10,7 +10,11 @@ import { invoke } from '@tauri-apps/api/core'
  * 3. Blocking Selection/Copy shortcuts (Ctrl+A, Ctrl+C) - Optional, kept open for now but can be strict.
  */
 export const useLockdown = () => {
+    const isDevMode = useDevStore((state) => state.isDevMode);
+
     useEffect(() => {
+        if (isDevMode) return; // BYPASS LOCKDOWN IN DEV MODE
+
         // 1. Block Context Menu
         const handleContextMenu = (e: MouseEvent) => {
             e.preventDefault()

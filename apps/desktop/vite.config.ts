@@ -27,7 +27,8 @@ export default defineConfig({
   },
   envPrefix: ['VITE_', 'TAURI_'],
   esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+    logOverride: { 'this-is-undefined-in-esm': 'silent' },
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
   },
   build: {
     target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari14',

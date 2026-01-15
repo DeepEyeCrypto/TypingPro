@@ -1,4 +1,4 @@
-import { getRank } from '@src/utils/rankSystem'
+import { getRankForWPM, calculateProgress } from '@src/services/rankSystem'
 import './RankBadge.css'
 
 interface RankBadgeProps {
@@ -7,8 +7,10 @@ interface RankBadgeProps {
     compact?: boolean
 }
 
-export const RankBadge = ({ wpm, progress, compact = false }: RankBadgeProps) => {
-    const rankInfo = getRank(wpm);
+export const RankBadge = ({ wpm, compact = false }: RankBadgeProps) => {
+    const rankInfo = getRankForWPM(wpm);
+    const progress = calculateProgress(wpm);
+
 
     return (
         <div className={`rank-badge ${compact ? 'compact' : ''} ${rankInfo.className || ''}`}>
@@ -17,29 +19,31 @@ export const RankBadge = ({ wpm, progress, compact = false }: RankBadgeProps) =>
                   Note: In a full implementation, we'd map rank labels to actual icons.
                   For now, we'll use a placeholder or the color context.
                 */}
-                <span style={{ color: rankInfo.color }}>🏆</span>
+                <span style={{ color: rankInfo.accentColor }}>{rankInfo.icon}</span>
+
             </div>
             {!compact && (
                 <>
                     <div className="rank-info">
                         <div className="rank-name" style={{
-                            color: rankInfo.color,
-                            textShadow: `0 0 10px ${rankInfo.color}44`
+                            color: rankInfo.accentColor,
+                            textShadow: `0 0 10px ${rankInfo.accentColor}44`
                         }}>
-                            {rankInfo.label}
+                            {rankInfo.name}
                         </div>
-                        <div className="rank-level">Elite Tier</div>
+                        <div className="rank-level">Level {rankInfo.level}</div>
                     </div>
                     <div className="rank-progress-bar">
                         <div
                             className="rank-progress-fill"
                             style={{
                                 width: `${progress}%`,
-                                color: rankInfo.color,
-                                background: `linear-gradient(90deg, ${rankInfo.color}, #fff)`
+                                backgroundColor: rankInfo.accentColor,
+                                boxShadow: `0 0 10px ${rankInfo.accentColor}`
                             }}
                         />
                     </div>
+
                 </>
             )}
         </div>

@@ -13,8 +13,11 @@ import { useAuthStore } from '@src/stores/authStore'
 import { useAchievementStore } from '@src/stores/achievementStore'
 import { checkBadgeEligibility } from '@src/services/badgeService'
 import { updateStreak } from '@src/services/streakService'
+import { userService } from '@src/services/userService'
 import { generateDailyChallenges, updateChallengeProgress } from '@src/services/challengeService'
 import { activityService } from '@src/services/activityService'
+import { useMissionStore } from '@src/stores/missionStore'
+import { usePresenceStore } from '@src/stores/presenceStore'
 
 export const useTyping = () => {
     const { playTypingSound } = useRustAudio()
@@ -60,6 +63,17 @@ export const useTyping = () => {
         addNotification
     } = useAchievementStore()
 
+    // MISSION STATE
+    const [missionData, setMissionData] = useState<{
+        isMission: boolean,
+        targetWpm: number,
+        minAccuracy: number,
+    }>({
+        isMission: false,
+        targetWpm: 0,
+        minAccuracy: 0,
+    })
+
     // ... (Initialization effects same as before) ...
 
 
@@ -68,6 +82,9 @@ export const useTyping = () => {
         if (!currentLesson) return ''
         return currentLesson.text[input.length] || ''
     }, [input, currentLesson])
+
+    // Mission Store Integration
+    const mission = useMissionStore()
 
     // State for Idle Timer & Graph
     const [isPaused, setIsPaused] = useState(false)
@@ -80,6 +97,21 @@ export const useTyping = () => {
 
     // Sync metricsRef
     useEffect(() => { metricsRef.current = metrics }, [metrics])
+
+    // 📡 PRESENCE: Broadcast WPM when typing
+    useEffect(() => {
+        const { status, setWpm } = usePresenceStore.getState()
+        if (status === 'TYPING' && metrics.raw_wpm > 0) {
+            setWpm(Math.round(metrics.raw_wpm))
+        }
+    }, [metrics.raw_wpm])
+
+    // Reset status to LOBBY when test ends or unmounts
+    useEffect(() => {
+        return () => {
+            usePresenceStore.getState().setStatus('LOBBY')
+        }
+    }, [])
 
     // Clear timer
     useEffect(() => {
@@ -140,6 +172,7 @@ export const useTyping = () => {
     }, [currentLesson, bestReplays, challengerGhost])
 
     const startLesson = async (lesson: Lesson, ghostData?: { charAndTime: { char: string, time: number }[] }) => {
+        usePresenceStore.getState().setStatus('TYPING')
         setCurrentLesson(lesson)
         setChallengerGhost(ghostData) // Set challenger if provided
         setInput('')
@@ -159,6 +192,17 @@ export const useTyping = () => {
         setView('typing')
         setShowResult(false)
         startIdleTimer()
+    }
+
+    const startMission = async (lesson: Lesson, targetWpm: number, minAccuracy: number, constraints: string[]) => {
+        mission.setBriefing({ lesson, targetWpm, minAccuracy, constraints })
+        // The UI will handle the transition to OPERATIONAL via mission.startMission()
+    }
+
+    const deployMission = async () => {
+        if (mission.state !== 'BRIEFING' || !mission.data.lesson) return
+        mission.startMission()
+        await startLesson(mission.data.lesson)
     }
 
     const retryLesson = async () => {
@@ -346,7 +390,43 @@ export const useTyping = () => {
 
         // if (!passed) { playTypingSound('error') } // Removed error sound on finish
         setShowResult(true)
-    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playTypingSound])
+
+        // If mission was active, mark as success
+        if (mission.state === 'OPERATIONAL') {
+            // Check final mission requirements
+            if (metrics.accuracy >= mission.data.minAccuracy && Math.round(netWpm) >= mission.data.targetWpm) {
+                mission.succeedMission()
+
+                // Persist certification if user is logged in
+                if (user) {
+                    userService.addCertification(user.id, {
+                        id: mission.data.lesson?.id || 'cert-unknown',
+                        name: mission.data.lesson?.title || 'Unknown Certification',
+                        date: Date.now(),
+                        wpm: Math.round(netWpm),
+                        accuracy: Math.round(metrics.accuracy)
+                    }).catch(err => console.error("Failed to persist certification:", err));
+
+                    // Global Broadcast
+                    activityService.reportEvent({
+                        type: 'certification',
+                        userId: user.id,
+                        username: user.name || 'Anonymous',
+                        avatarUrl: user.avatar_url || '',
+                        data: {
+                            name: mission.data.lesson?.title || 'Certification',
+                            wpm: Math.round(netWpm),
+                        }
+                    });
+                }
+            } else {
+                const failReason = Math.round(netWpm) < mission.data.targetWpm
+                    ? `SPEED_REQUIREMENT_NOT_MET: ${Math.round(netWpm)}/${mission.data.targetWpm} WPM`
+                    : `ACCURACY_REQUIREMENT_NOT_MET: ${Math.round(metrics.accuracy)}%/${mission.data.minAccuracy}%`;
+                mission.failMission(failReason)
+            }
+        }
+    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playTypingSound, mission])
 
     useEffect(() => {
         if (currentLesson && input.length === currentLesson.text.length && input.length > 0) {
@@ -361,6 +441,12 @@ export const useTyping = () => {
         resumeTimer()
 
         if (e.key === 'Backspace') {
+            // FAIL-FAST: No Backspace Constraint
+            if (mission.state === 'OPERATIONAL' && mission.data.constraints.includes('STRICT_NO_BACKSPACE_MODE')) {
+                mission.failMission('UNAUTHORIZED_BACKSPACE_DETECTED')
+                setShowResult(true) // Show failure result
+                return
+            }
             setInput((prev: string) => prev.slice(0, -1))
             playTypingSound('backspace')
             return
@@ -407,15 +493,24 @@ export const useTyping = () => {
                     }
 
                     // ⚡️ PERFORMANCE PATCH: Throttle Metric Updates (Visuals Only)
-                    // We only update the React state (metrics) occasionally to avoid
-                    // re-rendering the StatsDisplay on every keystroke.
-                    // Ideally: 10fps update rate is plenty for human eyes.
                     const now = Date.now();
                     const isSequenceEnd = input.length + 1 >= currentLesson.text.length; // Force update on finish
 
-                    if (isSequenceEnd || now - lastSyncTimeRef.current > 100) {
+                    if (isSequenceEnd || now - lastSyncTimeRef.current > 250) {
                         setMetrics(safeMetrics);
                         lastSyncTimeRef.current = now;
+
+                        // FAIL-FAST: Accuracy Threshold
+                        if (mission.state === 'OPERATIONAL' && safeMetrics.accuracy < mission.data.minAccuracy) {
+                            mission.failMission('PRECISION_BELOW_THRESHOLD')
+                            setShowResult(true)
+                        }
+
+                        // FAIL-FAST: Anti-Cheat
+                        if (mission.state === 'OPERATIONAL' && safeMetrics.is_bot) {
+                            mission.failMission(`SECURITY_PROTOCOL_VIOLATION: ${safeMetrics.cheat_flags}`)
+                            setShowResult(true)
+                        }
                     }
                     // Note: 'metricsRef' is still updated via effect when setMetrics runs, 
                     // but for high-freq logic, we might need a direct ref update here if logic depends on it.
@@ -441,6 +536,10 @@ export const useTyping = () => {
         }
     }
 
+    const stressLevel = useMemo(() => {
+        return Math.max(0, 100 - metrics.consistency);
+    }, [metrics.consistency]);
+
     return {
         view,
         setView,
@@ -459,7 +558,12 @@ export const useTyping = () => {
         errors,
         isPaused,
         ghostReplay, // Export ghost data for UI
-        activeMatchId,
-        setActiveMatchId
+        missionState: mission.state,
+        missionData: mission.data,
+        failureReason: mission.failureReason,
+        startMission,
+        deployMission,
+        resetMission: mission.resetMission,
+        stressLevel
     }
 }

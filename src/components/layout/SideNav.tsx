@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSoundEngine } from '../../hooks/useSoundEngine';
 
 interface NavItem {
     id: string;
@@ -14,62 +15,62 @@ interface SideNavProps {
     syncing?: boolean;
 }
 
-export const SideNav: React.FC<SideNavProps> = ({ items, footer, syncing = false }) => {
+/* ICONS */
+const Volume2 = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+);
+
+const VolumeX = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+);
+
+// Explicitly NOT using GlassCard to allow full custom overrides for "Cleanest Glass" possible
+const SideNavComponent: React.FC<SideNavProps> = ({ items }) => {
+    const { toggleMute, isMuted } = useSoundEngine();
+
     return (
-        <nav className="flex flex-col items-center w-full h-full justify-between py-2">
-            {/* LOGO / SYNC TRIGGER */}
-            <div
-                className={`
-                    w-10 h-10 shrink-0 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-500 cursor-pointer
-                    ${syncing
-                        ? 'bg-neon-cyan/20 border border-neon-cyan text-neon-cyan shadow-[0_0_20px_rgba(0,243,255,0.4)] animate-pulse'
-                        : 'bg-white/5 border border-white/10 text-white/60 hover:text-white hover:border-white/30'
-                    }
-                `}
-                title={syncing ? 'Syncing to Cloud...' : 'Cloud Synced'}
-            >
-                {syncing ? (
-                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                ) : (
-                    "TP"
-                )}
-            </div>
+        <aside className="fixed left-4 top-1/2 -translate-y-1/2 z-50 h-[85vh] w-16 hidden md:block">
+            {/* The Visual Container - UNIFIED GLASS STYLE (CLONED FROM TOPBAR) */}
+            <div className="w-full h-full rounded-full flex flex-col items-center py-8 justify-between
+                bg-white/15 backdrop-blur-[50px] border border-white/40 
+                shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)]">
 
-            {/* NAV ITEMS */}
-            <div className="flex-1 flex flex-col items-center justify-center space-y-6">
-                {items.map((item) => (
-                    <button
-                        key={item.id}
-                        onClick={item.onClick}
-                        className={`
-              group relative w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300
-              ${item.active
-                                ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-110'
-                                : 'text-white/40 hover:text-white hover:bg-white/10 hover:scale-105'
-                            }
-            `}
-                    >
-                        {item.icon}
+                {/* 1. NAVIGATION (Top) */}
+                <nav className="flex flex-col items-center gap-6 w-full pt-4">
+                    {items.filter(i => i.id !== 'settings').map((item) => (
+                        <button
+                            key={item.id}
+                            onClick={item.onClick}
+                            className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 shrink-0 ${item.active
+                                ? 'bg-white/20 text-neon-lime shadow-inner' // Active: subtle light + neon text
+                                : 'text-white/60 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                            {React.cloneElement(item.icon as React.ReactElement, { size: 20 })}
+                        </button>
+                    ))}
+                </nav>
 
-                        {/* TOOLTIP/LABEL overlay on hover */}
-                        {item.label && (
-                            <span className="absolute left-14 px-3 py-1.5 rounded-lg bg-black/80 backdrop-blur-xl border border-white/10 text-[10px] text-white/90 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
-                                {item.label}
-                            </span>
-                        )}
+                {/* 2. SYSTEM ICONS (Bottom) */}
+                <div className="flex flex-col gap-6 items-center w-full pb-4">
+                    {/* Volume Toggle */}
+                    <button onClick={toggleMute} className="w-10 h-10 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all" title={isMuted ? "Unmute" : "Mute"}>
+                        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                     </button>
-                ))}
-            </div>
-
-            {/* FOOTER AREA */}
-            {footer && (
-                <div className="pb-4">
-                    {footer}
+                    {/* Settings */}
+                    {items.find(i => i.id === 'settings') && (
+                        <button
+                            onClick={items.find(i => i.id === 'settings')?.onClick}
+                            className={`w-10 h-10 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all ${items.find(i => i.id === 'settings')?.active ? 'text-neon-lime' : ''}`}
+                        >
+                            {React.cloneElement(items.find(i => i.id === 'settings')?.icon as React.ReactElement, { size: 20 })}
+                        </button>
+                    )}
                 </div>
-            )}
-        </nav>
+            </div>
+        </aside>
     );
 };
+
+// React.memo optimization to prevent sidebar re-renders during high-speed typing
+export const SideNav = React.memo(SideNavComponent);

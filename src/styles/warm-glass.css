@@ -1,67 +1,66 @@
 /* ═══════════════════════════════════════════════════════════════════
-   HACKER GLASS THEME - Dark + Green + Fitness Layout Structure
+   WARM GLASS THEME - FULL WHITE AUTOMATION
    ═══════════════════════════════════════════════════════════════════ */
 
 :root {
-    /* Base Colors - DARK HACKER */
+    /* Base Colors - PURE GLASS */
     --wg-bg-main: transparent;
-    /* Was #0a0a0f */
-    --wg-bg-card: rgba(15, 15, 25, 0.4);
-    /* More transparent */
-    --wg-bg-card-solid: rgba(15, 15, 25, 0.6);
-    --wg-bg-card-hover: rgba(30, 30, 50, 0.5);
-    --wg-bg-sidebar: #0a0a0f;
-    --wg-bg-sidebar-light: #12121f;
+    --wg-bg-card: rgba(255, 255, 255, 0.05);
+    --wg-bg-card-solid: rgba(255, 255, 255, 0.08);
+    --wg-bg-card-hover: rgba(255, 255, 255, 0.10);
+    --wg-bg-sidebar: rgba(255, 255, 255, 0.05);
+    --wg-bg-sidebar-light: rgba(255, 255, 255, 0.08);
 
-    /* Accents - HACKER GREEN */
-    --wg-accent-primary: #00ff41;
-    --wg-accent-secondary: #00d4aa;
-    --wg-accent-success: #00ff41;
-    --wg-accent-warning: #ffaa00;
-    --wg-accent-danger: #ff4444;
-    --wg-accent-purple: #aa00ff;
+    /* Accents - ABSOLUTE WHITE */
+    --wg-accent-primary: #ffffff;
+    --wg-accent-secondary: #ffffff;
+    --wg-accent-success: #ffffff;
+    --wg-accent-warning: #ffffff;
+    --wg-accent-danger: #ffffff;
+    --wg-accent-purple: #ffffff;
 
-    /* Text - LIGHT ON DARK */
+    /* Text - ABSOLUTE WHITE */
     --wg-text-primary: #ffffff;
-    --wg-text-secondary: #a0a0a0;
-    --wg-text-muted: #606060;
+    --wg-text-secondary: rgba(255, 255, 255, 0.7);
+    --wg-text-muted: rgba(255, 255, 255, 0.4);
     --wg-text-light: #ffffff;
-    --wg-text-accent: #00ff41;
+    --wg-text-accent: #ffffff;
 
-    /* Effects */
-    --wg-shadow-sm: 0 2px 8px rgba(0, 255, 65, 0.05);
-    --wg-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --wg-shadow-hover: 0 8px 30px rgba(0, 255, 65, 0.15);
-    --wg-shadow-glow: 0 0 20px rgba(0, 255, 65, 0.4);
-    --wg-border-glow: 1px solid rgba(0, 255, 65, 0.2);
+    /* Effects - White Glows & Shadows */
+    --wg-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --wg-shadow-card: 0 32px 64px rgba(0, 0, 0, 0.5);
+    --wg-shadow-hover: 0 40px 80px rgba(0, 0, 0, 0.6);
+    --wg-shadow-glow: 0 0 20px rgba(255, 255, 255, 0.1);
+    --wg-border-glow: 1px solid rgba(255, 255, 255, 0.1);
 
-    /* Radius */
-    --wg-radius-sm: 8px;
-    --wg-radius-md: 12px;
-    --wg-radius-lg: 16px;
-    --wg-radius-xl: 20px;
+    /* Radius - Updated for High Fidelity */
+    --wg-radius-sm: 12px;
+    --wg-radius-md: 24px;
+    --wg-radius-lg: 32px;
+    --wg-radius-xl: 48px;
     --wg-radius-full: 9999px;
 
     /* Spacing */
-    --wg-gap: 16px;
-    --wg-padding: 20px;
+    --wg-gap: 24px;
+    --wg-padding: 32px;
 }
 
 /* Warm Glass Card */
 .wg-card {
     background: var(--wg-bg-card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     border-radius: var(--wg-radius-xl);
     box-shadow: var(--wg-shadow-card);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .wg-card:hover {
     background: var(--wg-bg-card-hover);
     box-shadow: var(--wg-shadow-hover);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Stats Card Specific */
@@ -69,31 +68,35 @@
     padding: var(--wg-padding);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 .wg-stats-icon {
-    width: 36px;
-    height: 36px;
+    width: 48px;
+    height: 48px;
     border-radius: var(--wg-radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .wg-stats-value {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 36px;
+    font-weight: 800;
     color: var(--wg-text-primary);
     font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .wg-stats-label {
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: 800;
     color: var(--wg-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.2em;
 }
 
 /* Progress Visualization */
@@ -108,44 +111,56 @@
 }
 
 .wg-progress-ring .track {
-    stroke: #e5e7eb;
+    stroke: rgba(255, 255, 255, 0.05);
     fill: none;
 }
 
 .wg-progress-ring .progress {
-    stroke: var(--wg-accent-success);
+    stroke: var(--wg-accent-primary);
     fill: none;
     stroke-linecap: round;
-    transition: stroke-dashoffset 0.5s ease;
+    transition: stroke-dashoffset 0.8s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
 /* Chart Container */
 .wg-chart-container {
     padding: var(--wg-padding);
-    height: 280px;
+    height: 320px;
 }
 
 .wg-chart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 }
 
 .wg-chart-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--wg-text-primary);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--wg-text-muted);
 }
 
 .wg-chart-dropdown {
-    background: var(--wg-bg-card-solid);
-    border: 1px solid #e5e7eb;
-    border-radius: var(--wg-radius-sm);
-    padding: 6px 12px;
-    font-size: 13px;
-    color: var(--wg-text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--wg-radius-full);
+    padding: 8px 16px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--wg-text-primary);
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.wg-chart-dropdown:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Sidebar Profile */
@@ -154,87 +169,102 @@
     border-radius: var(--wg-radius-xl);
     padding: var(--wg-padding);
     color: var(--wg-text-light);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .wg-profile-avatar {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     border-radius: var(--wg-radius-full);
     object-fit: cover;
-    border: 2px solid var(--wg-accent-primary);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .wg-profile-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 12px;
     text-align: center;
-    padding: 16px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .wg-profile-stat-value {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 800;
     color: var(--wg-text-light);
+    letter-spacing: -0.02em;
 }
 
 .wg-profile-stat-label {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--wg-text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
 /* Calendar */
 .wg-calendar {
-    padding: 12px 0;
+    padding: 16px 0;
 }
 
 .wg-calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--wg-text-muted);
 }
 
 .wg-calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 8px;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .wg-calendar-day {
-    padding: 6px;
-    border-radius: var(--wg-radius-sm);
-    color: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    border-radius: var(--wg-radius-md);
+    color: var(--wg-text-muted);
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .wg-calendar-day.active {
-    background: var(--wg-accent-primary);
-    color: white;
-    font-weight: 600;
+    background: #ffffff;
+    color: #000000;
+    font-weight: 800;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 .wg-calendar-day.today {
-    background: var(--wg-accent-secondary);
-    color: var(--wg-text-primary);
-    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-weight: 800;
 }
 
 /* Lesson Card */
 .wg-lesson-card {
     position: relative;
     overflow: hidden;
+    height: 100%;
 }
 
 .wg-lesson-image {
     width: 100%;
-    height: 160px;
+    height: 180px;
     object-fit: cover;
     border-radius: var(--wg-radius-lg) var(--wg-radius-lg) 0 0;
+    opacity: 0.8;
 }
 
 .wg-lesson-content {
@@ -242,79 +272,97 @@
 }
 
 .wg-lesson-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--wg-text-primary);
-    margin-bottom: 8px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
 }
 
 .wg-lesson-stats {
     display: flex;
-    gap: 16px;
-    margin: 12px 0;
+    gap: 20px;
+    margin: 16px 0;
 }
 
 .wg-lesson-stat {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 14px;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--wg-text-secondary);
 }
 
 .wg-lesson-stat strong {
-    color: var(--wg-accent-primary);
-    font-weight: 600;
+    color: #ffffff;
+    font-weight: 800;
 }
 
-/* Button */
+/* Button - Pure White Glass */
 .wg-button {
-    background: var(--wg-accent-primary);
-    color: white;
-    border: none;
-    border-radius: var(--wg-radius-md);
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--wg-radius-full);
+    padding: 14px 28px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 12px;
 }
 
 .wg-button:hover {
-    background: #ff6b3d;
-    box-shadow: var(--wg-shadow-glow);
-    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
 }
 
 .wg-button-ghost {
     background: transparent;
-    color: var(--wg-text-primary);
-    border: 1px solid #e5e7eb;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .wg-button-ghost:hover {
-    background: var(--wg-bg-card);
-    box-shadow: none;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* Challenge Card */
 .wg-challenge-card {
-    background: var(--wg-bg-sidebar-light);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: var(--wg-radius-md);
-    padding: 12px;
+    padding: 16px;
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.wg-challenge-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .wg-challenge-icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: var(--wg-radius-sm);
-    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
 }
 
 .wg-challenge-info {
@@ -322,90 +370,21 @@
 }
 
 .wg-challenge-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--wg-text-light);
+    font-size: 14px;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .wg-challenge-desc {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    color: var(--wg-text-muted);
 }
 
 .wg-challenge-reward {
     font-size: 12px;
-    color: var(--wg-accent-primary);
-    font-weight: 600;
-}
-
-/* Dashboard Grid Layout */
-.wg-dashboard {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: var(--wg-gap);
-    /* Removed min-height and padding/bg to fit in AppShell */
-    width: 100%;
-}
-
-.wg-main-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--wg-gap);
-}
-
-.wg-stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--wg-gap);
-}
-
-.wg-content-row {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: var(--wg-gap);
-}
-
-.wg-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--wg-gap);
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .wg-dashboard {
-        grid-template-columns: 1fr;
-    }
-
-    .wg-sidebar {
-        display: none;
-    }
-
-    .wg-stats-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .wg-content-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .wg-dashboard {
-        padding: 12px;
-        gap: 12px;
-    }
-
-    .wg-stats-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .wg-main-content {
-        gap: 12px;
-    }
-
-    .wg-card {
-        padding: 16px;
-    }
+    color: #ffffff;
+    font-weight: 800;
 }

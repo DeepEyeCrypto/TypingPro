@@ -11,12 +11,12 @@ export interface RankInfo {
 }
 
 export const RANKS: Record<RankTier, RankInfo> = {
-    Bronze: { label: 'Bronze', color: '#cd7f32', minWpm: 0, nextRank: 'Silver', nextWpm: 40 },
-    Silver: { label: 'Silver', color: '#c0c0c0', minWpm: 40, nextRank: 'Gold', nextWpm: 80 },
-    Gold: { label: 'Gold', color: '#ffd700', minWpm: 80, nextRank: 'Platinum', nextWpm: 120 },
-    Platinum: { label: 'Platinum', color: '#e5e4e2', minWpm: 120, nextRank: 'Diamond', nextWpm: 160, className: 'rank-pulse' },
-    Diamond: { label: 'Diamond', color: '#b9f2ff', minWpm: 160, nextRank: 'Radiant', nextWpm: 200, className: 'rank-glimmer' },
-    Radiant: { label: 'Radiant', color: '#ff6ec7', minWpm: 200, className: 'rank-radiance' }
+    Bronze: { label: 'Bronze', color: 'rgba(255,255,255,0.8)', minWpm: 0, nextRank: 'Silver', nextWpm: 40 },
+    Silver: { label: 'Silver', color: 'rgba(255,255,255,0.85)', minWpm: 40, nextRank: 'Gold', nextWpm: 80 },
+    Gold: { label: 'Gold', color: 'rgba(255,255,255,0.9)', minWpm: 80, nextRank: 'Platinum', nextWpm: 120 },
+    Platinum: { label: 'Platinum', color: 'rgba(255,255,255,0.95)', minWpm: 120, nextRank: 'Diamond', nextWpm: 160, className: 'rank-pulse' },
+    Diamond: { label: 'Diamond', color: '#ffffff', minWpm: 160, nextRank: 'Radiant', nextWpm: 200, className: 'rank-glimmer' },
+    Radiant: { label: 'Radiant', color: '#ffffff', minWpm: 200, className: 'rank-radiance' }
 };
 
 export const getRank = (wpm: number): RankInfo => {

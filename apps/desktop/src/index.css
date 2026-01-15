@@ -4,18 +4,55 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 1536px) {
+  html {
+    font-size: 16px;
+  }
+}
+
 :root {
   isolation: isolate;
   height: 100%;
   width: 100%;
-  background-color: #050505;
-  color: #ffffff;
+  background-color: #000000;
+  /* Deep Black Base */
+  color: #000000;
   overflow: hidden;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 16px;
+  /* Apple Liquid Glass Theme Variables */
+  --neon-lime: #6366f1;
+  /* Shifted to Indigo-500 */
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  /* Updated to 2% for ultra clear look */
+  --glass-border: rgba(255, 255, 255, 0.4);
+  /* Updated to 40% */
+  /* White/8% */
+  --text-primary: #FFFFFF;
+  --text-secondary: #94A3B8;
+  /* Slate-400 */
+  --glass-blur: 50px;
+  /* Updated to 50px */
+}
+
+/* Diamond Glass Standard Utility Classes */
+.glass {
+  @apply backdrop-blur-[50px] bg-white/15 border border-white/40;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.glass-card {
+  @apply backdrop-blur-[50px] bg-white/15 border border-white/40;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.glass-input {
+  @apply backdrop-blur-[50px] bg-white/15 border border-white/40 focus:border-white/60 transition-colors outline-none rounded-xl px-4 py-2 text-white placeholder-white/40;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
 }
 
 * {
@@ -32,11 +69,41 @@ body {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: #1a1a2e;
-  /* Fallback for black screen */
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background-color: #030303;
+  /* Deep base for Aurora */
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
 }
 
 #root {
@@ -44,25 +111,19 @@ body {
 }
 
 .liquid-glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 0.5px solid var(--glass-border);
-  border-radius: 4px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  @apply glass-card;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
+/* Anti-Gravity Scrollbars (Invisible) */
+::-webkit-scrollbar {
+  width: 0px;
   background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .no-drag {

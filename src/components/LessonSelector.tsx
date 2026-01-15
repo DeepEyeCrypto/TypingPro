@@ -22,20 +22,20 @@ export const LessonSelector = ({
   const stages = Array.from(new Set(CURRICULUM.map((l) => l.stage)))
 
   return (
-    <div className="w-full h-full text-white/90 p-8 overflow-y-auto animate-in fade-in duration-500">
+    <div className="w-full h-full text-white p-8 overflow-y-auto animate-in fade-in duration-500">
       {/* Dashboard Hero Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Next Lesson Card */}
-        <Card className="p-8 bg-black/20 border-white/5 backdrop-blur-md relative overflow-hidden group hover:border-white/10 transition-colors">
+        <Card blurLevel="l3" className="relative group overflow-hidden">
           <div className="absolute top-0 right-0 p-4">
-            <span className="text-[10px] font-black text-hacker opacity-20 uppercase tracking-[0.5em]">Sequence_Next</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white opacity-40">Sequence_Next</span>
           </div>
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Operational_Target</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white opacity-50">Operational_Target</h3>
               <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">{nextLesson.title}</h2>
-              <p className="text-sm text-white/40 leading-relaxed max-w-md">{nextLesson.description}</p>
+              <p className="text-sm text-white opacity-60 leading-relaxed max-w-md">{nextLesson.description}</p>
             </div>
 
             <div className="flex items-center gap-4 pt-4">
@@ -50,8 +50,8 @@ export const LessonSelector = ({
                 </svg>
               </Button>
               <div className="flex gap-2">
-                <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-full">
-                  <span className="text-[10px] font-bold text-white/40 tabular-nums">{nextLesson.targetWPM} WPM_GOAL</span>
+                <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                  <span className="text-[10px] font-bold tabular-nums text-white opacity-60">{nextLesson.targetWPM} WPM_GOAL</span>
                 </div>
               </div>
             </div>
@@ -59,19 +59,19 @@ export const LessonSelector = ({
         </Card>
 
         {/* AI COACH Card */}
-        <Card className="p-8 bg-midnight/40 relative overflow-hidden group border-hacker/10">
+        <Card blurLevel="l3" className="relative group overflow-hidden">
           <div className="absolute top-0 right-0 p-4">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-hacker animate-pulse"></div>
-              <span className="text-[10px] font-black text-hacker uppercase tracking-[0.5em]">Neural_Active</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+              <span className="text-[10px] font-black opacity-80 uppercase tracking-[0.5em] text-white">Neural_Active</span>
             </div>
           </div>
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <h3 className="text-[10px] font-black text-hacker/50 uppercase tracking-[0.3em]">Intelligence_Training</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white opacity-60">Intelligence_Training</h3>
               <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">Smart_Drill</h2>
-              <p className="text-sm text-white/40 leading-relaxed max-w-md">
+              <p className="text-sm text-white opacity-60 leading-relaxed max-w-md">
                 Tactical generation targeting mechanical weaknesses and error-prone bigrams.
               </p>
             </div>
@@ -104,8 +104,8 @@ export const LessonSelector = ({
       {stages.map((stage: string) => (
         <div key={stage} className="mb-12 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center gap-4">
-            <h2 className="text-xs font-black text-white/20 uppercase tracking-[0.5em]">{stage}</h2>
-            <div className="flex-1 h-px bg-white/5"></div>
+            <h2 className="text-xs font-black uppercase tracking-[0.5em] text-white opacity-40">{stage}</h2>
+            <div className="flex-1 h-px bg-white/10"></div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -118,18 +118,18 @@ export const LessonSelector = ({
                   key={lesson.id}
                   onClick={() => onSelect(lesson)}
                   className={`
-                    group text-left p-6 rounded-xl border transition-all duration-300 relative overflow-hidden backdrop-blur-sm
-                    bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/20 cursor-pointer shadow-lg hover:shadow-[0_0_20px_rgba(0,255,65,0.05)]
+                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden bg-white/5 backdrop-blur-[64px]
+                    border-white/5 hover:bg-white/10 hover:border-white/10 cursor-pointer shadow-2xl hover:translate-y-[-4px] text-white
                   `}
                 >
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className={`text-[10px] font-black tracking-widest text-white/20 group-hover:text-neon-cyan/80 transition-colors`}>
+                      <span className={`text-[10px] font-black tracking-widest text-white opacity-20 group-hover:opacity-80 transition-opacity`}>
                         {lesson.id.toUpperCase()}
                       </span>
                       {isCompleted && (
-                        <div className="w-5 h-5 rounded-full bg-neon-cyan/20 flex items-center justify-center border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,243,255,0.3)]">
-                          <svg className="w-3 h-3 text-neon-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center border border-white/10 shadow-md">
+                          <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
@@ -137,16 +137,16 @@ export const LessonSelector = ({
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className={`font-bold transition-colors text-white group-hover:text-hacker`}>
+                      <h3 className={`font-bold transition-colors text-white`}>
                         {lesson.title}
                       </h3>
-                      <p className={`text-[10px] leading-relaxed line-clamp-2 text-white/40`}>
+                      <p className={`text-[10px] leading-relaxed line-clamp-2 text-white opacity-60`}>
                         {lesson.description}
                       </p>
                     </div>
 
                     <div className="pt-2">
-                      <span className={`text-[9px] font-bold text-white/20`}>
+                      <span className="text-[9px] font-bold text-white opacity-30">
                         TARGET: {lesson.targetWPM} WPM
                       </span>
                     </div>

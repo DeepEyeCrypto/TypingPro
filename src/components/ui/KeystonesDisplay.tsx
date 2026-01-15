@@ -24,31 +24,30 @@ export const KeystonesDisplay: React.FC<KeystonesDisplayProps> = ({
     };
 
     return (
-        <div className={`relative flex items-center gap-2 bg-midnight-surface/50 rounded-lg ${sizeClasses[size]}`}>
+        <div className={`relative flex items-center gap-2 bg-black/5 border border-black/10 rounded-lg ${sizeClasses[size]}`}>
             <span className={`${iconSizes[size]}`}>💎</span>
             <span
                 key={amount}
-                className="font-bold font-mono text-white animate-pulse-green"
+                className="font-bold font-mono text-black animate-pulse-monochrome"
             >
                 {amount.toLocaleString()}
             </span>
 
             {showChange !== undefined && showChange !== 0 && (
                 <span
-                    className={`absolute -top-5 right-0 text-sm font-bold animate-float-up ${showChange > 0 ? 'text-hacker' : 'text-red-400'
-                        }`}
+                    className={`absolute -top-5 right-0 text-sm font-bold animate-float-up text-black`}
                 >
                     {showChange > 0 ? '+' : ''}{showChange}
                 </span>
             )}
 
             <style>{`
-                @keyframes pulse-green {
-                    0% { transform: scale(1.2); color: #00ff41; }
-                    100% { transform: scale(1); color: #ffffff; }
+                @keyframes pulse-monochrome {
+                    0% { transform: scale(1.2); }
+                    100% { transform: scale(1); }
                 }
-                .animate-pulse-green {
-                    animation: pulse-green 0.3s ease-out;
+                .animate-pulse-monochrome {
+                    animation: pulse-monochrome 0.3s ease-out;
                 }
                 @keyframes float-up {
                     0% { opacity: 1; transform: translateY(0); }

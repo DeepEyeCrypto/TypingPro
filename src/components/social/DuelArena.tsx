@@ -101,21 +101,21 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
     if (result) {
         return (
             <div className="w-full h-full flex items-center justify-center p-8 animate-in zoom-in duration-500">
-                <Card className={`w-full max-w-2xl p-12 text-center border-2 ${result === 'victory' ? 'border-hacker shadow-[0_0_50px_-12px_rgba(0,255,65,0.3)]' : 'border-rose-500 shadow-[0_0_50px_-12px_rgba(244,63,94,0.3)]'}`}>
-                    <div className="text-8xl mb-6">{result === 'victory' ? '🏆' : '💀'}</div>
-                    <h1 className={`text-6xl font-black uppercase tracking-[0.2em] mb-4 ${result === 'victory' ? 'text-hacker' : 'text-rose-500'}`}>
+                <Card blurLevel="l3" className={`w-full max-w-2xl p-12 text-center border-2 ${result === 'victory' ? 'border-black shadow-xl' : 'border-black/10 bg-black/5'}`}>
+                    <div className="text-8xl mb-6 grayscale">{result === 'victory' ? '🏆' : '💀'}</div>
+                    <h1 className={`text-6xl font-black uppercase tracking-[0.2em] mb-4 ${result === 'victory' ? 'text-black' : 'text-black opacity-40'}`}>
                         {result === 'victory' ? 'Victory' : 'Defeated'}
                     </h1>
-                    <p className="text-white/40 font-bold uppercase tracking-widest mb-8">Duel_Protocol_Terminated</p>
+                    <p className="text-black opacity-40 font-bold uppercase tracking-widest mb-8">Duel_Protocol_Terminated</p>
 
                     <div className="grid grid-cols-2 gap-8 mb-12">
-                        <div className="p-6 bg-white/5 rounded-2xl">
-                            <div className="text-4xl font-black text-white">{myWpm}</div>
-                            <div className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-1">Your_WPM</div>
+                        <div className="p-6 bg-black/5 rounded-2xl">
+                            <div className="text-4xl font-black text-black">{myWpm}</div>
+                            <div className="text-[10px] font-bold text-black opacity-30 uppercase tracking-widest mt-1">Your_WPM</div>
                         </div>
-                        <div className="p-6 bg-white/5 rounded-2xl">
-                            <div className="text-4xl font-black text-white">{oppWpm || 0}</div>
-                            <div className="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-1">Opponent_WPM</div>
+                        <div className="p-6 bg-black/5 rounded-2xl">
+                            <div className="text-4xl font-black text-black">{oppWpm || 0}</div>
+                            <div className="text-[10px] font-bold text-black opacity-30 uppercase tracking-widest mt-1">Opponent_WPM</div>
                         </div>
                     </div>
 
@@ -128,53 +128,53 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
     }
 
     return (
-        <div className="w-full h-full bg-midnight/90 backdrop-blur-xl flex flex-col p-8 overflow-hidden">
+        <div className="w-full h-full bg-white/40 backdrop-blur-xl flex flex-col p-8 overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="px-3 py-1 bg-hacker/10 border border-hacker/20 rounded-full">
-                        <span className="text-[10px] font-black text-hacker tracking-widest uppercase italic">Active_Combat_Zone</span>
+                    <div className="px-3 py-1 bg-black/5 border border-black/10 rounded-full">
+                        <span className="text-[10px] font-black tracking-widest uppercase italic text-black">Active_Combat_Zone</span>
                     </div>
                 </div>
                 {countdown > 0 && (
-                    <div className="absolute left-1/2 top-1/4 -translate-x-1/2 text-9xl font-black text-hacker animate-pulse z-50">
+                    <div className="absolute left-1/2 top-1/4 -translate-x-1/2 text-9xl font-black text-black animate-pulse z-50">
                         {countdown}
                     </div>
                 )}
-                <Button variant="ghost" size="sm" onClick={onEnd} className="text-rose-500/50 hover:text-rose-500">TERMINATE</Button>
+                <Button variant="ghost" size="sm" onClick={onEnd} className="opacity-50 hover:opacity-100">TERMINATE</Button>
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-8 mb-8">
                 {/* Me */}
-                <Card className="p-6 bg-midnight/40 border-hacker/20">
+                <Card className="p-6 bg-black/5 border-black/10">
                     <div className="flex items-center gap-4 mb-4">
-                        <img src={profile?.avatar_url} className="w-12 h-12 rounded-full border border-hacker" alt="" />
+                        <img src={profile?.avatar_url} className="w-12 h-12 rounded-full border border-black/10" alt="" />
                         <div className="flex-1">
-                            <div className="text-xs font-black text-white uppercase">{profile?.username}</div>
-                            <div className="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
-                                <div className="h-full bg-hacker transition-all duration-300" style={{ width: `${myProgress}%` }}></div>
+                            <div className="text-xs font-black text-black uppercase">{profile?.username}</div>
+                            <div className="w-full h-1 bg-black/5 rounded-full mt-2 overflow-hidden">
+                                <div className="h-full bg-black transition-all duration-300 shadow-md" style={{ width: `${myProgress}%` }}></div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-black text-white">{myWpm}</div>
-                            <div className="text-[8px] text-white/30 uppercase font-bold">WPM</div>
+                            <div className="text-2xl font-black text-black">{myWpm}</div>
+                            <div className="text-[8px] text-black opacity-30 uppercase font-bold">WPM</div>
                         </div>
                     </div>
                 </Card>
 
                 {/* Opponent */}
-                <Card className="p-6 bg-midnight/40 border-rose-500/20">
+                <Card className="p-6 bg-black/5 border-black/10">
                     <div className="flex items-center gap-4 mb-4">
-                        <img src={oppAvatar || 'https://via.placeholder.com/48'} className="w-12 h-12 rounded-full border border-rose-500" alt="" />
+                        <img src={oppAvatar || 'https://via.placeholder.com/48'} className="w-12 h-12 rounded-full border border-black/10" alt="" />
                         <div className="flex-1">
-                            <div className="text-xs font-black text-white uppercase">{oppName}</div>
-                            <div className="w-full h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
-                                <div className="h-full bg-rose-500 transition-all duration-300" style={{ width: `${oppProgress || 0}%` }}></div>
+                            <div className="text-xs font-black text-black uppercase">{oppName}</div>
+                            <div className="w-full h-1 bg-black/5 rounded-full mt-2 overflow-hidden">
+                                <div className="h-full bg-black opacity-40 transition-all duration-300" style={{ width: `${oppProgress || 0}%` }}></div>
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-black text-white">{oppWpm || 0}</div>
-                            <div className="text-[8px] text-white/30 uppercase font-bold">WPM</div>
+                            <div className="text-2xl font-black text-black">{oppWpm || 0}</div>
+                            <div className="text-[8px] text-black opacity-30 uppercase font-bold">WPM</div>
                         </div>
                     </div>
                 </Card>
@@ -182,15 +182,15 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
 
             {/* Typing Zone */}
             <div className="flex-1 min-h-0 relative">
-                {duelData?.status === 'pending' && <div className="absolute inset-0 bg-midnight/90 backdrop-blur-md z-50 rounded-3xl flex flex-col items-center justify-center gap-6">
-                    <div className="w-16 h-16 rounded-full border-4 border-hacker border-t-transparent animate-spin"></div>
-                    <div className="text-hacker font-black uppercase tracking-[0.4em] animate-pulse">Waiting_For_Opponent...</div>
-                    <Button variant="ghost" size="sm" onClick={onEnd} className="text-white/20 hover:text-rose-500 mt-8">CANCEL_CHALLENGE</Button>
+                {duelData?.status === 'pending' && <div className="absolute inset-0 bg-white/90 backdrop-blur-md z-50 rounded-3xl flex flex-col items-center justify-center gap-6">
+                    <div className="w-16 h-16 rounded-full border-4 border-black border-t-transparent animate-spin"></div>
+                    <div className="text-black font-black uppercase tracking-[0.4em] animate-pulse">Waiting_For_Opponent...</div>
+                    <Button variant="ghost" size="sm" onClick={onEnd} className="text-black opacity-20 hover:opacity-100 mt-8">CANCEL_CHALLENGE</Button>
                 </div>}
-                {countdown > 0 && duelData?.status === 'in_progress' && <div className="absolute inset-0 bg-midnight/60 backdrop-blur-sm z-40 rounded-3xl flex items-center justify-center">
-                    <div className="text-white/20 font-black uppercase tracking-[1em] animate-pulse">Initializing_Sync...</div>
+                {countdown > 0 && duelData?.status === 'in_progress' && <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-40 rounded-3xl flex items-center justify-center">
+                    <div className="text-black opacity-20 font-black uppercase tracking-[1em] animate-pulse">Initializing_Sync...</div>
                 </div>}
-                <div className="h-full rounded-3xl bg-black/40 p-12 overflow-y-auto">
+                <div className="h-full rounded-3xl bg-black/5 p-12 border border-black/10 overflow-y-auto">
                     <TypingField
                         targetText={text}
                         input={input}

@@ -1,116 +1,73 @@
-// ═══════════════════════════════════════════════════════════════════
-// STATS CARD - Warm Glass Design (WPM, Accuracy, Keystones, Streak)
-// ═══════════════════════════════════════════════════════════════════
-
 import React from 'react';
+import { GlassCard } from '../ui/GlassCard';
+import { MonoText } from '../ui/MonoText';
 
 interface StatsCardProps {
     icon: string;
     value: string | number;
     label: string;
     unit?: string;
-    color?: 'orange' | 'teal' | 'green' | 'purple';
-    visual?: 'bar' | 'ring' | 'wave' | 'none';
-    progress?: number; // 0-100 for ring visual
+    trend?: string;
+    className?: string;
 }
 
-const colorMap = {
-    green: { bg: 'rgba(0, 255, 65, 0.1)', icon: '#00ff41', gradient: 'from-green-400 to-green-500' },
-    teal: { bg: 'rgba(0, 212, 170, 0.1)', icon: '#00d4aa', gradient: 'from-teal-400 to-teal-500' },
-    purple: { bg: 'rgba(170, 0, 255, 0.1)', icon: '#aa00ff', gradient: 'from-purple-400 to-purple-500' },
-    orange: { bg: 'rgba(255, 170, 0, 0.1)', icon: '#ffaa00', gradient: 'from-amber-400 to-amber-500' },
-};
-
+/**
+ * Stage 3: Assembled Widget
+ * Combines GlassCard and MonoText into a functional Dashboard element.
+ */
 export const StatsCard: React.FC<StatsCardProps> = ({
     icon,
     value,
     label,
     unit,
-    color = 'green',
-    visual = 'none',
-    progress = 0,
+    trend = "Stable",
+    className = ""
 }) => {
-    const colors = colorMap[color];
-
     return (
-        <div className="wg-card wg-stats-card">
-            {/* Icon Badge */}
-            <div
-                className="wg-stats-icon"
-                style={{ backgroundColor: colors.bg }}
-            >
-                <span style={{ color: colors.icon }}>{icon}</span>
+        <GlassCard className={`p-6 lg:p-8 group hover:translate-y-[-4px] transition-all duration-500 ${className}`}>
+            <div className="flex justify-between items-start mb-4 lg:mb-6">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/5 border border-white/10 rounded-xl lg:rounded-2xl flex items-center justify-center text-xl lg:text-2xl shadow-inner">
+                    {icon}
+                </div>
+
+                {/* Stage 3: Glass Pill (Tag) */}
+                <div className="px-2 lg:px-3 py-1 bg-white/5 border border-white/10 rounded-full">
+                    <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-white opacity-40 group-hover:opacity-80 transition-colors">
+                        {trend}
+                    </span>
+                </div>
             </div>
 
-            {/* Visual Element */}
-            {visual === 'bar' && (
-                <div className="h-8 flex items-end gap-0.5">
-                    {[40, 60, 80, 50, 70, 90, 75, 85, 65, 80].map((h, i) => (
-                        <div
-                            key={i}
-                            className="flex-1 rounded-sm transition-all duration-300"
-                            style={{
-                                height: `${h}%`,
-                                backgroundColor: i === 9 ? colors.icon : `${colors.icon}40`,
-                            }}
-                        />
-                    ))}
-                </div>
-            )}
+            <div className="space-y-1">
+                <div className="flex items-baseline gap-1 lg:gap-2">
+                    {/* Stage 3: Primary MonoText */}
+                    <MonoText
+                        as="h2"
+                        variant="primary"
+                        className="text-2xl lg:text-4xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 drop-shadow-lg"
+                    >
+                        {value}
+                    </MonoText>
 
-            {visual === 'wave' && (
-                <div className="h-8 flex items-center justify-center">
-                    <svg viewBox="0 0 100 30" className="w-full h-full">
-                        <path
-                            d="M0,15 Q10,5 20,15 T40,15 T60,15 T80,15 T100,15"
-                            fill="none"
-                            stroke={colors.icon}
-                            strokeWidth="2"
-                            className="animate-pulse"
-                        />
-                    </svg>
+                    {unit && (
+                        <MonoText as="span" variant="secondary" className="text-[10px] lg:text-sm font-black uppercase tracking-widest opacity-40">
+                            {unit}
+                        </MonoText>
+                    )}
                 </div>
-            )}
 
-            {visual === 'ring' && (
-                <div className="wg-progress-ring mx-auto">
-                    <svg viewBox="0 0 80 80" className="w-full h-full">
-                        <circle
-                            className="track"
-                            cx="40"
-                            cy="40"
-                            r="34"
-                            strokeWidth="8"
-                        />
-                        <circle
-                            className="progress"
-                            cx="40"
-                            cy="40"
-                            r="34"
-                            strokeWidth="8"
-                            style={{
-                                stroke: colors.icon,
-                                strokeDasharray: `${2 * Math.PI * 34}`,
-                                strokeDashoffset: `${2 * Math.PI * 34 * (1 - progress / 100)}`,
-                            }}
-                        />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-sm font-bold" style={{ color: colors.icon }}>
-                            {value}
-                        </span>
-                    </div>
-                </div>
-            )}
-
-            {/* Value & Label */}
-            <div className="mt-auto">
-                <div className="wg-stats-value">
-                    {value}
-                    {unit && <span className="text-base font-normal text-gray-400 ml-1">{unit}</span>}
-                </div>
-                <div className="wg-stats-label">{label}</div>
+                {/* Stage 3: Secondary MonoText */}
+                <MonoText as="p" variant="secondary" className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.3em] opacity-30">
+                    {label}
+                </MonoText>
             </div>
-        </div>
+
+            {/* Stage 3: Decorative Glass Pill (Action/Badge) */}
+            <div className="mt-6 lg:mt-8 pt-4 lg:pt-6 border-t border-white/5">
+                <div className="inline-flex items-center gap-2 px-3 lg:px-4 py-1.5 lg:py-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-all cursor-pointer">
+                    <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-widest text-white opacity-60">View Analytics</span>
+                </div>
+            </div>
+        </GlassCard>
     );
 };

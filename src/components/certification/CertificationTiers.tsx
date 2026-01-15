@@ -27,11 +27,11 @@ export const CertificationTiers: React.FC<CertificationTiersProps> = ({
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h2 className="text-xl font-bold text-white">Typing Certifications</h2>
-                    <p className="text-white/50 text-sm">Prove your skills with official timed tests</p>
+                    <p className="text-white opacity-60 text-sm">Prove your skills with official timed tests</p>
                 </div>
                 <div className="text-right">
-                    <div className="text-2xl font-bold text-[#00ff41]">{earnedCount}/5</div>
-                    <div className="text-white/40 text-xs">Certified</div>
+                    <div className="text-2xl font-bold text-white">{earnedCount}/5</div>
+                    <div className="text-white opacity-40 text-xs">Certified</div>
                 </div>
             </div>
 
@@ -53,12 +53,12 @@ export const CertificationTiers: React.FC<CertificationTiersProps> = ({
             {/* Progress bar */}
             <div className="mt-6 p-4 bg-white/5 rounded-xl">
                 <div className="flex justify-between text-sm mb-2">
-                    <span className="text-white/60">Certification Progress</span>
-                    <span className="text-white/40">{earnedCount * 20}% Complete</span>
+                    <span className="text-white opacity-60">Certification Progress</span>
+                    <span className="text-white opacity-40">{earnedCount * 20}% Complete</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-gradient-to-r from-[#cd7f32] via-[#ffd700] to-[#b9f2ff] rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-white/20 via-white/50 to-white/80 rounded-full transition-all duration-500"
                         style={{ width: `${earnedCount * 20}%` }}
                     />
                 </div>

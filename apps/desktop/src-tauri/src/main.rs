@@ -69,15 +69,38 @@ fn complete_session(state: State<AppState>) -> engine::TypingMetrics {
 }
 
 #[tauri::command]
-async fn google_login(_app: tauri::AppHandle) -> Result<UserProfile, String> {
-    println!("Executing google_login command");
-    oauth::perform_google_login(_app).await
+#[cfg(debug_assertions)]
+fn get_engine_state(state: State<AppState>) -> engine::TypingEngineDebugState {
+    state.engine.lock().unwrap().get_debug_state()
 }
 
 #[tauri::command]
-async fn github_login(_app: tauri::AppHandle) -> Result<UserProfile, String> {
-    println!("Executing github_login command");
-    oauth::perform_github_login(_app).await
+#[cfg(not(debug_assertions))]
+fn get_engine_state() -> Result<String, String> {
+    Err("COMMAND_RESTRICTED_IN_RELEASE".to_string())
+}
+
+#[tauri::command]
+#[cfg(debug_assertions)]
+fn force_engine_cheat(state: State<AppState>, status: bool) {
+    state.engine.lock().unwrap().force_cheat(status);
+}
+
+#[tauri::command]
+#[cfg(not(debug_assertions))]
+fn force_engine_cheat() -> Result<String, String> {
+    Err("COMMAND_RESTRICTED_IN_RELEASE".to_string())
+}
+
+#[tauri::command]
+fn get_oauth_url(provider: String, oauth: State<oauth::OAuthManager>) -> Result<String, String> {
+    oauth::generate_auth_url(&oauth, &provider)
+}
+
+#[tauri::command]
+async fn exchange_auth_token(provider: String, code: String, state: String, oauth: State<'_, oauth::OAuthManager>) -> Result<UserProfile, String> {
+    println!("Exchanging token for provider: {}", provider);
+    oauth::exchange_code(&oauth, code, state).await
 }
 
 #[tauri::command]
@@ -121,11 +144,21 @@ use window_vibrancy::apply_blur;
 
 mod logger;
 
+mod database;
+mod stats_commands;
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
             // Initialize Logger
             logger::init_logging(app).expect("Failed to initialize logger");
+
+            // Initialize Database (Async, so we use tauri::async_runtime::block_on)
+            let db = tauri::async_runtime::block_on(async {
+                database::init_db(app.handle()).await
+            }).expect("Failed to initialize database");
+            
+            app.manage(db);
 
             let window = app.get_webview_window("main").unwrap();
 
@@ -153,15 +186,15 @@ fn main() {
             engine: Mutex::new(TypingEngine::new()),
             telemetry: telemetry::TelemetryManager::new(),
         })
+        .manage(oauth::OAuthManager::new())
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                // On macOS, hide the window instead of closing it so the app keeps running
                 #[cfg(target_os = "macos")]
                 {
-                    if window.label() == "main" {
-                        window.hide().unwrap();
-                        api.prevent_close();
-                    }
+                   if window.label() == "main" {
+                       window.hide().unwrap();
+                       api.prevent_close();
+                   }
                 }
             }
         })
@@ -169,8 +202,10 @@ fn main() {
             start_session,
             handle_keystroke,
             complete_session,
-            google_login,
-            github_login,
+            get_engine_state,
+            force_engine_cheat,
+            get_oauth_url,
+            exchange_auth_token,
             toggle_zen_window,
             play_typing_sound,
             set_audio_volume,
@@ -179,7 +214,10 @@ fn main() {
             update_presence,
             get_analytics_summary,
             reset_telemetry,
-            build_info::get_build_info
+            build_info::get_build_info,
+            stats_commands::save_session,
+            stats_commands::get_dashboard_stats,
+            stats_commands::ensure_user
         ])
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()

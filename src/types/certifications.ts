@@ -43,11 +43,11 @@ export interface CertificationTest {
 
 // Tier display info
 export const TIER_COLORS: Record<CertificationTier, string> = {
-    bronze: '#cd7f32',
-    silver: '#c0c0c0',
-    gold: '#ffd700',
-    platinum: '#00d4aa',
-    diamond: '#b9f2ff',
+    bronze: 'rgba(0, 0, 0, 0.3)',
+    silver: 'rgba(0, 0, 0, 0.5)',
+    gold: 'rgba(0, 0, 0, 0.7)',
+    platinum: 'rgba(0, 0, 0, 0.85)',
+    diamond: 'rgba(0, 0, 0, 1.0)',
 };
 
 export const TIER_ICONS: Record<CertificationTier, string> = {

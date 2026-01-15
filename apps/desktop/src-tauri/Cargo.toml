@@ -33,6 +33,15 @@ sha2 = "0.10"
 base64 = "0.22"
 rand = "0.8"
 urlencoding = "2.1"
+oauth2 = "5.0.0"
+sqlx = { version = "0.8.6", features = ["runtime-tokio-native-tls", "sqlite"] }
+uuid = { version = "1.19.0", features = ["v4", "fast-rng"] }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+strip = true

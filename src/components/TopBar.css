@@ -12,15 +12,23 @@
     align-items: center;
     padding: 0 2rem;
 
-    /* Glass Capsule */
-    background: rgba(13, 43, 51, 0.3);
-    /* Teal tint */
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Light Mode: Crystal Glass */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 100px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     z-index: 100;
     transition: all 0.3s ease;
+}
+
+/* Dark Mode: Pure Glass */
+:root.dark .top-bar,
+.dark .top-bar {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .mode-indicator,
@@ -38,20 +46,35 @@
 
 .label {
     font-size: 0.6rem;
-    color: #444444;
+    color: #666666;
     text-transform: uppercase;
     letter-spacing: 0.2em;
+}
+
+:root.dark .label,
+.dark .label {
+    color: #444444;
 }
 
 .value {
     font-size: 0.9rem;
     font-weight: 300;
-    color: #888888;
+    color: #333333;
     font-family: 'Inter', sans-serif;
 }
 
+:root.dark .value,
+.dark .value {
+    color: #888888;
+}
+
 .text-white {
-    color: #ffffff;
+    color: #1a1a1a !important;
+}
+
+:root.dark .text-white,
+.dark .text-white {
+    color: #ffffff !important;
 }
 
 /* Auth Buttons container shift to right */

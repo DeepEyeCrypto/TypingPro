@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
 
 :root {
-    --glass-bg: rgba(10, 15, 20, 0.7);
-    --neon-cyan: #00f0ff;
-    --neon-cyan-glow: rgba(0, 240, 255, 0.4);
+    --glass-bg: rgba(0, 0, 0, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --mono-white: #ffffff;
+    --mono-gray: rgba(255, 255, 255, 0.5);
     --text-primary: rgba(255, 255, 255, 0.95);
-    --text-muted: rgba(255, 255, 255, 0.5);
-    --error-red: #ff4444;
+    --text-muted: rgba(255, 255, 255, 0.4);
 }
 
 body {
@@ -25,7 +25,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 0.5px solid var(--neon-cyan-glow);
+    border: 0.5px solid var(--glass-border);
     box-sizing: border-box;
     padding: 30px;
     gap: 15px;
@@ -41,7 +41,8 @@ body {
     width: 32px;
     height: 32px;
     opacity: 0.8;
-    filter: drop-shadow(0 0 5px var(--neon-cyan-glow));
+    filter: grayscale(1);
+    opacity: 0.2;
 }
 
 .zen-text {
@@ -62,14 +63,14 @@ body {
 }
 
 .zen-text span.correct {
-    color: var(--neon-cyan);
-    text-shadow: 0 0 12px var(--neon-cyan-glow);
+    color: var(--mono-white);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .zen-text span.error {
-    color: var(--error-red);
-    text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
-    background: rgba(255, 68, 68, 0.1);
+    color: #000;
+    background: #fff;
+    text-shadow: none;
     border-radius: 2px;
 }
 
@@ -98,17 +99,18 @@ body {
     font-family: 'Outfit', sans-serif;
     font-size: 18px;
     font-weight: 600;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 8px var(--neon-cyan-glow);
+    color: var(--mono-white);
+    opacity: 0.8;
 }
 
 .zen-complete {
     font-family: 'Outfit', sans-serif;
     font-size: 22px;
-    color: var(--neon-cyan);
-    font-weight: 600;
+    color: var(--mono-white);
+    font-weight: 900;
     margin-top: 10px;
-    text-shadow: 0 0 15px var(--neon-cyan-glow);
+    letter-spacing: 2px;
+    text-transform: uppercase;
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

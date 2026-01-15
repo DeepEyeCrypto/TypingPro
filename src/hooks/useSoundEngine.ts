@@ -1,30 +1,33 @@
-import { useEffect, useRef } from 'react'
-import { AudioEngine } from '@src/lib/AudioEngine'
-import { useSettingsStore } from '@src/stores/settingsStore'
+import { useCallback, useEffect, useState } from 'react';
+import { soundManager } from '../utils/SoundManager';
+import { useSettingsStore } from '../stores/settingsStore';
 
 export const useSoundEngine = () => {
-    const { soundEnabled, soundVolume, activeSoundProfileId } = useSettingsStore()
-    const engine = useRef(AudioEngine.getInstance())
+    const { soundEnabled, setSoundEnabled } = useSettingsStore();
+    const [isMuted, setIsMuted] = useState(!soundEnabled);
 
     useEffect(() => {
-        engine.current.init(soundVolume)
-    }, [])
+        setIsMuted(!soundEnabled);
+    }, [soundEnabled]);
 
-    useEffect(() => {
-        engine.current.setMasterVolume(soundVolume)
-    }, [soundVolume])
+    const playClick = useCallback(() => {
+        soundManager.playClick();
+    }, []);
 
-    useEffect(() => {
-        engine.current.setEnabled(soundEnabled)
-    }, [soundEnabled])
+    const playError = useCallback(() => {
+        soundManager.play('error');
+    }, []);
 
-    const playTypingSound = (key: string) => {
-        engine.current.play(activeSoundProfileId, key)
-    }
+    const toggleMute = useCallback(() => {
+        const newState = !soundEnabled;
+        setSoundEnabled(newState);
+        soundManager.setVolume(newState ? 0.5 : 0); // Default volume 50%
+    }, [soundEnabled, setSoundEnabled]);
 
-    const playErrorSound = () => {
-        engine.current.playError()
-    }
-
-    return { playTypingSound, playErrorSound }
-}
+    return {
+        playClick,
+        playError,
+        toggleMute,
+        isMuted
+    };
+};

@@ -1,0 +1,97 @@
+import { useState, useEffect, useCallback } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-shell';
+import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
+
+export interface User {
+    id: string;
+    name: string;
+    email?: string;
+    avatar_url?: string;
+    provider: string;
+    token: string;
+}
+
+export const useAuth = () => {
+    const [user, setUser] = useState<User | null>(() => {
+        const stored = localStorage.getItem('user_session');
+        return stored ? JSON.parse(stored) : null;
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const login = useCallback(async (provider: 'google' | 'github') => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            // Get PKCE Auth URL from Rust
+            const url = await invoke<string>('get_oauth_url', { provider });
+
+            // Store provider for logging/debug if needed, though Rust handles state map
+            localStorage.setItem('pending_auth_provider', provider);
+
+            // Open System Browser
+            await open(url);
+        } catch (err: any) {
+            console.error('Login failed init:', err);
+            setError(err.toString());
+            setIsLoading(false);
+        }
+    }, []);
+
+    const logout = useCallback(() => {
+        setUser(null);
+        localStorage.removeItem('user_session');
+    }, []);
+
+    useEffect(() => {
+        let unlisten: (() => void) | undefined;
+
+        const initDeepLink = async () => {
+            unlisten = await onOpenUrl(async (urls) => {
+                console.log('Deep link received:', urls);
+                for (const urlStr of urls) {
+                    if (urlStr.includes('typingpro://auth/callback')) {
+                        try {
+                            setIsLoading(true);
+                            // Parse URL manually or use URL object
+                            const url = new URL(urlStr);
+                            const code = url.searchParams.get('code');
+                            const state = url.searchParams.get('state');
+
+                            if (!code || !state) {
+                                throw new Error('Missing code or state in callback');
+                            }
+
+                            const provider = localStorage.getItem('pending_auth_provider') || 'unknown';
+
+                            // Exchange code for profile
+                            const profile = await invoke<User>('exchange_auth_token', {
+                                provider,
+                                code,
+                                state
+                            });
+
+                            setUser(profile);
+                            localStorage.setItem('user_session', JSON.stringify(profile));
+                            localStorage.removeItem('pending_auth_provider');
+                            setIsLoading(false);
+                        } catch (err: any) {
+                            console.error('Token exchange failed:', err);
+                            setError(typeof err === 'string' ? err : err.message || 'Login failed');
+                            setIsLoading(false);
+                        }
+                    }
+                }
+            });
+        };
+
+        initDeepLink();
+
+        return () => {
+            if (unlisten) unlisten();
+        };
+    }, []);
+
+    return { user, login, logout, isLoading, error };
+};

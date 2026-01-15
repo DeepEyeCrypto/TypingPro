@@ -1,30 +1,37 @@
 .leaderboard-section {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     height: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .leaderboard-section .section-title {
-    padding: 1.5rem;
+    padding: 1.5rem 2rem;
     margin: 0;
-    font-size: 1.2rem;
-    color: #e0e0e0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #000;
+    letter-spacing: -0.02em;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.01);
 }
 
 .ranking-header {
     display: grid;
-    grid-template-columns: 60px 2fr 80px 80px;
-    padding: 1rem 1.5rem;
-    font-size: 0.8rem;
-    color: #666;
+    grid-template-columns: 80px 2fr 100px 100px;
+    padding: 1.2rem 2rem;
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.4);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    letter-spacing: 0.1em;
+    font-weight: 900;
+    background: rgba(0, 0, 0, 0.03);
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
 }
 
 .ranking-list {
@@ -32,85 +39,109 @@
     flex: 1;
 }
 
+.ranking-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ranking-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+}
+
 .ranking-row {
     display: grid;
-    grid-template-columns: 60px 2fr 80px 80px;
-    padding: 0.8rem 1.5rem;
+    grid-template-columns: 80px 2fr 100px 100px;
+    padding: 1rem 2rem;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-    transition: background 0.2s;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.03);
+    color: #000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ranking-row:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.02);
+    transform: scale(1.005);
+    z-index: 2;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .ranking-row.highlight {
-    background: rgba(0, 255, 65, 0.1);
-    border-left: 3px solid #00FF41;
+    background: rgba(0, 0, 0, 0.04);
+    border-left: 3px solid rgba(0, 0, 0, 0.6);
 }
 
 .col-rank.badge {
-    font-weight: bold;
-    color: #888;
+    font-weight: 900;
+    color: #000;
+    font-size: 1.1rem;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .flex-user {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
 }
 
 .flex-user img {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #f0f0f0;
 }
 
 .col-wpm.value {
-    color: #00FF41;
-    font-weight: 600;
+    color: #000;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
 }
 
 .col-races {
-    color: #888;
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 700;
+    font-size: 0.85rem;
 }
-
-
 
 .user-info {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px;
+    gap: 1px;
 }
 
 .challenge-btn {
     font-size: 0.65rem;
-    padding: 2px 6px;
-    background: rgba(255, 0, 85, 0.1);
-    color: #FF0055;
-    border: 1px solid rgba(255, 0, 85, 0.2);
-    border-radius: 4px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.6);
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
     text-transform: uppercase;
-    font-weight: bold;
+    font-weight: 900;
+    letter-spacing: 0.05em;
 }
 
 .challenge-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: wait;
 }
 
 .challenge-btn:hover:not(:disabled) {
-    background: #FF0055;
+    background: #000;
+    border-color: #000;
     color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .leaderboard-loading {
-    padding: 2rem;
+    padding: 3rem;
     text-align: center;
-    color: #666;
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 700;
+    letter-spacing: 0.03em;
 }

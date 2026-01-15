@@ -9,26 +9,21 @@ class SoundManager {
     private isMuted: boolean = false;
     private masterVolume: number = 0.5;
 
-    // The holy grail of click sounds
-    private readonly CLICK_VARIANTS = ['click1', 'click2', 'click3', 'click4', 'click5'];
-
+    // CLICK_VARIANTS are now dynamic based on profile
+    private activeProfile: string = 'mechanical';
     private constructor() {
         this.initContext();
-        // Bind the resume function to window events to bypass autoplay policy
+        // Bind the resume function
         if (typeof window !== 'undefined') {
             const resumeAudio = () => {
                 if (this.context && this.context.state === 'suspended') {
-                    this.context.resume().then(() => {
-                        console.log('AudioContext resumed successfully');
-                    });
+                    this.context.resume().then(() => console.log('AudioContext resumed'));
                 }
-                // Remove listeners once resumed
                 if (this.context && this.context.state === 'running') {
                     window.removeEventListener('keydown', resumeAudio);
                     window.removeEventListener('click', resumeAudio);
                 }
             };
-
             window.addEventListener('keydown', resumeAudio);
             window.addEventListener('click', resumeAudio);
         }
@@ -51,29 +46,38 @@ class SoundManager {
         }
     }
 
-    // Preload all assets to memory buffers
+    // Load assets for a specific profile
+    public async loadProfile(profileId: string) {
+        if (!this.context) return;
+        this.activeProfile = profileId;
+        this.buffers.clear(); // Flush old sounds
+
+        const basePath = `/sounds/${profileId}`;
+        const variants = ['click1', 'click2', 'click3', 'click4', 'click5'];
+
+        const loadPromises = [
+            ...variants.map(name => this.loadSound(name, `${basePath}/${name}.wav`)),
+            this.loadSound('space', `${basePath}/space.wav`),
+            this.loadSound('enter', `${basePath}/enter.wav`),
+            this.loadSound('backspace', `${basePath}/backspace.wav`),
+            this.loadSound('error', `/sounds/mechanical/error.wav`) // Universal error sound
+        ];
+
+        try {
+            await Promise.all(loadPromises);
+            console.log(`Sound Engine: Loaded profile '${profileId}' 🎧`);
+        } catch (e) {
+            console.error('Sound Engine: Profile load failed', e);
+        }
+    }
+
     public async init() {
         this.initContext();
         if (this.context && this.context.state === 'suspended') {
             await this.context.resume();
         }
-
-        const loadPromises = [
-            // Clicks
-            ...this.CLICK_VARIANTS.map(name => this.loadSound(name, `/sounds/mechanical/${name}.wav`)),
-            // Utility
-            this.loadSound('space', '/sounds/mechanical/space.wav'),
-            this.loadSound('error', '/sounds/mechanical/error.wav'),
-            this.loadSound('enter', '/sounds/mechanical/enter.wav'),
-            this.loadSound('backspace', '/sounds/mechanical/backspace.wav')
-        ];
-
-        try {
-            await Promise.all(loadPromises);
-            console.log('Sound Engine: All assets hydrated 💧');
-        } catch (e) {
-            console.error('Sound Engine: Preload failed', e);
-        }
+        // Default load
+        await this.loadProfile('mechanical');
     }
 
     private async loadSound(key: string, url: string): Promise<void> {
@@ -91,13 +95,13 @@ class SoundManager {
     public playClick() {
         if (this.isMuted) return;
 
-        // Randomize click sound
-        const variant = this.CLICK_VARIANTS[Math.floor(Math.random() * this.CLICK_VARIANTS.length)];
+        // Randomize click sound from 1-5
+        const variantId = Math.floor(Math.random() * 5) + 1;
+        const variant = `click${variantId}`;
 
-        // Slight pitch randomization (0.95 - 1.05) for organic feel
-        // And volume diffs
+        // Organic variation
         const rate = 0.98 + Math.random() * 0.04;
-        const detune = (Math.random() - 0.5) * 50; // +/- 25 cents
+        const detune = (Math.random() - 0.5) * 50;
 
         this.play(variant, { rate, detune });
     }

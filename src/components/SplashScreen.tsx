@@ -38,8 +38,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: '#1a1a1a',
-            color: '#fff',
+            background: '#ffffff',
+            color: '#000000',
             zIndex: 9999,
             opacity: opacity,
             transition: 'opacity 0.5s ease-in-out',
@@ -48,30 +48,29 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             <div className="liquid-glass-card" style={{ padding: '3rem', width: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <h1 style={{
                     fontSize: '2.5rem',
-                    fontWeight: 800,
+                    fontWeight: 900,
                     marginBottom: '0.5rem',
-                    background: 'linear-gradient(45deg, #00f260, #0575e6)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    letterSpacing: '-1px'
+                    color: '#000000',
+                    letterSpacing: '-2px',
+                    textTransform: 'uppercase'
                 }}>
                     TypingPro
                 </h1>
-                <p style={{ color: '#888', fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '2rem' }}>
+                <p style={{ color: '#000', opacity: 0.3, fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '2rem' }}>
                     Elite Typing Engine
                 </p>
 
-                <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: '4px', background: 'rgba(0,0,0,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
                     <div style={{
                         width: `${progress}%`,
                         height: '100%',
-                        background: '#00f260',
-                        boxShadow: '0 0 10px #00f260',
+                        background: '#000',
+                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
                         transition: 'width 0.1s linear'
                     }} />
                 </div>
 
-                <div style={{ marginTop: '1rem', fontSize: '0.7rem', color: '#444' }}>
+                <div style={{ marginTop: '1rem', fontSize: '0.7rem', color: '#000', opacity: 0.4 }}>
                     v1.2.1 [RUST::CORE::ACTIVE] (SAFE_MODE)
                 </div>
             </div>

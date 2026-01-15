@@ -110,14 +110,14 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
                 {onBack && (
                     <button
                         onClick={onBack}
-                        className="text-white/60 hover:text-white transition-colors"
+                        className="text-white opacity-60 hover:opacity-100 transition-colors"
                     >
                         ← Back
                     </button>
                 )}
                 <div>
                     <h1 className="text-2xl font-bold text-white">Certifications</h1>
-                    <p className="text-white/50 text-sm">Official typing skill certifications</p>
+                    <p className="text-white opacity-60 text-sm">Official typing skill certifications</p>
                 </div>
             </div>
 
@@ -127,8 +127,8 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
                     className={`
             mb-6 p-4 rounded-xl border
             ${testResult.passed
-                            ? 'bg-[#00ff41]/10 border-[#00ff41]/30'
-                            : 'bg-red-500/10 border-red-500/30'
+                            ? 'bg-white/5 border-white/10'
+                            : 'bg-white/5 border-white/20 opacity-80'
                         }
           `}
                 >
@@ -137,17 +137,17 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
                             {testResult.passed ? '🎉' : '😔'}
                         </span>
                         <div>
-                            <h3 className={`font-bold ${testResult.passed ? 'text-[#00ff41]' : 'text-red-400'}`}>
+                            <h3 className={`font-bold text-white`}>
                                 {testResult.passed ? 'Certification Earned!' : 'Test Not Passed'}
                             </h3>
-                            <p className="text-white/60 text-sm">
+                            <p className="text-white opacity-60 text-sm">
                                 You achieved {testResult.wpm} WPM with {testResult.accuracy}% accuracy
                                 {!testResult.passed && '. Keep practicing and try again!'}
                             </p>
                         </div>
                         <button
                             onClick={() => setTestResult(null)}
-                            className="ml-auto text-white/40 hover:text-white"
+                            className="ml-auto text-white opacity-40 hover:opacity-100"
                         >
                             ×
                         </button>

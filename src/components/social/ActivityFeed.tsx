@@ -37,7 +37,7 @@ export const ActivityFeed: React.FC = () => {
     if (events.length === 0) {
         return (
             <div className="p-8 text-center border border-dashed border-white/5 rounded-xl">
-                <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                <p className="text-[10px] font-bold text-white opacity-20 uppercase tracking-[0.2em]">
                     No_Global_Activity_Detected<br />
                     <span className="opacity-50">Pulse_Monitoring_Active</span>
                 </p>
@@ -50,7 +50,7 @@ export const ActivityFeed: React.FC = () => {
             {events.map((event) => (
                 <div
                     key={event.id}
-                    className="flex items-start gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-hacker/30 transition-all group"
+                    className="flex items-start gap-4 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all group"
                 >
                     <img
                         src={event.avatarUrl}
@@ -62,11 +62,11 @@ export const ActivityFeed: React.FC = () => {
                             <span className="text-xs font-bold text-white truncate">
                                 @{event.username}
                             </span>
-                            <span className="text-[8px] font-bold text-white/20 uppercase">
+                            <span className="text-[8px] font-bold text-white opacity-20 uppercase">
                                 {formatRelativeTime(event.timestamp)}
                             </span>
                         </div>
-                        <p className="text-[11px] text-white/70 leading-relaxed">
+                        <p className="text-[11px] text-white opacity-70 leading-relaxed">
                             {renderEventMessage(event)}
                         </p>
                     </div>
@@ -80,9 +80,9 @@ function renderEventMessage(event: GlobalEvent) {
     switch (event.type) {
         case 'certification':
             return (
-                <span className="flex items-center gap-1.5 flex-wrap">
+                <span className="flex items-center gap-1.5 flex-wrap text-white">
                     Just earned
-                    <span className="text-xs font-black text-hacker uppercase tracking-wider">
+                    <span className="text-xs font-black uppercase tracking-wider">
                         [{event.data.tier}_Rank]
                     </span>
                     Certification 🎖️
@@ -90,20 +90,20 @@ function renderEventMessage(event: GlobalEvent) {
             );
         case 'streak':
             return (
-                <span>
-                    Reached a <span className="text-hacker font-bold">{event.data.days}-day</span> practice streak! 🔥
+                <span className="text-white">
+                    Reached a <span className="font-bold">{event.data.days}-day</span> practice streak! 🔥
                 </span>
             );
         case 'record':
             return (
-                <span>
-                    Set a new personal record of <span className="text-hacker font-bold">{event.data.wpm} WPM</span>! ⚡
+                <span className="text-white">
+                    Set a new personal record of <span className="font-bold">{event.data.wpm} WPM</span>! ⚡
                 </span>
             );
         case 'badge':
             return (
-                <span>
-                    Unlocked the <span className="text-[#ffd700] font-bold">{event.data.badgeName}</span> badge! 🏆
+                <span className="text-white">
+                    Unlocked the <span className="font-bold">{event.data.badgeName}</span> badge! 🏆
                 </span>
             );
         default:

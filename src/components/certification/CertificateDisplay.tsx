@@ -32,7 +32,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
             <div
-                className="relative max-w-2xl w-full bg-[#0a0a0f] rounded-2xl overflow-hidden"
+                className="relative max-w-2xl w-full bg-[#050505] rounded-3xl overflow-hidden glass-depth-high backdrop-blur-2xl"
                 style={{
                     boxShadow: `0 0 60px ${color}40`,
                     border: `2px solid ${color}`,
@@ -41,7 +41,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-white/60 hover:text-white text-2xl z-10"
+                    className="absolute top-4 right-4 text-white opacity-60 hover:opacity-100 text-2xl z-10"
                 >
                     ×
                 </button>
@@ -55,7 +55,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
                     />
 
                     {/* TypingPro logo */}
-                    <div className="text-white/20 text-sm tracking-[0.3em] uppercase mb-4">
+                    <div className="text-white opacity-30 text-sm tracking-[0.3em] uppercase mb-4">
                         TypingPro Expert Engine
                     </div>
 
@@ -76,11 +76,11 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
                     </h2>
 
                     {/* Awarded to */}
-                    <p className="text-white/60 mb-2">This certifies that</p>
+                    <p className="text-white opacity-60 mb-2">This certifies that</p>
                     <p className="text-2xl font-bold text-white mb-4">{username}</p>
 
                     {/* Achievement text */}
-                    <p className="text-white/60 max-w-md mx-auto mb-6">
+                    <p className="text-white opacity-60 max-w-md mx-auto mb-6">
                         has demonstrated proficiency in touch typing by achieving a speed of{' '}
                         <span style={{ color }}>{certification.wpm_achieved} WPM</span> with{' '}
                         <span style={{ color }}>{certification.accuracy_achieved}% accuracy</span> on the official
@@ -93,25 +93,25 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
                             <div className="text-3xl font-bold" style={{ color }}>
                                 {certification.wpm_achieved}
                             </div>
-                            <div className="text-white/40 text-sm">WPM</div>
+                            <div className="text-white opacity-40 text-sm">WPM</div>
                         </div>
                         <div className="w-px bg-white/10" />
                         <div>
                             <div className="text-3xl font-bold" style={{ color }}>
                                 {certification.accuracy_achieved}%
                             </div>
-                            <div className="text-white/40 text-sm">Accuracy</div>
+                            <div className="text-white opacity-40 text-sm">Accuracy</div>
                         </div>
                     </div>
 
                     {/* Date */}
-                    <p className="text-white/40 text-sm mb-4">
+                    <p className="text-white opacity-40 text-sm mb-4">
                         Issued on {earnedDate}
                     </p>
 
                     {/* Verification code */}
                     <div className="bg-white/5 rounded-lg p-4 inline-block">
-                        <div className="text-white/40 text-xs mb-1">Verification Code</div>
+                        <div className="text-white opacity-40 text-xs mb-1">Verification Code</div>
                         <div className="font-mono text-lg tracking-wider" style={{ color }}>
                             {certification.verification_code}
                         </div>
@@ -120,7 +120,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
                     {/* Actions */}
                     <div className="flex justify-center gap-4 mt-6">
                         <button
-                            className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all"
+                            className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-black/20 transition-all font-bold"
                             onClick={() => {
                                 // Future: Download as image/PDF
                                 navigator.clipboard.writeText(certification.verification_code);

@@ -1,73 +1,144 @@
-/* Emerald Glow - "The Matrix" / "Hacker" Aesthetic */
+/* 
+ * LIQUID GLASS V5 - DESIGN SYSTEM TOKENS
+ * Optimized for 144FPS Rendering & Sub-0.5px Hairline Aesthetics
+ */
+:root {
+    --v5-bg: rgba(0, 0, 0, 0.4);
+    --v5-blur: blur(32px) saturate(180%);
+    --v5-border-idle: 0.5px solid rgba(255, 255, 255, 0.1);
+    --v5-border-active: 0.5px solid rgba(255, 255, 255, 0.3);
+    --v5-glow-active: 0 0 20px rgba(255, 255, 255, 0.05);
+    --v5-accent: rgba(255, 255, 255, 0.9);
+}
+
+/* Neutral Glow - Pure Glass Aesthetic */
 .emerald-text {
-    color: #00FF41;
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 20px rgba(0, 255, 65, 0.3);
-    font-weight: 700;
+    color: var(--v5-accent);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.05);
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .emerald-border {
-    border: 1px solid #00FF41;
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+    border: var(--v5-border-active);
+    box-shadow: var(--v5-glow-active);
 }
 
-/* User Rank Badges */
-.rank-badge-1 {
-    font-size: 1.2rem;
-    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
+/* Hardware Accelerated V5 Card - Pure Glass (Monochrome) */
+.glass-v5 {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    will-change: transform, opacity;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.rank-badge-2 {
-    font-size: 1.1rem;
-    filter: drop-shadow(0 0 5px rgba(192, 192, 192, 0.7));
+.glass-v5:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
-.rank-badge-3 {
-    font-size: 1.1rem;
-    filter: drop-shadow(0 0 5px rgba(205, 127, 50, 0.7));
+/* Presence Status Rings */
+.status-ring {
+    position: relative;
+    padding: 2px;
+    border-radius: 50%;
 }
 
-/* Animated Glow for 100+ WPM */
-@keyframes neon-pulse {
+.status-ring::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.status-ring.typing::after {
+    border-color: #fff;
+    animation: status-pulse 1.5s infinite;
+}
+
+.status-ring.lobby::after {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.status-ring.dueling::after {
+    border-color: #fff;
+    border-style: dashed;
+    animation: status-pulse 0.8s infinite;
+}
+
+@keyframes status-pulse {
     0% {
-        text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
-    }
-
-    50% {
-        text-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 10px rgba(255, 255, 255, 0.4);
+        transform: scale(1);
+        opacity: 0.8;
     }
 
     100% {
-        text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* Matrix Scanline Animation for UserSearch */
+.scanline-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.scanline-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            transparent 100%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+    z-index: 10;
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+/* Animated Glow for 100+ WPM - Monochrome edition */
+@keyframes neon-pulse {
+    0% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+        transform: scale(1);
+    }
+
+    50% {
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.15), 0 0 10px rgba(255, 255, 255, 0.1);
+        transform: scale(1.05);
+    }
+
+    100% {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+        transform: scale(1);
     }
 }
 
 .wpm-elite {
-    animation: neon-pulse 2s infinite alternate;
+    animation: neon-pulse 1.5s infinite ease-in-out;
     color: #fff;
-}
-
-/* Glass Panel Enhancements */
-.social-dashboard.glass-panel {
-    background: rgba(10, 10, 10, 0.75) !important;
-    backdrop-filter: blur(24px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Scrollbar Styling */
-.ranking-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.ranking-list::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.ranking-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.ranking-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }

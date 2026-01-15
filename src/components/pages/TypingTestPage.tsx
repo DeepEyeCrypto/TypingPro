@@ -3,6 +3,7 @@ import { TypingField } from '../TypingField';
 import { Card } from '../ui/Card';
 import { StatDisplay } from '../ui/StatDisplay';
 import { Button } from '../ui/Button';
+import { MissionHUD } from '../MissionHUD';
 
 interface TypingTestPageProps {
     targetText: string;
@@ -15,6 +16,12 @@ interface TypingTestPageProps {
         rawKpm: number;
     };
     onReset: () => void;
+    missionData?: {
+        isMission: boolean;
+        targetWpm: number;
+        minAccuracy: number;
+        stressLevel: number;
+    }
 }
 
 /**
@@ -27,7 +34,8 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
     active,
     onKeyDown,
     stats,
-    onReset
+    onReset,
+    missionData
 }) => {
     return (
         <div className="flex flex-col items-center justify-center min-h-[70vh] w-full">
@@ -39,7 +47,7 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
             </div>
 
             {/* MAIN TYPING ZONE */}
-            <Card className="w-full max-w-5xl hacker-border bg-midnight/40 p-12">
+            <Card className="w-full max-w-5xl glass-card p-12 relative overflow-hidden">
                 <TypingField
                     targetText={targetText}
                     input={input}
@@ -47,9 +55,22 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
                     onKeyDown={onKeyDown}
                 />
 
+                {missionData?.isMission && (
+                    <div className="absolute inset-0 pointer-events-none">
+                        <MissionHUD
+                            isMissionActive={true}
+                            currentWpm={stats.wpm}
+                            targetWpm={missionData.targetWpm}
+                            accuracy={stats.accuracy}
+                            minAccuracy={missionData.minAccuracy}
+                            stressLevel={missionData.stressLevel}
+                        />
+                    </div>
+                )}
+
                 {/* HINT / SHORTCUTS */}
                 <div className="mt-12 flex justify-center border-t border-white/5 pt-8">
-                    <div className="flex items-center space-x-6 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                    <div className="flex items-center space-x-6 text-[10px] font-bold text-white uppercase tracking-widest">
                         <span className="flex items-center bg-white/5 px-2 py-1 rounded">Tab</span>
                         <span>to reset</span>
                         <span className="flex items-center bg-white/5 px-2 py-1 rounded ml-4">Esc</span>

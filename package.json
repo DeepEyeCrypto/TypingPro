@@ -1,7 +1,7 @@
 {
   "name": "typingpro-monorepo",
   "private": true,
-  "version": "1.2.51",
+  "version": "1.2.53",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -10,6 +10,7 @@
     "dev": "npm run dev --workspace=@typingpro/desktop",
     "build": "node scripts/check-env.cjs && npm run build --workspace=@typingpro/desktop",
     "tauri": "npm run tauri --workspace=@typingpro/desktop",
+    "build:mac": "export $(grep -v '^#' apps/desktop/.env | xargs) && npm run build --workspace=@typingpro/desktop && npm run tauri --workspace=@typingpro/desktop -- build",
     "release:patch": "npm version patch --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:minor": "npm version minor --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:major": "npm version major --no-git-tag-version && node scripts/sync-tauri-version.cjs",
@@ -33,9 +34,12 @@
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-store": "^2.4.1",
     "@tauri-apps/plugin-updater": "^2.9.0",
+    "@types/recharts": "^1.8.29",
     "firebase": "^12.7.0",
+    "framer-motion": "^12.26.1",
     "howler": "^2.2.4",
     "html2canvas": "^1.4.1",
+    "recharts": "^3.6.0",
     "use-sound": "^5.0.0"
   }
 }

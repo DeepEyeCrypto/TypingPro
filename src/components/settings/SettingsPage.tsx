@@ -22,15 +22,15 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
             {/* Header */}
             <div className="flex items-center justify-between shrink-0">
                 <div>
-                    <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-neon-green to-emerald-400">
+                    <h2 className="text-3xl font-black text-black">
                         Visual Settings
                     </h2>
-                    <p className="text-white/40 text-sm mt-1">Customize your immersive environment.</p>
+                    <p className="text-black opacity-40 text-sm mt-1">Customize your immersive environment.</p>
                 </div>
                 {onBack && (
                     <button
                         onClick={onBack}
-                        className="px-4 py-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                        className="px-4 py-2 rounded-full border border-black/10 text-black/60 hover:text-black hover:bg-black/5 transition-colors font-bold"
                     >
                         Back
                     </button>
@@ -42,7 +42,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
 
                 {/* Section Title */}
                 <div className="col-span-full">
-                    <h3 className="text-lg font-semibold text-white/80 mb-4 border-b border-white/5 pb-2">
+                    <h3 className="text-lg font-black text-black opacity-30 mb-4 border-b border-black/5 pb-2 uppercase tracking-widest">
                         Environment Background
                     </h3>
                 </div>
@@ -57,8 +57,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                         className={`
                             relative group cursor-pointer overflow-hidden rounded-xl border transition-all duration-300
                             ${backgroundImage === bg.url
-                                ? 'border-neon-green ring-2 ring-neon-green/20'
-                                : 'border-white/10 hover:border-white/30'}
+                                ? 'border-black ring-2 ring-black/10'
+                                : 'border-black/10 hover:border-black/20'}
                         `}
                     >
                         {/* Thumbnail */}
@@ -71,9 +71,9 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
 
                             {/* Selected Indicator */}
                             {backgroundImage === bg.url && (
-                                <div className="absolute inset-0 bg-neon-green/10 flex items-center justify-center backdrop-blur-[1px]">
+                                <div className="absolute inset-0 bg-black/10 flex items-center justify-center backdrop-blur-[1px]">
                                     <div className="bg-black/60 p-2 rounded-full">
-                                        <svg className="w-6 h-6 text-neon-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                         </svg>
                                     </div>
@@ -82,7 +82,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
 
                             {/* Hover Name Overlay */}
                             <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-sm font-medium text-white">{bg.name}</span>
+                                <span className="text-sm font-bold text-white">{bg.name}</span>
                             </div>
                         </div>
                     </motion.div>

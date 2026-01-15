@@ -98,7 +98,7 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
                 <div className="flex items-center gap-4">
                     <button
                         onClick={onCancel}
-                        className="text-white/60 hover:text-white transition-colors"
+                        className="text-white opacity-60 hover:opacity-100 transition-colors"
                     >
                         ← Cancel
                     </button>
@@ -114,7 +114,7 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
                 <div
                     className={`
             text-3xl font-mono font-bold px-4 py-2 rounded-lg
-            ${timeLeft <= 60 ? 'bg-red-500/20 text-red-400 animate-pulse' : 'bg-white/5 text-white'}
+            ${timeLeft <= 60 ? 'bg-black/10 text-white animate-pulse border border-black/20' : 'bg-black/5 text-white'}
           `}
                 >
                     {formatTimeRemaining(timeLeft)}
@@ -123,10 +123,10 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
 
             {/* Requirements reminder */}
             <div className="flex gap-6 mb-6 text-sm">
-                <div className="text-white/60">
+                <div className="text-white opacity-60">
                     Required: <span style={{ color }}>{tierInfo?.min_wpm}+ WPM</span>
                 </div>
-                <div className="text-white/60">
+                <div className="text-white opacity-60">
                     Accuracy: <span style={{ color }}>{tierInfo?.min_accuracy}%+</span>
                 </div>
             </div>
@@ -137,13 +137,13 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
                     <div className="flex flex-col items-center justify-center h-full gap-6">
                         <div className="text-6xl">{icon}</div>
                         <h2 className="text-2xl font-bold text-white">Ready to begin?</h2>
-                        <p className="text-white/60 text-center max-w-md">
+                        <p className="text-white opacity-60 text-center max-w-md">
                             You will have 5 minutes to type the text below as quickly and accurately as possible.
                             Focus on both speed and precision.
                         </p>
                         <button
                             onClick={startTest}
-                            className="px-8 py-4 bg-[#00ff41] text-[#0a0a0f] rounded-xl text-lg font-bold hover:bg-[#00ff41]/90 transition-all"
+                            className="px-8 py-4 bg-white text-black rounded-xl text-lg font-bold hover:bg-white/90 transition-all"
                         >
                             Start Test
                         </button>
@@ -151,11 +151,11 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
                 ) : (
                     <div className="text-lg leading-relaxed font-mono">
                         {test.text.split('').map((char, i) => {
-                            let className = 'text-white/30'; // Upcoming
+                            let className = 'text-white opacity-30'; // Upcoming
                             if (i < charIndex) {
-                                className = input[i] === char ? 'text-[#00ff41]' : 'text-red-400';
+                                className = input[i] === char ? 'text-white' : 'text-white opacity-100 underline decoration-white decoration-2';
                             } else if (i === charIndex) {
-                                className = 'text-white bg-[#00ff41]/30 px-0.5';
+                                className = 'text-white bg-black/10 px-0.5';
                             }
                             return (
                                 <span key={i} className={className}>
@@ -192,19 +192,19 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
 
                     {/* Live stats */}
                     <div className="flex justify-between text-sm">
-                        <div className="text-white/60">
+                        <div className="text-white opacity-60">
                             Progress: <span className="text-white font-bold">{Math.round(progress)}%</span>
                         </div>
-                        <div className="text-white/60">
+                        <div className="text-white opacity-60">
                             Characters: <span className="text-white font-bold">{charIndex}/{test.text.length}</span>
                         </div>
-                        <div className="text-white/60">
-                            Accuracy: <span className={accuracy >= (tierInfo?.min_accuracy || 95) ? 'text-[#00ff41]' : 'text-red-400'}>
+                        <div className="text-white opacity-60">
+                            Accuracy: <span className={accuracy >= (tierInfo?.min_accuracy || 95) ? 'text-white' : 'text-white font-black underline'}>
                                 {accuracy}%
                             </span>
                         </div>
-                        <div className="text-white/60">
-                            Errors: <span className="text-red-400">{errors}</span>
+                        <div className="text-white opacity-60">
+                            Errors: <span className="text-white font-black">{errors}</span>
                         </div>
                     </div>
                 </div>

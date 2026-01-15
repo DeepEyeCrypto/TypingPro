@@ -65,12 +65,12 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                     {onBack && (
                         <button
                             onClick={onBack}
-                            className="text-white/60 hover:text-white transition-colors"
+                            className="text-white opacity-60 hover:opacity-100 transition-colors"
                         >
                             ← Back
                         </button>
                     )}
-                    <h1 className="text-2xl font-bold text-white">Achievements</h1>
+                    <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent tracking-tight uppercase">Achievements</h1>
                 </div>
 
                 {/* Tab navigation */}
@@ -80,10 +80,10 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`
-                px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize
+                px-4 py-2 rounded-lg text-sm font-bold transition-all capitalize
                 ${activeTab === tab
-                                    ? 'bg-[#00ff41]/20 text-[#00ff41] border border-[#00ff41]/30'
-                                    : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
+                                    ? 'bg-white/10 text-cyan-400 border border-cyan-500/30 shadow-[0_0_20px_rgba(34,211,238,0.2)]'
+                                    : 'bg-white/5 text-white opacity-40 border border-white/10 hover:bg-white/10 hover:opacity-100'
                                 }
               `}
                         >
@@ -107,7 +107,7 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
 
                         {/* Daily Challenges */}
                         <div>
-                            <h2 className="text-xl font-bold text-white mb-4">Daily Challenges</h2>
+                            <h2 className="text-xl font-black bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent mb-4 tracking-tight uppercase">Daily Challenges</h2>
                             <div className="space-y-3">
                                 {dailyChallenges.map(challenge => (
                                     <ChallengeCard
@@ -128,23 +128,23 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                     {/* Right column: Quick stats */}
                     <div className="space-y-4">
                         {/* Badge summary */}
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                            <h3 className="font-bold text-white mb-4">Badges</h3>
+                        <div className="bg-white/5 backdrop-blur-[60px] border border-white/10 rounded-xl p-6 shadow-xl">
+                            <h3 className="font-bold text-white opacity-30 mb-4 uppercase tracking-widest text-xs">Badges</h3>
                             <div className="text-center mb-4">
-                                <div className="text-4xl font-bold text-[#00ff41]">{unlockedCount}</div>
-                                <div className="text-white/50">of {BADGES.length} unlocked</div>
+                                <div className="text-4xl font-black bg-gradient-to-br from-cyan-400 to-blue-500 bg-clip-text text-transparent">{unlockedCount}</div>
+                                <div className="text-white opacity-30 text-[10px] mt-1 uppercase tracking-widest font-bold">of {BADGES.length} unlocked</div>
                             </div>
                             <button
                                 onClick={() => setActiveTab('badges')}
-                                className="w-full py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm"
+                                className="w-full py-2 bg-white/5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors text-[10px] font-black border border-white/10 uppercase tracking-widest"
                             >
                                 View All Badges →
                             </button>
                         </div>
 
                         {/* Top 3 Leaderboard preview */}
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                            <h3 className="font-bold text-white mb-4">Top Typers</h3>
+                        <div className="bg-white/5 backdrop-blur-[60px] border border-white/10 rounded-xl p-6 shadow-xl">
+                            <h3 className="font-bold text-white opacity-30 mb-4 uppercase tracking-widest text-xs">Top Typers</h3>
                             <div className="space-y-3">
                                 {leaderboardEntries.slice(0, 3).map(entry => (
                                     <div key={entry.user_id} className="flex items-center gap-3">
@@ -153,14 +153,14 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                                             {entry.rank_position === 2 && '🥈'}
                                             {entry.rank_position === 3 && '🥉'}
                                         </span>
-                                        <span className="flex-1 text-white truncate">{entry.username}</span>
-                                        <span className="text-[#00ff41] font-mono">{entry.wpm}</span>
+                                        <span className="flex-1 text-white/70 truncate text-sm font-medium">{entry.username}</span>
+                                        <span className="text-cyan-400 font-mono font-bold">{entry.wpm}</span>
                                     </div>
                                 ))}
                             </div>
                             <button
                                 onClick={() => setActiveTab('leaderboard')}
-                                className="w-full mt-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm"
+                                className="w-full mt-4 py-2 bg-white/5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors text-[10px] font-black border border-white/10 uppercase tracking-widest"
                             >
                                 View Leaderboard →
                             </button>

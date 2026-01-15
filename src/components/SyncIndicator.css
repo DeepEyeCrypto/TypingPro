@@ -4,8 +4,8 @@
     gap: 0.6rem;
     padding: 4px 10px;
     border-radius: 4px;
-    background: rgba(0, 255, 65, 0.05);
-    border: 1px solid rgba(0, 255, 65, 0.1);
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.1);
     margin-right: 1rem;
     position: relative;
     overflow: hidden;
@@ -19,8 +19,8 @@
 }
 
 .synced .sync-dot {
-    background: #00ff41;
-    box-shadow: 0 0 10px #00ff41;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .pending .sync-dot {
@@ -38,8 +38,8 @@
 }
 
 .synced .sync-label {
-    color: #00ff41;
-    text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+    color: white;
+    text-shadow: 0 0 5px rgba(0, 243, 255, 0.3);
 }
 
 @keyframes pulse {

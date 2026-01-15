@@ -90,8 +90,8 @@
 }
 
 .rank-glimmer {
-    background: linear-gradient(135deg, rgba(13, 13, 13, 0.6), rgba(30, 30, 30, 0.6));
-    border-color: rgba(185, 242, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .rank-glimmer::after {
@@ -107,11 +107,12 @@
 }
 
 .rank-radiance {
-    border-color: rgba(255, 110, 199, 0.5);
-    box-shadow: 0 0 20px rgba(255, 110, 199, 0.2), inset 0 0 10px rgba(255, 110, 199, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
 @keyframes rankBadgePulse {
+
     0%,
     100% {
         transform: scale(1);
