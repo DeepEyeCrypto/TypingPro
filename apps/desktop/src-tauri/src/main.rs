@@ -149,6 +149,13 @@ mod database;
 mod stats_commands;
 
 fn main() {
+    #[cfg(debug_assertions)]
+    let _sentry = sentry::init(sentry::ClientOptions {
+        dsn: Some("YOUR_SENTRY_DSN".into()),
+        release: sentry::Release::new(&env!("CARGO_PKG_VERSION")),
+        ..Default::default()
+    });
+
     tauri::Builder::default()
         .setup(|app| {
             // Initialize Logger

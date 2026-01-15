@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node ../../scripts/check-env.cjs && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
+    "build": "vite build && tauri build",
+    "tauri": "tauri",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "contrast:test": "node scripts/test-contrast.js"
   },
   "dependencies": {
     "@fabianlars/tauri-plugin-oauth": "^2.0.0",
