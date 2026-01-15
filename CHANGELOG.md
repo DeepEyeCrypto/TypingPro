@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.53] - 2026-01-16
+
+### ✨ Features
+
+- **Auto Contrast Text**: Text automatically adapts to background color
+  - New `useContrastText()` hook
+  - `<ContrastText>` component
+  - Tauri `contrast_get_text_color()` backend
+  - WCAG-compliant contrast ratios (4.5:1 minimum)
+
+### 🛠 Improvements
+
+- Glassmorphism cards now use dynamic text colors
+- Sidebar navigation auto-adapts to theme/background
+- 60fps performance (useMemo + cached luminance calc)
+
+### 📱 Platforms
+
+- macOS (Intel + Apple Silicon)
+- Windows (x64)
+- Linux (DEB + AppImage)
+
 ## [1.2.11] - 2026-01-09
 
 ### Added
