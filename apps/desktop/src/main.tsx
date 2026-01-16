@@ -1,5 +1,6 @@
 import './index.css'
 import './styles/tailwind.css'
+import './styles/glass-perfect.css'
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ErrorBoundary } from '../../../src/components/ErrorBoundary'

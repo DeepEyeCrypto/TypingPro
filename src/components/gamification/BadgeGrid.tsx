@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { Badge, BadgeCategory } from '../../types/badges';
 import { BadgeCard } from './BadgeCard';
+import { GlassSurface } from '../ui/glass/GlassSurface';
 
 interface BadgeWithStatus extends Badge {
     unlocked: boolean;
@@ -34,33 +35,41 @@ export const BadgeGrid: React.FC<BadgeGridProps> = ({ badges, onBadgeClick }) =>
     const unlockedCount = badges.filter(b => b.unlocked).length;
 
     return (
-        <div>
+        <div className="space-y-6">
             {/* Stats */}
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-white">Badges</h2>
-                <div className="text-sm text-white opacity-60">
-                    <span className="text-white font-bold">{unlockedCount}</span>/{badges.length} Unlocked
+            <div className="flex items-center justify-between mb-8 px-2">
+                <div className="flex flex-col">
+                    <h2 className="text-2xl font-black text-white tracking-tight uppercase">Registry_Vault</h2>
+                    <span className="text-[10px] text-white/30 font-black uppercase tracking-[0.3em]">Operational_Telemetry_Inquiry</span>
+                </div>
+                <div className="text-right">
+                    <div className="text-2xl font-black text-white tabular-nums">{unlockedCount} / {badges.length}</div>
+                    <div className="text-[10px] text-white/20 font-black uppercase tracking-widest mt-1">Status_Unsynced_Indices</div>
                 </div>
             </div>
 
             {/* Category tabs */}
-            <div className="flex gap-2 mb-6 overflow-x-auto">
+            <GlassSurface
+                elevation="low"
+                cornerRadius="md"
+                className="flex gap-2 p-1.5 bg-white/5 border-white/10 mb-8 overflow-x-auto scrollbar-hide"
+            >
                 {CATEGORIES.map(cat => (
                     <button
                         key={cat.id}
                         onClick={() => setSelectedCategory(cat.id)}
                         className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition-all
-              ${selectedCategory === cat.id
-                                ? 'bg-white/20 text-white border border-white/30'
-                                : 'bg-white/5 text-white opacity-60 border border-white/10 hover:bg-black/10'
+                            px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 rounded-lg whitespace-nowrap
+                            ${selectedCategory === cat.id
+                                ? 'bg-white text-black shadow-glow translate-y-[-1px]'
+                                : 'text-white/40 hover:text-white/80 hover:bg-white/5'
                             }
-            `}
+                        `}
                     >
                         {cat.label}
                     </button>
                 ))}
-            </div>
+            </GlassSurface>
 
             {/* Badge grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

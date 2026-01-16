@@ -43,7 +43,7 @@ export const CertificationCard: React.FC<CertificationCardProps> = ({
         >
             {/* Lock overlay */}
             {locked && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-[3rem] backdrop-blur-sm z-10">
+                <div className="absolute inset-0 flex items-center justify-center glass-perfect rounded-[3rem] z-10">
                     <span className="text-5xl drop-shadow-[0_0_20px_rgba(0,0,0,1)]">🔒</span>
                 </div>
             )}

@@ -11,7 +11,7 @@ interface MissionCardProps {
 
 export const MissionCard: React.FC<MissionCardProps & { className?: string }> = ({ title, label, description, targetWpm, onStart, className }) => {
     return (
-        <div className={`bg-white/5 backdrop-blur-[64px] border border-white/10 rounded-2xl lg:rounded-[3rem] p-6 lg:p-10 h-full flex flex-col justify-between group cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all hover:translate-y-[-4px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden text-white ${className}`}>
+        <div className={`glass-perfect p-6 lg:p-10 h-full flex flex-col justify-between group cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all hover:translate-y-[-4px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden text-white ${className}`}>
             {/* Ambient Glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[100px] group-hover:bg-white/10 transition-colors duration-700" />
 

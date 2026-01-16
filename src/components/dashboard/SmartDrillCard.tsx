@@ -6,7 +6,7 @@ interface SmartDrillCardProps {
 
 export const SmartDrillCard: React.FC<SmartDrillCardProps> = ({ onStart }) => {
     return (
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 h-full flex flex-col justify-between group cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all hover:translate-y-[-2px] shadow-[0_8px_32px_rgba(0,0,0,0.05),inset_0_1px_0_0_rgba(255,255,255,0.1)] relative overflow-hidden text-white">
+        <div className="glass-perfect rounded-3xl p-6 h-full flex flex-col justify-between group cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all hover:translate-y-[-2px] shadow-[0_8px_32px_rgba(0,0,0,0.05),inset_0_1px_0_0_rgba(255,255,255,0.1)] relative overflow-hidden text-white">
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[60px] group-hover:bg-white/10 transition-colors duration-700" />
 

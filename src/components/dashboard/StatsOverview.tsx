@@ -15,49 +15,43 @@ const StatsOverview: React.FC = () => {
             {/* Left Column: WPM History Chart */}
             <MasterGlassCard className="col-span-1 lg:col-span-2 p-6 flex flex-col justify-between min-h-[300px]">
                 <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-white font-bold text-lg tracking-tight">WPM History</h3>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-white font-bold text-lg tracking-tight">WPM Performance</h3>
                         <div className="flex gap-2">
-                            <span className="text-xs text-white/40 bg-white/5 px-2 py-1 rounded">Last 20 Sessions</span>
+                            <span className="text-[10px] uppercase font-black tracking-widest text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full">Historical Matrix</span>
                         </div>
                     </div>
-                    <p className="text-white/40 text-sm">Consistent performance tracking.</p>
                 </div>
 
                 <div className="flex-1 w-full min-h-[200px] flex items-center justify-center">
-                    <Suspense fallback={<div className="text-white/20 text-sm animate-pulse">Loading Hologram...</div>}>
+                    <Suspense fallback={<div className="text-white/20 text-sm animate-pulse">Initializing Hologram...</div>}>
                         <WpmGlassChart data={data} />
                     </Suspense>
                 </div>
             </MasterGlassCard>
 
             {/* Right Column: Key Metrics Summary */}
-            <MasterGlassCard className="col-span-1 p-6 flex flex-col justify-center items-center relative">
-                <div className="text-center">
-                    <h3 className="text-white/50 text-sm uppercase tracking-widest mb-4">Average Speed</h3>
-                    <div className="relative inline-block">
-                        <span className="text-6xl font-bold text-white tracking-tighter">{averageWpm}</span>
-                        <span className="text-xl text-white/40 ml-1">WPM</span>
+            <MasterGlassCard className="col-span-1 p-8 flex flex-col justify-center items-center">
+                <div className="text-center w-full">
+                    <h3 className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-6">Aggregate Speed</h3>
+                    <div className="relative inline-flex flex-col items-center">
+                        <span className="text-7xl font-black text-white tracking-tighter tabular-nums drop-shadow-2xl">
+                            {averageWpm}
+                        </span>
+                        <span className="text-xs font-black text-white/30 tracking-[0.2em] mt-2">WORDS PER MINUTE</span>
                     </div>
                 </div>
 
-                <div className="mt-4 w-full flex justify-center">
+                <div className="mt-8 w-full flex justify-center">
                     <RankBadge wpm={averageWpm} />
                 </div>
 
-
-                <div className="mt-8 w-full border-t border-white/5 pt-8 text-center">
-                    <h3 className="text-white/50 text-sm uppercase tracking-widest mb-2">Precision</h3>
-                    <div className="flex items-center justify-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-white"></div>
-                        <span className="text-2xl font-bold text-white">{latestAccuracy}%</span>
+                <div className="mt-10 w-full border-t border-white/10 pt-8 text-center">
+                    <h3 className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Precision Metric</h3>
+                    <div className="flex items-center justify-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        <span className="text-3xl font-black text-white tabular-nums">{latestAccuracy}%</span>
                     </div>
-                </div>
-
-                {/* Decorative Ring Background Effect */}
-                <div className="absolute inset-0 rounded-[32px] overflow-hidden pointer-events-none">
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 blur-3xl rounded-full"></div>
-                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 blur-3xl rounded-full"></div>
                 </div>
             </MasterGlassCard>
         </div>

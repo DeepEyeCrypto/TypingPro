@@ -12,13 +12,10 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({ title, subtitle, children, className = '', action, glimmer = false }) => {
     return (
         <div className={`
-            bg-white/10
-            backdrop-blur-[64px]
-            border border-white/10
-            rounded-[3rem] p-10
-            shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),inset_0_1px_1px_0_rgba(255,255,255,0.02)]
+            glass-perfect
+            p-6
             relative overflow-hidden group will-change-transform 
-            transition-all duration-500 hover:bg-white/5 hover:border-white/20 hover:translate-y-[-4px]
+            transition-all duration-300 hover:bg-white/20
             ${className}
         `}>
             {/* Minimal top highlight for depth */}
@@ -57,11 +54,11 @@ export const Card: React.FC<CardProps> = ({ title, subtitle, children, className
 
             {/* Inject keyframes via style tag */}
             <style>{`
-                @keyframes glimmer {
-                    0% { transform: translateX(-100%) rotate(45deg); }
-                    100% { transform: translateX(100%) rotate(45deg); }
-                }
-            `}</style>
+    @keyframes glimmer {
+        0 % { transform: translateX(-100 %) rotate(45deg); }
+        100 % { transform: translateX(100 %) rotate(45deg); }
+    }
+    `}</style>
         </div>
     );
 };

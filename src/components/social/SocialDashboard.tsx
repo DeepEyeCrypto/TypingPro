@@ -38,7 +38,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
     if (!user) {
         return (
             <div className="h-full flex flex-col items-center justify-center space-y-6 animate-in fade-in duration-700">
-                <div className="glass-v5 p-12 rounded-3xl text-center space-y-4 max-w-md bg-white/5 backdrop-blur-[60px] border border-white/20">
+                <div className="glass-perfect p-12 rounded-3xl text-center space-y-4 max-w-md">
                     <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
                         <svg className="w-8 h-8 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -84,7 +84,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Hero Profile Card */}
-                <div className="lg:col-span-4 glass-v5 p-8 relative overflow-hidden group rounded-3xl border-white/5 bg-white/5 backdrop-blur-xl">
+                <div className="lg:col-span-4 glass-perfect p-8 relative overflow-hidden group rounded-3xl">
                     <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none text-white">
                         <svg className="w-64 h-64 fill-current" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
@@ -160,7 +160,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                 </div>
 
                 <div className="space-y-8">
-                    <div className="glass-v5 p-6 space-y-6 rounded-2xl border-white/10 bg-white/5 backdrop-blur-[60px]">
+                    <div className="glass-perfect p-6 space-y-6 rounded-2xl">
                         <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Active_Tactical_Group</h3>
                         <FriendList />
                     </div>

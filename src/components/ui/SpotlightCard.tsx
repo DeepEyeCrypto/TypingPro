@@ -3,13 +3,14 @@ import React, { useState, useRef, useCallback } from 'react';
 interface SpotlightCardProps {
     children: React.ReactNode;
     className?: string;
+    style?: React.CSSProperties;
 }
 
 /**
  * Stage 1: The "Spotlight" Border (Mouse Tracking)
  * Borders glow where the mouse hovers using a radial gradient follow-mask.
  */
-export const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = '' }) => {
+export const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = '', style }) => {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [opacity, setOpacity] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +35,7 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, classNam
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={`relative overflow-hidden ${className}`}
+            style={style}
         >
             {/* Spotlight Gradient Layer */}
             <div

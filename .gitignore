@@ -7,19 +7,23 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
 *.local
 release
+
+# Environment
 .env
+.env.production
+.env.development
+apps/desktop/.env
 src-tauri/.env
 
-
-# Editor directories and files
+# Editor & OS
 .vscode/*
 !.vscode/extensions.json
-!.vscode/settings.json
 !.vscode/settings.json
 .idea
 .DS_Store
@@ -29,5 +33,19 @@ src-tauri/.env
 *.sln
 *.sw?
 
+# Rust & Tauri
 **/target/
+src-tauri/target/
+**/Cargo.lock
+# apps/desktop/src-tauri/Cargo.lock # Keep in monorepo if needed for deterministic builds
+**/typingpro.db
+
+# TypeScript
 tsconfig.tsbuildinfo
+
+# Build artifacts
+*.dmg
+*.msi
+*.exe
+*.deb
+*.AppImage

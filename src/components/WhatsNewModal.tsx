@@ -67,7 +67,7 @@ export const WhatsNewModal = () => {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-300 backdrop-blur-[50px]">
-            <div className="bg-white/15 backdrop-blur-[50px] max-w-2xl w-full max-h-[80vh] flex flex-col animate-in zoom-in-95 duration-300 transform overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)] border border-white/40 rounded-[2.5rem]">
+            <div className="glass-perfect max-w-2xl w-full max-h-[80vh] flex flex-col animate-in zoom-in-95 duration-300 transform overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)]">
 
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-black/5 bg-black/5">

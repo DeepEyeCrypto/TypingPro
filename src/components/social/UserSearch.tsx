@@ -46,7 +46,7 @@ export const UserSearch = () => {
                     placeholder="ENTER_BIOMETRIC_ID..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-full px-8 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all font-mono tracking-wider shadow-2xl backdrop-blur-xl"
+                    className="w-full glass-perfect rounded-full px-8 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all font-mono tracking-wider shadow-2xl"
                 />
                 <button
                     type="submit"

@@ -6,7 +6,7 @@ export const SessionTable = () => {
     const { sessionHistory } = useStatsStore()
 
     return (
-        <GlassCard className="p-10 col-span-2 overflow-hidden !bg-black/25 backdrop-blur-[64px]">
+        <GlassCard className="p-10 col-span-2 overflow-hidden glass-perfect">
             <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-8 font-black block">Mission_History</span>
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm border-spacing-0 border-collapse">

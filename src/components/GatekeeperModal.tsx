@@ -65,7 +65,7 @@ export const GatekeeperModal = ({
 
   return (
     <div className="modal-overlay">
-      <div className={`gatekeeper-card liquid-glass-card ${passed ? 'passed-glow' : 'failed-glow'}`}>
+      <div className={`gatekeeper-card liquid-glass-card glass-perfect ${passed ? 'passed-glow' : 'failed-glow'}`}>
         <h2 className={`status-title ${passed ? 'passed' : 'failed'}`}>
           {passed ? 'Protocol Passed' : 'Protocol Failed'}
         </h2>

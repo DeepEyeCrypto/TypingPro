@@ -103,7 +103,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
                 {/* 1. DeepEye Insight (Hero) */}
                 <div className="lg:col-span-3 space-y-8 lg:space-y-12">
-                    <Card className="relative overflow-hidden p-8 lg:p-16 !bg-white/5 backdrop-blur-[64px] !border-white/10">
+                    <Card className="relative overflow-hidden p-8 lg:p-16 glass-perfect">
                         {/* Scan Line Animation */}
                         {isAnalyzing && (
                             <div className="absolute top-0 left-0 w-full h-1 bg-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.1)] animate-[scan_3s_ease-in-out_infinite] z-20"></div>
@@ -171,7 +171,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                             {verdict.recommended_drills.map((drill, idx) => (
                                 <Card
                                     key={idx}
-                                    className="p-6 lg:p-10 flex flex-col justify-between group hover:bg-white/10 !bg-white/5 backdrop-blur-[64px] !border-white/10"
+                                    className="p-6 lg:p-10 flex flex-col justify-between group hover:bg-white/10 glass-perfect"
                                 >
                                     <div className="space-y-3 lg:space-y-4">
                                         <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -202,7 +202,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                 {/* 2. Stats Column */}
                 <div className="space-y-8 lg:space-y-12">
                     {/* Weakness Map List */}
-                    <Card className="p-6 lg:p-10 space-y-6 lg:space-y-8 !bg-white/5 backdrop-blur-[64px] !border-white/10">
+                    <Card className="p-6 lg:p-10 space-y-6 lg:space-y-8 glass-perfect">
                         <div className="flex items-center justify-between">
                             <h3 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">Heat_Map</h3>
                             <span className="text-[8px] font-black text-white opacity-60 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/10">LATENCY</span>
@@ -238,7 +238,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                         )}
                     </Card>
 
-                    <Card className="p-6 lg:p-10 space-y-6 lg:space-y-8 !bg-white/5 backdrop-blur-[64px] !border-white/10">
+                    <Card className="p-6 lg:p-10 space-y-6 lg:space-y-8 glass-perfect">
                         <div className="flex items-center justify-between">
                             <h3 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">Fracture_Points</h3>
                             <span className="text-[8px] font-black text-white opacity-60 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/10">PRECISION</span>

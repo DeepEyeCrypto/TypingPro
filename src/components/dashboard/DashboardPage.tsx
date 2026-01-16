@@ -76,7 +76,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
                 {/* 1. THERMOSTAT / WPM GAUGE (Top Left) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-4 h-full">
-                    <GlassCard className="flex flex-col justify-center items-center p-8 relative min-h-[300px] xl:min-h-full h-full">
+                    <GlassCard className="glass-perfect rounded-2xl flex flex-col justify-center items-center p-8 relative min-h-[300px] xl:min-h-full h-full">
                         <h3 className="text-white/70 text-sm font-bold tracking-widest absolute top-8 left-8 drop-shadow-md">CURRENT_VELOCITY</h3>
                         <div className="relative">
                             {/* Circle Gauge Implementation would go here */}
@@ -90,13 +90,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
                 {/* 2. STATS CHART / ENERGY (Middle Top) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-3 h-full">
-                    <GlassCard className="p-6 min-h-[300px] xl:min-h-full h-full">
+                    <GlassCard className="glass-perfect rounded-2xl p-6 min-h-[300px] xl:min-h-full h-full">
                         <div className="flex justify-between mb-4">
                             <h3 className="text-red-400/80 text-xs font-bold tracking-widest drop-shadow-md">PERFORMANCE_VECTOR</h3>
                             <span className="text-neon-lime text-xs font-mono font-bold">LIVE</span>
                         </div>
                         {/* Placeholder for Recharts */}
-                        <div className="flex-1 w-full min-h-[200px] bg-white/5 backdrop-blur-sm border border-white/30 rounded-[24px] flex items-center justify-center text-white/20 shadow-inner">
+                        <div className="flex-1 w-full min-h-[200px] glass-perfect flex items-center justify-center text-white/20 shadow-inner">
                             CHART_MODULE_Z4
                         </div>
                     </GlassCard>
@@ -104,7 +104,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
                 {/* 3. PROFILE / RANK (Right Column) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-6 h-full">
-                    <GlassCard className="px-8 pt-8 pb-10 flex flex-col items-center h-full">
+                    <GlassCard className="glass-perfect rounded-2xl px-8 pt-8 pb-10 flex flex-col items-center h-full">
                         {/* Avatar with Fallback */}
                         <div className="w-32 h-32 rounded-full mb-6 overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center relative shadow-[0_0_20px_rgba(0,0,0,0.2)]">
                             <img
@@ -124,7 +124,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         <h2 className="text-3xl font-black text-white mb-1 uppercase tracking-tight text-shadow-sm">{username}</h2>
                         <span className="text-purple-400 font-mono text-sm tracking-[0.2em] mb-8 font-bold opacity-90">{rank} // LVL {level}</span>
 
-                        <div className="w-full mt-auto space-y-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-[24px] shadow-inner p-6">
+                        <div className="w-full mt-auto space-y-4 glass-perfect shadow-inner p-6">
                             <div className="flex justify-between text-sm py-2 border-b border-white/10 last:border-0">
                                 <span className="text-white/70 font-bold tracking-wider text-xs drop-shadow-md">STREAK</span>
                                 <span className="text-white font-bold">{streak} DAYS</span>
@@ -143,7 +143,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
                 {/* 4. CURRENT LESSON (Bottom Left) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-2 h-full">
-                    <GlassCard className="p-6 flex flex-col justify-between group cursor-pointer hover:border-neon-lime/30 transition-colors min-h-[200px] xl:min-h-full h-full" onClick={onStartLesson}>
+                    <GlassCard className="glass-perfect rounded-2xl p-6 flex flex-col justify-between group cursor-pointer hover:border-neon-lime/30 transition-colors min-h-[200px] xl:min-h-full h-full" onClick={onStartLesson}>
                         <div>
                             <h3 className="text-neon-lime text-xs font-bold tracking-widest mb-1 drop-shadow-md">NEXT_PROTOCOL</h3>
                             <h2 className="text-2xl font-black text-white leading-tight">{currentLesson.title}</h2>
@@ -159,7 +159,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
                 {/* 5. ACCURACY MODULE (Middle Bottom) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-3 h-full">
-                    <GlassCard className="p-6 flex flex-col justify-center items-center min-h-[200px] xl:min-h-full h-full relative text-shadow-md">
+                    <GlassCard className="glass-perfect rounded-2xl p-6 flex flex-col justify-center items-center min-h-[200px] xl:min-h-full h-full relative text-shadow-md">
                         <h3 className="text-white/70 text-xs font-bold tracking-widest absolute top-6 left-6 drop-shadow-md">PRECISION_INDEX</h3>
                         <span className="text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent transition-all duration-500">{Math.round(accuracy)}%</span>
                         <div className="w-full h-2 bg-white/10 rounded-full mt-4 overflow-hidden">

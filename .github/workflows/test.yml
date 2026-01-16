@@ -1,0 +1,55 @@
+# .github/workflows/test.yml
+name: Test & Lint
+on: 
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: install rust stable
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy, rustfmt
+
+    - name: install dependencies (ubuntu only)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Rust (Release)
+      run: cd apps/desktop/src-tauri && cargo build --release
+    
+    - name: Run frontend tests
+      run: npm run test
+    
+    - name: Run Rust tests
+      run: cd apps/desktop/src-tauri && cargo test
+    
+    - name: Lint Frontend
+      run: npm run lint
+    
+    - name: Lint Rust (fmt & clippy)
+      run: |
+        cd apps/desktop/src-tauri
+        cargo fmt --check
+        cargo clippy -- -D warnings

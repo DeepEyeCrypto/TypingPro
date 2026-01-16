@@ -1,21 +1,21 @@
 /* 
- * LIQUID GLASS V5 - DESIGN SYSTEM TOKENS
- * Optimized for 144FPS Rendering & Sub-0.5px Hairline Aesthetics
+ * LIQUID GLASS SYSTEM (PHASE: L-LAYOUT)
+ * Unified with Global Design Tokens
  */
 :root {
-    --v5-bg: rgba(0, 0, 0, 0.4);
-    --v5-blur: blur(32px) saturate(180%);
-    --v5-border-idle: 0.5px solid rgba(255, 255, 255, 0.1);
-    --v5-border-active: 0.5px solid rgba(255, 255, 255, 0.3);
+    --v5-bg: var(--glass-mid-bg);
+    --v5-blur: var(--glass-mid-blur);
+    --v5-border-idle: 0.5px solid var(--glass-low-border);
+    --v5-border-active: 0.5px solid var(--glass-mid-border);
     --v5-glow-active: 0 0 20px rgba(255, 255, 255, 0.05);
-    --v5-accent: rgba(255, 255, 255, 0.9);
+    --v5-accent: rgba(255, 255, 255, 0.95);
 }
 
 /* Neutral Glow - Pure Glass Aesthetic */
 .emerald-text {
     color: var(--v5-accent);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 0.05);
-    font-weight: 800;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    font-weight: 900;
     letter-spacing: -0.02em;
 }
 
@@ -26,20 +26,20 @@
 
 /* Hardware Accelerated V5 Card - Pure Glass (Monochrome) */
 .glass-v5 {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: var(--glass-mid-blur);
+    -webkit-backdrop-filter: var(--glass-mid-blur);
+    background: var(--glass-mid-bg);
+    border: 0.5px solid var(--glass-mid-border);
+    box-shadow: var(--glass-shadow-soft), var(--glass-inner-specular);
     will-change: transform, opacity;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition-premium);
 }
 
 .glass-v5:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--glass-high-border);
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--glass-shadow-deep);
 }
 
 /* Presence Status Rings */

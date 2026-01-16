@@ -17,7 +17,7 @@
 
     /* Golden Standard: Light blur, higher opacity in light mode */
     background: rgba(0, 0, 0, 0.4);
-    @apply backdrop-blur-md;
+    /* glass-perfect applied in TSX */
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: -10px 0 50px rgba(255, 255, 255, 0.1);
     padding: 2.5rem;

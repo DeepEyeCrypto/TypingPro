@@ -12,7 +12,7 @@ import { Payload, ValueType, NameType } from 'recharts/types/component/DefaultTo
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-lg p-3 shadow-xl">
+            <div className="glass-perfect rounded-lg p-3 shadow-xl bg-black/60">
                 <p className="text-white/60 text-xs mb-1">{label}</p>
                 <p className="text-white font-bold text-sm">
                     {payload[0].value} <span className="text-white/60 font-normal">WPM</span>

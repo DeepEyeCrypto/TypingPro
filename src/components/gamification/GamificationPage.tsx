@@ -12,6 +12,8 @@ import { getBadgesWithProgress, UserStats } from '../../services/badgeService';
 import { generateDailyChallenges } from '../../services/challengeService';
 import { LeaderboardEntry, LeaderboardPeriod } from '../../types/leaderboards';
 import { DailyChallenge, UserChallengeProgress } from '../../types/challenges';
+import { ActionIcon } from '../ui/ActionIcon';
+import { GlassCard } from '../ui/GlassCard';
 import { CertificationTiers } from '../certification/CertificationTiers';
 import { UserCertification } from '../../types/certifications';
 
@@ -126,45 +128,58 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                     </div>
 
                     {/* Right column: Quick stats */}
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {/* Badge summary */}
-                        <div className="bg-white/5 backdrop-blur-[60px] border border-white/10 rounded-xl p-6 shadow-xl">
-                            <h3 className="font-bold text-white opacity-30 mb-4 uppercase tracking-widest text-xs">Badges</h3>
-                            <div className="text-center mb-4">
-                                <div className="text-4xl font-black bg-gradient-to-br from-cyan-400 to-blue-500 bg-clip-text text-transparent">{unlockedCount}</div>
-                                <div className="text-white opacity-30 text-[10px] mt-1 uppercase tracking-widest font-bold">of {BADGES.length} unlocked</div>
+                        <GlassCard
+                            elevation="mid"
+                            className="p-8 flex flex-col items-center"
+                            interactive={true}
+                        >
+                            <h3 className="font-black text-white/30 mb-6 uppercase tracking-[0.3em] text-[10px]">Registry_Pulse</h3>
+                            <div className="text-center mb-6">
+                                <div className="text-6xl font-black bg-gradient-to-br from-white to-white/40 bg-clip-text text-transparent tracking-tighter tabular-nums drop-shadow-glow">
+                                    {unlockedCount}
+                                </div>
+                                <div className="text-white/20 text-[9px] mt-2 uppercase tracking-[0.4em] font-black">UNLOCKED / {BADGES.length}</div>
                             </div>
                             <button
                                 onClick={() => setActiveTab('badges')}
-                                className="w-full py-2 bg-white/5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors text-[10px] font-black border border-white/10 uppercase tracking-widest"
+                                className="w-full py-3 bg-white/5 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 text-[10px] font-black border border-white/5 uppercase tracking-[0.2em] shadow-inner"
                             >
-                                View All Badges →
+                                Access_Vault →
                             </button>
-                        </div>
+                        </GlassCard>
 
                         {/* Top 3 Leaderboard preview */}
-                        <div className="bg-white/5 backdrop-blur-[60px] border border-white/10 rounded-xl p-6 shadow-xl">
-                            <h3 className="font-bold text-white opacity-30 mb-4 uppercase tracking-widest text-xs">Top Typers</h3>
-                            <div className="space-y-3">
+                        <GlassCard
+                            elevation="mid"
+                            className="p-8"
+                            interactive={true}
+                        >
+                            <h3 className="font-black text-white/30 mb-6 uppercase tracking-[0.3em] text-[10px]">Global_Apex</h3>
+                            <div className="space-y-4">
                                 {leaderboardEntries.slice(0, 3).map(entry => (
-                                    <div key={entry.user_id} className="flex items-center gap-3">
-                                        <span className="text-lg">
+                                    <div key={entry.user_id} className="flex items-center gap-4 group">
+                                        <span className="text-2xl transition-transform group-hover:scale-110 duration-500">
                                             {entry.rank_position === 1 && '🥇'}
                                             {entry.rank_position === 2 && '🥈'}
                                             {entry.rank_position === 3 && '🥉'}
                                         </span>
-                                        <span className="flex-1 text-white/70 truncate text-sm font-medium">{entry.username}</span>
-                                        <span className="text-cyan-400 font-mono font-bold">{entry.wpm}</span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="text-white/80 text-xs font-black truncate tracking-tight">{entry.username}</div>
+                                            <div className="text-[9px] text-white/20 font-black uppercase tracking-[0.2em]">Rank #{entry.rank_position}</div>
+                                        </div>
+                                        <span className="text-white font-black tabular-nums text-sm">{entry.wpm}</span>
                                     </div>
                                 ))}
                             </div>
                             <button
                                 onClick={() => setActiveTab('leaderboard')}
-                                className="w-full mt-4 py-2 bg-white/5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors text-[10px] font-black border border-white/10 uppercase tracking-widest"
+                                className="w-full mt-8 py-3 bg-white/5 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 text-[10px] font-black border border-white/5 uppercase tracking-[0.2em] shadow-inner"
                             >
-                                View Leaderboard →
+                                View_Global_Relay →
                             </button>
-                        </div>
+                        </GlassCard>
                     </div>
                 </div>
             )}

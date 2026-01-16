@@ -36,9 +36,9 @@ export const TypingArea = React.memo(({
     lesson // Added lesson prop
 }: TypingAreaProps) => {
     return (
-        <div className="flex flex-col h-full bg-black/5 backdrop-blur-[64px] rounded-2xl lg:rounded-[3rem] border border-black/10 overflow-hidden text-black animate-in fade-in duration-700">
+        <div className="flex flex-col h-full overflow-hidden text-white animate-in fade-in duration-700">
             {/* Header / Meta */}
-            <div className="p-4 lg:p-8 flex items-center justify-between border-b border-black/10 bg-black/5">
+            <div className="p-4 lg:p-8 flex items-center justify-between border-b border-white/10">
                 <div className="flex items-center gap-4 lg:gap-8">
                     <button
                         onClick={onBack}

@@ -12,6 +12,8 @@ interface BadgeCardProps {
     showProgress?: boolean;
 }
 
+import { GlassCard } from '../ui/GlassCard';
+
 export const BadgeCard: React.FC<BadgeCardProps> = ({
     badge,
     unlocked,
@@ -21,61 +23,61 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({
     const rarityColor = BADGE_RARITY_COLORS[badge.rarity];
 
     return (
-        <div
-            className={`
-        relative p-4 rounded-xl border transition-all duration-300
-        ${unlocked
-                    ? 'bg-white/5 border-white/20'
-                    : 'bg-white/[0.03] border-white/10 opacity-60'
-                }
-      `}
-            style={{
-                boxShadow: unlocked ? `0 4px 12px rgba(255,255,255,0.05)` : 'none',
-            }}
+        <GlassCard
+            elevation="matte"
+            cornerRadius="md"
+            className={`transition-all duration-500 ${unlocked ? 'border-white/30' : 'opacity-40 grayscale'}`}
+            prismatic={unlocked}
+            interactive={unlocked}
         >
-            {/* Rarity indicator */}
-            <div
-                className="absolute top-2 right-2 w-2 h-2 rounded-full"
-                style={{ backgroundColor: rarityColor }}
-            />
+            <div className="p-4 flex flex-col items-center text-center">
+                {/* Rarity indicator */}
+                <div
+                    className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor]"
+                    style={{ color: rarityColor, backgroundColor: rarityColor }}
+                />
 
-            {/* Badge icon */}
-            <div className="text-4xl mb-3 text-center">
-                {unlocked ? badge.icon : '🔒'}
+                {/* Badge icon */}
+                <div className="text-4xl mb-4 transform transition-transform group-hover:scale-110 duration-500">
+                    {unlocked ? badge.icon : '🔒'}
+                </div>
+
+                {/* Badge info */}
+                <h3 className="font-black text-white text-xs uppercase tracking-widest mb-1 leading-tight">
+                    {badge.name}
+                </h3>
+                <p className="text-white/30 text-[10px] font-medium px-2 mb-4">
+                    {badge.description}
+                </p>
+
+                {/* Progress bar (if not unlocked) */}
+                {showProgress && !unlocked && (
+                    <div className="w-full mt-auto">
+                        <div className="h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div
+                                className="h-full rounded-full transition-all duration-1000 ease-out"
+                                style={{
+                                    width: `${progress}%`,
+                                    backgroundColor: rarityColor,
+                                    boxShadow: `0 0 10px ${rarityColor}80`
+                                }}
+                            />
+                        </div>
+                        <div className="text-[9px] font-black text-white/20 uppercase tracking-tighter mt-1.5">
+                            {progress}% SYNC
+                        </div>
+                    </div>
+                )}
+
+                {/* Keystones reward */}
+                {unlocked && (
+                    <div className="mt-auto pt-2 border-t border-white/5 w-full">
+                        <span className="text-[10px] font-black text-white tracking-widest">
+                            +{badge.keystones_reward} 💎
+                        </span>
+                    </div>
+                )}
             </div>
-
-            {/* Badge info */}
-            <h3 className="font-bold text-white text-sm text-center mb-1">
-                {badge.name}
-            </h3>
-            <p className="text-white opacity-50 text-xs text-center mb-2">
-                {badge.description}
-            </p>
-
-            {/* Progress bar (if not unlocked) */}
-            {showProgress && !unlocked && (
-                <div className="mt-3">
-                    <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                                width: `${progress}%`,
-                                backgroundColor: rarityColor,
-                            }}
-                        />
-                    </div>
-                    <div className="text-xs text-white opacity-40 text-center mt-1">
-                        {progress}%
-                    </div>
-                </div>
-            )}
-
-            {/* Keystones reward */}
-            {unlocked && (
-                <div className="text-center text-xs text-white font-bold mt-2">
-                    +{badge.keystones_reward} 💎
-                </div>
-            )}
-        </div>
+        </GlassCard>
     );
 };

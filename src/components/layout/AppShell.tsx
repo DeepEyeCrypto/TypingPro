@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useSoundEngine } from '../../hooks/useSoundEngine';
+import { GlassSurface } from '../ui/glass/GlassSurface';
 
 const MuteToggle: React.FC = () => {
     const { toggleMute, isMuted } = useSoundEngine();
@@ -9,7 +10,7 @@ const MuteToggle: React.FC = () => {
         <button
             onClick={toggleMute}
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-white/5
-                ${isMuted ? 'bg-white/5 text-white/20' : 'bg-glass-surface text-white backdrop-blur-md shadow-glass-edge border-t-white/10'} 
+                ${isMuted ? 'bg-white/5 text-white/20' : 'glass-perfect text-white shadow-glass-edge'} 
                 hover:scale-105 active:scale-95`}
             title={isMuted ? "Unmute Audio" : "Mute Audio"}
         >
@@ -39,7 +40,7 @@ export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, a
 
     return (
         <div
-            className="flex h-screen w-screen bg-deep-ocean overflow-hidden select-none font-sans relative"
+            className="flex h-screen w-screen bg-transparent overflow-hidden select-none font-sans relative"
             style={effectiveBackgroundImage ? { backgroundImage: `url("${effectiveBackgroundImage}")`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
         >
             {/* Minimal Ambient Overlay - Optional or Removed based on "Invisible Container" */}
@@ -55,13 +56,12 @@ export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, a
             {/* Removed background color/blur from main wrapper to allow transparency */}
             <div className="flex-1 flex flex-col relative z-10 min-w-0 bg-transparent gpu-accelerated">
 
-                {/* TOP BAR - Floating Glass (Consistent with Sidebar) */}
-                <header className="flex-none h-14 mx-6 mt-4 backdrop-blur-[50px] bg-white/15 border border-white/40 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),_0_20px_40px_rgba(0,0,0,0.5)] rounded-[32px] flex items-center px-6 md:ml-32 transition-all">
+                <header className="flex-none h-16 mx-6 mt-4 md:ml-32 transition-all z-50">
                     {topbar}
                 </header>
 
                 {/* SCROLLABLE CONTENT */}
-                <main className="flex-1 overflow-y-auto relative p-4 md:p-6 lg:p-12 md:pl-28 lg:pl-32 custom-scrollbar contain-content">
+                <main className="flex-1 overflow-y-auto relative p-4 md:p-6 lg:p-12 md:pl-28 lg:pl-32 custom-scrollbar contain-content bg-transparent">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeView}

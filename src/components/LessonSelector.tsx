@@ -118,7 +118,7 @@ export const LessonSelector = ({
                   key={lesson.id}
                   onClick={() => onSelect(lesson)}
                   className={`
-                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden bg-white/5 backdrop-blur-[64px]
+                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden glass-perfect
                     border-white/5 hover:bg-white/10 hover:border-white/10 cursor-pointer shadow-2xl hover:translate-y-[-4px] text-white
                   `}
                 >

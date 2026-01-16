@@ -24,7 +24,7 @@ export const CurrentLesson: React.FC<CurrentLessonProps> = ({
     const progress = Math.round((currentLesson / totalLessons) * 100);
 
     return (
-        <div className="bg-white/5 backdrop-blur-[64px] border border-white/10 rounded-2xl lg:rounded-[3rem] p-6 lg:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 lg:gap-8 hover:bg-white/10 transition-all shadow-xl group text-white">
+        <div className="glass-perfect rounded-2xl lg:rounded-[3rem] p-6 lg:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 lg:gap-8 hover:bg-white/10 transition-all shadow-xl group text-white">
             <div className="flex-1 space-y-4 lg:space-y-6 w-full lg:w-auto">
                 <div>
                     <div className="flex items-center gap-3 mb-2 lg:mb-4">

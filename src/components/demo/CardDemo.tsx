@@ -11,11 +11,11 @@ export const CardDemo: React.FC = () => {
                 {/* Top Section: Logo & Badge */}
                 <div className="flex justify-between items-start mb-6">
                     {/* Mock Google Logo */}
-                    <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/5 backdrop-blur-md">
+                    <div className="w-12 h-12 rounded-full glass-perfect flex items-center justify-center">
                         <span className="text-2xl">G</span>
                     </div>
 
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/5 backdrop-blur-md">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-perfect">
                         <span className="text-white text-sm font-medium">Saved</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
@@ -38,7 +38,7 @@ export const CardDemo: React.FC = () => {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-8">
                         {['Full-Time', 'Flexible Schedule'].map((tag) => (
-                            <span key={tag} className="bg-white/5 border border-white/10 rounded-full px-5 py-2 text-white/80 text-sm backdrop-blur-md font-medium hover:bg-white/10 transition-colors cursor-default">
+                            <span key={tag} className="glass-perfect rounded-full px-5 py-2 text-white/80 text-sm font-medium hover:bg-white/10 transition-colors cursor-default">
                                 {tag}
                             </span>
                         ))}
@@ -52,7 +52,7 @@ export const CardDemo: React.FC = () => {
                         <div className="text-white/50 text-sm">Mountain View, CA</div>
                     </div>
 
-                    <button className="px-6 py-3 rounded-[20px] border border-white/30 text-white font-medium hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm">
+                    <button className="px-6 py-3 rounded-[20px] glass-perfect text-white font-medium hover:bg-white hover:text-black transition-all duration-300">
                         Apply Now
                     </button>
                 </div>

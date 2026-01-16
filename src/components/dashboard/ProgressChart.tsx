@@ -43,7 +43,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
     const areaD = `${pathD} L 100 100 L 0 100 Z`;
 
     return (
-        <div className="bg-white/5 backdrop-blur-[64px] border border-white/10 rounded-[3rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
+        <div className="glass-perfect rounded-[3rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
             {/* Header */}
             <div className="flex justify-between items-center mb-10">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white opacity-30">{title}</h3>

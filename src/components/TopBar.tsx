@@ -41,7 +41,7 @@ export const TopBar = ({ metrics, mode, onAnalyticsClick, onSocialClick }: TopBa
   }
 
   return (
-    <div className="top-bar" data-tauri-drag-region>
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 w-[90%] max-w-[1400px] h-16 flex justify-between items-center px-8 z-50 transition-all duration-300 glass-perfect shadow-[0_20px_50px_rgba(0,0,0,0.3)]" data-tauri-drag-region>
       <div className="mode-indicator">
         <span className="label">Mode</span>
         <span className="value">{mode}</span>

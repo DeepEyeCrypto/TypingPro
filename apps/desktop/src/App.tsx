@@ -18,7 +18,7 @@ import { getRankForWPM } from '../../../src/services/rankSystem'
 import { friendService } from '../../../src/services/friendService'
 import { userService } from '../../../src/services/userService'
 import { matchmakingService } from '../../../src/services/matchmakingService'
-import '../../../src/styles/glass.css'
+// import '../../../src/styles/glass-blur.css' // Replaced by glass-perfect.css imported in main.tsx
 import '../../../src/styles/themes.css'
 import { TitleBar } from '../../../src/components/TitleBar'
 import { useUpdater } from '../../../src/hooks/useUpdater'
@@ -42,6 +42,7 @@ import { TopBar as ModernTopBar } from '../../../src/components/layout/TopBar'
 import { Button } from '../../../src/components/ui/Button'
 import { AuthButtons } from '../../../src/components/AuthButtons'
 import { AuthPage } from '../../../src/pages/Auth'
+import { ProfilePage } from '../../../src/components/pages/ProfilePage'
 import { useAuth } from '../../../src/hooks/useAuth'
 
 // WARM GLASS DASHBOARD
@@ -248,6 +249,9 @@ const App: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <NetworkTest />
                   <AuthButtons />
+                  <div className="cursor-pointer hover:bg-white/10 rounded-full p-1 transition-colors" onClick={() => typing.setView('profile')}>
+                    {user?.avatar_url ? <img src={user.avatar_url} className="w-8 h-8 rounded-full border border-white/20" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}
+                  </div>
                 </div>
               }
             />
@@ -288,6 +292,8 @@ const App: React.FC = () => {
               onDeployMission={typing.deployMission}
               onResetMission={typing.resetMission}
             />
+          ) : typing.view === 'profile' ? (
+            <ProfilePage />
           ) : typing.view === 'store' ? (
             <StorePage onBack={() => typing.setView('dashboard')} />
           ) : typing.view === 'settings' ? (

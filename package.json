@@ -14,7 +14,9 @@
     "release:patch": "npm version patch --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:minor": "npm version minor --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:major": "npm version major --no-git-tag-version && node scripts/sync-tauri-version.cjs",
-    "lint:css": "stylelint \"src/**/*.css\" \"apps/**/*.css\""
+    "verify:glass": "npx ts-node scripts/verify-glass.ts",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint . --ext ts,tsx && npm run lint:css"
   },
   "devDependencies": {
     "@types/howler": "^2.2.12",
@@ -39,6 +41,8 @@
     "framer-motion": "^12.26.1",
     "howler": "^2.2.4",
     "html2canvas": "^1.4.1",
+    "lucide-react": "^0.562.0",
+    "react-router-dom": "^7.12.0",
     "recharts": "^3.6.0",
     "use-sound": "^5.0.0"
   }

@@ -55,11 +55,24 @@ pub fn get_contrast_text(bg_hex: &str) -> Result<String, String> {
     let rgb = hex_to_rgb(bg_hex)?;
     let luminance = calculate_relative_luminance(&rgb);
 
-    // WCAG threshold for middle-gray contrast pivot is ~0.179 relative luminance
-    // However, for pure Black/White choice, a common threshold is 0.5 - 0.6 in perceived brightness.
-    // Standard formula: (L + 0.05) / (L_other + 0.05)
+    // Read threshold from environment or fallback to WCAG standard 0.179
+    let threshold = std::env::var("CONTRAST_THRESHOLD")
+        .ok()
+        .and_then(|s| s.parse::<f64>().ok())
+        .unwrap_or(0.179);
 
-    if luminance > 0.179 {
+    let is_debug = std::env::var("TAURI_CONTRAST_DEBUG")
+        .map(|s| s.to_lowercase() == "true")
+        .unwrap_or(false);
+
+    if is_debug {
+        println!(
+            "[CONTRAST DEBUG] Hex: {}, Luminance: {:.4}, Threshold: {:.4}",
+            bg_hex, luminance, threshold
+        );
+    }
+
+    if luminance > threshold {
         Ok("#000000".to_string())
     } else {
         Ok("#FFFFFF".to_string())

@@ -128,7 +128,7 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
     }
 
     return (
-        <div className="w-full h-full bg-white/40 backdrop-blur-xl flex flex-col p-8 overflow-hidden">
+        <div className="w-full h-full glass-perfect flex flex-col p-8 overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">

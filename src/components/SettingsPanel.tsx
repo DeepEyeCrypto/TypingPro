@@ -27,7 +27,7 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
 
     return (
         <div className="settings-overlay" onClick={onClose}>
-            <div className="settings-panel" onClick={e => e.stopPropagation()}>
+            <div className="settings-panel glass-perfect" onClick={e => e.stopPropagation()}>
                 <div className="settings-header">
                     <h2>Configuration</h2>
                     <button className="close-btn" onClick={onClose}>ESC</button>

@@ -1,10 +1,10 @@
 import React from 'react';
-import { SpotlightCard } from './SpotlightCard';
+import { GlassCard } from './GlassCard';
 
 interface MasterGlassCardProps {
     children: React.ReactNode;
     className?: string;
-    highlight?: boolean; // Slot for "Saved" icon/badge if needed
+    highlight?: boolean;
 }
 
 export const MasterGlassCard: React.FC<MasterGlassCardProps> = ({
@@ -13,26 +13,20 @@ export const MasterGlassCard: React.FC<MasterGlassCardProps> = ({
     highlight = false
 }) => {
     return (
-        <SpotlightCard
-            className={`
-        glass-panel
-        rounded-[32px]
-        ${className}
-      `}
+        <GlassCard
+            elevation="mid"
+            cornerRadius="lg"
+            className={`${className}`}
+            prismatic={true}
         >
             {/* Optional Highlight/Badge Slot Wrapper */}
             {highlight && (
                 <div className="absolute top-6 right-6 z-20">
-                    {/* Content injected via children usually, or specific prop logic here */}
+                    {/* Highlight content */}
                 </div>
             )}
 
-            {/* Content Container - Ensures content feels "inside" */}
-            <div className="relative z-10 w-full h-full">
-                {children}
-            </div>
-
-            {/* Optional: Subtle noise or gradient overlay could go here for extra depth */}
-        </SpotlightCard>
+            {children}
+        </GlassCard>
     );
 };

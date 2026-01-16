@@ -38,7 +38,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
     return (
         <div className="space-y-8 pr-2">
             {/* Profile Card */}
-            <div className="bg-white/10 backdrop-blur-[64px] border border-white/10 rounded-[3rem] p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] relative overflow-hidden group">
+            <div className="glass-perfect rounded-[3rem] p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] relative overflow-hidden group">
                 <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/[0.02] to-transparent pointer-events-none" />
 
                 <div className="relative z-10">
@@ -113,7 +113,7 @@ export const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
             </div>
 
             {/* Daily Challenges */}
-            <div className="bg-white/10 backdrop-blur-[64px] border border-white/10 rounded-[3rem] p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
+            <div className="glass-perfect rounded-[3rem] p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.3em]">DAILY_SYNC</span>
                     <button className="text-[8px] text-white opacity-40 hover:opacity-100 transition-opacity uppercase font-black tracking-widest">View All</button>

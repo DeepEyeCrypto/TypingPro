@@ -60,7 +60,7 @@ export const MissionBriefing: React.FC<MissionBriefingProps> = ({ isOpen, onClos
 
                             {/* Mission Parameters */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 mb-8 lg:mb-16">
-                                <div className="p-6 lg:p-8 bg-black/5 border border-black/10 rounded-xl lg:rounded-[2rem] backdrop-blur-md">
+                                <div className="p-6 lg:p-8 glass-perfect rounded-xl lg:rounded-[2rem]">
                                     <span className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.3em] block mb-2 lg:mb-3">TARGET_SPEED</span>
                                     <div className="flex items-baseline space-x-2">
                                         <span className="text-4xl lg:text-5xl font-black text-white tracking-tighter">{missionData.targetWpm}</span>
@@ -74,7 +74,7 @@ export const MissionBriefing: React.FC<MissionBriefingProps> = ({ isOpen, onClos
                                         <span className="text-xs font-black text-white opacity-40 tracking-widest uppercase">ACC</span>
                                     </div>
                                 </div>
-                                <div className="p-8 bg-black/5 border border-black/10 rounded-[2rem] backdrop-blur-md">
+                                <div className="p-8 glass-perfect rounded-[2rem]">
                                     <span className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.3em] block mb-3">THREAT_LEVEL</span>
                                     <div className="flex items-baseline space-x-2">
                                         <span className="text-5xl font-black text-white tracking-tighter italic">ULTRA</span>
@@ -95,7 +95,7 @@ export const MissionBriefing: React.FC<MissionBriefingProps> = ({ isOpen, onClos
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="w-1/3 p-6 border border-black/10 bg-black/5 rounded-[2rem] backdrop-blur-md">
+                                <div className="w-1/3 p-6 glass-perfect rounded-[2rem]">
                                     <div className="flex items-center text-white opacity-40 text-[10px] font-black tracking-[0.2em] uppercase mb-4">
                                         <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />

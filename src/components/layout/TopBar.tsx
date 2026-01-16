@@ -24,7 +24,7 @@ export const StatMinimal: React.FC<{ label: string; value: string | number | und
 
 export const TopBar: React.FC<TopBarProps> = ({ title, stats, actions }) => {
     return (
-        <div className="w-full h-full px-4 flex items-center justify-between">
+        <div className="w-full h-full px-4 flex items-center justify-between glass-perfect">
             {/* TITLE AREA AND STATS */}
             <div className="flex items-center gap-4 lg:gap-8 flex-1">
                 <div className="flex flex-col">

@@ -63,7 +63,7 @@ const CertificationCard: React.FC<CertificationCardProps> = ({ currentWpm, requi
         <GlassCard delay={0.1} className="h-full flex flex-col justify-between">
             <div>
                 <div className="flex justify-between items-start mb-12">
-                    <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-3xl shadow-xl backdrop-blur-md">
+                    <div className="w-16 h-16 rounded-full glass-perfect flex items-center justify-center text-3xl shadow-xl">
                         🎓
                     </div>
                     <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase backdrop-blur-md ${isUnlocked
@@ -130,7 +130,7 @@ const SmartDrillCard: React.FC<SmartDrillCardProps> = ({ drillFocuses, onStartDr
     return (
         <GlassCard delay={0.2} className="h-full flex flex-col">
             <div className="flex justify-between items-start mb-12">
-                <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-3xl shadow-xl backdrop-blur-md">
+                <div className="w-16 h-16 rounded-full glass-perfect flex items-center justify-center text-3xl shadow-xl">
                     🧠
                 </div>
                 <div className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase bg-white/10 text-white border border-white/20 backdrop-blur-md">
@@ -311,7 +311,7 @@ export const GlassDashboard: React.FC<GlassDashboardProps> = ({ onStartCertifica
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.6 + i * 0.1 }}
-                                className="bg-white/5 backdrop-blur-md border border-white/5 rounded-[2rem] p-6 hover:bg-white/10 transition-all cursor-crosshair group"
+                                className="glass-perfect rounded-[2rem] p-6 hover:bg-white/10 transition-all cursor-crosshair group"
                             >
                                 <div className="text-white/20 text-3xl mb-4 group-hover:scale-110 transition-transform">{stat.icon}</div>
                                 <div className="text-2xl font-black text-white tracking-tighter leading-none mb-1">{stat.value}</div>

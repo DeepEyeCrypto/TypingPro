@@ -25,6 +25,17 @@ TypingPro Desktop is not just a typing test. It is a **focus instrument** design
 - **👻 Ghost Mode**: Race against your own Personal Best shadow in real-time.
 - **🔊 Polyphonic Audio**: Procedural mechanical keyboard sounds (Cherry MX Blue/Brown/Red) with zero delay.
 - **🛡️ Anti-Cheat System**: Detecting robotic consistencies (< 2ms deviation) and superhuman bursts.
+- **🌗 Auto Contrast Text**: Real-time WCAG 2.1 compliant text color detection over dynamic backgrounds (Powered by Rust).
+
+---
+
+## 🌗 Auto Contrast Text System
+
+TypingPro features a native **Auto Contrast System** that ensures 100% legibility over any background.
+
+- **Rust Backend**: Uses sRGB relative luminance formulas (WCAG 2.1) for high-precision decision making.
+- **React Hook**: `useContrastText` provides sub-millisecond switching with a fast YIQ fallback.
+- **CSS Tokens**: Integrated with Tailwind via the `text-contrast-text` utility.
 
 ---
 

@@ -33,7 +33,7 @@ export const JobCard: React.FC<JobCardProps> = ({
     return (
         <motion.div
             whileHover={{ y: -5, scale: 1.01 }}
-            className="group relative backdrop-blur-3xl bg-black/40 border border-white/10 rounded-[2rem] p-8 shadow-2xl overflow-hidden transition-all duration-500"
+            className="group relative glass-perfect p-8 shadow-2xl overflow-hidden transition-all duration-500"
         >
             {/* Top Gloss Highlight */}
             <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
@@ -62,8 +62,8 @@ export const JobCard: React.FC<JobCardProps> = ({
                 {/* SAVED BADGE (Float Right) */}
                 <button
                     className={`p-3 rounded-full transition-all duration-300 ${isSaved
-                            ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-                            : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white'
+                        ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+                        : 'glass-perfect rounded-full text-gray-400 hover:bg-white/10 hover:text-white'
                         }`}
                 >
                     <Bookmark size={18} fill={isSaved ? "currentColor" : "none"} />
@@ -78,11 +78,11 @@ export const JobCard: React.FC<JobCardProps> = ({
 
                 <div className="flex flex-wrap gap-3">
                     {/* STAGE 3: INNER GLASS PILLS */}
-                    <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/20 rounded-full text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-all cursor-default">
+                    <div className="flex items-center gap-2 px-4 py-2 glass-perfect rounded-full text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-all cursor-default">
                         <Briefcase size={14} />
                         <span>{type}</span>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/20 rounded-full text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-all cursor-default">
+                    <div className="flex items-center gap-2 px-4 py-2 glass-perfect rounded-full text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-all cursor-default">
                         <Clock size={14} />
                         <span>{schedule}</span>
                     </div>

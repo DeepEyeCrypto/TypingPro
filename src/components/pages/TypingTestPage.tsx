@@ -47,7 +47,7 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
             </div>
 
             {/* MAIN TYPING ZONE */}
-            <Card className="w-full max-w-5xl glass-card p-12 relative overflow-hidden">
+            <Card className="w-full max-w-5xl glass-perfect p-12 relative overflow-hidden">
                 <TypingField
                     targetText={targetText}
                     input={input}

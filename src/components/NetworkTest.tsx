@@ -21,7 +21,7 @@ export const NetworkTest: React.FC = () => {
 
     return (
         <div className={`
-            flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border 
+            flex items-center gap-2 px-3 py-1.5 rounded-full glass-perfect border 
             ${status === 'online' ? 'bg-white/5 border-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]' :
                 status === 'offline' ? 'bg-white/10 border-white/40 text-white' :
                     'bg-white/5 border-white/10 text-white/40'}

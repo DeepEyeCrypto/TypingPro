@@ -564,6 +564,8 @@ export const useTyping = () => {
         startMission,
         deployMission,
         resetMission: mission.resetMission,
-        stressLevel
+        stressLevel,
+        activeMatchId,
+        setActiveMatchId
     }
 }
