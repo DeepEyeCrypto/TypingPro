@@ -14,7 +14,7 @@
     "release:patch": "npm version patch --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:minor": "npm version minor --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:major": "npm version major --no-git-tag-version && node scripts/sync-tauri-version.cjs",
-    "verify:glass": "npx ts-node scripts/verify-glass.ts",
+    "verify:glass": "node scripts/verify-glass.js",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint . --ext ts,tsx && npm run lint:css"
   },
