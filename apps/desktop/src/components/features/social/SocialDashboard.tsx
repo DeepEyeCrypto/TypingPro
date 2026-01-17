@@ -44,10 +44,10 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-black text-white uppercase tracking-widest">Access_Denied</h2>
-                    <p className="text-white/60 text-sm font-medium">Authentication required to establish social uplink.</p>
+                    <h2 className="text-2xl font-black text-white uppercase tracking-widest">Access Denied</h2>
+                    <p className="text-white/60 text-sm font-medium">Sign in to access social features.</p>
                     <Button variant="primary" onClick={onBack} className="w-full">
-                        RETURN_TO_BASE
+                        Go Back
                     </Button>
                 </div>
             </div>
@@ -67,17 +67,17 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                         onClick={onBack}
                         className="text-[10px] font-black tracking-widest text-white opacity-30 hover:opacity-100 transition-all uppercase"
                     >
-                        [ ESC ] RETURN_TO_DASHBOARD
+                        [ ESC ] Back to Dashboard
                     </button>
                     <div className="h-4 w-px bg-white/10"></div>
                     <h1 className="text-xl font-black tracking-[0.25em] text-white uppercase italic">
-                        Social_<span className="not-italic text-white opacity-40">Uplink</span>
+                        Social<span className="not-italic text-white opacity-40"> Hub</span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
                         <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-                        <span className="text-[10px] font-black tracking-widest uppercase text-white opacity-60">Live_Connection</span>
+                        <span className="text-[10px] font-black tracking-widest uppercase text-white opacity-60">Live</span>
                     </div>
                 </div>
             </header>
@@ -111,7 +111,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                                             <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
                                             {getRank(profile?.highest_wpm || 0).label}
                                         </span>
-                                        <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] font-mono">STATUS: OPTIMAL_SYSTEM_READY</span>
+                                        <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] font-mono">Online</span>
                                     </div>
                                 </div>
                                 <div className="flex gap-4">
@@ -120,23 +120,23 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                                         variant="ghost"
                                         className="font-black tracking-widest text-[10px] text-white/50 hover:text-white"
                                     >
-                                        ENTER_LOBBY_CHANNEL
+                                        Enter Lobby
                                     </Button>
                                     <Button
                                         onClick={handleStartDuel}
                                         variant="primary"
                                         className="font-black tracking-widest text-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.1)]"
                                     >
-                                        INITIATE_DUEL_1V1
+                                        Challenge a Friend
                                     </Button>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-4 gap-6">
-                                <StatDisplay label="PEAK_VELOCITY" value={profile?.highest_wpm || 0} color="hacker" trend="up" />
-                                <StatDisplay label="CRUISE_SPEED" value={profile?.avg_wpm || 0} />
-                                <StatDisplay label="COMBAT_RECORDS" value={profile?.total_races || 0} />
-                                <StatDisplay label="SYNTAX_CREDITS" value={profile?.rank_points || 0} subValue="pts" />
+                                <StatDisplay label="Best WPM" value={profile?.highest_wpm || 0} color="hacker" trend="up" />
+                                <StatDisplay label="Avg Speed" value={profile?.avg_wpm || 0} />
+                                <StatDisplay label="Total Races" value={profile?.total_races || 0} />
+                                <StatDisplay label="Points" value={profile?.rank_points || 0} subValue="pts" />
                             </div>
 
                             <div className="pt-6 border-t border-white/5">
@@ -153,7 +153,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                 <div className="lg:col-span-3 space-y-8">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Global_Telemetry_Rankings</h3>
+                            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Global Leaderboard</h3>
                         </div>
                         <Leaderboard onPlayGhost={onPlayGhost} />
                     </div>
@@ -161,12 +161,12 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
 
                 <div className="space-y-8">
                     <div className="glass-perfect p-6 space-y-6 rounded-2xl">
-                        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Active_Tactical_Group</h3>
+                        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Friends</h3>
                         <FriendList />
                     </div>
 
                     <div className="glass-v5 p-6 space-y-6 rounded-2xl border-white/10 bg-white/5 backdrop-blur-[60px]">
-                        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Target_Discovery</h3>
+                        <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Find Players</h3>
                         <UserSearch />
                     </div>
                 </div>
@@ -175,11 +175,11 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
             {/* Bottom Tech Section */}
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-white/5 pt-12">
                 <div className="space-y-6">
-                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] opacity-40">Log_Release_Manifest</h3>
+                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] opacity-40">Release Notes</h3>
                     <ReleaseHub />
                 </div>
                 <div className="space-y-6">
-                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] opacity-40">Global_Subnet_Pulse</h3>
+                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] opacity-40">Activity Feed</h3>
                     <ActivityFeed />
                 </div>
             </div>

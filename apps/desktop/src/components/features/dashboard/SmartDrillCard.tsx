@@ -33,7 +33,7 @@ export const SmartDrillCard: React.FC<SmartDrillCardProps> = ({ onStart }) => {
                     onClick={onStart}
                     className="px-6 py-2 rounded-lg bg-white/5 backdrop-blur-xl border border-white/10 text-white text-xs font-bold tracking-widest hover:bg-white/10 hover:border-white/20 transition-all flex items-center group/btn shadow-[0_8px_32px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)] active:scale-95"
                 >
-                    INITIATE_AI_SYNC
+                    Start AI Drill
                     <svg className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>

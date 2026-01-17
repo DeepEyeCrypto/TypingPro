@@ -44,7 +44,7 @@ export const LessonSelector = ({
                 variant="primary"
                 className="group/btn"
               >
-                START_MISSION
+                Start Training
                 <svg className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -94,7 +94,7 @@ export const LessonSelector = ({
                 }}
                 variant="primary"
               >
-                INITIATE_AI_SYNC
+                Start AI Drill
               </Button>
             </div>
           </div>

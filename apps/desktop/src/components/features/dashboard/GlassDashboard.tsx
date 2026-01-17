@@ -75,7 +75,7 @@ const CertificationCard: React.FC<CertificationCardProps> = ({ currentWpm, requi
                 </div>
 
                 <h2 className="text-4xl font-bold text-white tracking-tighter mb-4 leading-none">
-                    Mission_Zero
+                    Certification
                 </h2>
                 <p className="text-white/50 text-base leading-relaxed max-w-[320px] mb-12 font-medium">
                     Official Elite Certification. Strictly monitored session with zero error tolerance.
@@ -83,11 +83,11 @@ const CertificationCard: React.FC<CertificationCardProps> = ({ currentWpm, requi
 
                 <div className="flex gap-4 mb-2">
                     <div className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1">REQ_SPEED</span>
+                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1">Required</span>
                         <span className="text-xl font-bold text-white">{requiredWpm} WPM</span>
                     </div>
                     <div className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1">ACC_MIN</span>
+                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1">Min Acc</span>
                         <span className="text-xl font-bold text-white">99%</span>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ const CertificationCard: React.FC<CertificationCardProps> = ({ currentWpm, requi
 
             <div className="flex items-center justify-between mt-12">
                 <div className="text-white/30 text-[10px] font-black uppercase tracking-widest">
-                    Operational_Window: 2025
+                    Valid for: 2025
                 </div>
                 <Button
                     variant="primary"
@@ -134,12 +134,12 @@ const SmartDrillCard: React.FC<SmartDrillCardProps> = ({ drillFocuses, onStartDr
                     🧠
                 </div>
                 <div className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase bg-white/10 text-white border border-white/20 backdrop-blur-md">
-                    ADAPTIVE_SYNC
+                    AI Adaptive
                 </div>
             </div>
 
             <h2 className="text-4xl font-bold text-white tracking-tighter mb-4 leading-none">
-                Neural_Drills
+                Smart Drills
             </h2>
             <p className="text-white/50 text-base leading-relaxed mb-10 font-medium">
                 AI-targeted bigram generation focused on your physiological mechanical lag.
@@ -196,12 +196,12 @@ const MiniAnalytics: React.FC<MiniAnalyticsProps> = ({ wpm, accuracy, streak }) 
     return (
         <div className="flex flex-col gap-6 h-full">
             <GlassCard delay={0.4} className="!p-8">
-                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-6 block">PERFORMANCE_METRICS</span>
+                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-6 block">Performance</span>
                 <div className="flex items-baseline gap-2 mb-1">
                     <span className="text-5xl font-black text-white tracking-tighter">{wpm}</span>
                     <span className="text-xs font-black text-white/40">WPM</span>
                 </div>
-                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Avg_Operational_Velocity</p>
+                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Average Speed</p>
 
                 <div className="h-2 w-full bg-white/5 rounded-full mt-6 overflow-hidden">
                     <motion.div
@@ -214,7 +214,7 @@ const MiniAnalytics: React.FC<MiniAnalyticsProps> = ({ wpm, accuracy, streak }) 
             </GlassCard>
 
             <GlassCard delay={0.5} className="!p-8 flex-1">
-                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-6 block">PRECISION_CORE</span>
+                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-6 block">Accuracy</span>
                 <div className="relative w-40 h-40 mx-auto">
                     <svg className="w-full h-full transform -rotate-90">
                         <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
@@ -242,7 +242,7 @@ const MiniAnalytics: React.FC<MiniAnalyticsProps> = ({ wpm, accuracy, streak }) 
                     <div className="text-5xl">🔥</div>
                     <div>
                         <span className="text-4xl font-black text-white tracking-tighter block leading-none">{streak}</span>
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Operational_Streak</span>
+                        <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Day Streak</span>
                     </div>
                 </div>
             </GlassCard>
@@ -278,12 +278,12 @@ export const GlassDashboard: React.FC<GlassDashboardProps> = ({ onStartCertifica
                 <main className="space-y-10">
                     <header className="flex justify-between items-end mb-12">
                         <div>
-                            <span className="text-xs font-black text-white/30 uppercase tracking-[0.5em] block mb-3">OPERATIONAL_CONTROL</span>
-                            <h1 className="text-6xl font-black text-white tracking-tighter leading-none uppercase">Mission_Hub</h1>
+                            <span className="text-xs font-black text-white/30 uppercase tracking-[0.5em] block mb-3">Dashboard</span>
+                            <h1 className="text-6xl font-black text-white tracking-tighter leading-none uppercase">Mission Hub</h1>
                         </div>
                         <div className="hidden sm:flex items-center gap-4 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                             <div className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                            <span className="text-[10px] font-black text-white/60 tracking-[0.2em] font-mono">NET_SYNC_ACTIVE</span>
+                            <span className="text-[10px] font-black text-white/60 tracking-[0.2em] font-mono">Online</span>
                         </div>
                     </header>
 
@@ -302,9 +302,9 @@ export const GlassDashboard: React.FC<GlassDashboardProps> = ({ onStartCertifica
                     <footer className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-10">
                         {[
                             { label: 'LESSONS', value: '12/50', icon: '📚' },
-                            { label: 'XP_SYNC', value: '2,450', icon: '⚡' },
-                            { label: 'RANK_ID', value: 'SILVER', icon: '🏆' },
-                            { label: 'CERT_LOGS', value: '8', icon: '🎖️' },
+                            { label: 'XP', value: '2,450', icon: '⚡' },
+                            { label: 'Rank', value: 'SILVER', icon: '🏆' },
+                            { label: 'Certs', value: '8', icon: '🎖️' },
                         ].map((stat, i) => (
                             <motion.div
                                 key={stat.label}

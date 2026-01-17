@@ -106,21 +106,21 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
                     <h1 className={`text-6xl font-black uppercase tracking-[0.2em] mb-4 ${result === 'victory' ? 'text-black' : 'text-black opacity-40'}`}>
                         {result === 'victory' ? 'Victory' : 'Defeated'}
                     </h1>
-                    <p className="text-black opacity-40 font-bold uppercase tracking-widest mb-8">Duel_Protocol_Terminated</p>
+                    <p className="text-black opacity-40 font-bold uppercase tracking-widest mb-8">Duel Complete</p>
 
                     <div className="grid grid-cols-2 gap-8 mb-12">
                         <div className="p-6 bg-black/5 rounded-2xl">
                             <div className="text-4xl font-black text-black">{myWpm}</div>
-                            <div className="text-[10px] font-bold text-black opacity-30 uppercase tracking-widest mt-1">Your_WPM</div>
+                            <div className="text-[10px] font-bold text-black opacity-30 uppercase tracking-widest mt-1">Your WPM</div>
                         </div>
                         <div className="p-6 bg-black/5 rounded-2xl">
                             <div className="text-4xl font-black text-black">{oppWpm || 0}</div>
-                            <div className="text-[10px] font-bold text-black opacity-30 uppercase tracking-widest mt-1">Opponent_WPM</div>
+                            <div className="text-[10px] font-bold text-black opacity-30 uppercase tracking-widest mt-1">Opponent WPM</div>
                         </div>
                     </div>
 
                     <Button variant="outline" size="xl" onClick={onEnd} className="w-full">
-                        RETURN_TO_BASE
+                        Go Back
                     </Button>
                 </Card>
             </div>
@@ -133,7 +133,7 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
                     <div className="px-3 py-1 bg-black/5 border border-black/10 rounded-full">
-                        <span className="text-[10px] font-black tracking-widest uppercase italic text-black">Active_Combat_Zone</span>
+                        <span className="text-[10px] font-black tracking-widest uppercase italic text-black">Live Duel</span>
                     </div>
                 </div>
                 {countdown > 0 && (
@@ -141,7 +141,7 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
                         {countdown}
                     </div>
                 )}
-                <Button variant="ghost" size="sm" onClick={onEnd} className="opacity-50 hover:opacity-100">TERMINATE</Button>
+                <Button variant="ghost" size="sm" onClick={onEnd} className="opacity-50 hover:opacity-100">Exit</Button>
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-8 mb-8">
@@ -184,11 +184,11 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
             <div className="flex-1 min-h-0 relative">
                 {duelData?.status === 'pending' && <div className="absolute inset-0 bg-white/90 backdrop-blur-md z-50 rounded-3xl flex flex-col items-center justify-center gap-6">
                     <div className="w-16 h-16 rounded-full border-4 border-black border-t-transparent animate-spin"></div>
-                    <div className="text-black font-black uppercase tracking-[0.4em] animate-pulse">Waiting_For_Opponent...</div>
-                    <Button variant="ghost" size="sm" onClick={onEnd} className="text-black opacity-20 hover:opacity-100 mt-8">CANCEL_CHALLENGE</Button>
+                    <div className="text-black font-black uppercase tracking-[0.4em] animate-pulse">Waiting for opponent...</div>
+                    <Button variant="ghost" size="sm" onClick={onEnd} className="text-black opacity-20 hover:opacity-100 mt-8">Cancel</Button>
                 </div>}
                 {countdown > 0 && duelData?.status === 'in_progress' && <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-40 rounded-3xl flex items-center justify-center">
-                    <div className="text-black opacity-20 font-black uppercase tracking-[1em] animate-pulse">Initializing_Sync...</div>
+                    <div className="text-black opacity-20 font-black uppercase tracking-[1em] animate-pulse">Get ready...</div>
                 </div>}
                 <div className="h-full rounded-3xl bg-black/5 p-12 border border-black/10 overflow-y-auto">
                     <TypingField

@@ -86,9 +86,9 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                         <ArrowLeft className="w-5 h-5 lg:w-6 lg:h-6 group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div>
-                        <h3 className="text-[10px] font-black opacity-30 tracking-[0.5em] uppercase mb-1 lg:mb-2">Intelligence_Terminal</h3>
+                        <h3 className="text-[10px] font-black opacity-30 tracking-[0.5em] uppercase mb-1 lg:mb-2">Dashboard</h3>
                         <h1 className="text-3xl lg:text-6xl font-black tracking-tighter uppercase leading-none">
-                            ANALYTICS_<span className="opacity-20">CORE</span>
+                            Analytics<span className="opacity-20"> Hub</span>
                         </h1>
                     </div>
                 </div>
@@ -101,10 +101,10 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
 
             {/* Primary Metrics Row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mb-8 lg:mb-16">
-                <MetricCard label="PEAK_VELOCITY" value={`${bestWpm} WPM`} subtext="HISTORICAL_MAX" />
-                <MetricCard label="AVG_VELOCITY" value={`${wpm} WPM`} subtext="CONSISTENCY_INDEX" />
-                <MetricCard label="PRECISION_INDEX" value={`${Math.round(accuracy)}%`} subtext="MECHANICAL_ACCURACY" className="hidden sm:flex" />
-                <MetricCard label="STREAK_STABILITY" value={`${streak}D`} subtext="OPERATIONAL_CONTINUITY" />
+                <MetricCard label="Best Speed" value={`${bestWpm} WPM`} subtext="All-time high" />
+                <MetricCard label="Avg Speed" value={`${wpm} WPM`} subtext="Recent average" />
+                <MetricCard label="Accuracy" value={`${Math.round(accuracy)}%`} subtext="Error-free keystrokes" className="hidden sm:flex" />
+                <MetricCard label="Streak" value={`${streak}D`} subtext="Days active" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
@@ -121,7 +121,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
 
                             <div className="flex-1 space-y-4 lg:space-y-6 text-center md:text-left">
                                 <h2 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">
-                                    {isAnalyzing ? "Processing_Neuro_Latency..." : "Intelligence_Briefing"}
+                                    {isAnalyzing ? "Analyzing your data..." : "AI Coach Insights"}
                                 </h2>
 
                                 <div className="min-h-[120px]">
@@ -148,7 +148,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                     ) : (
                                         <div className="space-y-4 lg:space-y-6">
                                             <h3 className="text-2xl lg:text-4xl font-black text-white leading-none tracking-tighter uppercase italic">
-                                                AI_COACHING_STANDBY
+                                                AI Coach Ready
                                             </h3>
                                             <p className="text-white opacity-40 text-lg leading-relaxed font-medium">
                                                 Synthesizing session data to uncover physiological bottlenecks.
@@ -164,7 +164,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                             variant="primary"
                                             className="w-full sm:w-auto min-w-[200px] lg:min-w-[240px] !py-4 lg:!py-5 !rounded-full shadow-2xl"
                                         >
-                                            {verdict ? "REFRESH_TACTICAL_SCAN" : "INITIATE_TACTICAL_SCAN"}
+                                            {verdict ? "Refresh Analysis" : "Get AI Insights"}
                                         </Button>
                                     </div>
                                 )}
@@ -197,7 +197,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                             variant="secondary"
                                             className="w-full !rounded-full !py-2.5 lg:!py-3 backdrop-blur-md"
                                         >
-                                            START_DRILL
+                                            Start Drill
                                         </Button>
                                     </div>
                                 </Card>
@@ -211,8 +211,8 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                     {/* Weakness Map List */}
                     <Card className="p-6 lg:p-10 space-y-6 lg:space-y-8 glass-perfect">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">Heat_Map</h3>
-                            <span className="text-[8px] font-black text-white opacity-60 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/10">LATENCY</span>
+                            <h3 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">Slow Keys</h3>
+                            <span className="text-[8px] font-black text-white opacity-60 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/10">Speed</span>
                         </div>
 
                         {profile ? (
@@ -240,15 +240,15 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                     <div className="absolute inset-0 bg-white/5 rounded-full blur-xl animate-pulse" />
                                     <span className="text-white opacity-20 text-xl lg:text-2xl relative z-10">?</span>
                                 </div>
-                                <p className="text-[10px] font-black text-white opacity-20 tracking-[0.4em] uppercase">Standby_For_Data</p>
+                                <p className="text-[10px] font-black text-white opacity-20 tracking-[0.4em] uppercase">No data yet</p>
                             </div>
                         )}
                     </Card>
 
                     <Card className="p-6 lg:p-10 space-y-6 lg:space-y-8 glass-perfect">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">Fracture_Points</h3>
-                            <span className="text-[8px] font-black text-white opacity-60 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/10">PRECISION</span>
+                            <h3 className="text-[10px] font-black text-white opacity-30 uppercase tracking-[0.4em]">Error-Prone Keys</h3>
+                            <span className="text-[8px] font-black text-white opacity-60 bg-white/5 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/10">Accuracy</span>
                         </div>
 
                         {profile ? (
@@ -260,7 +260,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                                 {k.key.toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-white opacity-30 uppercase tracking-widest">ERROR_RATE</span>
+                                                <span className="text-[8px] font-black text-white opacity-30 uppercase tracking-widest">Error Rate</span>
                                                 <span className="text-base lg:text-lg font-black text-white tabular-nums tracking-tighter">{k.errorRate.toFixed(1)}%</span>
                                             </div>
                                         </div>
@@ -274,7 +274,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                     <div className="absolute inset-0 bg-white/5 rounded-full blur-xl animate-pulse" />
                                     <span className="text-white opacity-20 text-xl lg:text-2xl relative z-10">✓</span>
                                 </div>
-                                <p className="text-[10px] font-black text-white opacity-20 tracking-[0.4em] uppercase">Clean_Biosync</p>
+                                <p className="text-[10px] font-black text-white opacity-20 tracking-[0.4em] uppercase">All clear!</p>
                             </div>
                         )}
                     </Card>

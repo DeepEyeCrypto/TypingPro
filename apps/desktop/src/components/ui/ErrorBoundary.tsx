@@ -71,7 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             letterSpacing: '0.2em',
                         }}
                     >
-                        INITIALIZE_REBOOT
+                        Restart App
                     </button>
                     {this.props.fallback}
                 </div>

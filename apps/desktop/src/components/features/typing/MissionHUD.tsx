@@ -29,7 +29,7 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
             <div className="absolute top-12 left-1/2 -translate-x-1/2 w-full max-w-2xl px-8 flex justify-between items-start">
                 {/* WPM Tracker */}
                 <div className="flex flex-col items-start translate-x-[-20%]">
-                    <span className="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase mb-2">VELOCITY_TARGET</span>
+                    <span className="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase mb-2">Speed Target</span>
                     <div className="flex items-baseline space-x-3">
                         <motion.span
                             animate={{ color: wpmColor }}
@@ -45,14 +45,14 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
                 <div className="flex flex-col items-center">
                     <div className="px-6 py-2 rounded-full glass-perfect mb-4 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                         <span className="text-[10px] font-black text-white tracking-[0.5em] animate-pulse">
-                            • MISSION_HOT_LANE
+                            • Mission Active
                         </span>
                     </div>
                 </div>
 
                 {/* Accuracy Tracker */}
                 <div className="flex flex-col items-end translate-x-[20%]">
-                    <span className="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase mb-2">CORE_PRECISION</span>
+                    <span className="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase mb-2">Accuracy</span>
                     <div className="flex items-baseline space-x-3">
                         <motion.span
                             animate={{ color: accColor }}
@@ -74,7 +74,7 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
                         className="absolute bottom-0 w-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.6)]"
                     />
                 </div>
-                <span className="text-[10px] font-black text-white/30 vertical-text tracking-[0.4em] uppercase">NEURAL_LOAD</span>
+                <span className="text-[10px] font-black text-white/30 vertical-text tracking-[0.4em] uppercase">Intensity</span>
             </div>
 
             {/* Vignette Stress Effect */}

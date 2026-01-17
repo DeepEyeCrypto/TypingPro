@@ -30,13 +30,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     }, [onComplete]);
 
     // Status message cycling for flair
-    const [statusMsg, setStatusMsg] = useState('INITIALIZING_RUST_CORE');
+    const [statusMsg, setStatusMsg] = useState('Starting engine');
     useEffect(() => {
         const msgs = [
-            'STABILIZING_QUANTUM_BUFFER',
-            'OPTIMIZING_LAYOUT_ENGINE',
-            'CONNECTING_GLOBAL_RELAY',
-            'PREPARING_LIQUID_GLASS_V5'
+            'Setting up UI',
+            'Connecting to cloud',
+            'Loading your data',
+            'Almost ready'
         ];
         let i = 0;
         const msgInterval = setInterval(() => {
@@ -111,13 +111,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                     {/* Version Checksum */}
                     <div className="mt-8 flex items-center gap-4 w-full pt-6 border-t border-white/5">
                         <div className="flex-1">
-                            <div className="text-[8px] font-black text-white/20 uppercase tracking-widest">Environment_Node</div>
-                            <div className="text-[10px] font-black text-white/60">v1.2.54 [PRODUCTION_STABLE]</div>
+                            <div className="text-[8px] font-black text-white/20 uppercase tracking-widest">Platform</div>
+                            <div className="text-[10px] font-black text-white/60">v1.2.54 [Stable]</div>
                         </div>
                         <div className="h-8 w-[1px] bg-white/5" />
                         <div className="flex-1 text-right">
-                            <div className="text-[8px] font-black text-white/20 uppercase tracking-widest">Core_Protocol</div>
-                            <div className="text-[10px] font-black text-cyan-400 drop-shadow-glow">RUST_NATIVE_ACTIVE</div>
+                            <div className="text-[8px] font-black text-white/20 uppercase tracking-widest">Engine</div>
+                            <div className="text-[10px] font-black text-cyan-400 drop-shadow-glow">Rust Native</div>
                         </div>
                     </div>
                 </div>

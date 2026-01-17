@@ -57,7 +57,7 @@ const LeaderboardRow = React.memo(({ user, index, isMe, loadingGhost, onChalleng
                         <RankBadge wpm={user.highest_wpm || 0} progress={0} compact />
                     </div>
                     <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">
-                        {user.total_races || 0} TEST_SESSIONS
+                        {user.total_races || 0} races
                     </span>
                 </div>
             </div>
@@ -67,7 +67,7 @@ const LeaderboardRow = React.memo(({ user, index, isMe, loadingGhost, onChalleng
                     <span className={`text-2xl font-black tabular-nums text-white tracking-tighter`}>
                         {Math.round(user.highest_wpm || 0)}
                     </span>
-                    <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">PEAK_VELOCITY</span>
+                    <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">Best WPM</span>
                 </div>
 
                 {!isMe && (
@@ -122,7 +122,7 @@ export const Leaderboard: React.FC<Props> = ({ onPlayGhost }) => {
     if (loading) return (
         <div className="p-20 flex flex-col items-center justify-center space-y-6">
             <div className="w-12 h-12 border-4 border-white/10 border-t-white animate-spin rounded-full" />
-            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] animate-pulse">Syncing_Global_Telemetry...</span>
+            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] animate-pulse">Loading rankings...</span>
         </div>
     );
 

@@ -37,13 +37,13 @@ export const UserSearch = () => {
     return (
         <div className={`space-y-8 animate-in fade-in duration-700 ${searching ? 'scanline-container' : ''}`}>
             <div className="flex items-center justify-between px-4">
-                <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">NEURAL_SEARCH</h3>
+                <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Search Players</h3>
             </div>
 
             <form onSubmit={handleSearch} className="relative group">
                 <input
                     type="text"
-                    placeholder="ENTER_BIOMETRIC_ID..."
+                    placeholder="Search username..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     className="w-full glass-perfect rounded-full px-8 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all font-mono tracking-wider shadow-2xl"
@@ -72,11 +72,11 @@ export const UserSearch = () => {
                         <img src={user.avatar_url} alt={user.username} className="w-12 h-12 rounded-full border-2 border-white/10 group-hover:border-white/40 transition-all shadow-xl" />
                         <div className="flex-1 min-w-0">
                             <span className="text-sm font-black text-white block truncate tracking-tight">{user.username}</span>
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">AVG_VELOCITY: {user.avg_wpm} WPM</span>
+                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Avg: {user.avg_wpm} WPM</span>
                         </div>
                         {requestSent === user.uid ? (
                             <div className="px-4 py-2 rounded-full bg-white text-black shadow-xl">
-                                <span className="text-[10px] font-black uppercase tracking-widest">ENVOY_SENT</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Request Sent</span>
                             </div>
                         ) : (
                             <button
@@ -93,8 +93,8 @@ export const UserSearch = () => {
                 {results.length === 0 && query && !searching && (
                     <div className="py-12 text-center bg-white/2 border border-dashed border-white/10 rounded-[2rem] px-10">
                         <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] leading-loose">
-                            NO_MATCHES_SIGNATURE_INVALID<br />
-                            <span className="opacity-40 text-[8px]">CHECK_OVERRIDE_PERMISSIONS</span>
+                            No matches found<br />
+                            <span className="opacity-40 text-[8px]">Try a different username</span>
                         </p>
                     </div>
                 )}

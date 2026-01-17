@@ -77,7 +77,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 {/* 1. THERMOSTAT / WPM GAUGE (Top Left) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-4 h-full">
                     <div className="glass-ultra rounded-2xl flex flex-col justify-center items-center p-8 relative min-h-[300px] xl:min-h-full h-full">
-                        <h3 className="text-white/70 text-sm font-bold tracking-widest absolute top-8 left-8 drop-shadow-md">CURRENT_VELOCITY</h3>
+                        <h3 className="text-white/70 text-sm font-bold tracking-widest absolute top-8 left-8 drop-shadow-md">Current Speed</h3>
                         <div className="relative">
                             {/* Circle Gauge Implementation would go here */}
                             <div className="w-56 h-56 rounded-full border-[12px] border-white/5 flex items-center justify-center">
@@ -92,12 +92,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-3 h-full">
                     <div className="glass-ultra rounded-2xl p-6 min-h-[300px] xl:min-h-full h-full">
                         <div className="flex justify-between mb-4">
-                            <h3 className="text-red-400/80 text-xs font-bold tracking-widest drop-shadow-md">PERFORMANCE_VECTOR</h3>
+                            <h3 className="text-red-400/80 text-xs font-bold tracking-widest drop-shadow-md">Performance</h3>
                             <span className="text-neon-lime text-xs font-mono font-bold">LIVE</span>
                         </div>
                         {/* Placeholder for Recharts */}
                         <div className="flex-1 w-full min-h-[200px] glass-ultra flex items-center justify-center text-white/20 shadow-inner">
-                            CHART_MODULE_Z4
+                            Chart Coming Soon
                         </div>
                     </div>
                 </motion.div>
@@ -145,7 +145,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-2 h-full">
                     <div className="glass-ultra rounded-2xl p-6 flex flex-col justify-between group cursor-pointer hover:border-neon-lime/30 transition-colors min-h-[200px] xl:min-h-full h-full" onClick={onStartLesson}>
                         <div>
-                            <h3 className="text-neon-lime text-xs font-bold tracking-widest mb-1 drop-shadow-md">NEXT_PROTOCOL</h3>
+                            <h3 className="text-neon-lime text-xs font-bold tracking-widest mb-1 drop-shadow-md">Next Lesson</h3>
                             <h2 className="text-2xl font-black text-white leading-tight">{currentLesson.title}</h2>
                         </div>
                         <div className="flex items-center justify-between">
@@ -160,7 +160,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 {/* 5. ACCURACY MODULE (Middle Bottom) */}
                 <motion.div variants={itemVariants} className="col-span-1 xl:row-span-3 h-full">
                     <div className="glass-ultra rounded-2xl p-6 flex flex-col justify-center items-center min-h-[200px] xl:min-h-full h-full relative text-shadow-md">
-                        <h3 className="text-white/70 text-xs font-bold tracking-widest absolute top-6 left-6 drop-shadow-md">PRECISION_INDEX</h3>
+                        <h3 className="text-white/70 text-xs font-bold tracking-widest absolute top-6 left-6 drop-shadow-md">Accuracy</h3>
                         <span className="text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent transition-all duration-500">{Math.round(accuracy)}%</span>
                         <div className="w-full h-2 bg-white/10 rounded-full mt-4 overflow-hidden">
                             <div className="h-full bg-gradient-to-r from-pink-500 to-indigo-500 shadow-[0_0_15px_rgba(168,85,247,0.4)]" style={{ width: `${accuracy}%` }} />
@@ -175,7 +175,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 onClose={onResetMission}
                 onStart={onDeployMission}
                 missionData={{
-                    title: "RANK_SILVER_CERT",
+                    title: "Silver Certification",
                     targetWpm: 90,
                     accuracy: 98,
                     constraints: ["STRICT_MODE"]

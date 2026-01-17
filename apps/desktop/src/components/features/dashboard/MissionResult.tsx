@@ -129,7 +129,7 @@ export const MissionResult: React.FC<MissionResultProps> = ({
                                         className="flex-1 py-5 rounded-full bg-white text-black font-black text-xs uppercase tracking-[0.3em] shadow-[0_32px_64px_rgba(0,0,0,0.5)] transition-all hover:scale-105 active:scale-95"
                                         onClick={onClose}
                                     >
-                                        RE-DEPLOY
+                                        Try Again
                                     </button>
                                 )}
                             </div>
