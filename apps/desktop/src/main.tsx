@@ -1,9 +1,12 @@
 import './index.css'
 import './styles/tailwind.css'
-import './styles/glass-perfect.css'
+import './styles/glass-blur.css'
+import './styles/warm-glass.css'
+import './styles/glassmorphism-hierarchy.css'
+import './styles/zen-overlay.css'
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
-import { ErrorBoundary } from '../../../src/components/ErrorBoundary'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
 
 const ErrorFallback = ({ message, stack }: { message: string, stack?: string }) => (
   <div style={{

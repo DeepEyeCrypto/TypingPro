@@ -1,0 +1,57 @@
+// ═══════════════════════════════════════════════════════════════════
+// CERTIFICATION TYPES
+// ═══════════════════════════════════════════════════════════════════
+
+export type CertificationTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+
+export interface CertificationRequirement {
+    tier: CertificationTier;
+    name: string;
+    icon: string;
+    color: string;
+    min_wpm: number;
+    min_accuracy: number;
+    test_duration_seconds: number;
+    keystones_reward: number;
+}
+
+export interface CertificationTest {
+    id: string;
+    tier: CertificationTier;
+    text: string;
+    duration_seconds: number;
+    started_at: string;
+    completed_at?: string;
+    result?: {
+        wpm: number;
+        accuracy: number;
+        passed: boolean;
+    };
+}
+
+export interface UserCertification {
+    id: string;
+    user_id: string;
+    tier: CertificationTier;
+    wpm_achieved: number;
+    accuracy_achieved: number;
+    test_duration: number;
+    earned_at: string;
+    verification_code: string;
+}
+
+export const TIER_COLORS: Record<CertificationTier, string> = {
+    bronze: '#cd7f32',
+    silver: '#c0c0c0',
+    gold: '#ffd700',
+    platinum: '#00d4aa',
+    diamond: '#b9f2ff',
+};
+
+export const TIER_ICONS: Record<CertificationTier, string> = {
+    bronze: '🥉',
+    silver: '🥈',
+    gold: '🥇',
+    platinum: '💠',
+    diamond: '💎',
+};

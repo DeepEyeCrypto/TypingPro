@@ -25,13 +25,16 @@
     "@tauri-apps/plugin-shell": "^2.3.3",
     "@tauri-apps/plugin-store": "^2.4.1",
     "@tauri-apps/plugin-updater": "^2.9.0",
+    "clsx": "^2.1.1",
     "firebase": "^12.7.0",
     "framer-motion": "^12.25.0",
     "howler": "^2.2.4",
+    "lucide-react": "^0.562.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^3.6.0",
     "socket.io-client": "^4.8.3",
+    "tailwind-merge": "^3.4.0",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

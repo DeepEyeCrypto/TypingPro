@@ -1,61 +1,59 @@
 import React, { useEffect, useRef } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/core'
-import { useAuthStore } from '../../../src/stores/authStore'
-import { useTyping } from '../../../src/hooks/useTyping'
-import { useSettingsStore } from '../../../src/stores/settingsStore'
-import { usePresenceStore } from '../../../src/stores/presenceStore'
-import { useSyncStore } from '../../../src/stores/syncStore'
-import { syncService } from '../../../src/services/syncService'
-import { TypingArea } from '../../../src/components/TypingArea'
-import { TypingTestPage } from '../../../src/components/pages/TypingTestPage'
-import { LessonSelector } from '../../../src/components/LessonSelector'
-import { GatekeeperModal } from '../../../src/components/GatekeeperModal'
-import { MissionResult } from '../../../src/components/dashboard/MissionResult'
-import { AnalyticsDashboard } from '../../../src/components/analytics/AnalyticsDashboard'
-import { CURRICULUM, Lesson } from '../../../src/data/lessons'
-import { getRankForWPM } from '../../../src/services/rankSystem'
-import { friendService } from '../../../src/services/friendService'
-import { userService } from '../../../src/services/userService'
-import { matchmakingService } from '../../../src/services/matchmakingService'
-// import '../../../src/styles/glass-blur.css' // Replaced by glass-perfect.css imported in main.tsx
-import '../../../src/styles/themes.css'
-import { TitleBar } from '../../../src/components/TitleBar'
-import { useUpdater } from '../../../src/hooks/useUpdater'
-import { useLockdown } from '../../../src/hooks/useLockdown'
+import { useAuthStore } from './core/store/authStore'
+import { useTyping } from './hooks/useTyping'
+import { useSettingsStore } from './core/store/settingsStore'
+import { usePresenceStore } from './core/store/presenceStore'
+import { useSyncStore } from './core/store/syncStore'
+import { syncService } from './core/syncService'
+import { TypingArea } from './components/features/typing/TypingArea'
+import { TypingTestPage } from './components/pages/TypingTestPage'
+import { LessonSelector } from './components/features/typing/LessonSelector'
+import { GatekeeperModal } from './components/features/typing/GatekeeperModal'
+import { MissionResult } from './components/features/dashboard/MissionResult'
+import { AnalyticsDashboard } from './components/features/analytics/AnalyticsDashboard'
+import { CURRICULUM, Lesson } from './data/lessons'
+import { getRankForWPM } from './core/rankSystem'
+import { friendService } from './core/friendService'
+import { userService } from './core/userService'
+import { matchmakingService } from './core/matchmakingService'
+// import '@/styles/glass-blur.css' // Replaced by glass-perfect.css imported in main.tsx
+import './styles/themes.css'
+import { TitleBar } from './components/layout/TitleBar'
+import { useUpdater } from './hooks/useUpdater'
+import { useLockdown } from './hooks/useLockdown'
 
-import { SplashScreen } from '../../../src/components/SplashScreen'
-import { WhatsNewModal } from '../../../src/components/WhatsNewModal'
-import { UsernameModal } from '../../../src/components/social/UsernameModal'
-import { SocialDashboard } from '../../../src/components/social/SocialDashboard'
-import { RankCelebration } from '../../../src/components/social/RankCelebration'
-import Lobby from '../../../src/components/social/Lobby'
-import { DuelArena } from '../../../src/components/social/DuelArena'
-import { NetworkTest } from '../../../src/components/NetworkTest'
-import { useDevChord } from '../../../src/hooks/useDevChord'
-import { DevHud } from '../../../src/components/dev/DevHud'
+import { SplashScreen } from './components/layout/SplashScreen'
+import { WhatsNewModal } from './components/features/settings/WhatsNewModal'
+import { UsernameModal } from './components/features/social/UsernameModal'
+import { SocialDashboard } from './components/features/social/SocialDashboard'
+import { RankCelebration } from './components/features/social/RankCelebration'
+import Lobby from './components/features/social/Lobby'
+import { DuelArena } from './components/features/social/DuelArena'
+import { useDevChord } from './hooks/useDevChord'
+import { DevHud } from './components/features/dev/DevHud'
 
 // NEW UI PRIMITIVES
-import { AppShell } from '../../../src/components/layout/AppShell'
-import { SideNav } from '../../../src/components/layout/SideNav'
-import { TopBar as ModernTopBar } from '../../../src/components/layout/TopBar'
-import { Button } from '../../../src/components/ui/Button'
-import { AuthButtons } from '../../../src/components/AuthButtons'
-import { AuthPage } from '../../../src/pages/Auth'
-import { ProfilePage } from '../../../src/components/pages/ProfilePage'
-import { useAuth } from '../../../src/hooks/useAuth'
+import { AppShell } from './components/layout/AppShell'
+import { SideNav } from './components/layout/SideNav'
+import { TopBar as ModernTopBar } from './components/layout/TopBar'
+import { Button } from './components/ui/Button'
+import { AuthButtons } from './components/features/auth/AuthButtons'
+import { AuthPage } from './components/pages/AuthPage'
+import { ProfilePage } from './components/pages/ProfilePage'
+import { useAuth } from './hooks/useAuth'
 
 // WARM GLASS DASHBOARD
-import { DashboardPage } from '../../../src/components/dashboard/DashboardPage'
-import { StorePage } from '../../../src/components/store/StorePage'
-import { SettingsPage } from '../../../src/components/settings/SettingsPage'
-import { ThemeToggle } from '../../../src/components/ThemeToggle'
+import { DashboardPage } from './components/features/dashboard/DashboardPage'
+import { StorePage } from './components/features/store/StorePage'
+import { SettingsPage } from './components/features/settings/SettingsPage'
 
 // GAMIFICATION
-import { GamificationPage } from '../../../src/components/gamification/GamificationPage'
-import { CertificationPage } from '../../../src/components/certification/CertificationPage'
-import { AchievementToast } from '../../../src/components/gamification/AchievementToast'
-import { useAchievementStore } from '../../../src/stores/achievementStore'
+import { GamificationPage } from './components/features/gamification/GamificationPage'
+import { CertificationPage } from './components/features/certification/CertificationPage'
+import { AchievementToast } from './components/features/gamification/AchievementToast'
+import { useAchievementStore } from './core/store/achievementStore'
 
 // ICONS for SideNav
 const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" /></svg>;
@@ -223,7 +221,6 @@ const App: React.FC = () => {
               ]}
               footer={
                 <div className="flex flex-col items-center space-y-4 pb-2">
-                  <ThemeToggle />
                   {user ? (
                     <div className="w-8 h-8 rounded-full border border-black/20 overflow-hidden">
                       <img src={user.avatar_url || ''} alt="User" />
@@ -247,7 +244,6 @@ const App: React.FC = () => {
               }}
               actions={
                 <div className="flex items-center space-x-2">
-                  <NetworkTest />
                   <AuthButtons />
                   <div className="cursor-pointer hover:bg-white/10 rounded-full p-1 transition-colors" onClick={() => typing.setView('profile')}>
                     {user?.avatar_url ? <img src={user.avatar_url} className="w-8 h-8 rounded-full border border-white/20" /> : <div className="w-8 h-8 rounded-full bg-white/10" />}

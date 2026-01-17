@@ -5,19 +5,96 @@
 @layer base {
     body {
         @apply bg-midnight text-white antialiased overflow-hidden;
-
         font-family: 'Inter', sans-serif;
+    }
+
+    /* Aggressive High-Fidelity Glass Typography Rules - Force White */
+    * {
+        @apply border-white/5;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    span,
+    div,
+    button,
+    input,
+    textarea,
+    a,
+    li,
+    label,
+    strong,
+    em,
+    code,
+    pre {
+        @apply text-white;
+        @apply transition-colors duration-200;
+    }
+
+    /* Subtle hover state for interactive elements */
+    a:hover,
+    button:hover {
+        @apply text-white/80 !important;
     }
 }
 
 @layer components {
-    .glass-panel {
-        @apply bg-midnight-surface bg-opacity-80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl;
+
+    /* Stage 1: Monochrome Typography System Utility - Absolute White */
+    .mono-text {
+        @apply transition-colors duration-200 ease-in-out;
+        @apply text-white;
     }
 
-    .hacker-border {
-        @apply border border-white border-opacity-30;
+    /* Legacy label preservation for backward compatibility if needed, but pointing to mono-text logic */
+    .mono-text-interactive {
+        @apply mono-text;
+    }
 
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    /* Stage 2: Hierarchical Blur System (Premium Glassmorphism) */
+    .glass-depth-sm {
+        @apply backdrop-blur-[20px];
+    }
+
+    .glass-depth-md {
+        @apply backdrop-blur-[40px];
+    }
+
+    .glass-depth-high {
+        @apply backdrop-blur-[64px];
+    }
+
+    .glass-panel-high {
+        @apply bg-black/20 glass-depth-high border border-white/10 rounded-[3rem] shadow-2xl;
+    }
+
+    /* Keep legacy blur classes mapping to new depth logic to prevent breakage during transition */
+    .glass-blur-l1 {
+        @apply glass-depth-sm;
+    }
+
+    .glass-blur-l2 {
+        @apply glass-depth-md;
+    }
+
+    .glass-blur-l3 {
+        @apply glass-depth-high;
+    }
+
+    /* Glass Border Standard */
+    .hacker-border {
+        @apply border border-white/10 shadow-[0_0_20px_rgba(255, 255, 255, 0.05)];
+    }
+
+    /* PERFORMANCE: Hardware Acceleration */
+    .gpu-accelerated {
+        transform: translateZ(0);
+        will-change: transform, opacity;
+        backface-visibility: hidden;
     }
 }
