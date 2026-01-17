@@ -2,6 +2,71 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.54] - 2026-01-17
+
+### 🎨 UI/UX Improvements
+
+- **User-Friendly Labels**: Replaced ~70 tactical/code-style labels with friendly, readable text across 13 components
+
+#### Analytics Dashboard (`AnalyticsDashboard.tsx`)
+
+| Before | After |
+|--------|-------|
+| `PEAK_VELOCITY` | Best Speed |
+| `AVG_VELOCITY` | Avg Speed |
+| `PRECISION_INDEX` | Accuracy |
+| `STREAK_STABILITY` | Streak |
+| `AI_COACHING_STANDBY` | AI Coach Ready |
+| `INITIATE_TACTICAL_SCAN` | Get AI Insights |
+| `Heat_Map` | Slow Keys |
+| `Fracture_Points` | Error-Prone Keys |
+
+#### Social Hub (`SocialDashboard.tsx`, `Leaderboard.tsx`, `UserSearch.tsx`, `DuelArena.tsx`)
+
+| Before | After |
+|--------|-------|
+| `Social_Uplink` | Social Hub |
+| `INITIATE_DUEL_1V1` | Challenge a Friend |
+| `Global_Telemetry_Rankings` | Global Leaderboard |
+| `NEURAL_SEARCH` | Search Players |
+| `TERMINATE` | Exit |
+| `Active_Combat_Zone` | Live Duel |
+
+#### Dashboard (`GlassDashboard.tsx`, `DashboardPage.tsx`, `MissionResult.tsx`)
+
+| Before | After |
+|--------|-------|
+| `Mission_Zero` | Certification |
+| `Neural_Drills` | Smart Drills |
+| `ADAPTIVE_SYNC` | AI Adaptive |
+| `CURRENT_VELOCITY` | Current Speed |
+| `RE-DEPLOY` | Try Again |
+
+#### Typing Components (`MissionHUD.tsx`, `LessonSelector.tsx`)
+
+| Before | After |
+|--------|-------|
+| `VELOCITY_TARGET` | Speed Target |
+| `CORE_PRECISION` | Accuracy |
+| `NEURAL_LOAD` | Intensity |
+| `START_MISSION` | Start Training |
+| `INITIATE_AI_SYNC` | Start AI Drill |
+
+#### Splash Screen (`SplashScreen.tsx`)
+
+| Before | After |
+|--------|-------|
+| `INITIALIZING_RUST_CORE` | Starting engine |
+| `STABILIZING_QUANTUM_BUFFER` | Setting up UI |
+| `RUST_NATIVE_ACTIVE` | Rust Native |
+
+### 🛠 Maintenance
+
+- Component reorganization: Moved files to feature folders (`features/typing/`, `features/settings/`, `layout/`)
+- Renamed `core/store.ts` → `core/tauriStore.ts` for clarity
+- Deleted empty `src/pages/` directory
+- Fixed all import paths after file moves
+
 ## [1.2.53] - 2026-01-16
 
 ### ✨ Features
