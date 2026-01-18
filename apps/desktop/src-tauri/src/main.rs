@@ -149,14 +149,17 @@ mod database;
 mod stats_commands;
 
 fn main() {
-    #[cfg(debug_assertions)]
-    let _sentry = sentry::init(sentry::ClientOptions {
-        dsn: Some("YOUR_SENTRY_DSN".into()),
-        release: sentry::Release::new(&env!("CARGO_PKG_VERSION")),
-        ..Default::default()
-    });
+    // Sentry integration disabled - placeholder DSN
+    // TODO: Configure proper Sentry DSN for production error tracking
+    // #[cfg(debug_assertions)]
+    // let _sentry = sentry::init(sentry::ClientOptions {
+    //     dsn: Some("YOUR_SENTRY_DSN".parse().ok()),
+    //     release: Some(env!("CARGO_PKG_VERSION").into()),
+    //     ..Default::default()
+    // });
 
     tauri::Builder::default()
+
         .setup(|app| {
             // Initialize Logger
             logger::init_logging(app).expect("Failed to initialize logger");
