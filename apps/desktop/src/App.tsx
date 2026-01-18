@@ -58,6 +58,9 @@ import { useAchievementStore } from './core/store/achievementStore'
 // GLOBAL TOAST NOTIFICATIONS
 import { ToastContainer } from './components/ui/ToastContainer'
 
+// AUTH PROTECTION
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
+
 // ICONS for SideNav
 const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" /></svg>;
 const TestIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
@@ -277,7 +280,9 @@ const App: React.FC = () => {
               onResetMission={typing.resetMission}
             />
           ) : typing.view === 'profile' ? (
-            <ProfilePage />
+            <ProtectedRoute fallbackMessage="Sign in to view your profile and stats">
+              <ProfilePage />
+            </ProtectedRoute>
           ) : typing.view === 'store' ? (
             <StorePage onBack={() => typing.setView('dashboard')} />
           ) : typing.view === 'settings' ? (
@@ -300,17 +305,19 @@ const App: React.FC = () => {
               onCertificationAttempt={() => typing.setView('certification')}
             />
           ) : typing.view === 'certification' ? (
-            <CertificationPage
-              userId={user?.id || 'guest'}
-              username={user?.name || 'Typist'}
-              earnedCertifications={certifications}
-              onCertificationEarned={(cert, reward) => {
-                useAchievementStore.getState().addCertification(cert);
-                useAchievementStore.getState().addKeystones(reward);
-                syncService.pushToCloud();
-              }}
-              onBack={() => typing.setView('achievements')}
-            />
+            <ProtectedRoute fallbackMessage="Sign in to earn and track certifications">
+              <CertificationPage
+                userId={user?.id || 'guest'}
+                username={user?.name || 'Typist'}
+                earnedCertifications={certifications}
+                onCertificationEarned={(cert, reward) => {
+                  useAchievementStore.getState().addCertification(cert);
+                  useAchievementStore.getState().addKeystones(reward);
+                  syncService.pushToCloud();
+                }}
+                onBack={() => typing.setView('achievements')}
+              />
+            </ProtectedRoute>
           ) : typing.view === 'selection' ? (
             <LessonSelector
               unlockedIds={typing.unlockedIds}
@@ -335,18 +342,20 @@ const App: React.FC = () => {
               }}
             />
           ) : typing.view === 'social' ? (
-            <SocialDashboard
-              onBack={() => typing.setView('selection')}
-              onPlayGhost={(lessonId, ghostData) => {
-                const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
-                if (lesson) {
-                  typing.startLesson(lesson, ghostData)
-                } else {
-                  console.error("Lesson not found for ghost replay:", lessonId)
-                }
-              }}
-              onNavigateToLobby={() => typing.setView('lobby')}
-            />
+            <ProtectedRoute fallbackMessage="Sign in to connect with other typists">
+              <SocialDashboard
+                onBack={() => typing.setView('selection')}
+                onPlayGhost={(lessonId, ghostData) => {
+                  const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
+                  if (lesson) {
+                    typing.startLesson(lesson, ghostData)
+                  } else {
+                    console.error("Lesson not found for ghost replay:", lessonId)
+                  }
+                }}
+                onNavigateToLobby={() => typing.setView('lobby')}
+              />
+            </ProtectedRoute>
           ) : typing.view === 'lobby' ? (
             <Lobby
               onBack={() => typing.setView('social')}
