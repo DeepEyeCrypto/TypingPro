@@ -4,6 +4,8 @@ import { open } from '@tauri-apps/plugin-shell';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import { useAuthStore } from '../core/store/authStore';
 import { syncService } from '../core/syncService';
+import { toast } from '../core/store/toastStore';
+
 
 export interface User {
     id: string;
@@ -40,6 +42,7 @@ export const useAuth = () => {
         } catch (err: any) {
             console.error('Login failed init:', err);
             setError(err.toString());
+            toast.error('Failed to start login. Please try again.');
             setIsLoading(false);
         }
     }, []);
@@ -50,6 +53,7 @@ export const useAuth = () => {
         localStorage.removeItem('pending_auth_provider');
         // Also update the Zustand store
         authStoreLogout();
+        toast.info('You have been signed out.');
     }, [authStoreLogout]);
 
     useEffect(() => {
@@ -105,10 +109,13 @@ export const useAuth = () => {
                                 console.warn('Cloud sync failed after login:', syncErr);
                             }
 
+                            toast.success(`Welcome back, ${profile.name}!`);
                             setIsLoading(false);
                         } catch (err: any) {
                             console.error('Token exchange failed:', err);
-                            setError(typeof err === 'string' ? err : err.message || 'Login failed');
+                            const errorMsg = typeof err === 'string' ? err : err.message || 'Login failed';
+                            setError(errorMsg);
+                            toast.error(`Login failed: ${errorMsg}`);
                             setIsLoading(false);
                         }
                     }
