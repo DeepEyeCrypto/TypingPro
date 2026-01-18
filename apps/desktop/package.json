@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tauri build",
+    "build": "vite build",
     "tauri": "tauri",
     "test": "vitest run",
     "test:watch": "vitest",
