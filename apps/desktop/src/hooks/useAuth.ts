@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
 import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
+import { useAuthStore } from '../core/store/authStore';
+import { syncService } from '../core/syncService';
 
 export interface User {
     id: string;
@@ -19,6 +21,9 @@ export const useAuth = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Get authStore actions for cross-store sync
+    const { setAuthenticated, logout: authStoreLogout, setGuest } = useAuthStore();
 
     const login = useCallback(async (provider: 'google' | 'github') => {
         setIsLoading(true);
@@ -42,7 +47,10 @@ export const useAuth = () => {
     const logout = useCallback(() => {
         setUser(null);
         localStorage.removeItem('user_session');
-    }, []);
+        localStorage.removeItem('pending_auth_provider');
+        // Also update the Zustand store
+        authStoreLogout();
+    }, [authStoreLogout]);
 
     useEffect(() => {
         let unlisten: (() => void) | undefined;
@@ -54,6 +62,7 @@ export const useAuth = () => {
                     if (urlStr.includes('typingpro://auth/callback')) {
                         try {
                             setIsLoading(true);
+                            setError(null);
                             // Parse URL manually or use URL object
                             const url = new URL(urlStr);
                             const code = url.searchParams.get('code');
@@ -72,9 +81,30 @@ export const useAuth = () => {
                                 state
                             });
 
+                            // Update local state
                             setUser(profile);
                             localStorage.setItem('user_session', JSON.stringify(profile));
                             localStorage.removeItem('pending_auth_provider');
+
+                            // Sync with Zustand authStore
+                            await setAuthenticated(
+                                {
+                                    id: profile.id,
+                                    name: profile.name,
+                                    email: profile.email,
+                                    avatar_url: profile.avatar_url,
+                                    provider: profile.provider as 'google' | 'github',
+                                },
+                                profile.token
+                            );
+
+                            // Pull cloud data after successful login
+                            try {
+                                await syncService.pullFromCloud();
+                            } catch (syncErr) {
+                                console.warn('Cloud sync failed after login:', syncErr);
+                            }
+
                             setIsLoading(false);
                         } catch (err: any) {
                             console.error('Token exchange failed:', err);
@@ -91,7 +121,24 @@ export const useAuth = () => {
         return () => {
             if (unlisten) unlisten();
         };
-    }, []);
+    }, [setAuthenticated]);
+
+    // On mount, sync local storage user with Zustand store
+    useEffect(() => {
+        if (user && !useAuthStore.getState().user) {
+            setAuthenticated(
+                {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    avatar_url: user.avatar_url,
+                    provider: user.provider as 'google' | 'github',
+                },
+                user.token
+            );
+        }
+    }, [user, setAuthenticated]);
 
     return { user, login, logout, isLoading, error };
 };
+
