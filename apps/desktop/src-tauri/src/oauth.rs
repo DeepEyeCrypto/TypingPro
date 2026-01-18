@@ -16,22 +16,30 @@ use rand::Rng;
 // ═══════════════════════════════════════════════════════════════════
 
 // Redirect URI must match what is registered in Google/GitHub Console and tauri.conf.json
-const REDIRECT_URI: &str = "typingpro://auth/callback";
+const REDIRECT_URI: &str = "http://localhost:1420/auth/google/callback";
 
 pub fn get_google_client_id() -> String {
-    std::env::var("GOOGLE_CLIENT_ID").unwrap_or_else(|_| "GOOGLE_CLIENT_ID_MISSING".to_string())
+    std::env::var("GOOGLE_CLIENT_ID")
+        .or_else(|_| std::env::var("VITE_GOOGLE_CLIENT_ID"))
+        .unwrap_or_else(|_| "GOOGLE_CLIENT_ID_MISSING".to_string())
 }
 
 pub fn get_github_client_id() -> String {
-    std::env::var("GITHUB_CLIENT_ID").unwrap_or_else(|_| "GITHUB_CLIENT_ID_MISSING".to_string())
+    std::env::var("GITHUB_CLIENT_ID")
+        .or_else(|_| std::env::var("VITE_GITHUB_CLIENT_ID"))
+        .unwrap_or_else(|_| "GITHUB_CLIENT_ID_MISSING".to_string())
 }
 
 pub fn get_github_client_secret() -> String {
-    std::env::var("GITHUB_CLIENT_SECRET").unwrap_or_else(|_| "GITHUB_CLIENT_SECRET_MISSING".to_string())
+    std::env::var("GITHUB_CLIENT_SECRET")
+        .or_else(|_| std::env::var("TAURI_GITHUB_CLIENT_SECRET"))
+        .unwrap_or_else(|_| "GITHUB_CLIENT_SECRET_MISSING".to_string())
 }
 
 pub fn get_google_client_secret() -> String {
-    std::env::var("TAURI_GOOGLE_CLIENT_SECRET").unwrap_or_else(|_| "GOOGLE_CLIENT_SECRET_MISSING".to_string())
+    std::env::var("TAURI_GOOGLE_CLIENT_SECRET")
+        .or_else(|_| std::env::var("GOOGLE_CLIENT_SECRET"))
+        .unwrap_or_else(|_| "GOOGLE_CLIENT_SECRET_MISSING".to_string())
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -125,21 +133,16 @@ pub fn generate_auth_url(manager: &OAuthManager, provider: &str) -> Result<Strin
                 code_verifier: Some(verifier),
             });
 
-            // Construct URL
-            Ok(format!(
-                "https://accounts.google.com/o/oauth2/v2/auth?\
-                 client_id={}\
-                 &redirect_uri={}\
-                 &response_type=code\
-                 &scope=openid%20profile%20email\
-                 &code_challenge={}\
-                 &code_challenge_method=S256\
-                 &state={}",
-                get_google_client_id(),
+            let url = format!(
+                "https://accounts.google.com/o/oauth2/v2/auth?client_id={}&redirect_uri={}&response_type=code&scope={}&code_challenge={}&code_challenge_method=S256&state={}",
+                get_google_client_id().trim(),
                 urlencoding::encode(REDIRECT_URI),
+                urlencoding::encode("openid profile email"),
                 challenge,
                 state
-            ))
+            );
+            println!("DEBUG: Google Auth URL: {}", url);
+            Ok(url)
         },
         "github" => {
             // Store pending auth (No PKCE for GitHub standard flow, but we use State)

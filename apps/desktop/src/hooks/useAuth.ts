@@ -1,11 +1,29 @@
+// ═══════════════════════════════════════════════════════════════════
+// USE AUTH: Hybrid Tauri Deep-Link + Firebase Authentication
+// ═══════════════════════════════════════════════════════════════════
+//
+// 1. App initiates login via Rust (invoke('get_oauth_url'))
+// 2. Rust opens system browser with PKCE
+// 3. Browser redirects back to typingpro://auth/callback
+// 4. Tauri Deep Link plugin catches the code/state
+// 5. Rust exchanges code for profile + token
+// 6. Frontend receives profile and logs into Firebase for cloud sync
+// ═══════════════════════════════════════════════════════════════════
+
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
-import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
+import { onOpenUrl as onDeepLinkOpenUrl } from '@tauri-apps/plugin-deep-link';
+import {
+    signInWithCredential,
+    GoogleAuthProvider,
+    GithubAuthProvider,
+    signOut as firebaseSignOut
+} from 'firebase/auth';
+import { auth as firebaseAuth } from '../lib/firebase';
 import { useAuthStore } from '../core/store/authStore';
 import { syncService } from '../core/syncService';
 import { toast } from '../core/store/toastStore';
-
 
 export interface User {
     id: string;
@@ -24,8 +42,7 @@ export const useAuth = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Get authStore actions for cross-store sync
-    const { setAuthenticated, logout: authStoreLogout, setGuest } = useAuthStore();
+    const { setAuthenticated, logout: authStoreLogout } = useAuthStore();
 
     const login = useCallback(async (provider: 'google' | 'github') => {
         setIsLoading(true);
@@ -33,104 +50,126 @@ export const useAuth = () => {
         try {
             // Get PKCE Auth URL from Rust
             const url = await invoke<string>('get_oauth_url', { provider });
-
-            // Store provider for logging/debug if needed, though Rust handles state map
             localStorage.setItem('pending_auth_provider', provider);
 
             // Open System Browser
             await open(url);
         } catch (err: any) {
-            console.error('Login failed init:', err);
+            console.error('Login failed to start:', err);
             setError(err.toString());
-            toast.error('Failed to start login. Please try again.');
+            toast.error('Failed to start login flow.');
             setIsLoading(false);
         }
     }, []);
 
-    const logout = useCallback(() => {
-        setUser(null);
-        localStorage.removeItem('user_session');
-        localStorage.removeItem('pending_auth_provider');
-        // Also update the Zustand store
-        authStoreLogout();
-        toast.info('You have been signed out.');
+    const logout = useCallback(async () => {
+        try {
+            await firebaseSignOut(firebaseAuth);
+            setUser(null);
+            localStorage.removeItem('user_session');
+            authStoreLogout();
+            toast.info('You have been signed out.');
+        } catch (err) {
+            console.error('Logout error:', err);
+        }
     }, [authStoreLogout]);
+
+    const handleAuthCallback = useCallback(async (urlStr: string) => {
+        // Support both deep link and localhost callback
+        if (!urlStr.includes('typingpro://auth/callback') && !urlStr.includes('/auth/google/callback')) {
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const url = new URL(urlStr);
+            const code = url.searchParams.get('code');
+            const state = url.searchParams.get('state');
+
+            if (!code || !state) {
+                setIsLoading(false);
+                return;
+            }
+
+            const provider = localStorage.getItem('pending_auth_provider') || 'google';
+
+            // Exchange code for profile via Rust
+            const profile = await invoke<User>('exchange_auth_token', {
+                provider,
+                code,
+                state
+            });
+
+            // --- FIREBASE SYNC ---
+            try {
+                const credential = provider === 'google'
+                    ? GoogleAuthProvider.credential(profile.token)
+                    : GithubAuthProvider.credential(profile.token);
+
+                await signInWithCredential(firebaseAuth, credential);
+                console.log('Successfully synced with Firebase Auth');
+            } catch (fbErr) {
+                console.warn('Firebase sync failed, but local auth succeeded:', fbErr);
+            }
+
+            // Update local and store
+            setUser(profile);
+            localStorage.setItem('user_session', JSON.stringify(profile));
+            localStorage.removeItem('pending_auth_provider');
+
+            await setAuthenticated(
+                {
+                    id: profile.id,
+                    name: profile.name,
+                    email: profile.email,
+                    avatar_url: profile.avatar_url,
+                    provider: profile.provider as 'google' | 'github',
+                },
+                profile.token
+            );
+
+            try {
+                await syncService.pullFromCloud();
+            } catch (syncErr) {
+                console.warn('Cloud sync failed after login:', syncErr);
+            }
+
+            toast.success(`Welcome back, ${profile.name}!`);
+            setIsLoading(false);
+
+            // If we're on a callback URL, clean up the address bar
+            if (window.location.search) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        } catch (err: any) {
+            console.error('Auth callback error:', err);
+            toast.error('Authentication failed.');
+            setIsLoading(false);
+        }
+    }, [setAuthenticated]);
 
     useEffect(() => {
         let unlisten: (() => void) | undefined;
 
-        const initDeepLink = async () => {
-            unlisten = await onOpenUrl(async (urls) => {
-                console.log('Deep link received:', urls);
+        const initAuth = async () => {
+            // 1. Check current URL for callback (Localhost flow)
+            if (window.location.search.includes('code=') && window.location.search.includes('state=')) {
+                handleAuthCallback(window.location.href);
+            }
+
+            // 2. Listen for Deep Links (Production flow)
+            unlisten = await onDeepLinkOpenUrl(async (urls) => {
                 for (const urlStr of urls) {
-                    if (urlStr.includes('typingpro://auth/callback')) {
-                        try {
-                            setIsLoading(true);
-                            setError(null);
-                            // Parse URL manually or use URL object
-                            const url = new URL(urlStr);
-                            const code = url.searchParams.get('code');
-                            const state = url.searchParams.get('state');
-
-                            if (!code || !state) {
-                                throw new Error('Missing code or state in callback');
-                            }
-
-                            const provider = localStorage.getItem('pending_auth_provider') || 'unknown';
-
-                            // Exchange code for profile
-                            const profile = await invoke<User>('exchange_auth_token', {
-                                provider,
-                                code,
-                                state
-                            });
-
-                            // Update local state
-                            setUser(profile);
-                            localStorage.setItem('user_session', JSON.stringify(profile));
-                            localStorage.removeItem('pending_auth_provider');
-
-                            // Sync with Zustand authStore
-                            await setAuthenticated(
-                                {
-                                    id: profile.id,
-                                    name: profile.name,
-                                    email: profile.email,
-                                    avatar_url: profile.avatar_url,
-                                    provider: profile.provider as 'google' | 'github',
-                                },
-                                profile.token
-                            );
-
-                            // Pull cloud data after successful login
-                            try {
-                                await syncService.pullFromCloud();
-                            } catch (syncErr) {
-                                console.warn('Cloud sync failed after login:', syncErr);
-                            }
-
-                            toast.success(`Welcome back, ${profile.name}!`);
-                            setIsLoading(false);
-                        } catch (err: any) {
-                            console.error('Token exchange failed:', err);
-                            const errorMsg = typeof err === 'string' ? err : err.message || 'Login failed';
-                            setError(errorMsg);
-                            toast.error(`Login failed: ${errorMsg}`);
-                            setIsLoading(false);
-                        }
-                    }
+                    handleAuthCallback(urlStr);
                 }
             });
         };
 
-        initDeepLink();
+        initAuth();
+        return () => { if (unlisten) unlisten(); };
+    }, [handleAuthCallback]);
 
-        return () => {
-            if (unlisten) unlisten();
-        };
-    }, [setAuthenticated]);
-
-    // On mount, sync local storage user with Zustand store
+    // On mount, sync session
     useEffect(() => {
         if (user && !useAuthStore.getState().user) {
             setAuthenticated(
@@ -149,3 +188,4 @@ export const useAuth = () => {
     return { user, login, logout, isLoading, error };
 };
 
+export default useAuth;
