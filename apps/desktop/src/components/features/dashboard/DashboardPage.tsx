@@ -6,6 +6,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard } from '../../ui/GlassCard';
 import { MissionBriefing } from './MissionBriefing';
+import { ThemePreviewCarousel } from '../../ThemePreviewCarousel';
 
 interface DashboardPageProps {
     username: string;
@@ -90,10 +91,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         prismatic
                     >
                         <div className="flex justify-between items-end">
-                            <p className="glass-text-muted text-sm max-w-[200px]">
+                            <p className="text-secondary text-sm max-w-[200px]">
                                 Validate your typing speed and earn official digital certificates.
                             </p>
-                            <div className="w-12 h-12 rounded-full glass-pill flex items-center justify-center text-xl font-bold">
+                            <div className="w-12 h-12 rounded-full glass-panel-dark flex items-center justify-center text-xl font-bold">
                                 🎖️
                             </div>
                         </div>
@@ -110,10 +111,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         className="h-48 flex flex-col justify-end"
                     >
                         <div className="flex justify-between items-end">
-                            <p className="glass-text-muted text-sm max-w-[200px]">
+                            <p className="text-secondary text-sm max-w-[200px]">
                                 AI targets your weak letter pairs for optimized muscle memory.
                             </p>
-                            <div className="w-12 h-12 rounded-full glass-pill flex items-center justify-center text-xl font-bold">
+                            <div className="w-12 h-12 rounded-full glass-panel-dark flex items-center justify-center text-xl font-bold">
                                 🧠
                             </div>
                         </div>
@@ -127,23 +128,23 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {/* WPM Stat */}
                     <GlassCard variant="compact" className="flex flex-col items-center justify-center text-center py-8">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Current SPD</span>
-                        <div className="text-5xl font-black text-white">{wpm}</div>
-                        <span className="text-[10px] font-bold text-cyan-400 mt-1 uppercase tracking-widest">Words Per Minute</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary mb-2">Current SPD</span>
+                        <div className="text-5xl font-black text-primary">{wpm}</div>
+                        <span className="text-[10px] font-bold text-accent mt-1 uppercase tracking-widest">Words Per Minute</span>
                     </GlassCard>
 
                     {/* Streak Stat */}
                     <GlassCard variant="compact" className="flex flex-col items-center justify-center text-center py-8">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Active Streak</span>
-                        <div className="text-5xl font-black text-white">{streak}</div>
-                        <span className="text-[10px] font-bold text-orange-400 mt-1 uppercase tracking-widest">Days Committed</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary mb-2">Active Streak</span>
+                        <div className="text-5xl font-black text-primary">{streak}</div>
+                        <span className="text-[10px] font-bold text-accent mt-1 uppercase tracking-widest">Days Committed</span>
                     </GlassCard>
 
                     {/* Best Stat */}
                     <GlassCard variant="compact" className="flex flex-col items-center justify-center text-center py-8">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Peak Velocity</span>
-                        <div className="text-5xl font-black text-white">{bestWpm}</div>
-                        <span className="text-[10px] font-bold text-purple-400 mt-1 uppercase tracking-widest">Personal Record</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary mb-2">Peak Velocity</span>
+                        <div className="text-5xl font-black text-primary">{bestWpm}</div>
+                        <span className="text-[10px] font-bold text-accent mt-1 uppercase tracking-widest">Personal Record</span>
                     </GlassCard>
                 </motion.div>
 
@@ -154,28 +155,33 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <GlassCard variant="compact" title="F & J Focus" subtitle="HOME ROW" cornerRadius="md">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-white/80">98%</span>
-                            <span className="text-[8px] font-bold text-lime-400">OPTIMAL</span>
+                            <span className="text-lg font-black text-primary/80">98%</span>
+                            <span className="text-[8px] font-bold text-accent">OPTIMAL</span>
                         </div>
                     </GlassCard>
                     <GlassCard variant="compact" title="K & L Focus" subtitle="HOME ROW" cornerRadius="md">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-white/80">94%</span>
-                            <span className="text-[8px] font-bold text-cyan-400">SYNCING</span>
+                            <span className="text-lg font-black text-primary/80">94%</span>
+                            <span className="text-[8px] font-bold text-accent">SYNCING</span>
                         </div>
                     </GlassCard>
                     <GlassCard variant="compact" title="E & R Focus" subtitle="TOP ROW" cornerRadius="md">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-white/80">91%</span>
-                            <span className="text-[8px] font-bold text-white/40">CALIBRATING</span>
+                            <span className="text-lg font-black text-primary/80">91%</span>
+                            <span className="text-[8px] font-bold text-secondary">CALIBRATING</span>
                         </div>
                     </GlassCard>
                     <GlassCard variant="compact" title="A & S Focus" subtitle="HOME ROW" cornerRadius="md">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-white/80">88%</span>
-                            <span className="text-[8px] font-bold text-orange-400">DRILL REQ</span>
+                            <span className="text-lg font-black text-primary/80">88%</span>
+                            <span className="text-[8px] font-bold text-secondary">DRILL REQ</span>
                         </div>
                     </GlassCard>
+                </motion.div>
+
+                {/* Theme Preview Section */}
+                <motion.div variants={itemVariants} className="col-span-1 md:col-span-2">
+                    <ThemePreviewCarousel />
                 </motion.div>
 
             </motion.div>

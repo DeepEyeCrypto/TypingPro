@@ -1,0 +1,172 @@
+/* ═══════════════════════════════════════════════════════════════════
+   VISIONOS GLASSMORPHISM DESIGN TOKENS
+   Unified styling for all glass surfaces in TypingPro
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. GLASS-UNIFIED: Main glass surface (sidebar, cards, modals, topbar)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.glass-unified {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(26px) saturate(140%);
+    -webkit-backdrop-filter: blur(26px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 26px;
+    box-shadow:
+        0 22px 60px rgba(15, 23, 42, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    transform: translateZ(0);
+    overflow: hidden;
+}
+
+.glass-unified:hover {
+    background: rgba(255, 255, 255, 0.24);
+    box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   2. GLASS-PILL: Inner selected tab / button pill style
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.glass-pill {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: all 0.2s ease-out;
+}
+
+.glass-pill:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   3. GLASS-TEXT: High contrast text for glass backgrounds
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.glass-text {
+    color: rgba(17, 24, 39, 0.95);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.glass-text-muted {
+    color: rgba(17, 24, 39, 0.6);
+    font-weight: 400;
+}
+
+.glass-text-accent {
+    color: rgba(17, 24, 39, 0.95);
+    font-weight: 700;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   4. DARK MODE VARIANTS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (prefers-color-scheme: dark) {
+    .glass-unified {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow:
+            0 22px 60px rgba(0, 0, 0, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-unified:hover {
+        background: rgba(15, 23, 42, 0.85);
+        box-shadow:
+            0 30px 80px rgba(0, 0, 0, 0.9),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .glass-pill {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .glass-pill:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .glass-text {
+        color: rgba(248, 250, 252, 0.95);
+    }
+
+    .glass-text-muted {
+        color: rgba(248, 250, 252, 0.6);
+    }
+
+    .glass-text-accent {
+        color: rgba(248, 250, 252, 0.95);
+    }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. BACKWARD-COMPATIBLE ALIASES (Legacy class support)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.glass-perfect,
+.card,
+.glass,
+.stats-card,
+.mode-card,
+.container-glass,
+.glass-card-heavy,
+.glass-heavy,
+.glass-ultra {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(26px) saturate(140%);
+    -webkit-backdrop-filter: blur(26px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 26px;
+    box-shadow:
+        0 22px 60px rgba(15, 23, 42, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    transform: translateZ(0);
+    overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .glass-perfect,
+    .card,
+    .glass,
+    .stats-card,
+    .mode-card,
+    .container-glass,
+    .glass-card-heavy,
+    .glass-heavy,
+    .glass-ultra {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow:
+            0 22px 60px rgba(0, 0, 0, 0.8),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   6. UTILITY CLASSES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.glass-interactive {
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-interactive:hover {
+    transform: translateY(-2px);
+}
+
+.glass-interactive:active {
+    transform: translateY(0);
+}
+
+/* GPU acceleration for glass elements */
+.glass-accelerated {
+    transform: translateZ(0);
+    will-change: transform, opacity, backdrop-filter;
+    backface-visibility: hidden;
+}

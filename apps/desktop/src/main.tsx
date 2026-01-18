@@ -1,11 +1,10 @@
 import './index.css'
-import './styles/tailwind.css'
-import './styles/glass-tokens.css'
 import './styles/gpu-optimized.css'
 import './styles/zen-overlay.css'
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { ThemeProvider } from './context/ThemeContext'
 
 const ErrorFallback = ({ message, stack }: { message: string, stack?: string }) => (
   <div style={{
@@ -62,9 +61,11 @@ async function init() {
     root.render(
       <React.StrictMode>
         <ErrorBoundary fallback={<ErrorFallback message="React Runtime Error" />}>
-          <Suspense fallback={<div style={{ background: '#050505', height: '100vh' }} />}>
-            <App />
-          </Suspense>
+          <ThemeProvider>
+            <Suspense fallback={<div style={{ background: '#050505', height: '100vh' }} />}>
+              <App />
+            </Suspense>
+          </ThemeProvider>
         </ErrorBoundary>
       </React.StrictMode>
     );

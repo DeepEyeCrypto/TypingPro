@@ -5,14 +5,22 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
+
+
+
+
 interface TopBarProps {
   stats?: {
     wpm?: number;
     accuracy?: number;
     streak?: number;
+    rank?: string;
   };
   onSettingsClick?: () => void;
   onProfileClick?: () => void;
+  typing: any;
+  title?: string;
+  actions?: React.ReactNode;
 }
 
 const SettingsIcon = () => (
@@ -34,7 +42,7 @@ const UserIcon = () => (
   </svg>
 );
 
-export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfileClick }) => {
+export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfileClick, typing }) => {
   const { user, logout, login, isLoading } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -44,31 +52,33 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
   };
 
   return (
-    <header className="glass-unified flex items-center justify-between px-8 py-4 mb-6 h-16 shrink-0 transition-all">
+    <header className="glass-panel flex items-center justify-between px-8 py-4 mb-6 h-16 shrink-0 transition-all">
 
       {/* 1. BRANDING & IDENTITY */}
       <div className="flex items-center gap-4">
-        <div className="w-8 h-8 glass-pill flex items-center justify-center text-gray-900 shadow-xl font-black">P</div>
-        <h1 className="text-sm font-black text-white tracking-[0.2em] italic">
-          TYPING<span className="text-yellow-400 not-italic">PRO</span>
+        <div className="w-8 h-8 glass-panel-dark flex items-center justify-center text-accent shadow-xl font-black">P</div>
+        <h1 className="text-sm font-black text-primary tracking-[0.2em] italic">
+          TYPING<span className="text-accent not-italic">PRO</span>
         </h1>
       </div>
 
-      {/* 2. STATS CLUSTER (STAGE 4 REQUIREMENTS) */}
-      <div className="flex items-center gap-12">
+
+
+      {/* 3. STATS CLUSTER */}
+      <div className="flex items-center gap-12 ml-auto mr-12">
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-widest leading-none">Velocity</span>
-          <span className="text-lg font-black text-white tabular-nums">{stats?.wpm ?? 0} <small className="text-[9px] opacity-20">WPM</small></span>
+          <span className="text-[9px] font-black text-secondary uppercase tracking-widest leading-none">Velocity</span>
+          <span className="text-lg font-black text-primary tabular-nums">{stats?.wpm ?? 0} <small className="text-[9px] text-secondary">WPM</small></span>
         </div>
-        <div className="w-px h-6 bg-white/5" />
+        <div className="w-px h-6 bg-secondary opacity-20" />
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-widest leading-none">Precision</span>
-          <span className="text-lg font-black text-white tabular-nums">{stats?.accuracy ?? 100}%</span>
+          <span className="text-[9px] font-black text-secondary uppercase tracking-widest leading-none">Precision</span>
+          <span className="text-lg font-black text-primary tabular-nums">{stats?.accuracy ?? 100}%</span>
         </div>
-        <div className="w-px h-6 bg-white/5" />
+        <div className="w-px h-6 bg-secondary opacity-20" />
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black text-white/30 uppercase tracking-widest leading-none">Active Loop</span>
-          <span className="text-lg font-black text-cyan-400 tabular-nums">{stats?.streak ?? 0}D</span>
+          <span className="text-[9px] font-black text-secondary uppercase tracking-widest leading-none">Active Loop</span>
+          <span className="text-lg font-black text-accent tabular-nums">{stats?.streak ?? 0}D</span>
         </div>
       </div>
 
@@ -77,7 +87,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
         {/* Settings Button */}
         <button
           onClick={onSettingsClick}
-          className="glass-pill p-2.5 text-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all"
+          className="glass-panel p-2.5 text-primary shadow-lg hover:scale-110 active:scale-95 transition-all"
           aria-label="Settings"
         >
           <SettingsIcon />
@@ -88,7 +98,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="w-10 h-10 rounded-full border border-white/10 glass-unified overflow-hidden hover:border-cyan-400/50 transition-all shadow-xl group"
+              className="w-10 h-10 rounded-full border border-glass glass-panel overflow-hidden hover:border-accent transition-all shadow-xl group"
             >
               {user.avatar_url ? (
                 <img
@@ -97,7 +107,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-cyan-500/40 to-purple-500/40 flex items-center justify-center text-sm font-black text-white">
+                <div className="w-full h-full bg-primary flex items-center justify-center text-sm font-black text-primary">
                   {user.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
               )}
@@ -107,14 +117,14 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             {showDropdown && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
-                <div className="absolute right-0 top-full mt-2 w-56 glass-unified rounded-xl p-2 z-50 shadow-2xl border border-white/10">
+                <div className="absolute right-0 top-full mt-2 w-56 glass-panel rounded-xl p-2 z-50 shadow-2xl border border-glass">
                   {/* User Info Header */}
-                  <div className="px-3 py-2 border-b border-white/10 mb-2">
-                    <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                  <div className="px-3 py-2 border-b border-glass mb-2">
+                    <p className="text-sm font-bold text-primary truncate">{user.name}</p>
                     {user.email && (
-                      <p className="text-[10px] text-white/50 truncate">{user.email}</p>
+                      <p className="text-[10px] text-secondary truncate">{user.email}</p>
                     )}
-                    <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-full">
+                    <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest text-accent glass-panel-dark px-2 py-0.5 rounded-full">
                       {user.provider}
                     </span>
                   </div>
@@ -122,7 +132,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
                   {/* Profile Link */}
                   <button
                     onClick={() => { onProfileClick?.(); setShowDropdown(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-secondary hover:text-primary hover:bg-white/10 rounded-lg transition-all"
                   >
                     <UserIcon />
                     <span className="font-medium">Profile</span>
@@ -131,7 +141,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
                   {/* Logout */}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-white/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                   >
                     <LogoutIcon />
                     <span className="font-medium">Sign Out</span>
@@ -146,7 +156,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             <button
               onClick={() => login('google')}
               disabled={isLoading}
-              className="w-10 h-10 rounded-full border border-white/10 glass-unified overflow-hidden hover:border-white/40 transition-all shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+              className="w-10 h-10 rounded-full border border-white/10 glass-panel overflow-hidden hover:border-white/40 transition-all shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
               title="Sign in with Google"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -160,7 +170,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             <button
               onClick={() => login('github')}
               disabled={isLoading}
-              className="w-10 h-10 rounded-full border border-white/10 glass-unified overflow-hidden hover:border-white/40 transition-all shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center text-white"
+              className="w-10 h-10 rounded-full border border-white/10 glass-panel overflow-hidden hover:border-white/40 transition-all shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
               title="Sign in with GitHub"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -168,7 +178,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
               </svg>
             </button>
             {isLoading && (
-              <span className="text-[8px] font-black text-cyan-400 animate-pulse tracking-widest uppercase">
+              <span className="text-[8px] font-black text-accent animate-pulse tracking-widest uppercase">
                 CONNECTING...
               </span>
             )}

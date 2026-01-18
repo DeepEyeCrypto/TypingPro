@@ -54,7 +54,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
 
     return (
         <aside
-            className="glass-unified flex flex-col items-center justify-between h-full w-16 py-6 transition-all"
+            className="glass-panel flex flex-col items-center justify-between h-full w-16 py-6 transition-transform duration-300 ease-in-out fixed left-0 top-0 z-40 transform -translate-x-full md:translate-x-0 md:relative"
             style={{ '--contrast-text': textColor } as React.CSSProperties}
         >
             {/* Navigation Items */}
@@ -67,8 +67,8 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                             w-10 h-10 flex items-center justify-center rounded-xl 
                             transition-all duration-200 ease-out shrink-0
                             ${item.active
-                                ? 'glass-pill text-gray-900 shadow-lg'
-                                : 'text-white/70 hover:text-white hover:bg-white/10'
+                                ? 'glass-panel-dark text-accent shadow-lg'
+                                : 'text-secondary hover:text-primary hover:bg-white/10'
                             }
                         `}
                         title={item.label}
@@ -85,7 +85,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
             <div className="flex flex-col gap-4 items-center w-full">
                 {/* Sync indicator */}
                 {syncing && (
-                    <div className="text-[10px] text-white/50 animate-pulse font-medium tracking-wider">
+                    <div className="text-[10px] text-accent animate-pulse font-medium tracking-wider">
                         SYNC
                     </div>
                 )}
@@ -93,7 +93,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                 {/* Volume Toggle */}
                 <button
                     onClick={toggleMute}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all duration-200"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-secondary hover:text-primary hover:bg-white/10 transition-all duration-200"
                     title={isMuted ? "Unmute" : "Mute"}
                 >
                     {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
@@ -107,8 +107,8 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                             w-10 h-10 flex items-center justify-center rounded-xl 
                             transition-all duration-200 ease-out
                             ${items.find(i => i.id === 'settings')?.active
-                                ? 'glass-pill text-gray-900'
-                                : 'text-white/50 hover:text-white hover:bg-white/10'
+                                ? 'glass-panel-dark text-accent'
+                                : 'text-secondary hover:text-primary hover:bg-white/10'
                             }
                         `}
                         title="Settings"

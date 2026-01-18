@@ -58,11 +58,11 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
     // Build class string
     const baseClasses = `
-        glass-unified
+        glass-panel
         ${paddingMap[variant]}
         ${radiusMap[cornerRadius]}
-        ${interactive ? 'cursor-pointer glass-interactive' : ''}
-        ${prismatic ? 'ring-1 ring-white/20 ring-offset-2 ring-offset-transparent' : ''}
+        ${interactive ? 'cursor-pointer hover:shadow-lg' : ''}
+        ${prismatic ? 'border-accent' : ''}
         ${className}
     `.trim().replace(/\s+/g, ' ');
 
@@ -91,18 +91,18 @@ export const GlassCard: React.FC<GlassCardProps> = ({
                 <div className="flex items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
                         {icon && (
-                            <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white/70">
+                            <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-accent">
                                 {icon}
                             </div>
                         )}
                         <div className="flex flex-col">
                             {title && (
-                                <h3 className="text-lg font-bold text-white tracking-tight">
+                                <h3 className="text-lg font-bold text-primary tracking-tight">
                                     {title}
                                 </h3>
                             )}
                             {subtitle && (
-                                <span className="text-xs text-white/50 font-medium">
+                                <span className="text-xs text-secondary font-medium">
                                     {subtitle}
                                 </span>
                             )}
@@ -142,7 +142,7 @@ export const GlassSurface: React.FC<GlassSurfaceProps> = ({
     };
 
     return (
-        <div className={`glass-unified ${radiusMap[cornerRadius]} ${className}`}>
+        <div className={`glass-panel ${radiusMap[cornerRadius]} ${className}`}>
             {children}
         </div>
     );

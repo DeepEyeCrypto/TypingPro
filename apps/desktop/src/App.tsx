@@ -19,7 +19,7 @@ import { friendService } from './core/friendService'
 import { userService } from './core/userService'
 import { matchmakingService } from './core/matchmakingService'
 // import '@/styles/glass-blur.css' // Replaced by glass-unified.css imported in main.tsx
-import './styles/themes.css'
+// import './styles/themes.css' // Replaced by Index.css Theme Engine
 import { TitleBar } from './components/layout/TitleBar'
 import { useUpdater } from './hooks/useUpdater'
 import { useLockdown } from './hooks/useLockdown'
@@ -38,6 +38,7 @@ import { DevHud } from './components/features/dev/DevHud'
 import { AppLayout } from './components/layout/AppLayout' // Unified Layout
 import { SideNav } from './components/layout/SideNav'
 import { TopBar as ModernTopBar } from './components/layout/TopBar'
+import { ThemeSwitcher } from './components/ThemeSwitcher'
 import { Button } from './components/ui/Button'
 import { AuthButtons } from './components/features/auth/AuthButtons'
 import { AuthPage } from './components/pages/AuthPage'
@@ -243,6 +244,7 @@ const App: React.FC = () => {
             />
           }
         >
+          <ThemeSwitcher />
           <TitleBar />
           <WhatsNewModal />
           <UsernameModal />
