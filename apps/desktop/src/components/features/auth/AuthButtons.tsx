@@ -1,150 +1,137 @@
-import React from 'react'
-import { invoke } from '@tauri-apps/api/core'
-import { open } from '@tauri-apps/plugin-shell'
-import { start } from '@fabianlars/tauri-plugin-oauth'
-import { useAuthStore } from '../../../core/store/authStore'
-import { syncService } from '../../../core/syncService'
+import React, { useState } from 'react';
+import { useAuth } from '../../../hooks/useAuth';
+import { syncService } from '../../../core/syncService';
 
-export const AuthButtons = () => {
-  const { user, setAuthenticated, logout } = useAuthStore()
+// SVG Icons
+const GoogleIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+  </svg>
+);
 
-  const handleLogin = async (provider: 'google' | 'github') => {
-    try {
-      // 1. Start Listener on 1420
-      const port = await start({ ports: [1420] })
+const GitHubIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.42 22 12c0-5.523-4.477-10-10-10z" />
+  </svg>
+);
 
-      // 2. Get Auth URL from Rust
-      const url = await invoke<string>(`${provider}_login`)
+const LogoutIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" />
+    <line x1="21" y1="12" x2="9" y2="12" />
+  </svg>
+);
 
-      // 3. Open Browser
-      await open(url)
+export const AuthButtons: React.FC = () => {
+  const { user, login, logout, isLoading, error } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
 
-      // 4. Wait for Code
-      const code = await start({ ports: [1420] })
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+  };
 
-      if (typeof code === 'string') {
-        const userData = await invoke<any>(`${provider}_auth_finish`, { code })
-        setAuthenticated(userData, userData.token)
-        syncService.pullFromCloud()
-      }
-
-    } catch (e) {
-      console.error(`Failed ${provider} auth`, e)
-    }
-  }
-
-  const loginGoogle = () => handleLogin('google')
-  const loginGithub = () => handleLogin('github')
-
+  // Authenticated State: Show user avatar with dropdown
   if (user) {
     return (
-      <div className="user-profile">
-        {user.avatar_url && <img src={user.avatar_url} alt={user.name} className="avatar shadow-2xl" />}
-        <button className="auth-btn logout" onClick={logout} title="Logout">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
+      <div className="relative">
+        <button
+          onClick={() => setShowDropdown(!showDropdown)}
+          className="flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-all group"
+        >
+          {user.avatar_url ? (
+            <img
+              src={user.avatar_url}
+              alt={user.name}
+              className="w-9 h-9 rounded-full border-2 border-white/20 group-hover:border-cyan-400/50 transition-all shadow-lg"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white font-black text-sm border-2 border-white/20">
+              {user.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+          )}
         </button>
-        <style>{`
-          .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            position: relative;
-            z-index: 999;
-          }
-          .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-             border: 2px solid rgba(0, 0, 0, 0.1);
-          }
-          .logout {
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-             background: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: rgba(0, 0, 0, 0.6);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-           .logout:hover {
-            color: #000000;
-            background: rgba(0, 0, 0, 0.1);
-            transform: scale(1.1);
-          }
-        `}</style>
+
+        {/* Dropdown Menu */}
+        {showDropdown && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowDropdown(false)}
+            />
+            {/* Menu */}
+            <div className="absolute right-0 top-full mt-2 w-56 glass-unified rounded-xl p-2 z-50 shadow-2xl border border-white/10">
+              {/* User Info */}
+              <div className="px-3 py-2 border-b border-white/10 mb-2">
+                <p className="text-sm font-bold text-white truncate">{user.name}</p>
+                {user.email && (
+                  <p className="text-[10px] text-white/50 truncate">{user.email}</p>
+                )}
+                <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded-full">
+                  {user.provider === 'google' ? 'Google' : 'GitHub'}
+                </span>
+              </div>
+
+              {/* Actions */}
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-white/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all group"
+              >
+                <LogoutIcon />
+                <span className="font-medium">Sign Out</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
-    )
+    );
   }
 
+  // Unauthenticated State: Show login buttons
   return (
-    <div className="auth-buttons">
-      <button onClick={loginGoogle} className="auth-btn" title="Sign in with Google">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path
-            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            className="fill-black"
-          />
-          <path
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            className="fill-black opacity-40"
-          />
-          <path
-            d="M1.18 16.93l3.66-2.84c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93z"
-            className="fill-black opacity-60"
-          />
-          <path
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            className="fill-black opacity-20"
-          />
-        </svg>
-      </button>
-      <button onClick={loginGithub} className="auth-btn" title="Sign in with GitHub">
-        <svg width="18" height="18" viewBox="0 0 24 24" className="fill-black opacity-80">
-          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.28-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-        </svg>
+    <div className="flex items-center gap-2">
+      {/* Google Login */}
+      <button
+        onClick={() => login('google')}
+        disabled={isLoading}
+        className="glass-unified w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 group border border-white/10 hover:border-white/20"
+        title="Sign in with Google"
+      >
+        <div className="group-hover:scale-110 transition-transform">
+          <GoogleIcon />
+        </div>
       </button>
 
-      <style>{`
-        .auth-buttons {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-          position: relative;
-          z-index: 9999;
-        }
-        .auth-btn {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-           background: rgba(0, 0, 0, 0.05);
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-           transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          color: rgba(0, 0, 0, 0.6);
-          position: relative;
-          z-index: 9999;
-          pointer-events: auto !important;
-        }
-         .auth-btn:hover {
-          color: #000000;
-          background: rgba(0, 0, 0, 0.1);
-          border-color: rgba(0, 0, 0, 0.2);
-          transform: scale(1.1);
-          box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
-        }
-      `}</style>
+      {/* GitHub Login */}
+      <button
+        onClick={() => login('github')}
+        disabled={isLoading}
+        className="glass-unified w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 group border border-white/10 hover:border-white/20 text-white"
+        title="Sign in with GitHub"
+      >
+        <div className="group-hover:scale-110 transition-transform">
+          <GitHubIcon />
+        </div>
+      </button>
+
+      {/* Loading Indicator */}
+      {isLoading && (
+        <span className="text-[9px] font-black text-cyan-400 animate-pulse tracking-widest uppercase ml-2">
+          CONNECTING...
+        </span>
+      )}
+
+      {/* Error Display */}
+      {error && !isLoading && (
+        <span className="text-[9px] font-black text-red-400 tracking-wider uppercase ml-2 max-w-[100px] truncate" title={error}>
+          ERROR
+        </span>
+      )}
     </div>
-  )
-}
+  );
+};

@@ -18,7 +18,7 @@ import { getRankForWPM } from './core/rankSystem'
 import { friendService } from './core/friendService'
 import { userService } from './core/userService'
 import { matchmakingService } from './core/matchmakingService'
-// import '@/styles/glass-blur.css' // Replaced by glass-perfect.css imported in main.tsx
+// import '@/styles/glass-blur.css' // Replaced by glass-unified.css imported in main.tsx
 import './styles/themes.css'
 import { TitleBar } from './components/layout/TitleBar'
 import { useUpdater } from './hooks/useUpdater'
@@ -35,7 +35,7 @@ import { useDevChord } from './hooks/useDevChord'
 import { DevHud } from './components/features/dev/DevHud'
 
 // NEW UI PRIMITIVES
-import { AppShell } from './components/layout/AppShell'
+import { AppLayout } from './components/layout/AppLayout' // Unified Layout
 import { SideNav } from './components/layout/SideNav'
 import { TopBar as ModernTopBar } from './components/layout/TopBar'
 import { Button } from './components/ui/Button'
@@ -54,6 +54,12 @@ import { GamificationPage } from './components/features/gamification/Gamificatio
 import { CertificationPage } from './components/features/certification/CertificationPage'
 import { AchievementToast } from './components/features/gamification/AchievementToast'
 import { useAchievementStore } from './core/store/achievementStore'
+
+// GLOBAL TOAST NOTIFICATIONS
+import { ToastContainer } from './components/ui/ToastContainer'
+
+// AUTH PROTECTION
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
 // ICONS for SideNav
 const PracticeIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8" /></svg>;
@@ -186,26 +192,10 @@ const App: React.FC = () => {
 
   return (
     <>
-      {/* 1. MESH GRADIENT BASE */}
-      <div className="fixed inset-0 bg-[radial-gradient(at_0%_0%,_hsla(253,16%,7%,1)_0,_transparent_50%),_radial-gradient(at_50%_0%,_hsla(225,39%,30%,1)_0,_transparent_50%),_radial-gradient(at_100%_0%,_hsla(339,49%,30%,1)_0,_transparent_50%)] pointer-events-none z-[-1]" />
-
-      {/* 2. AURORA ORBS (FLOATING COLORS) */}
-      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-40 animate-blob pointer-events-none z-[-1]" />
-      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-cyan-600 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-2000 pointer-events-none z-[-1]" />
-      <div className="fixed -bottom-8 left-20 w-[600px] h-[600px] bg-pink-600 rounded-full mix-blend-screen filter blur-[128px] opacity-30 animate-blob animation-delay-4000 pointer-events-none z-[-1]" />
-
-      {/* GLOBAL FROSTED NOISE OVERLAY */}
-      <div
-        className="fixed inset-0 z-[9999] opacity-[0.03] pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
-        }}
-      />
-
       {isLoading && <SplashScreen onComplete={() => setIsLoading(false)} />}
 
       {!isLoading && (
-        <AppShell
+        <AppLayout
           activeView={typing.view}
           sidebar={
             <SideNav
@@ -259,6 +249,7 @@ const App: React.FC = () => {
           <RankCelebration />
           <AchievementToast />
           <DevHud />
+          <ToastContainer />
 
           {typing.view === 'dashboard' ? (
             <DashboardPage
@@ -289,7 +280,9 @@ const App: React.FC = () => {
               onResetMission={typing.resetMission}
             />
           ) : typing.view === 'profile' ? (
-            <ProfilePage />
+            <ProtectedRoute fallbackMessage="Sign in to view your profile and stats">
+              <ProfilePage />
+            </ProtectedRoute>
           ) : typing.view === 'store' ? (
             <StorePage onBack={() => typing.setView('dashboard')} />
           ) : typing.view === 'settings' ? (
@@ -312,17 +305,19 @@ const App: React.FC = () => {
               onCertificationAttempt={() => typing.setView('certification')}
             />
           ) : typing.view === 'certification' ? (
-            <CertificationPage
-              userId={user?.id || 'guest'}
-              username={user?.name || 'Typist'}
-              earnedCertifications={certifications}
-              onCertificationEarned={(cert, reward) => {
-                useAchievementStore.getState().addCertification(cert);
-                useAchievementStore.getState().addKeystones(reward);
-                syncService.pushToCloud();
-              }}
-              onBack={() => typing.setView('achievements')}
-            />
+            <ProtectedRoute fallbackMessage="Sign in to earn and track certifications">
+              <CertificationPage
+                userId={user?.id || 'guest'}
+                username={user?.name || 'Typist'}
+                earnedCertifications={certifications}
+                onCertificationEarned={(cert, reward) => {
+                  useAchievementStore.getState().addCertification(cert);
+                  useAchievementStore.getState().addKeystones(reward);
+                  syncService.pushToCloud();
+                }}
+                onBack={() => typing.setView('achievements')}
+              />
+            </ProtectedRoute>
           ) : typing.view === 'selection' ? (
             <LessonSelector
               unlockedIds={typing.unlockedIds}
@@ -347,18 +342,20 @@ const App: React.FC = () => {
               }}
             />
           ) : typing.view === 'social' ? (
-            <SocialDashboard
-              onBack={() => typing.setView('selection')}
-              onPlayGhost={(lessonId, ghostData) => {
-                const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
-                if (lesson) {
-                  typing.startLesson(lesson, ghostData)
-                } else {
-                  console.error("Lesson not found for ghost replay:", lessonId)
-                }
-              }}
-              onNavigateToLobby={() => typing.setView('lobby')}
-            />
+            <ProtectedRoute fallbackMessage="Sign in to connect with other typists">
+              <SocialDashboard
+                onBack={() => typing.setView('selection')}
+                onPlayGhost={(lessonId, ghostData) => {
+                  const lesson = CURRICULUM.find((l: any) => l.id === lessonId)
+                  if (lesson) {
+                    typing.startLesson(lesson, ghostData)
+                  } else {
+                    console.error("Lesson not found for ghost replay:", lessonId)
+                  }
+                }}
+                onNavigateToLobby={() => typing.setView('lobby')}
+              />
+            </ProtectedRoute>
           ) : typing.view === 'lobby' ? (
             <Lobby
               onBack={() => typing.setView('social')}
@@ -438,7 +435,7 @@ const App: React.FC = () => {
               }}
             />
           )}
-        </AppShell>
+        </AppLayout>
       )}
     </>
   )
