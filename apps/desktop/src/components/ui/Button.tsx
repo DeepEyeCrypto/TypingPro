@@ -18,9 +18,9 @@ export const Button: React.FC<ButtonProps> = ({
 
     const variants = {
         primary: 'bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_35px_rgba(168,85,247,0.6)] min-w-[120px] font-black rounded-full border border-white/20',
-        secondary: 'glass-perfect rounded-full text-white hover:bg-white/10 font-bold',
+        secondary: 'glass-unified rounded-full text-white hover:bg-white/10 font-bold',
         ghost: 'text-white opacity-30 hover:opacity-100 hover:bg-white/5 rounded-full',
-        danger: 'glass-perfect rounded-full text-white opacity-40 hover:opacity-100 hover:bg-white/10'
+        danger: 'glass-unified rounded-full text-white opacity-40 hover:opacity-100 hover:bg-white/10'
     };
 
     const sizes = {

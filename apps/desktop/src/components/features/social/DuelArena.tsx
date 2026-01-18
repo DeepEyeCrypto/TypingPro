@@ -128,7 +128,7 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
     }
 
     return (
-        <div className="w-full h-full glass-perfect flex flex-col p-8 overflow-hidden">
+        <div className="w-full h-full glass-unified flex flex-col p-8 overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
@@ -146,7 +146,7 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
 
             <div className="flex-1 grid grid-cols-2 gap-8 mb-8">
                 {/* Me */}
-                <Card className="p-6 bg-black/5 border-black/10">
+                <Card className="p-6 bg-black/5 border-black/10 glass-unified">
                     <div className="flex items-center gap-4 mb-4">
                         <img src={profile?.avatar_url} className="w-12 h-12 rounded-full border border-black/10" alt="" />
                         <div className="flex-1">
@@ -163,7 +163,7 @@ export const DuelArena: React.FC<Props> = ({ duelId, onEnd }) => {
                 </Card>
 
                 {/* Opponent */}
-                <Card className="p-6 bg-black/5 border-black/10">
+                <Card className="p-6 bg-black/5 border-black/10 glass-unified">
                     <div className="flex items-center gap-4 mb-4">
                         <img src={oppAvatar || 'https://via.placeholder.com/48'} className="w-12 h-12 rounded-full border border-black/10" alt="" />
                         <div className="flex-1">

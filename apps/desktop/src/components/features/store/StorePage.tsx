@@ -127,7 +127,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                             className={`p-4 transition-all ${getRarityBorder(cosmetic.rarity)}`}
                         >
                             {/* Preview Image */}
-                            <div className="aspect-square glass-perfect mb-3 flex items-center justify-center overflow-hidden shadow-inner">
+                            <div className="aspect-square glass-unified mb-3 flex items-center justify-center overflow-hidden shadow-inner">
                                 {cosmetic.preview_url ? (
                                     <img
                                         src={cosmetic.preview_url}

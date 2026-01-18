@@ -32,7 +32,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
             <div
-                className="relative max-w-2xl w-full glass-perfect rounded-3xl overflow-hidden"
+                className="relative max-w-2xl w-full glass-unified rounded-3xl overflow-hidden"
                 style={{
                     boxShadow: `0 0 60px ${color}40`,
                     border: `2px solid ${color}`,

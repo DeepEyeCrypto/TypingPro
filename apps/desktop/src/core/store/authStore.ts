@@ -14,8 +14,9 @@ interface AuthState {
     user: User | null,
     profile: UserProfile | null, // Added profile
     token: string | null,
+    isAuthenticated: boolean,
     isGuest: boolean,
-    isLoadingProfile: boolean, // Loading state for profile
+    isLoadingProfile: boolean,
     setAuthenticated: (user: User, token?: string) => Promise<void>, // Made async
     refreshProfile: () => Promise<void>,
     setGuest: () => void,
@@ -27,11 +28,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
     profile: null,
     token: null,
+    isAuthenticated: false,
     isGuest: true,
     isLoadingProfile: false,
 
     setAuthenticated: async (user, token = undefined) => {
-        set({ user, token: token || null, isGuest: false, isLoadingProfile: true })
+        set({ user, token: token || null, isAuthenticated: true, isGuest: false, isLoadingProfile: true })
         // Persist to Store
         storeService.setUserProfile(user)
         if (token) storeService.setAuthToken(token)
@@ -54,15 +56,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     },
 
     setGuest: () => {
-        set({ user: null, profile: null, token: null, isGuest: true })
+        set({ user: null, profile: null, token: null, isAuthenticated: false, isGuest: true })
         storeService.clearAuth()
     },
 
     logout: () => {
-        set({ user: null, profile: null, token: null, isGuest: true })
+        set({ user: null, profile: null, token: null, isAuthenticated: false, isGuest: true })
         storeService.clearAuth()
         localStorage.removeItem('auth_user')
-        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_session') // Added for useAuth hook consistency
     },
 
     checkSession: async () => {

@@ -31,7 +31,7 @@ export const RaceTrack: React.FC = () => {
             {players.map((player) => (
                 <div key={player.id} className="relative w-full">
                     {/* Track Base */}
-                    <div className="w-full h-8 glass-perfect rounded-full overflow-hidden relative">
+                    <div className="w-full h-8 glass-unified rounded-full overflow-hidden relative">
 
                         {/* Progress Fill (Optional - maybe just cursor?) */}
                         {/* Let's do a glowing trail */}
@@ -52,7 +52,7 @@ export const RaceTrack: React.FC = () => {
                              `} />
 
                             {/* Player Name Tooltip */}
-                            <div className="absolute -top-8 whitespace-nowrap text-xs font-bold text-white/80 glass-perfect bg-black/50 px-2 py-1 rounded">
+                            <div className="absolute -top-8 whitespace-nowrap text-xs font-bold text-white/80 glass-unified bg-black/50 px-2 py-1 rounded">
                                 {player.username} ({Math.round(player.wpm)} WPM)
                             </div>
                         </div>

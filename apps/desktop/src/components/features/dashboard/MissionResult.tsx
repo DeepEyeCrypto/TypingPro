@@ -43,7 +43,7 @@ export const MissionResult: React.FC<MissionResultProps> = ({
                     transition={{ type: 'spring', damping: 20, stiffness: 100 }}
                     className="relative w-full max-w-3xl"
                 >
-                    <div className="glass-perfect rounded-[3.5rem] p-16 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.8)] relative overflow-hidden">
+                    <div className="glass-unified rounded-[3.5rem] p-16 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.8)] relative overflow-hidden">
 
                         {/* Status Label */}
                         <div className="flex justify-center mb-12">
@@ -77,7 +77,7 @@ export const MissionResult: React.FC<MissionResultProps> = ({
 
                             {/* Stats Grid */}
                             <div className="grid grid-cols-2 gap-8 w-full mb-16">
-                                <div className="glass-perfect rounded-[2.5rem] p-10 relative group overflow-hidden">
+                                <div className="glass-unified rounded-[2.5rem] p-10 relative group overflow-hidden">
                                     <div className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-black mb-4">VELOCITY_LOG</div>
                                     <div className="flex items-baseline justify-center gap-2">
                                         <span className="text-7xl font-black text-white tracking-tighter">{wpm}</span>

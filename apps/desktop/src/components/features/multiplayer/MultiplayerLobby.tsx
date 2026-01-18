@@ -26,7 +26,7 @@ export const MultiplayerLobby: React.FC = () => {
     return (
         <div className="h-full w-full flex items-center justify-center p-8 relative">
 
-            <GlassCard className="w-full max-w-4xl p-8 min-h-[600px] flex flex-col items-center gap-8 relative z-10">
+            <GlassCard className="w-full max-w-4xl p-8 min-h-[600px] flex flex-col items-center gap-8 relative z-10 glass-unified">
                 {/* Header */}
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic drop-shadow-lg">

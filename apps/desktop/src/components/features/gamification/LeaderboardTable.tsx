@@ -17,7 +17,6 @@ const PERIOD_LABELS: Record<LeaderboardPeriod, string> = {
 };
 
 import { GlassCard } from '../../ui/GlassCard';
-import { GlassSurface } from '../../ui/glass/GlassSurface';
 
 // Optimized Row with premium glass tier
 const TableRow = React.memo(({ entry, isCurrentUser }: { entry: LeaderboardEntry, isCurrentUser: boolean }) => {
@@ -104,10 +103,8 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
     return (
         <div className="space-y-6">
             {/* Header with tabs */}
-            <GlassSurface
-                elevation="low"
-                cornerRadius="md"
-                className="flex gap-2 p-1.5 bg-white/5 border-white/10"
+            <div
+                className="flex gap-2 p-1.5 bg-white/5 border border-white/10 rounded-xl"
             >
                 {(['daily', 'weekly', 'alltime'] as LeaderboardPeriod[]).map(p => (
                     <button
@@ -124,7 +121,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                         {PERIOD_LABELS[p]}
                     </button>
                 ))}
-            </GlassSurface>
+            </div>
 
             {/* List */}
             <div className="min-h-[500px]">

@@ -10,7 +10,7 @@ const MuteToggle: React.FC = () => {
         <button
             onClick={toggleMute}
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-white/5
-                ${isMuted ? 'bg-white/5 text-white/20' : 'glass-perfect text-white shadow-glass-edge'} 
+                ${isMuted ? 'bg-white/5 text-white/20' : 'glass-unified text-white shadow-glass-edge'} 
                 hover:scale-105 active:scale-95`}
             title={isMuted ? "Unmute Audio" : "Mute Audio"}
         >

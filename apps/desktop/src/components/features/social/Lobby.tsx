@@ -1,6 +1,11 @@
+// ═══════════════════════════════════════════════════════════════════
+// LOBBY: VisionOS-style matchmaking and duel preparation
+// ═══════════════════════════════════════════════════════════════════
+
 import React, { useState, useEffect } from 'react';
 import { matchmakingService } from '../../../core/matchmakingService';
 import { useAuthStore } from '../../../core/store/authStore';
+import { GlassCard } from '../../ui/GlassCard';
 
 interface Props {
     onBack: () => void;
@@ -27,7 +32,6 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
 
         return () => {
             if (interval) clearInterval(interval);
-            // Cleanup on unmount
             if (isSearching) {
                 matchmakingService.leaveQueue();
                 matchmakingService.stopListening();
@@ -37,24 +41,14 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
 
     const handleFindMatch = async () => {
         if (!user) return;
-
         try {
             setIsSearching(true);
             setStatusText("Searching for worthy adversary...");
-
-            // 1. Join Queue
-            // For MVP, just using avg WPM of 50 if stats not ready?
-            // Ideally fetch from store.
             await matchmakingService.joinQueue(user.name || "Unknown", user.avatar_url || "", 50);
-
-            // 2. Listen
             matchmakingService.listenForMatch((matchId) => {
                 setStatusText("Match Found! Entering Arena...");
-                setTimeout(() => {
-                    onMatchFound(matchId);
-                }, 1500);
+                setTimeout(() => onMatchFound(matchId), 1500);
             });
-
         } catch (error) {
             console.error(error);
             setStatusText("Error joining queue.");
@@ -70,38 +64,60 @@ const Lobby: React.FC<Props> = ({ onBack, onMatchFound }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full text-black font-mono relative">
-            <button onClick={onBack} className="absolute top-8 left-8 text-sm hover:underline uppercase tracking-widest opacity-50 hover:opacity-100 transition-all">← Exit Lobby</button>
-            {/* Radar Animation Area */}
-            <div className="relative w-64 h-64 mb-8 flex items-center justify-center">
-                {isSearching && (
-                    <>
-                        <div className="absolute w-full h-full border border-black/10 rounded-full animate-ping opacity-20"></div>
-                        <div className="absolute w-48 h-48 border border-black/20 rounded-full animate-pulse"></div>
-                    </>
-                )}
-                <div className="z-10 text-6xl">⚔️</div>
-            </div>
+        <div className="flex flex-col items-center justify-center min-h-[70vh] w-full max-w-2xl mx-auto p-6 animate-in fade-in duration-700">
 
-            <h2 className="text-2xl mb-4 font-bold tracking-widest uppercase">
-                {statusText}
-            </h2>
+            <GlassCard variant="large" className="w-full flex flex-col items-center py-16 gap-8 text-center relative overflow-hidden">
 
-            {!isSearching ? (
-                <button
-                    onClick={handleFindMatch}
-                    className="glass-button text-black font-bold uppercase tracking-widest text-lg px-12 py-4 border-black/20 hover:bg-black/5"
-                >
-                    Find Match
-                </button>
-            ) : (
-                <button
-                    onClick={handleCancel}
-                    className="mt-8 glass-button text-black hover:text-black opacity-60 hover:opacity-100 text-sm border-black/30 hover:border-black/80"
-                >
-                    Cancel Search
-                </button>
-            )}
+                {/* Visualizer / Radar */}
+                <div className="relative w-48 h-48 flex items-center justify-center">
+                    {isSearching ? (
+                        <>
+                            <div className="absolute inset-0 border-4 border-cyan-400/20 rounded-full animate-ping" />
+                            <div className="absolute inset-4 border-2 border-white/10 rounded-full animate-pulse" />
+                            <div className="absolute inset-8 border border-white/5 rounded-full" />
+                            <div className="z-10 text-6xl animate-bounce">⚔️</div>
+                        </>
+                    ) : (
+                        <div className="z-10 text-6xl drop-shadow-2xl grayscale opacity-50">⚔️</div>
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <h2 className="text-3xl font-black text-white tracking-tight uppercase italic">{statusText}</h2>
+                    <p className="glass-text-muted text-[10px] font-black uppercase tracking-[0.3em]">Neural Matchmaking Protocol</p>
+                </div>
+
+                <div className="flex flex-col gap-4 w-full max-w-xs mt-4">
+                    {!isSearching ? (
+                        <button
+                            onClick={handleFindMatch}
+                            className="glass-pill w-full py-4 text-sm font-black text-gray-900 shadow-xl active:scale-95 transition-all uppercase tracking-widest"
+                        >
+                            Request Access
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleCancel}
+                            className="w-full py-4 text-[10px] font-black text-white/40 hover:text-white transition-colors uppercase tracking-[0.2em]"
+                        >
+                            Abort Signal Search
+                        </button>
+                    )}
+                </div>
+
+                {/* Legend / Tip */}
+                <div className="absolute bottom-6 left-0 right-0 px-8 flex justify-between">
+                    <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">Latency: 14ms</span>
+                    <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">Arena: US-EAST-1</span>
+                </div>
+            </GlassCard>
+
+            <button
+                onClick={onBack}
+                className="mt-12 text-[10px] font-black text-white/30 uppercase tracking-[0.4em] hover:text-white transition-colors decoration-none"
+            >
+                ← Return to Hub
+            </button>
         </div>
     );
 };

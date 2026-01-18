@@ -43,7 +43,7 @@ export const MissionHUD: React.FC<MissionHUDProps> = ({
 
                 {/* Status Indicator */}
                 <div className="flex flex-col items-center">
-                    <div className="px-6 py-2 rounded-full glass-perfect mb-4 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <div className="px-6 py-2 rounded-full glass-unified mb-4 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                         <span className="text-[10px] font-black text-white tracking-[0.5em] animate-pulse">
                             • Mission Active
                         </span>

@@ -41,7 +41,7 @@ export const DashboardLayout = () => {
                     {/* TypingField would go here, wrapped in a high-focus container */}
                     <div className="w-full max-w-4xl pt-12">
                         {/* Mocking the performance field */}
-                        <Card className="border-white/10 bg-white/5 dark:bg-black/30">
+                        <Card className="border-white/10 bg-white/5 dark:bg-black/30 glass-unified">
                             <div className="flex justify-center py-12">
                                 <span className="mono-text-interactive opacity-20 font-mono text-2xl">TYPING_ENGINE_READY_V1.2.40</span>
                             </div>

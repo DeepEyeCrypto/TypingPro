@@ -1,59 +1,65 @@
+// ═══════════════════════════════════════════════════════════════════
+// STATS OVERVIEW: VisionOS-style performance matrix
+// ═══════════════════════════════════════════════════════════════════
+
 import React, { Suspense, memo } from 'react';
-import { MasterGlassCard } from '../../ui/MasterGlassCard';
+import { GlassCard } from '../../ui/GlassCard';
 import { useTypingStats } from '../../../hooks/useTypingStats';
 import { RankBadge } from '../RankBadge';
 
-
-// Lazy load the chart for performance
 const WpmGlassChart = React.lazy(() => import('./WpmGlassChart'));
 
 const StatsOverview: React.FC = () => {
     const { data, averageWpm, latestAccuracy } = useTypingStats();
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
-            {/* Left Column: WPM History Chart */}
-            <MasterGlassCard className="col-span-1 lg:col-span-2 p-6 flex flex-col justify-between min-h-[300px]">
-                <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-white font-bold text-lg tracking-tight">WPM Performance</h3>
-                        <div className="flex gap-2">
-                            <span className="text-[10px] uppercase font-black tracking-widest text-white/40 bg-white/5 border border-white/10 px-3 py-1 rounded-full">Historical Matrix</span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-7xl mx-auto animate-in fade-in duration-700">
+
+            {/* PERFORMANCE CHART */}
+            <GlassCard
+                title="Performance Matrix"
+                subtitle="HISTORICAL VELOCITY"
+                variant="large"
+                className="col-span-1 lg:col-span-2 min-h-[360px]"
+            >
+                <div className="flex-1 w-full min-h-[200px] flex items-center justify-center mt-6">
+                    <Suspense fallback={
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-12 h-12 glass-pill animate-spin border-t-2 border-cyan-400" />
+                            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Compiling Hologram...</span>
+                        </div>
+                    }>
+                        <WpmGlassChart data={data} />
+                    </Suspense>
+                </div>
+            </GlassCard>
+
+            {/* QUICK METRICS */}
+            <GlassCard variant="large" className="col-span-1 flex flex-col items-center justify-center py-10">
+                <div className="text-center w-full mb-10">
+                    <span className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] block mb-6 italic">Mean Signal Velocity</span>
+                    <div className="relative">
+                        <span className="text-8xl font-black text-white tracking-tighter tabular-nums drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                            {averageWpm}
+                        </span>
+                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
+                            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Words / Min</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex-1 w-full min-h-[200px] flex items-center justify-center">
-                    <Suspense fallback={<div className="text-white/20 text-sm animate-pulse">Initializing Hologram...</div>}>
-                        <WpmGlassChart data={data} />
-                    </Suspense>
-                </div>
-            </MasterGlassCard>
-
-            {/* Right Column: Key Metrics Summary */}
-            <MasterGlassCard className="col-span-1 p-8 flex flex-col justify-center items-center">
-                <div className="text-center w-full">
-                    <h3 className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-6">Aggregate Speed</h3>
-                    <div className="relative inline-flex flex-col items-center">
-                        <span className="text-7xl font-black text-white tracking-tighter tabular-nums drop-shadow-2xl">
-                            {averageWpm}
-                        </span>
-                        <span className="text-xs font-black text-white/30 tracking-[0.2em] mt-2">WORDS PER MINUTE</span>
-                    </div>
-                </div>
-
-                <div className="mt-8 w-full flex justify-center">
+                <div className="w-full flex flex-col items-center gap-10 mt-6 pt-10 border-t border-white/5">
                     <RankBadge wpm={averageWpm} />
-                </div>
 
-                <div className="mt-10 w-full border-t border-white/10 pt-8 text-center">
-                    <h3 className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Precision Metric</h3>
-                    <div className="flex items-center justify-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                        <span className="text-3xl font-black text-white tabular-nums">{latestAccuracy}%</span>
+                    <div className="flex flex-col items-center gap-2">
+                        <span className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] italic">Current Precision</span>
+                        <div className="flex items-center gap-4">
+                            <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+                            <span className="text-4xl font-black text-white tabular-nums tracking-tighter">{latestAccuracy}%</span>
+                        </div>
                     </div>
                 </div>
-            </MasterGlassCard>
+            </GlassCard>
         </div>
     );
 };

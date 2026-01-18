@@ -25,7 +25,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className={`glass-perfect p-8 rounded-2xl w-full ${sizeClasses[size]}`}>
+            <div className={`glass-unified p-8 rounded-2xl w-full ${sizeClasses[size]}`}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     {title && <h2 className="text-2xl font-bold">{title}</h2>}

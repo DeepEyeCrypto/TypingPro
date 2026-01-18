@@ -1,9 +1,10 @@
+// ═══════════════════════════════════════════════════════════════════
+// DASHBOARD PAGE: VisionOS-style glass dashboard
+// ═══════════════════════════════════════════════════════════════════
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard } from '../../ui/GlassCard';
-import { StatsCard } from './StatsCard';
-import { CurrentLesson } from './CurrentLesson';
-import { ProfileSidebar } from './ProfileSidebar';
 import { MissionBriefing } from './MissionBriefing';
 
 interface DashboardPageProps {
@@ -35,14 +36,15 @@ const containerVariants = {
 };
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
     visible: {
         opacity: 1,
         y: 0,
+        scale: 1,
         transition: {
             type: "spring",
-            stiffness: 100,
-            damping: 20
+            stiffness: 80,
+            damping: 15
         }
     }
 };
@@ -65,107 +67,115 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 }) => {
 
     return (
-        <div className="w-full min-h-full pr-0 md:pr-2 pb-6">
-            {/* Responsive Bento Grid: Mobile(1) -> Tablet(2) -> Desktop(3) */}
+        <div className="w-full flex flex-col gap-6 p-2 md:p-6 max-w-7xl mx-auto pb-24">
+
             <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full auto-rows-[minmax(180px,auto)] pb-20 md:pb-0"
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
+                {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   STAGE 6: TOP SECTION (Hero Cards)
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
 
-                {/* 1. THERMOSTAT / WPM GAUGE (Top Left) */}
-                <motion.div variants={itemVariants} className="col-span-1 xl:row-span-4 h-full">
-                    <div className="glass-ultra rounded-2xl flex flex-col justify-center items-center p-8 relative min-h-[300px] xl:min-h-full h-full">
-                        <h3 className="text-white/70 text-sm font-bold tracking-widest absolute top-8 left-8 drop-shadow-md">Current Speed</h3>
-                        <div className="relative">
-                            {/* Circle Gauge Implementation would go here */}
-                            <div className="w-56 h-56 rounded-full border-[12px] border-white/5 flex items-center justify-center">
-                                <span className="text-8xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent transition-all duration-500">{wpm}</span>
-                                <span className="absolute bottom-10 text-cyan-500/30 text-xl font-bold">WPM</span>
+                {/* Certification Test Hero */}
+                <motion.div variants={itemVariants}>
+                    <GlassCard
+                        title="Certification Test"
+                        subtitle="PRO LEVEL AUTHENTICATION"
+                        interactive
+                        onClick={() => onStartMission(null, 90, 98)}
+                        className="h-48 flex flex-col justify-end"
+                        prismatic
+                    >
+                        <div className="flex justify-between items-end">
+                            <p className="glass-text-muted text-sm max-w-[200px]">
+                                Validate your typing speed and earn official digital certificates.
+                            </p>
+                            <div className="w-12 h-12 rounded-full glass-pill flex items-center justify-center text-xl font-bold">
+                                🎖️
                             </div>
                         </div>
-                    </div>
+                    </GlassCard>
                 </motion.div>
 
-                {/* 2. STATS CHART / ENERGY (Middle Top) */}
-                <motion.div variants={itemVariants} className="col-span-1 xl:row-span-3 h-full">
-                    <div className="glass-ultra rounded-2xl p-6 min-h-[300px] xl:min-h-full h-full">
-                        <div className="flex justify-between mb-4">
-                            <h3 className="text-red-400/80 text-xs font-bold tracking-widest drop-shadow-md">Performance</h3>
-                            <span className="text-neon-lime text-xs font-mono font-bold">LIVE</span>
+                {/* Smart Drill Hero */}
+                <motion.div variants={itemVariants}>
+                    <GlassCard
+                        title="AI Smart Drill"
+                        subtitle="ADAPTIVE NEURAL TRAINING"
+                        interactive
+                        onClick={onStartLesson}
+                        className="h-48 flex flex-col justify-end"
+                    >
+                        <div className="flex justify-between items-end">
+                            <p className="glass-text-muted text-sm max-w-[200px]">
+                                AI targets your weak letter pairs for optimized muscle memory.
+                            </p>
+                            <div className="w-12 h-12 rounded-full glass-pill flex items-center justify-center text-xl font-bold">
+                                🧠
+                            </div>
                         </div>
-                        {/* Placeholder for Recharts */}
-                        <div className="flex-1 w-full min-h-[200px] glass-ultra flex items-center justify-center text-white/20 shadow-inner">
-                            Chart Coming Soon
-                        </div>
-                    </div>
+                    </GlassCard>
                 </motion.div>
 
-                {/* 3. PROFILE / RANK (Right Column) */}
-                <motion.div variants={itemVariants} className="col-span-1 xl:row-span-6 h-full">
-                    <div className="glass-ultra rounded-2xl px-8 pt-8 pb-10 flex flex-col items-center h-full">
-                        {/* Avatar with Fallback */}
-                        <div className="w-32 h-32 rounded-full mb-6 overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center relative shadow-[0_0_20px_rgba(0,0,0,0.2)]">
-                            <img
-                                src={`https://api.dicebear.com/7.x/api/bottts/svg?seed=${username}`}
-                                alt={username}
-                                className="w-full h-full object-cover relative z-10 text-transparent"
-                                onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                    (e.target as HTMLImageElement).parentElement!.classList.add('fallback-active');
-                                }}
-                            />
-                            <span className="absolute text-4xl font-black text-white/20 select-none">
-                                {username.slice(0, 2).toUpperCase()}
-                            </span>
-                        </div>
+                {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   STAGE 6: MIDDLE SECTION (Progress/Stats)
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
 
-                        <h2 className="text-3xl font-black text-white mb-1 uppercase tracking-tight text-shadow-sm">{username}</h2>
-                        <span className="text-purple-400 font-mono text-sm tracking-[0.2em] mb-8 font-bold opacity-90">{rank} // LVL {level}</span>
+                <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {/* WPM Stat */}
+                    <GlassCard variant="compact" className="flex flex-col items-center justify-center text-center py-8">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Current SPD</span>
+                        <div className="text-5xl font-black text-white">{wpm}</div>
+                        <span className="text-[10px] font-bold text-cyan-400 mt-1 uppercase tracking-widest">Words Per Minute</span>
+                    </GlassCard>
 
-                        <div className="w-full mt-auto space-y-4 glass-ultra shadow-inner p-6">
-                            <div className="flex justify-between text-sm py-2 border-b border-white/10 last:border-0">
-                                <span className="text-white/70 font-bold tracking-wider text-xs drop-shadow-md">STREAK</span>
-                                <span className="text-white font-bold">{streak} DAYS</span>
-                            </div>
-                            <div className="flex justify-between text-sm py-2 border-b border-white/10 last:border-0">
-                                <span className="text-white/70 font-bold tracking-wider text-xs drop-shadow-md">PEAK WPM</span>
-                                <span className="text-white font-bold">{bestWpm}</span>
-                            </div>
-                            <div className="flex justify-between text-sm py-2 border-b-0">
-                                <span className="text-white/70 font-bold tracking-wider text-xs drop-shadow-md">KEYSTONES</span>
-                                <span className="text-purple-400 font-bold">{keystones} 💎</span>
-                            </div>
-                        </div>
-                    </div>
+                    {/* Streak Stat */}
+                    <GlassCard variant="compact" className="flex flex-col items-center justify-center text-center py-8">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Active Streak</span>
+                        <div className="text-5xl font-black text-white">{streak}</div>
+                        <span className="text-[10px] font-bold text-orange-400 mt-1 uppercase tracking-widest">Days Committed</span>
+                    </GlassCard>
+
+                    {/* Best Stat */}
+                    <GlassCard variant="compact" className="flex flex-col items-center justify-center text-center py-8">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-2">Peak Velocity</span>
+                        <div className="text-5xl font-black text-white">{bestWpm}</div>
+                        <span className="text-[10px] font-bold text-purple-400 mt-1 uppercase tracking-widest">Personal Record</span>
+                    </GlassCard>
                 </motion.div>
 
-                {/* 4. CURRENT LESSON (Bottom Left) */}
-                <motion.div variants={itemVariants} className="col-span-1 xl:row-span-2 h-full">
-                    <div className="glass-ultra rounded-2xl p-6 flex flex-col justify-between group cursor-pointer hover:border-neon-lime/30 transition-colors min-h-[200px] xl:min-h-full h-full" onClick={onStartLesson}>
-                        <div>
-                            <h3 className="text-neon-lime text-xs font-bold tracking-widest mb-1 drop-shadow-md">Next Lesson</h3>
-                            <h2 className="text-2xl font-black text-white leading-tight">{currentLesson.title}</h2>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-white/40 text-xs font-mono">STAGE {currentLesson.stage}</span>
-                            <div className="w-10 h-10 rounded-full bg-neon-lime flex items-center justify-center text-deep-ocean font-bold shadow-neon-glow group-hover:scale-110 transition-transform">
-                                ▶
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
+                {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   STAGE 6: BOTTOM SECTION (Focus Areas)
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
 
-                {/* 5. ACCURACY MODULE (Middle Bottom) */}
-                <motion.div variants={itemVariants} className="col-span-1 xl:row-span-3 h-full">
-                    <div className="glass-ultra rounded-2xl p-6 flex flex-col justify-center items-center min-h-[200px] xl:min-h-full h-full relative text-shadow-md">
-                        <h3 className="text-white/70 text-xs font-bold tracking-widest absolute top-6 left-6 drop-shadow-md">Accuracy</h3>
-                        <span className="text-6xl font-black bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent transition-all duration-500">{Math.round(accuracy)}%</span>
-                        <div className="w-full h-2 bg-white/10 rounded-full mt-4 overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-pink-500 to-indigo-500 shadow-[0_0_15px_rgba(168,85,247,0.4)]" style={{ width: `${accuracy}%` }} />
+                <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <GlassCard variant="compact" title="F & J Focus" subtitle="HOME ROW" cornerRadius="md">
+                        <div className="flex justify-between items-end mt-2">
+                            <span className="text-lg font-black text-white/80">98%</span>
+                            <span className="text-[8px] font-bold text-lime-400">OPTIMAL</span>
                         </div>
-                    </div>
+                    </GlassCard>
+                    <GlassCard variant="compact" title="K & L Focus" subtitle="HOME ROW" cornerRadius="md">
+                        <div className="flex justify-between items-end mt-2">
+                            <span className="text-lg font-black text-white/80">94%</span>
+                            <span className="text-[8px] font-bold text-cyan-400">SYNCING</span>
+                        </div>
+                    </GlassCard>
+                    <GlassCard variant="compact" title="E & R Focus" subtitle="TOP ROW" cornerRadius="md">
+                        <div className="flex justify-between items-end mt-2">
+                            <span className="text-lg font-black text-white/80">91%</span>
+                            <span className="text-[8px] font-bold text-white/40">CALIBRATING</span>
+                        </div>
+                    </GlassCard>
+                    <GlassCard variant="compact" title="A & S Focus" subtitle="HOME ROW" cornerRadius="md">
+                        <div className="flex justify-between items-end mt-2">
+                            <span className="text-lg font-black text-white/80">88%</span>
+                            <span className="text-[8px] font-bold text-orange-400">DRILL REQ</span>
+                        </div>
+                    </GlassCard>
                 </motion.div>
 
             </motion.div>
@@ -181,6 +191,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     constraints: ["STRICT_MODE"]
                 }}
             />
-        </div >
+        </div>
     );
 };
+
+export default DashboardPage;

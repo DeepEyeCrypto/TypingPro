@@ -26,14 +26,14 @@ export const LessonSelector = ({
       {/* Dashboard Hero Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Next Lesson Card */}
-        <Card blurLevel="l3" className="relative group overflow-hidden">
+        <Card blurLevel="l3" className="relative group overflow-hidden glass-unified">
           <div className="absolute top-0 right-0 p-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white opacity-40">Sequence_Next</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white opacity-40">Up Next</span>
           </div>
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white opacity-50">Operational_Target</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white opacity-50">Next Lesson</h3>
               <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">{nextLesson.title}</h2>
               <p className="text-sm text-white opacity-60 leading-relaxed max-w-md">{nextLesson.description}</p>
             </div>
@@ -51,7 +51,7 @@ export const LessonSelector = ({
               </Button>
               <div className="flex gap-2">
                 <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
-                  <span className="text-[10px] font-bold tabular-nums text-white opacity-60">{nextLesson.targetWPM} WPM_GOAL</span>
+                  <span className="text-[10px] font-bold tabular-nums text-white opacity-60">{nextLesson.targetWPM} WPM Goal</span>
                 </div>
               </div>
             </div>
@@ -59,18 +59,18 @@ export const LessonSelector = ({
         </Card>
 
         {/* AI COACH Card */}
-        <Card blurLevel="l3" className="relative group overflow-hidden">
+        <Card blurLevel="l3" className="relative group overflow-hidden glass-unified">
           <div className="absolute top-0 right-0 p-4">
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-              <span className="text-[10px] font-black opacity-80 uppercase tracking-[0.5em] text-white">Neural_Active</span>
+              <span className="text-[10px] font-black opacity-80 uppercase tracking-[0.5em] text-white">AI Active</span>
             </div>
           </div>
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white opacity-60">Intelligence_Training</h3>
-              <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">Smart_Drill</h2>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white opacity-60">AI Coach</h3>
+              <h2 className="text-3xl font-black text-white tracking-tight uppercase leading-none">Smart Drill</h2>
               <p className="text-sm text-white opacity-60 leading-relaxed max-w-md">
                 Tactical generation targeting mechanical weaknesses and error-prone bigrams.
               </p>
@@ -118,7 +118,7 @@ export const LessonSelector = ({
                   key={lesson.id}
                   onClick={() => onSelect(lesson)}
                   className={`
-                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden glass-perfect
+                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden glass-unified
                     border-white/5 hover:bg-white/10 hover:border-white/10 cursor-pointer shadow-2xl hover:translate-y-[-4px] text-white
                   `}
                 >

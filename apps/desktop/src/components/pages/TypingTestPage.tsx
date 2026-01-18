@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+// ═══════════════════════════════════════════════════════════════════
+// TYPING TEST PAGE: VisionOS-style focused typing environment
+// ═══════════════════════════════════════════════════════════════════
+
+import React from 'react';
 import { TypingField } from '../features/typing/TypingField';
-import { Card } from '../ui/Card';
-import { StatDisplay } from '../ui/StatDisplay';
-import { Button } from '../ui/Button';
+import { GlassCard } from '../ui/GlassCard';
 import { MissionHUD } from '../features/typing/MissionHUD';
 
 interface TypingTestPageProps {
@@ -24,10 +26,6 @@ interface TypingTestPageProps {
     }
 }
 
-/**
- * TypingTestPage: The core practice experience refactored for the new UI.
- * It provides a focused environment for high-performance typing.
- */
 export const TypingTestPage: React.FC<TypingTestPageProps> = ({
     targetText,
     input,
@@ -38,16 +36,29 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
     missionData
 }) => {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[70vh] w-full">
-            {/* PERFORMANCE METRICS OVERLAY (SUBTLE) */}
-            <div className="w-full max-w-5xl flex justify-between mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
-                <StatDisplay label="WPM" value={stats.wpm} color="hacker" trend="up" />
-                <StatDisplay label="Accuracy" value={`${stats.accuracy}%`} />
-                <StatDisplay label="Raw Speed" value={stats.rawKpm} subValue="kpm" />
+        <div className="flex flex-col items-center justify-center min-h-[80vh] w-full max-w-5xl mx-auto p-4 animate-in fade-in duration-1000">
+
+            {/* Header / Stats HUD */}
+            <div className="w-full flex justify-between items-end mb-8 px-4">
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Session Metrics</span>
+                    <h1 className="text-2xl font-black text-white tracking-tight">Active Drill</h1>
+                </div>
+
+                <div className="flex gap-8">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Velocity</span>
+                        <span className="text-3xl font-black text-white p-0 leading-none">{stats.wpm} <small className="text-xs opacity-30">WPM</small></span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] font-black text-lime-400 uppercase tracking-widest">Precision</span>
+                        <span className="text-3xl font-black text-white p-0 leading-none">{stats.accuracy}%</span>
+                    </div>
+                </div>
             </div>
 
-            {/* MAIN TYPING ZONE */}
-            <Card className="w-full max-w-5xl p-12 relative overflow-hidden">
+            {/* Main Typing Surface */}
+            <GlassCard variant="large" className="w-full relative shadow-[0_40px_100px_rgba(0,0,0,0.6)] py-16">
                 <TypingField
                     targetText={targetText}
                     input={input}
@@ -68,21 +79,33 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
                     </div>
                 )}
 
-                {/* HINT / SHORTCUTS */}
-                <div className="mt-12 flex justify-center border-t border-white/5 pt-8">
-                    <div className="flex items-center space-x-6 text-[10px] font-bold text-white uppercase tracking-widest">
-                        <span className="flex items-center bg-white/5 px-2 py-1 rounded">Tab</span>
-                        <span>to reset</span>
-                        <span className="flex items-center bg-white/5 px-2 py-1 rounded ml-4">Esc</span>
-                        <span>to pause</span>
+                {/* Tactical Shortcuts */}
+                <div className="mt-16 flex justify-center">
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2 group cursor-pointer" onClick={onReset}>
+                            <kbd className="glass-pill px-2.5 py-1 text-[10px] font-black text-gray-900 shadow-md group-hover:scale-110 transition-transform">TAB</kbd>
+                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Reset Interface</span>
+                        </div>
+                        <div className="w-px h-4 bg-white/10" />
+                        <div className="flex items-center gap-2">
+                            <kbd className="bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-[10px] font-black text-white/50">ESC</kbd>
+                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">System Pause</span>
+                        </div>
                     </div>
                 </div>
-            </Card>
+            </GlassCard>
 
-            {/* ACTIONS */}
-            <div className="mt-12 flex space-x-4 opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-forwards delay-500">
-                <Button onClick={onReset} variant="secondary">RESET_DRILL (TAB)</Button>
-                <Button variant="ghost">CHANGE_CURRICULUM</Button>
+            {/* Supplemental Actions */}
+            <div className="mt-12 flex gap-4 opacity-40 hover:opacity-100 transition-opacity">
+                <button
+                    onClick={onReset}
+                    className="glass-pill px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-900"
+                >
+                    Hard Reset
+                </button>
+                <button className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors">
+                    Reconfigure Drill
+                </button>
             </div>
         </div>
     );

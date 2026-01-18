@@ -5,7 +5,6 @@
 import React, { useState } from 'react';
 import { Badge, BadgeCategory } from '../../../types/badges';
 import { BadgeCard } from './BadgeCard';
-import { GlassSurface } from '../../ui/glass/GlassSurface';
 
 interface BadgeWithStatus extends Badge {
     unlocked: boolean;
@@ -49,10 +48,8 @@ export const BadgeGrid: React.FC<BadgeGridProps> = ({ badges, onBadgeClick }) =>
             </div>
 
             {/* Category tabs */}
-            <GlassSurface
-                elevation="low"
-                cornerRadius="md"
-                className="flex gap-2 p-1.5 bg-white/5 border-white/10 mb-8 overflow-x-auto scrollbar-hide"
+            <div
+                className="flex gap-2 p-1.5 bg-white/5 border border-white/10 mb-8 overflow-x-auto scrollbar-hide rounded-xl"
             >
                 {CATEGORIES.map(cat => (
                     <button
@@ -69,7 +66,7 @@ export const BadgeGrid: React.FC<BadgeGridProps> = ({ badges, onBadgeClick }) =>
                         {cat.label}
                     </button>
                 ))}
-            </GlassSurface>
+            </div>
 
             {/* Badge grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

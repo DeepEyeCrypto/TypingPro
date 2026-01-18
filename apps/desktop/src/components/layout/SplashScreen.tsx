@@ -75,7 +75,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             {/* Central Loading Unit */}
             <GlassCard
                 variant="glass"
-                className="w-[420px] p-8 border-white/20 relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.8)] glass-perfect"
+                className="w-[420px] p-8 border-white/20 relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.8)] glass-unified"
             >
                 {/* Prismatic Sheen Integrated */}
                 <div className="absolute inset-0 prismatic-sheen opacity-40 pointer-events-none" />

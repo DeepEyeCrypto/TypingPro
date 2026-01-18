@@ -2,9 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.54] - 2026-01-17
+## [1.2.54] - 2026-01-18
+
+### 🔐 Authentication
+
+- **Google OAuth Login**: Complete PKCE-based OAuth flow with deep-link callbacks
+  - System browser opens for secure authentication
+  - Automatic token exchange via Rust backend
+  - Cross-store synchronization between `useAuth` hook and Zustand `authStore`
+  
+- **GitHub OAuth Login**: Alternative login option with same PKCE security
+  
+- **Protected Routes**: Sensitive pages now require authentication
+  - Profile page: "Sign in to view your profile and stats"
+  - Certification page: "Sign in to earn and track certifications"
+  - Social dashboard: "Sign in to connect with other typists"
+  - Beautiful glass-styled login prompt fallback
 
 ### 🎨 UI/UX Improvements
+
+- **TopBar Auth Integration**:
+  - Login buttons (Google/GitHub) visible when not authenticated
+  - User avatar with dropdown when authenticated
+  - Profile link and Sign Out in dropdown menu
+  
+- **Toast Notifications**:
+  - Success: "Welcome back, {name}!" on login
+  - Info: "You have been signed out." on logout
+  - Error: Clear error messages on login failures
+  - Stacked glass-styled toast rendering
+
+- **GoogleLoginButton Component**: Glass-unified styling with Google branding
 
 - **User-Friendly Labels**: Replaced ~70 tactical/code-style labels with friendly, readable text across 13 components
 
@@ -60,12 +88,22 @@ All notable changes to this project will be documented in this file.
 | `STABILIZING_QUANTUM_BUFFER` | Setting up UI |
 | `RUST_NATIVE_ACTIVE` | Rust Native |
 
+### 📚 Documentation
+
+- **Comprehensive OAuth Setup Guide**: `docs/auth-google.md`
+  - Step-by-step Google Cloud Console configuration
+  - Tauri deep-link specific instructions
+  - Environment variable setup for macOS, Linux, Windows
+  - Troubleshooting section for common issues
+  - Security checklist
+
 ### 🛠 Maintenance
 
 - Component reorganization: Moved files to feature folders (`features/typing/`, `features/settings/`, `layout/`)
 - Renamed `core/store.ts` → `core/tauriStore.ts` for clarity
 - Deleted empty `src/pages/` directory
 - Fixed all import paths after file moves
+- Disabled broken Sentry initialization in Rust backend
 
 ## [1.2.53] - 2026-01-16
 
