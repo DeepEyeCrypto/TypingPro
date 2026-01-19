@@ -9,6 +9,10 @@ export const useUpdater = () => {
     const [checking, setChecking] = useState(false)
 
     const checkUpdate = async (silent = false) => {
+        // @ts-ignore
+        if (typeof window !== 'undefined' && !window.__TAURI__) {
+            return;
+        }
         setChecking(true)
         try {
             const update = await check()

@@ -21,7 +21,7 @@ const auth = getAuth(app);
 const rtdb = getDatabase(app);
 
 let analytics: Analytics | undefined;
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
     isAnalyticsSupported().then(supported => {
         if (supported && firebaseConfig.measurementId) {
             analytics = getAnalytics(app);

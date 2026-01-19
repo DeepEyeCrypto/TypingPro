@@ -1,0 +1,71 @@
+/* GPU-OPTIMIZED ANIMATIONS */
+/* Force GPU compositing for all animated elements */
+
+.typing-area,
+.typing-field,
+.keyboard-overlay,
+.rank-badge,
+.progress-dashboard,
+.zen-container {
+    /* Force compositor layer */
+    transform: translateZ(0);
+    will-change: transform, opacity;
+
+    /* Enable hardware acceleration */
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Optimize glassmorphism for GPU */
+.liquid-glass-card,
+.stat-card,
+.hero-card {
+    transform: translateZ(0);
+    will-change: transform;
+
+    /* GPU-accelerated backdrop filter */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    /* Optimize compositing */
+    isolation: isolate;
+}
+
+/* Chart animations */
+.chart-bar {
+    transform: translateZ(0);
+    will-change: transform, height;
+}
+
+/* Smooth transitions with GPU */
+.lesson-card,
+.btn-back,
+.hero-cta {
+    transform: translateZ(0);
+    will-change: transform;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lesson-card:hover {
+    transform: translateZ(0) scale(1.02);
+}
+
+/* Optimize text rendering */
+.typing-text,
+.zen-text {
+    /* Force GPU text rendering */
+    -webkit-font-smoothing: subpixel-antialiased;
+    text-rendering: optimizeSpeed;
+
+    /* Compositor layer for rapid changes */
+    transform: translateZ(0);
+    will-change: contents;
+}
+
+/* Remove will-change after animation */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        will-change: auto !important;
+        transform: none !important;
+    }
+}

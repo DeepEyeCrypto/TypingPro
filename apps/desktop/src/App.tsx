@@ -244,6 +244,7 @@ const App: React.FC = () => {
             />
           }
         >
+          {/* ThemeSwitcher moved to TopBar */}
           <ThemeSwitcher />
           <TitleBar />
           <WhatsNewModal />

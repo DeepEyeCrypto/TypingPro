@@ -20,6 +20,7 @@ interface GlassCardProps {
     elevation?: 'low' | 'medium' | 'high' | 'matte';
     cornerRadius?: 'sm' | 'md' | 'lg' | 'xl';
     prismatic?: boolean; // Special glow effect
+    mode?: 'light' | 'dark'; // Theme mode
     style?: React.CSSProperties;
 }
 
@@ -39,6 +40,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     elevation = 'medium',
     cornerRadius = 'lg',
     prismatic = false,
+    mode = 'light',
     style,
 }) => {
     // Variant-based padding
@@ -58,7 +60,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
     // Build class string
     const baseClasses = `
-        glass-panel
+        ${mode === 'dark' ? 'glass-panel-dark' : 'glass-panel'}
         ${paddingMap[variant]}
         ${radiusMap[cornerRadius]}
         ${interactive ? 'cursor-pointer hover:shadow-lg' : ''}

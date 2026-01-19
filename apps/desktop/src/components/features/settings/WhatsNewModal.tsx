@@ -22,6 +22,12 @@ export const WhatsNewModal = () => {
     }, [])
 
     const checkVersion = async () => {
+        // Skip version check if not running in Tauri
+        // @ts-ignore
+        if (!window.__TAURI__) {
+            return
+        }
+
         try {
             const currentVersion = await getVersion()
             const lastSeenVersion = localStorage.getItem('last_seen_version')

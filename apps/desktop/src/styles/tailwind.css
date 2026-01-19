@@ -32,14 +32,14 @@
     em,
     code,
     pre {
-        @apply text-white;
+        color: var(--text-primary);
         @apply transition-colors duration-200;
     }
 
     /* Subtle hover state for interactive elements */
     a:hover,
     button:hover {
-        @apply text-white/80 !important;
+        opacity: 0.8;
     }
 }
 

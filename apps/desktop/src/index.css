@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
-   ║  MASTER CSS VARIABLES – DEFAULT THEME (Nature/Homi)                     ║
+   ║  MASTER CSS VARIABLES – ROOT DEFAULTS                                   ║
    ╚══════════════════════════════════════════════════════════════════════════╝ */
 
 :root {
@@ -230,13 +230,8 @@ body {
   border-color: var(--glass-border);
 }
 
-
-.bg-accent {
-  background-color: var(--text-accent);
-}
-
-.border-accent {
-  border-color: var(--text-accent);
+.shadow-glass {
+  box-shadow: var(--glass-shadow);
 }
 
 /* Scrollbar Styling */

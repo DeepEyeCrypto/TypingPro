@@ -1,6 +1,5 @@
 import './index.css'
-import './styles/gpu-optimized.css'
-import './styles/zen-overlay.css'
+
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'

@@ -68,7 +68,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                             transition-all duration-200 ease-out shrink-0
                             ${item.active
                                 ? 'glass-panel-dark text-accent shadow-lg'
-                                : 'text-secondary hover:text-primary hover:bg-white/10'
+                                : 'text-secondary hover:text-primary hover:bg-[var(--glass-hover)]'
                             }
                         `}
                         title={item.label}
@@ -108,7 +108,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                             transition-all duration-200 ease-out
                             ${items.find(i => i.id === 'settings')?.active
                                 ? 'glass-panel-dark text-accent'
-                                : 'text-secondary hover:text-primary hover:bg-white/10'
+                                : 'text-secondary hover:text-primary hover:bg-[var(--glass-hover)]'
                             }
                         `}
                         title="Settings"

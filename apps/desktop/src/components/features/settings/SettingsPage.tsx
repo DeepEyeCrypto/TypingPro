@@ -155,36 +155,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                     </div>
                 </section>
 
-                {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                   Environment Section
-                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-                <section className="py-6 border-b border-white/10">
-                    <h3 className="text-lg font-bold text-white mb-6 tracking-tight">Environmental Backgrounds</h3>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {BACKGROUNDS.map((bg) => (
-                            <div
-                                key={bg.id}
-                                onClick={() => settings.setBackgroundImage(bg.url)}
-                                className={`
-                                    relative group cursor-pointer overflow-hidden rounded-2xl border-2 transition-all aspect-video
-                                    ${settings.backgroundImage === bg.url
-                                        ? 'border-white ring-4 ring-white/10'
-                                        : 'border-transparent hover:border-white/20'}
-                                `}
-                            >
-                                <img
-                                    src={bg.thumb}
-                                    alt={bg.name}
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{bg.name}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
 
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                    Danger Zone

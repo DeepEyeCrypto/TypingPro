@@ -153,27 +153,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
 
                 <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <GlassCard variant="compact" title="F & J Focus" subtitle="HOME ROW" cornerRadius="md">
+                    <GlassCard variant="compact" title="F & J Focus" subtitle="HOME ROW" cornerRadius="md" mode="dark">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-primary/80">98%</span>
+                            <span className="text-lg font-black text-primary opacity-80">98%</span>
                             <span className="text-[8px] font-bold text-accent">OPTIMAL</span>
                         </div>
                     </GlassCard>
-                    <GlassCard variant="compact" title="K & L Focus" subtitle="HOME ROW" cornerRadius="md">
+                    <GlassCard variant="compact" title="K & L Focus" subtitle="HOME ROW" cornerRadius="md" mode="dark">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-primary/80">94%</span>
+                            <span className="text-lg font-black text-primary opacity-80">94%</span>
                             <span className="text-[8px] font-bold text-accent">SYNCING</span>
                         </div>
                     </GlassCard>
-                    <GlassCard variant="compact" title="E & R Focus" subtitle="TOP ROW" cornerRadius="md">
+                    <GlassCard variant="compact" title="E & R Focus" subtitle="TOP ROW" cornerRadius="md" mode="dark">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-primary/80">91%</span>
+                            <span className="text-lg font-black text-primary opacity-80">91%</span>
                             <span className="text-[8px] font-bold text-secondary">CALIBRATING</span>
                         </div>
                     </GlassCard>
-                    <GlassCard variant="compact" title="A & S Focus" subtitle="HOME ROW" cornerRadius="md">
+                    <GlassCard variant="compact" title="A & S Focus" subtitle="HOME ROW" cornerRadius="md" mode="dark">
                         <div className="flex justify-between items-end mt-2">
-                            <span className="text-lg font-black text-primary/80">88%</span>
+                            <span className="text-lg font-black text-primary opacity-80">88%</span>
                             <span className="text-[8px] font-bold text-secondary">DRILL REQ</span>
                         </div>
                     </GlassCard>

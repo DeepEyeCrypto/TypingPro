@@ -7,23 +7,23 @@
    1. GLASS-UNIFIED: Main glass surface (sidebar, cards, modals, topbar)
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .glass-unified {
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(26px) saturate(140%);
-    -webkit-backdrop-filter: blur(26px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 26px;
     box-shadow:
-        0 22px 60px rgba(15, 23, 42, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+        0 22px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
     transform: translateZ(0);
     overflow: hidden;
 }
 
 .glass-unified:hover {
-    background: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.18);
     box-shadow:
-        0 30px 80px rgba(15, 23, 42, 0.7),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        0 30px 80px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
     transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -49,18 +49,18 @@
    3. GLASS-TEXT: High contrast text for glass backgrounds
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .glass-text {
-    color: rgba(17, 24, 39, 0.95);
+    color: rgba(255, 255, 255, 0.95);
     font-weight: 500;
     letter-spacing: 0.3px;
 }
 
 .glass-text-muted {
-    color: rgba(17, 24, 39, 0.6);
+    color: rgba(255, 255, 255, 0.7);
     font-weight: 400;
 }
 
 .glass-text-accent {
-    color: rgba(17, 24, 39, 0.95);
+    color: rgba(0, 0, 0, 0.95);
     font-weight: 700;
 }
 
@@ -69,18 +69,18 @@
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 @media (prefers-color-scheme: dark) {
     .glass-unified {
-        background: rgba(15, 23, 42, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: rgba(0, 0, 0, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         box-shadow:
             0 22px 60px rgba(0, 0, 0, 0.8),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .glass-unified:hover {
-        background: rgba(15, 23, 42, 0.85);
+        background: rgba(0, 0, 0, 0.75);
         box-shadow:
             0 30px 80px rgba(0, 0, 0, 0.9),
-            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     .glass-pill {
@@ -93,15 +93,15 @@
     }
 
     .glass-text {
-        color: rgba(248, 250, 252, 0.95);
+        color: rgba(255, 255, 255, 0.95);
     }
 
     .glass-text-muted {
-        color: rgba(248, 250, 252, 0.6);
+        color: rgba(34, 211, 238, 0.7);
     }
 
     .glass-text-accent {
-        color: rgba(248, 250, 252, 0.95);
+        color: rgba(255, 255, 255, 0.95);
     }
 }
 
@@ -117,14 +117,14 @@
 .glass-card-heavy,
 .glass-heavy,
 .glass-ultra {
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(26px) saturate(140%);
-    -webkit-backdrop-filter: blur(26px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 26px;
     box-shadow:
-        0 22px 60px rgba(15, 23, 42, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+        0 22px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
     transform: translateZ(0);
     overflow: hidden;
 }
@@ -140,11 +140,11 @@
     .glass-card-heavy,
     .glass-heavy,
     .glass-ultra {
-        background: rgba(15, 23, 42, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: rgba(0, 0, 0, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         box-shadow:
             0 22px 60px rgba(0, 0, 0, 0.8),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 }
 

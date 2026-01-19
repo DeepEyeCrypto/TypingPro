@@ -5,6 +5,28 @@ import { load } from '@tauri-apps/plugin-store';
 let store: Awaited<ReturnType<typeof load>> | null = null;
 
 const getStore = async () => {
+    // @ts-ignore
+    if (typeof window !== 'undefined' && !window.__TAURI__) {
+        // Return a mock store using localStorage for browser dev
+        return {
+            set: async (key: string, value: any) => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                } catch (e) { console.error('LocalStorage set error', e) }
+            },
+            get: async <T>(key: string): Promise<T | null> => {
+                try {
+                    const item = localStorage.getItem(key);
+                    return item ? JSON.parse(item) : null;
+                } catch (e) { return null; }
+            },
+            delete: async (key: string) => {
+                localStorage.removeItem(key);
+            },
+            save: async () => { } // No-op for localStorage
+        } as any;
+    }
+
     if (!store) {
         store = await load('settings.dat', { autoSave: true });
     }

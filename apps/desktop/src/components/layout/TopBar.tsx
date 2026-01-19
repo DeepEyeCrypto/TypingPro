@@ -4,6 +4,18 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../context/ThemeContext';
+import { ThemeSwitcher } from '../ThemeSwitcher';
+
+type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature';
+
+const THEMES: { name: ThemeType; label: string; emoji: string }[] = [
+  { name: 'vision', label: 'Vision', emoji: '🔮' },
+  { name: 'arctic', label: 'Arctic', emoji: '❄️' },
+  { name: 'cyberpunk', label: 'Cyber', emoji: '⚡' },
+  { name: 'aurora', label: 'Aurora', emoji: '🌌' },
+  { name: 'nature', label: 'Nature', emoji: '🌿' },
+];
 
 
 
@@ -44,6 +56,7 @@ const UserIcon = () => (
 
 export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfileClick, typing }) => {
   const { user, logout, login, isLoading } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = () => {
@@ -82,16 +95,13 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
         </div>
       </div>
 
+      {/* 4. THEME SWITCHER (INTEGRATED) */}
+      <ThemeSwitcher className="hidden xl:flex mr-6" />
+
       {/* 3. USER & ACTIONS */}
       <div className="flex items-center gap-4">
         {/* Settings Button */}
-        <button
-          onClick={onSettingsClick}
-          className="glass-panel p-2.5 text-primary shadow-lg hover:scale-110 active:scale-95 transition-all"
-          aria-label="Settings"
-        >
-          <SettingsIcon />
-        </button>
+
 
         {/* User Avatar / Login */}
         {user ? (

@@ -34,6 +34,9 @@ export const useContrastText = (bgColor: string) => {
     const fallbackColor = useMemo(() => getContrastText(bgColor), [bgColor]);
 
     useEffect(() => {
+        // @ts-ignore
+        if (!window.__TAURI__) return;
+
         // Attempt to get high-precision color from Rust
         invoke<string>('contrast_get_text_color', { bgHex: bgColor })
             .then(setNativeColor)
