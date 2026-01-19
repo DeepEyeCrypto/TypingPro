@@ -93,18 +93,18 @@ export const GlassCard: React.FC<GlassCardProps> = ({
                 <div className="flex items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
                         {icon && (
-                            <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-accent">
+                            <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent-soft)] text-[var(--text-accent)] border border-[var(--text-accent)]/20 shadow-inner">
                                 {icon}
                             </div>
                         )}
                         <div className="flex flex-col">
                             {title && (
-                                <h3 className="text-lg font-bold text-primary tracking-tight">
+                                <h3 className="text-lg font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
                                     {title}
                                 </h3>
                             )}
                             {subtitle && (
-                                <span className="text-xs text-secondary font-medium">
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60" style={{ color: 'var(--text-secondary)' }}>
                                     {subtitle}
                                 </span>
                             )}

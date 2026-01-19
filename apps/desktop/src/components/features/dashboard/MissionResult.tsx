@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertTriangle, Share2, Award, ArrowRight } from 'lucide-react';
+import { Trophy, AlertTriangle, Share2, Award, ArrowRight, X } from 'lucide-react';
 import { Button } from '../../ui/Button';
 
 interface MissionResultProps {
@@ -32,120 +32,107 @@ export const MissionResult: React.FC<MissionResultProps> = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/60 backdrop-blur-[64px] overflow-hidden"
+                className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-xl"
             >
-                {/* Background Shaders */}
-                <div className="absolute inset-x-0 top-0 h-[50vh] bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-
                 <motion.div
-                    initial={{ scale: 0.9, y: 40, opacity: 0 }}
+                    initial={{ scale: 0.9, y: 20, opacity: 0 }}
                     animate={{ scale: 1, y: 0, opacity: 1 }}
-                    transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-                    className="relative w-full max-w-3xl"
+                    exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                    className="relative w-full max-w-2xl bg-[var(--glass-bg)] p-12 shadow-2xl overflow-hidden border border-glass rounded-[4rem]"
+                    style={{ color: 'var(--text-primary)' }}
                 >
-                    <div className="glass-unified rounded-[3.5rem] p-16 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.8)] relative overflow-hidden">
+                    {/* Background Glow */}
+                    <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 blur-[120px] opacity-20 pointer-events-none ${isSuccess ? 'bg-[var(--text-accent)]' : 'bg-red-500'}`} />
 
-                        {/* Status Label */}
-                        <div className="flex justify-center mb-12">
-                            <div className={`px-6 py-2 rounded-full border text-[10px] font-black tracking-[0.4em] uppercase backdrop-blur-md ${isSuccess
-                                ? 'bg-white/10 text-white border-white/20'
-                                : 'bg-white/5 text-white/60 border-white/10'
-                                }`}>
-                                {isSuccess ? 'MISSION_READY' : 'TERMINATION_LOG'}
+                    {/* Status Label */}
+                    <div className="flex justify-center mb-8">
+                        <div className={`px-4 py-1.5 rounded-full border text-[10px] font-black tracking-[0.3em] uppercase backdrop-blur-md ${isSuccess
+                            ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)] border-[var(--text-accent)]/20'
+                            : 'bg-red-500/10 text-red-500 border-red-500/20'
+                            }`}>
+                            {isSuccess ? 'MISSION_READY' : 'TERMINATION_LOG'}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col items-center text-center">
+                        <motion.div
+                            initial={{ scale: 0, rotate: -45 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ type: 'spring', damping: 12, delay: 0.2 }}
+                            className={`w-24 h-24 rounded-3xl flex items-center justify-center mb-8 shadow-2xl backdrop-blur-xl border ${isSuccess
+                                ? 'bg-[var(--text-accent)]/20 border-[var(--text-accent)]/30 text-[var(--text-accent)]'
+                                : 'bg-red-500/20 border-red-500/30 text-red-500'}`}
+                        >
+                            {isSuccess ? <Trophy size={48} /> : <AlertTriangle size={48} />}
+                        </motion.div>
+
+                        <h1 className="text-6xl font-black tracking-tighter mb-2 uppercase leading-none italic">
+                            {isSuccess ? 'DECODED' : 'FRACTURED'}
+                        </h1>
+
+                        <p className="text-[var(--text-secondary)] font-bold text-[10px] uppercase tracking-[0.4em] mb-12 opacity-60">
+                            {isSuccess ? 'Elite_Status_Synchronized' : 'Operational_Failure_Detained'}
+                        </p>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-6 w-full mb-12">
+                            <div className="bg-[var(--glass-bg)] border border-glass rounded-[2.5rem] p-8 relative group overflow-hidden transition-all hover:bg-[var(--glass-hover)] shadow-inner">
+                                <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-accent)] font-black mb-2">VELOCITY_LOG</div>
+                                <div className="flex items-baseline justify-center gap-1">
+                                    <span className="text-5xl font-black tracking-tighter">{wpm}</span>
+                                    <span className="text-xs font-black opacity-40">WPM</span>
+                                </div>
+                            </div>
+                            <div className="bg-[var(--glass-bg)] border border-glass rounded-[2.5rem] p-8 relative group overflow-hidden transition-all hover:bg-[var(--glass-hover)] shadow-inner">
+                                <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-accent)] font-black mb-2">PRECISION_LOG</div>
+                                <div className="flex items-baseline justify-center gap-1">
+                                    <span className="text-5xl font-black tracking-tighter">{accuracy}</span>
+                                    <span className="text-xs font-black opacity-40">%</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Card Content */}
-                        <div className="flex flex-col items-center text-center">
-                            {/* Header Icon */}
-                            <motion.div
-                                initial={{ scale: 0, rotate: -45 }}
-                                animate={{ scale: 1, rotate: 0 }}
-                                transition={{ type: 'spring', damping: 15, delay: 0.3 }}
-                                className={`w-32 h-32 rounded-full flex items-center justify-center mb-10 bg-white/10 border border-white/20 text-white shadow-2xl backdrop-blur-xl`}
+                        {/* Failure Reason */}
+                        {!isSuccess && failureReason && (
+                            <div className="w-full bg-red-500/5 border border-red-500/10 rounded-[2rem] p-6 mb-12 text-left backdrop-blur-md">
+                                <div className="flex items-start gap-4">
+                                    <AlertTriangle className="text-red-500 shrink-0" size={20} />
+                                    <div>
+                                        <div className="text-[10px] font-black text-red-500/60 uppercase tracking-[0.2em] mb-1">SYSTEM_ERROR_REPORT</div>
+                                        <div className="text-xs text-[var(--text-primary)] font-medium leading-relaxed uppercase tracking-wider">{failureReason}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+                            <button
+                                className="w-full md:flex-1 py-4 rounded-2xl border border-glass bg-[var(--glass-bg)] hover:bg-[var(--glass-hover)] font-black text-[10px] uppercase tracking-[0.3em] transition-all opacity-40 hover:opacity-100"
+                                onClick={onClose}
                             >
-                                {isSuccess ? <Trophy size={64} strokeWidth={1.5} /> : <AlertTriangle size={64} strokeWidth={1.5} />}
-                            </motion.div>
+                                ABORT_TO_BASE
+                            </button>
 
-                            <h1 className="text-6xl font-black tracking-tighter mb-4 text-white uppercase leading-none">
-                                {isSuccess ? 'DECODED' : 'FRACTURED'}
-                            </h1>
-
-                            <p className="text-white/30 font-black text-[10px] uppercase tracking-[0.5em] mb-16">
-                                {isSuccess ? 'Elite_Status_Synchronized' : 'Operational_Failure_Detained'}
-                            </p>
-
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-2 gap-8 w-full mb-16">
-                                <div className="glass-unified rounded-[2.5rem] p-10 relative group overflow-hidden">
-                                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-black mb-4">VELOCITY_LOG</div>
-                                    <div className="flex items-baseline justify-center gap-2">
-                                        <span className="text-7xl font-black text-white tracking-tighter">{wpm}</span>
-                                        <span className="text-sm font-black text-white/40 uppercase tracking-widest">WPM</span>
-                                    </div>
-                                    <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
-                                </div>
-                                <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md relative group overflow-hidden">
-                                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-black mb-4">PRECISION_LOG</div>
-                                    <div className="flex items-baseline justify-center gap-2">
-                                        <span className="text-7xl font-black text-white tracking-tighter">{accuracy}</span>
-                                        <span className="text-sm font-black text-white/40 uppercase tracking-widest">%</span>
-                                    </div>
-                                    <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
-                                </div>
-                            </div>
-
-                            {/* Failure Reason */}
-                            {!isSuccess && failureReason && (
-                                <div className="w-full bg-white/5 border border-white/10 rounded-[2rem] p-8 mb-16 text-left backdrop-blur-md">
-                                    <div className="flex items-start gap-4">
-                                        <div className="mt-1 text-white/50"><AlertTriangle size={24} /></div>
-                                        <div>
-                                            <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">SYSTEM_ERROR_REPORT</div>
-                                            <div className="text-sm text-white/60 font-medium leading-relaxed uppercase tracking-wider">{failureReason}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-6 w-full">
-                                <button
-                                    className="flex-1 py-5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-white font-black text-xs uppercase tracking-[0.3em] transition-all"
-                                    onClick={onClose}
-                                >
-                                    ABORT_TO_BASE
-                                </button>
-
-                                {isSuccess ? (
-                                    <button
-                                        className="flex-1 py-5 rounded-full bg-white text-black font-black text-xs uppercase tracking-[0.3em] shadow-[0_32px_64px_rgba(0,0,0,0.5)] transition-all hover:scale-105 active:scale-95"
-                                        onClick={onShare}
-                                    >
-                                        Share_Sync
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="flex-1 py-5 rounded-full bg-white text-black font-black text-xs uppercase tracking-[0.3em] shadow-[0_32px_64px_rgba(0,0,0,0.5)] transition-all hover:scale-105 active:scale-95"
-                                        onClick={onClose}
-                                    >
-                                        Try Again
-                                    </button>
-                                )}
-                            </div>
+                            <button
+                                className={`w-full md:flex-1 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl transition-all hover:scale-[1.05] active:scale-95 ${isSuccess
+                                    ? 'bg-[var(--text-accent)] text-white shadow-[var(--text-accent)]/20'
+                                    : 'bg-[var(--text-primary)] text-black'}`}
+                                onClick={isSuccess ? (onShare || onClose) : onClose}
+                                style={isSuccess ? {} : { color: 'var(--glass-bg)' }}
+                            >
+                                {isSuccess ? 'Share_Sync' : 'Retry Protocol'}
+                            </button>
                         </div>
                     </div>
 
-                    {/* Footer Info */}
-                    <div className="mt-12 flex justify-between items-center px-10">
-                        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">
-                            SECURE_STORAGE_FINALIZED // 2025
-                        </div>
-                        <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] flex items-center">
-                            <ArrowRight size={12} className="mr-3" />
-                            END_TRANSMISSION
-                        </div>
-                    </div>
+                    <button
+                        onClick={onClose}
+                        className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors opacity-40 hover:opacity-100"
+                    >
+                        <X size={20} />
+                    </button>
                 </motion.div>
             </motion.div>
         </AnimatePresence>

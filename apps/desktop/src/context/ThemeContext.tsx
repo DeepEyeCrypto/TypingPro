@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature';
+type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature' | 'neural' | 'neumorphism';
 
 interface ThemeContextType {
     theme: ThemeType;

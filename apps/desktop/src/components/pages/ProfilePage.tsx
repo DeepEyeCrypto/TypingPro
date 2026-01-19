@@ -35,39 +35,37 @@ export const ProfilePage: React.FC = () => {
             {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                STAGE 8: PROFILE HEADER
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-            <GlassCard variant="large" className="flex flex-col md:flex-row items-center gap-8 py-10">
-                <div className="relative group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/10 glass-unified shadow-2xl transition-transform group-hover:scale-105">
+            <GlassCard variant="large" className="flex flex-col md:flex-row items-center gap-8 py-10 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--text-accent)] opacity-[0.03] blur-[100px] pointer-events-none" />
+                <div className="relative group shrink-0">
+                    <div className="w-32 h-32 rounded-3xl overflow-hidden border-4 border-glass bg-[var(--glass-bg)] shadow-2xl transition-transform group-hover:scale-105">
                         <img
                             src={user?.avatar_url || `https://api.dicebear.com/7.x/api/bottts/svg?seed=${user?.name || 'User'}`}
                             alt="avatar"
                             className="w-full h-full object-cover"
                         />
                     </div>
-                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full glass-pill flex items-center justify-center text-xs shadow-lg">
-                        ✨
-                    </div>
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
-                    <h1 className="text-4xl font-black text-white tracking-tight mb-2">
+                    <h1 className="text-4xl font-black tracking-tight mb-2 uppercase italic" style={{ color: 'var(--text-primary)' }}>
                         {user?.name || 'Anonymous Typist'}
                     </h1>
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                        <span className="glass-pill px-4 py-1.5 text-xs font-bold text-gray-900 shadow-sm">
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                        <span className="bg-[var(--text-accent)] text-white px-4 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-lg shadow-[var(--text-accent)]/20">
                             ELITE TYPIST
                         </span>
-                        <span className="text-white/40 font-mono text-sm tracking-widest">
+                        <span className="text-[var(--text-secondary)] font-mono text-sm tracking-widest opacity-60">
                             {user?.email || 'Guest Protocol'}
                         </span>
                     </div>
-                    <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mt-6 font-bold">
+                    <p className="text-[10px] text-[var(--text-secondary)] uppercase tracking-[0.2em] mt-6 font-bold opacity-40">
                         Interface Link Established: {profile?.joined_at ? new Date(profile.joined_at).toLocaleDateString() : 'Unknown Date'}
                     </p>
                 </div>
 
-                <button className="glass-pill px-8 py-3 text-sm font-bold text-gray-900 shadow-xl active:scale-95 transition-all">
-                    Update Profile
+                <button className="px-8 py-3 rounded-2xl text-sm font-black uppercase tracking-widest transition-all bg-[var(--text-accent)] text-white shadow-xl hover:scale-105 active:scale-95">
+                    Sync_Neural_Log
                 </button>
             </GlassCard>
 
@@ -75,23 +73,23 @@ export const ProfilePage: React.FC = () => {
                STAGE 8: OVERALL STATISTICS
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <GlassCard variant="compact" className="text-center py-6">
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/30 block mb-2">Total Tests</span>
-                    <span className="text-3xl font-black text-white">{profile?.tests_completed || 0}</span>
+                <GlassCard variant="compact" className="text-center py-6 border-b-2 border-transparent hover:border-[var(--text-accent)] transition-all">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[var(--text-secondary)] block mb-2 opacity-50">Total Tests</span>
+                    <span className="text-3xl font-black" style={{ color: 'var(--text-primary)' }}>{profile?.tests_completed || 0}</span>
                 </GlassCard>
 
-                <GlassCard variant="compact" className="text-center py-6">
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/30 block mb-2">Peak WPM</span>
+                <GlassCard variant="compact" className="text-center py-6 border-b-2 border-transparent hover:border-cyan-400 transition-all">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[var(--text-secondary)] block mb-2 opacity-50">Peak WPM</span>
                     <span className="text-3xl font-black text-cyan-400">{Math.round(profile?.highest_wpm || 0)}</span>
                 </GlassCard>
 
-                <GlassCard variant="compact" className="text-center py-6">
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/30 block mb-2">Avg Velocity</span>
-                    <span className="text-3xl font-black text-white">{Math.round(profile?.avg_wpm || 0)}</span>
+                <GlassCard variant="compact" className="text-center py-6 border-b-2 border-transparent hover:border-[var(--text-accent)] transition-all">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[var(--text-secondary)] block mb-2 opacity-50">Avg Velocity</span>
+                    <span className="text-3xl font-black" style={{ color: 'var(--text-primary)' }}>{Math.round(profile?.avg_wpm || 0)}</span>
                 </GlassCard>
 
-                <GlassCard variant="compact" className="text-center py-6">
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/30 block mb-2">Efficiency</span>
+                <GlassCard variant="compact" className="text-center py-6 border-b-2 border-transparent hover:border-lime-400 transition-all">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[var(--text-secondary)] block mb-2 opacity-50">Efficiency</span>
                     <span className="text-3xl font-black text-lime-400">98.2%</span>
                 </GlassCard>
             </div>
@@ -127,26 +125,32 @@ export const ProfilePage: React.FC = () => {
                STAGE 8: ACCOUNT ACTIONS
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
             <div className="flex flex-col gap-4">
-                <button className="glass-unified p-4 flex items-center justify-between group hover:bg-white/5">
+                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-[var(--glass-hover)] transition-all border border-glass">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl glass-pill flex items-center justify-center text-lg">🔑</div>
-                        <span className="text-sm font-bold text-white">Cryptographic Keys (Password)</span>
+                        <div className="w-12 h-12 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🔑</div>
+                        <div>
+                            <span className="text-sm font-black uppercase tracking-widest block" style={{ color: 'var(--text-primary)' }}>Neural_Keys</span>
+                            <span className="text-[10px] text-[var(--text-secondary)] opacity-60 font-bold uppercase">Update Authentication Protocols</span>
+                        </div>
                     </div>
-                    <span className="text-white/20 group-hover:text-white/60 transition-colors">→</span>
                 </button>
-                <button className="glass-unified p-4 flex items-center justify-between group hover:bg-white/5">
+                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-[var(--glass-hover)] transition-all border border-glass">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl glass-pill flex items-center justify-center text-lg">🛡️</div>
-                        <span className="text-sm font-bold text-white">Privacy & Telemetry</span>
+                        <div className="w-12 h-12 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🛡️</div>
+                        <div>
+                            <span className="text-sm font-black uppercase tracking-widest block" style={{ color: 'var(--text-primary)' }}>Telemetry_Privacy</span>
+                            <span className="text-[10px] text-[var(--text-secondary)] opacity-60 font-bold uppercase">Manage Neural Link Secrecy</span>
+                        </div>
                     </div>
-                    <span className="text-white/20 group-hover:text-white/60 transition-colors">→</span>
                 </button>
-                <button className="glass-unified p-4 flex items-center justify-between group hover:bg-red-500/10 border-red-500/20">
+                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-red-500/10 border border-red-500/20 transition-all">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-lg">🚪</div>
-                        <span className="text-sm font-bold text-red-400">Terminate Session (Sign Out)</span>
+                        <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🚪</div>
+                        <div>
+                            <span className="text-sm font-black uppercase tracking-widest block text-red-500">Terminate_Session</span>
+                            <span className="text-[10px] text-red-500 opacity-60 font-bold uppercase">Sever Connection to Core</span>
+                        </div>
                     </div>
-                    <span className="text-red-400/20 group-hover:text-red-400/60 transition-colors">→</span>
                 </button>
             </div>
 

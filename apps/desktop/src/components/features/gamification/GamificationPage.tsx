@@ -16,6 +16,8 @@ import { ActionIcon } from '../../ui/ActionIcon';
 import { GlassCard } from '../../ui/GlassCard';
 import { CertificationTiers } from '../certification/CertificationTiers';
 import { UserCertification } from '../../../types/certifications';
+import { TrophyRoom } from './TrophyRoom';
+import { Share2, Trophy as TrophyIcon } from 'lucide-react';
 
 interface GamificationPageProps {
     userStats: UserStats;
@@ -29,6 +31,8 @@ interface GamificationPageProps {
     earnedCertifications?: UserCertification[];
     userId?: string;
     username?: string;
+    keystones?: number;
+    avgAccuracy?: number;
     onCertificationAttempt?: (tier: string) => void;
     onBack?: () => void;
 }
@@ -41,11 +45,14 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
     earnedCertifications = [],
     userId = '',
     username = 'Typist',
+    keystones = 0,
+    avgAccuracy = 0,
     onBack,
 }) => {
     const [activeTab, setActiveTab] = useState<'overview' | 'badges' | 'leaderboard' | 'certifications'>('overview');
     const [leaderboardPeriod, setLeaderboardPeriod] = useState<LeaderboardPeriod>('weekly');
     const [dailyChallenges] = useState<DailyChallenge[]>(() => generateDailyChallenges());
+    const [isTrophyOpen, setIsTrophyOpen] = useState(false);
 
     // Mock leaderboard data (replace with actual API call)
     const [leaderboardEntries] = useState<LeaderboardEntry[]>([
@@ -75,23 +82,32 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                     <h1 className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent tracking-tight uppercase">Achievements</h1>
                 </div>
 
-                {/* Tab navigation */}
-                <div className="flex gap-2">
-                    {(['overview', 'badges', 'certifications', 'leaderboard'] as const).map(tab => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`
-                px-4 py-2 rounded-lg text-sm font-bold transition-all capitalize
-                ${activeTab === tab
-                                    ? 'bg-white/10 text-cyan-400 border border-cyan-500/30 shadow-[0_0_20px_rgba(34,211,238,0.2)]'
-                                    : 'bg-white/5 text-white opacity-40 border border-white/10 hover:bg-white/10 hover:opacity-100'
-                                }
-              `}
-                        >
-                            {tab}
-                        </button>
-                    ))}
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setIsTrophyOpen(true)}
+                        className="flex items-center gap-3 px-6 py-2 rounded-xl bg-[var(--text-accent)] text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[var(--text-accent)]/20"
+                    >
+                        <Share2 size={14} />
+                        Share_Profile
+                    </button>
+                    {/* Tab navigation */}
+                    <div className="flex gap-2 p-1.5 bg-[var(--glass-bg)] border border-glass rounded-2xl">
+                        {(['overview', 'badges', 'certifications', 'leaderboard'] as const).map(tab => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`
+                                    px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                                    ${activeTab === tab
+                                        ? 'bg-[var(--text-accent)] text-white shadow-lg'
+                                        : 'text-[var(--text-primary)] opacity-40 hover:opacity-100 hover:bg-[var(--glass-hover)]'
+                                    }
+                                `}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -210,6 +226,17 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                     }}
                 />
             )}
+
+            <TrophyRoom
+                isOpen={isTrophyOpen}
+                onClose={() => setIsTrophyOpen(false)}
+                username={username}
+                bestWpm={userStats.best_wpm || 0}
+                accuracy={avgAccuracy}
+                keystones={keystones}
+                level={Math.floor(Math.sqrt((userStats.best_wpm || 0) * (avgAccuracy || 0) / 10))}
+                unlockedBadgesCount={unlockedCount}
+            />
         </div>
     );
 };

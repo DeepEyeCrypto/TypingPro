@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/core'
 import { useAuthStore } from './core/store/authStore'
+import { ArrowLeft, Brain } from 'lucide-react'
 import { useTyping } from './hooks/useTyping'
 import { useSettingsStore } from './core/store/settingsStore'
 import { usePresenceStore } from './core/store/presenceStore'
@@ -14,12 +15,10 @@ import { GatekeeperModal } from './components/features/typing/GatekeeperModal'
 import { MissionResult } from './components/features/dashboard/MissionResult'
 import { AnalyticsDashboard } from './components/features/analytics/AnalyticsDashboard'
 import { CURRICULUM, Lesson } from './data/lessons'
-import { getRankForWPM } from './core/rankSystem'
+import { getRankForWPM, calculateLevel } from './core/rankSystem'
 import { friendService } from './core/friendService'
 import { userService } from './core/userService'
 import { matchmakingService } from './core/matchmakingService'
-// import '@/styles/glass-blur.css' // Replaced by glass-unified.css imported in main.tsx
-// import './styles/themes.css' // Replaced by Index.css Theme Engine
 import { TitleBar } from './components/layout/TitleBar'
 import { useUpdater } from './hooks/useUpdater'
 import { useLockdown } from './hooks/useLockdown'
@@ -49,12 +48,15 @@ import { useAuth } from './hooks/useAuth'
 import { DashboardPage } from './components/features/dashboard/DashboardPage'
 import { StorePage } from './components/features/store/StorePage'
 import { SettingsPage } from './components/features/settings/SettingsPage'
+import { SmartLessonGenerator } from './utils/SmartLessonGenerator'
+import { WeaknessAnalyzer } from './core/weaknessAnalyzer'
 
 // GAMIFICATION
 import { GamificationPage } from './components/features/gamification/GamificationPage'
 import { CertificationPage } from './components/features/certification/CertificationPage'
 import { AchievementToast } from './components/features/gamification/AchievementToast'
 import { useAchievementStore } from './core/store/achievementStore'
+import { NeuralCoach } from './components/features/dashboard/NeuralCoach'
 
 // GLOBAL TOAST NOTIFICATIONS
 import { ToastContainer } from './components/ui/ToastContainer'
@@ -73,7 +75,8 @@ const StoreIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColo
 const TrophyIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
 
 const App: React.FC = () => {
-  const [isLoading, setIsLoading] = React.useState(true) // Start with loading true
+  const [isLoading, setIsLoading] = useState(true) // Start with loading true
+  const [weaknessProfile, setWeaknessProfile] = useState<any>(null)
   const { isSyncing } = useSyncStore()
 
 
@@ -81,7 +84,6 @@ const App: React.FC = () => {
   useLockdown()
   useAuth() // Initialize Auth Listeners (Deep Link)
   const { user, isGuest, checkSession } = useAuthStore()
-  const { theme, fontFamily } = useSettingsStore()
   const typing = useTyping()
   const { unlockedBadges, streak: streakData, certifications, keystones } = useAchievementStore()
   useUpdater()
@@ -97,10 +99,24 @@ const App: React.FC = () => {
       if (useAuthStore.getState().user) {
         await syncService.pullFromCloud()
       }
+
+      // Load weakness profile
+      const profile = await WeaknessAnalyzer.loadProfile()
+      setWeaknessProfile(profile)
+
       setTimeout(() => setIsLoading(false), 500)
     }
     initSession()
   }, [])
+
+  // Refresh weakness profile when returning to dashboard
+  useEffect(() => {
+    if (typing.view === 'dashboard') {
+      WeaknessAnalyzer.loadProfile().then(profile => {
+        setWeaknessProfile(profile)
+      })
+    }
+  }, [typing.view])
 
   // Protected Route Logic
   if (!isLoading && !user && !isGuest) {
@@ -179,13 +195,59 @@ const App: React.FC = () => {
 
     return () => clearInterval(interval)
   }, [user?.id, syncPresence, setStatus])
-
   // Focus management
   useEffect(() => {
     if (!isLoading && typing.view === 'typing') {
       setTimeout(() => inputRef.current?.focus(), 10)
     }
   }, [typing.view, isLoading])
+
+  // 10. Global Discord Presence (Tauri RPC)
+  useEffect(() => {
+    const updatePresence = async () => {
+      let state = 'Idle';
+      let details = 'In the mainframe';
+
+      switch (typing.view) {
+        case 'typing':
+          state = 'Training';
+          details = typing.currentLesson?.title || 'Active Session';
+          break;
+        case 'social':
+          state = 'Community Hub';
+          details = 'Browsing the matrix';
+          break;
+        case 'coach':
+          state = 'AI Consultation';
+          details = 'Recalibrating neural pathways';
+          break;
+        case 'certification':
+          state = 'Credentialing';
+          details = 'Validating elite status';
+          break;
+        case 'duel':
+          state = 'Arena Battle';
+          details = 'Engaged in combat';
+          break;
+        case 'selection':
+          state = 'Mission Selection';
+          details = 'Choosing next objective';
+          break;
+        case 'analytics':
+          state = 'Performance Lab';
+          details = 'Analyzing synaptic throughput';
+          break;
+      }
+
+      try {
+        await invoke('update_presence', { state, details });
+      } catch (e) {
+        // Silent fail if Discord not open or command fails in web
+      }
+    };
+
+    updatePresence();
+  }, [typing.view]);
 
   const gatekeeperPassed = typing.currentLesson
     ? (Math.round(typing.metrics.accuracy) === 100 && Math.round(typing.metrics.raw_wpm) >= Math.max(28, typing.currentLesson.targetWPM))
@@ -199,29 +261,32 @@ const App: React.FC = () => {
         <AppLayout
           activeView={typing.view}
           sidebar={
-            <SideNav
-              syncing={isSyncing}
-              items={[
-                { id: 'dashboard', icon: <HomeIcon />, label: 'Dashboard', onClick: () => typing.setView('dashboard'), active: typing.view === 'dashboard' },
-                { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
-                { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
-                { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
-                { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' || typing.view === 'certification' },
-                { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
-                { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => typing.setView('settings'), active: typing.view === 'settings' },
-              ]}
-              footer={
-                <div className="flex flex-col items-center space-y-4 pb-2">
-                  {user ? (
-                    <div className="w-8 h-8 rounded-full border border-black/20 overflow-hidden">
-                      <img src={user.avatar_url || ''} alt="User" />
-                    </div>
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-black/5 border border-black/10" />
-                  )}
-                </div>
-              }
-            />
+            typing.view === 'dashboard' ? undefined : (
+              <SideNav
+                syncing={isSyncing}
+                items={[
+                  { id: 'dashboard', icon: <HomeIcon />, label: 'Dashboard', onClick: () => typing.setView('dashboard'), active: typing.view === 'dashboard' },
+                  { id: 'practice', icon: <PracticeIcon />, label: 'Practice', onClick: () => typing.setView('selection'), active: typing.view === 'selection' || typing.view === 'typing' },
+                  { id: 'analytics', icon: <AnalyticsIcon />, label: 'Analytics', onClick: () => typing.setView('analytics'), active: typing.view === 'analytics' },
+                  { id: 'coach', icon: <Brain size={20} />, label: 'AI Coach', onClick: () => typing.setView('coach'), active: typing.view === 'coach' },
+                  { id: 'social', icon: <SocialIcon />, label: 'Social', onClick: () => typing.setView('social'), active: typing.view === 'social' || typing.view === 'lobby' || typing.view === 'duel' },
+                  { id: 'achievements', icon: <TrophyIcon />, label: 'Achievements', onClick: () => typing.setView('achievements'), active: typing.view === 'achievements' || typing.view === 'certification' },
+                  { id: 'store', icon: <StoreIcon />, label: 'Store', onClick: () => typing.setView('store'), active: typing.view === 'store' },
+                  { id: 'settings', icon: <SettingsIcon />, label: 'Settings', onClick: () => typing.setView('settings'), active: typing.view === 'settings' },
+                ]}
+                footer={
+                  <div className="flex flex-col items-center space-y-4 pb-2">
+                    {user ? (
+                      <div className="w-8 h-8 rounded-full border border-black/20 overflow-hidden">
+                        <img src={user.avatar_url || ''} alt="User" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-black/5 border border-black/10" />
+                    )}
+                  </div>
+                }
+              />
+            )
           }
           topbar={
             <ModernTopBar
@@ -229,9 +294,8 @@ const App: React.FC = () => {
               stats={{
                 wpm: Math.round(typing.metrics.adjusted_wpm),
                 accuracy: Math.round(typing.metrics.accuracy),
-                rank: useAuthStore.getState().profile
-                  ? getRankForWPM(useAuthStore.getState().profile?.avg_wpm || 0).name
-                  : 'UNRANKED'
+                rank: getRankForWPM(useAuthStore.getState().profile?.highest_wpm || 0).name,
+                rankIcon: getRankForWPM(useAuthStore.getState().profile?.highest_wpm || 0).icon
               }}
               actions={
                 <div className="flex items-center space-x-2">
@@ -244,8 +308,7 @@ const App: React.FC = () => {
             />
           }
         >
-          {/* ThemeSwitcher moved to TopBar */}
-          <ThemeSwitcher />
+          {/* ThemeSwitcher already integrated in TopBar */}
           <TitleBar />
           <WhatsNewModal />
           <UsernameModal />
@@ -256,31 +319,59 @@ const App: React.FC = () => {
 
           {typing.view === 'dashboard' ? (
             <DashboardPage
-              username={user?.displayName?.split(' ')[0] || 'Typist'}
-              wpm={Math.round(typing.metrics.adjusted_wpm)}
-              accuracy={typing.metrics.accuracy}
+              username={user?.name || 'Pro Typist'}
+              wpm={Math.round(typing.metrics.adjusted_wpm) || (useAuthStore.getState().profile?.avg_wpm || 0)}
+              accuracy={Math.round(typing.metrics.accuracy) || 100}
               keystones={keystones}
               streak={streakData.current_streak}
               bestWpm={useAuthStore.getState().profile?.highest_wpm || 0}
-              rank={getRankForWPM(useAuthStore.getState().profile?.avg_wpm || 0).name}
-              level={Math.floor((useAuthStore.getState().profile?.avg_wpm || 0) / 10) + 1}
+              rank={getRankForWPM(useAuthStore.getState().profile?.highest_wpm || 0).name}
+              level={calculateLevel(useAuthStore.getState().profile?.rank_points || 0)}
+              rankPoints={useAuthStore.getState().profile?.rank_points || 0}
               currentLesson={{
-                title: CURRICULUM[typing.unlockedIds.length - 1]?.title || 'Home Row: F & J',
-                stage: CURRICULUM[typing.unlockedIds.length - 1]?.stage || 'Home Row',
-                targetWpm: CURRICULUM[typing.unlockedIds.length - 1]?.targetWPM || 28,
-                index: typing.completedIds.length,
-                total: CURRICULUM.length,
+                title: typing.currentLesson?.title || 'Home Row Basics',
+                stage: typing.currentLesson?.stage || 'Novice',
+                targetWpm: typing.currentLesson?.targetWPM || 30,
+                index: CURRICULUM.findIndex(l => l.id === typing.currentLesson?.id) + 1 || 1,
+                total: CURRICULUM.length
               }}
-              onStartLesson={() => {
-                const nextLesson = CURRICULUM[typing.unlockedIds.length - 1] || CURRICULUM[0];
-                typing.startLesson(nextLesson);
+              onStartLesson={async () => {
+                const text = await SmartLessonGenerator.generateIntelligentDrill(50);
+                const title = await SmartLessonGenerator.getIntelligentDrillTitle();
+                const smartLesson: any = {
+                  id: 'smart-ai-drill',
+                  title: title,
+                  description: 'AI-targeted practice based on your neural weaknesses.',
+                  text: text,
+                  targetWPM: Math.max(30, Math.round((useAuthStore.getState().profile?.avg_wpm || 30) + 5)),
+                  focusFingers: ['All'],
+                  stage: 'AI Coach'
+                };
+                typing.startLesson(smartLesson);
               }}
-              onStartMission={(lesson, targetWpm, minAcc) => {
-                typing.startMission(lesson, targetWpm, minAcc, ["STRICT_NO_BACKSPACE_MODE", "PERMANENT_FOCUS_LOCK"]);
+              onStartMission={(lesson: any, targetWpm: number, minAcc: number) => {
+                // If lesson is null, it's a Certification Test
+                if (!lesson) {
+                  const certLesson: any = {
+                    id: 'cert-test-current',
+                    title: 'Elite Certification',
+                    description: 'Official performance validation session.',
+                    text: SmartLessonGenerator.generate([], 80), // Long random text for certification
+                    targetWPM: targetWpm,
+                    focusFingers: ['All'],
+                    stage: 'Certification'
+                  };
+                  typing.startMission(certLesson, targetWpm, minAcc);
+                } else {
+                  typing.startMission(lesson, targetWpm, minAcc);
+                }
               }}
               missionState={typing.missionState}
               onDeployMission={typing.deployMission}
               onResetMission={typing.resetMission}
+              onConsultCoach={() => typing.setView('coach')}
+              onOpenAnalytics={() => typing.setView('analytics')}
+              weaknessProfile={weaknessProfile}
             />
           ) : typing.view === 'profile' ? (
             <ProtectedRoute fallbackMessage="Sign in to view your profile and stats">
@@ -304,6 +395,14 @@ const App: React.FC = () => {
               streakData={streakData}
               earnedCertifications={certifications}
               challengeProgress={useAchievementStore.getState().challengeProgress}
+              username={user?.name || 'Typist'}
+              userId={user?.id || 'guest'}
+              keystones={keystones}
+              avgAccuracy={(() => {
+                const history = useStatsStore.getState().sessionHistory;
+                if (history.length === 0) return 100;
+                return Math.round(history.reduce((a, b) => a + b.accuracy, 0) / history.length);
+              })()}
               onBack={() => typing.setView('dashboard')}
               onCertificationAttempt={() => typing.setView('certification')}
             />
@@ -344,6 +443,30 @@ const App: React.FC = () => {
                 typing.startLesson(drillLesson);
               }}
             />
+          ) : typing.view === 'coach' ? (
+            <div className="animate-in fade-in duration-700">
+              <button
+                onClick={() => typing.setView('dashboard')}
+                className="mb-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest opacity-20 hover:opacity-100 transition-opacity"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <ArrowLeft size={14} /> Back_To_Mainframe
+              </button>
+              <NeuralCoach
+                onStartDrill={(drill) => {
+                  const lesson: any = {
+                    id: 'coach-drill-' + drill.title.toLowerCase().replace(/\s+/g, '-'),
+                    title: drill.title,
+                    description: 'Specially calibrated drill by your AI Coach.',
+                    text: drill.text,
+                    targetWPM: Math.max(30, Math.round((useAuthStore.getState().profile?.avg_wpm || 30) + 5)),
+                    focusFingers: ['All'],
+                    stage: 'Coach Recommendation'
+                  };
+                  typing.startLesson(lesson);
+                }}
+              />
+            </div>
           ) : typing.view === 'social' ? (
             <ProtectedRoute fallbackMessage="Sign in to connect with other typists">
               <SocialDashboard

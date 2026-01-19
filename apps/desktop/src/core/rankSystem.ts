@@ -70,6 +70,48 @@ export const RANKS: Rank[] = [
     },
 ]
 
+export interface LevelInfo {
+    level: number;
+    currentXP: number;
+    xpToNext: number;
+    progress: number;
+}
+
+export const calculateLevel = (xp: number): number => {
+    // Basic logarithmic leveling: Level = floor(sqrt(xp/50)) + 1
+    // 0 XP = Lvl 1
+    // 200 XP = Lvl 3
+    // 800 XP = Lvl 5
+    // 5000 XP = Lvl 11
+    return Math.floor(Math.sqrt(Math.max(0, xp) / 50)) + 1
+}
+
+export const getLevelInfo = (xp: number): LevelInfo => {
+    const level = calculateLevel(xp)
+    const currentLevelXP = Math.pow(level - 1, 2) * 50
+    const nextLevelXP = Math.pow(level, 2) * 50
+
+    const xpInLevel = xp - currentLevelXP
+    const xpToNext = nextLevelXP - currentLevelXP
+    const progress = (xpInLevel / xpToNext) * 100
+
+    return {
+        level,
+        currentXP: xpInLevel,
+        xpToNext,
+        progress: Math.min(100, Math.max(0, progress))
+    }
+}
+
+export const RANK_REWARDS: Record<string, string[]> = {
+    'Bronze': ['Basic Sound Set', 'Legacy Theme'],
+    'Silver': ['Soft Taps Sound', 'Cyberpunk Accent'],
+    'Gold': ['Crisp Clicks', 'Glass Brilliance'],
+    'Platinum': ['Mechanical MX Blue', 'Aura Glow'],
+    'Diamond': ['Premium Thock', 'Prismatic UI'],
+    'Radiant': ['Divine Resonance', 'Neural Overload UI']
+}
+
 /**
  * Get rank for a given WPM
  */

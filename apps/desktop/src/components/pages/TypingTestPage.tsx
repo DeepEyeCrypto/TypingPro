@@ -41,18 +41,18 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
             {/* Header / Stats HUD */}
             <div className="w-full flex justify-between items-end mb-8 px-4">
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Session Metrics</span>
-                    <h1 className="text-2xl font-black text-white tracking-tight">Active Drill</h1>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>Session Metrics</span>
+                    <h1 className="text-2xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>Active Drill</h1>
                 </div>
 
                 <div className="flex gap-8">
                     <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Velocity</span>
-                        <span className="text-3xl font-black text-white p-0 leading-none">{stats.wpm} <small className="text-xs opacity-30">WPM</small></span>
+                        <span className="text-[10px] font-black text-[var(--text-accent)] uppercase tracking-widest opacity-80">Velocity</span>
+                        <span className="text-3xl font-black p-0 leading-none" style={{ color: 'var(--text-primary)' }}>{stats.wpm} <small className="text-xs opacity-30">WPM</small></span>
                     </div>
                     <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-lime-400 uppercase tracking-widest">Precision</span>
-                        <span className="text-3xl font-black text-white p-0 leading-none">{stats.accuracy}%</span>
+                        <span className="text-[10px] font-black text-[var(--text-accent)] uppercase tracking-widest opacity-80">Precision</span>
+                        <span className="text-3xl font-black p-0 leading-none" style={{ color: 'var(--text-primary)' }}>{stats.accuracy}%</span>
                     </div>
                 </div>
             </div>
@@ -83,13 +83,13 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
                 <div className="mt-16 flex justify-center">
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 group cursor-pointer" onClick={onReset}>
-                            <kbd className="glass-pill px-2.5 py-1 text-[10px] font-black text-gray-900 shadow-md group-hover:scale-110 transition-transform">TAB</kbd>
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Reset Interface</span>
+                            <kbd className="px-3 py-1 rounded-lg bg-[var(--glass-bg)] border border-glass text-[10px] font-black shadow-md group-hover:scale-110 transition-transform" style={{ color: 'var(--text-primary)' }}>TAB</kbd>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>Reset Interface</span>
                         </div>
-                        <div className="w-px h-4 bg-white/10" />
+                        <div className="w-px h-4 border-r border-glass" />
                         <div className="flex items-center gap-2">
-                            <kbd className="bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-[10px] font-black text-white/50">ESC</kbd>
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">System Pause</span>
+                            <kbd className="bg-[var(--glass-bg)] border border-glass px-3 py-1 rounded-lg text-[10px] font-black opacity-50" style={{ color: 'var(--text-primary)' }}>ESC</kbd>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>System Pause</span>
                         </div>
                     </div>
                 </div>
@@ -99,11 +99,12 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
             <div className="mt-12 flex gap-4 opacity-40 hover:opacity-100 transition-opacity">
                 <button
                     onClick={onReset}
-                    className="glass-pill px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-900"
+                    className="px-8 py-2.5 rounded-2xl bg-[var(--glass-bg)] border border-glass text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[var(--glass-hover)] transition-all"
+                    style={{ color: 'var(--text-primary)' }}
                 >
                     Hard Reset
                 </button>
-                <button className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-colors">
+                <button className="px-8 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-colors" style={{ color: 'var(--text-primary)' }}>
                     Reconfigure Drill
                 </button>
             </div>

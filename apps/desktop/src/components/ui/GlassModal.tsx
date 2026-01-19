@@ -105,10 +105,10 @@ export const GlassModal: React.FC<GlassModalProps> = ({
                                             className={`
                                                 px-6 py-2.5 rounded-full text-sm font-bold shadow-xl transition-all active:scale-95
                                                 ${action.variant === 'primary'
-                                                    ? 'glass-pill text-gray-900'
+                                                    ? 'bg-[var(--text-accent)] text-white hover:brightness-110'
                                                     : action.variant === 'danger'
                                                         ? 'bg-red-500 text-white hover:bg-red-600'
-                                                        : 'text-white/60 hover:text-white hover:bg-white/10'
+                                                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)]'
                                                 }
                                             `}
                                         >

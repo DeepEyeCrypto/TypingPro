@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { leaderboardService } from '../../../core/leaderboardService';
 import { UserProfile } from '../../../core/userService';
 import { useAuthStore } from '../../../core/store/authStore';
 import { raceService } from '../../../core/raceService';
 import { RankBadge } from '../../layout/RankBadge';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, Zap, Sword, Activity, Loader2, ShieldCheck, Crown, Star } from 'lucide-react';
 import './RankStyles.css';
-import './Visuals.css';
 
 interface Props {
     onPlayGhost: (lessonId: string, ghostData: any) => void;
 }
 
-// Optimized Row Component for 144FPS - High Fidelity Deep Glass
 const LeaderboardRow = React.memo(({ user, index, isMe, loadingGhost, onChallenge }: {
     user: UserProfile,
     index: number,
@@ -19,75 +19,103 @@ const LeaderboardRow = React.memo(({ user, index, isMe, loadingGhost, onChalleng
     loadingGhost: boolean,
     onChallenge: (uid: string) => void
 }) => {
-    const getRankIcon = (idx: number) => {
-        if (idx === 0) return '🥇';
-        if (idx === 1) return '🥈';
-        if (idx === 2) return '🥉';
-        return index + 1;
+    const getRankDisplay = (idx: number) => {
+        if (idx === 0) return <Crown className="text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]" size={24} />;
+        if (idx === 1) return <Star className="text-slate-300 drop-shadow-[0_0_10px_rgba(203,213,225,0.5)]" size={20} />;
+        if (idx === 2) return <Star className="text-amber-600 drop-shadow-[0_0_10px_rgba(217,119,6,0.3)]" size={20} />;
+        return <span className="text-xs font-black opacity-20">{idx + 1}</span>;
     };
 
-    const isElite = (user.highest_wpm || 0) >= 100;
-
     return (
-        <div className={`group flex items-center gap-6 p-5 rounded-[2rem] transition-all duration-500 ${isMe ? 'bg-white/10 border border-white/40 shadow-[0_20px_40px_rgba(255,255,255,0.1)]' : 'bg-white/5 border border-white/5 hover:border-white/20 hover:bg-white/10'}`}>
-            <div className="w-12 text-center">
-                <span className={`text-[10px] font-black tracking-tighter ${index < 3 ? 'text-3xl' : 'text-white/20'}`}>
-                    {getRankIcon(index)}
-                </span>
+        <motion.div
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.05 }}
+            className={`group relative flex items-center gap-6 p-5 rounded-[2.5rem] transition-all duration-500 border overflow-hidden
+            ${isMe
+                    ? 'bg-white/10 border-[var(--text-accent)]/50 shadow-[0_20px_50px_rgba(0,0,0,0.3)]'
+                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
+                }
+        `}>
+            {/* Top 3 Glow Background */}
+            {index < 3 && (
+                <div className={`absolute inset-0 opacity-5 pointer-events-none ${index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-slate-400' : 'bg-amber-800'
+                    }`} />
+            )}
+
+            {/* Scan Beam for Top 3 */}
+            {index < 3 && (
+                <motion.div
+                    animate={{ left: ['-10%', '110%'] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-0 w-px h-full bg-white/20 blur-sm pointer-events-none"
+                />
+            )}
+
+            <div className="w-10 flex justify-center relative z-10">
+                {getRankDisplay(index)}
             </div>
 
-            <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="relative">
-                    <img
-                        src={user.avatar_url}
-                        alt={user.username}
-                        className="w-12 h-12 rounded-full border-2 border-white/10 group-hover:border-white/40 transition-all shadow-xl"
-                        loading="lazy"
-                    />
-                    {isElite && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full blur-[4px] animate-pulse" />
-                    )}
+            <div className="flex items-center gap-5 flex-1 min-w-0 relative z-10">
+                <div className="relative group/avatar">
+                    <div className={`w-14 h-14 rounded-2xl overflow-hidden border-2 transition-all duration-500 overflow-hidden
+                        ${index === 0 ? 'border-yellow-400/50 scale-110 shadow-[0_0_20px_rgba(250,204,21,0.2)]' : 'border-white/10'}
+                    `}>
+                        <img
+                            src={user.avatar_url}
+                            alt={user.username}
+                            className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all"
+                            loading="lazy"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex flex-col min-w-0">
-                    <div className="flex items-center gap-3">
-                        <span className={`text-base font-black truncate text-white tracking-tight`}>
+                    <div className="flex items-center gap-3 mb-1">
+                        <span className={`text-lg font-black tracking-tighter ${isMe ? 'text-[var(--text-accent)]' : 'text-white'}`}>
                             {user.username}
                         </span>
+                        {index === 0 && <ShieldCheck size={14} className="text-yellow-400" />}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-black uppercase tracking-widest opacity-20">Rank:</span>
                         <RankBadge wpm={user.highest_wpm || 0} progress={0} compact />
                     </div>
-                    <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">
-                        {user.total_races || 0} races
-                    </span>
                 </div>
             </div>
 
-            <div className="flex items-center gap-10">
+            <div className="flex items-center gap-12 relative z-10">
                 <div className="flex flex-col items-end">
-                    <span className={`text-2xl font-black tabular-nums text-white tracking-tighter`}>
-                        {Math.round(user.highest_wpm || 0)}
-                    </span>
-                    <span className="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]">Best WPM</span>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Zap size={12} className="text-[var(--text-accent)]" />
+                        <span className="text-3xl font-black italic tabular-nums tracking-tighter text-white">
+                            {Math.round(user.highest_wpm || 0)}
+                        </span>
+                    </div>
+                    <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-20">Peak_Sync_Spd</span>
                 </div>
 
                 {!isMe && (
                     <button
                         onClick={() => onChallenge(user.uid)}
                         disabled={loadingGhost}
-                        className={`p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black transition-all ${loadingGhost ? 'opacity-50' : ''}`}
-                        title="Challenge Ghost"
+                        className={`p-4 rounded-2xl transition-all flex items-center justify-center
+                            ${loadingGhost
+                                ? 'bg-white/5 opacity-50 cursor-not-allowed'
+                                : 'bg-white/5 border border-white/5 hover:bg-[var(--text-accent)] hover:text-white hover:border-[var(--text-accent)] hover:scale-110 active:scale-95 shadow-2xl'
+                            }`}
+                        style={{ color: loadingGhost ? 'var(--text-primary)' : '' }}
                     >
                         {loadingGhost ? (
-                            <div className="w-5 h-5 border-3 border-white/20 border-t-white animate-spin rounded-full" />
+                            <Loader2 className="w-5 h-5 animate-spin" />
                         ) : (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
+                            <Sword size={20} />
                         )}
                     </button>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 });
 
@@ -120,24 +148,30 @@ export const Leaderboard: React.FC<Props> = ({ onPlayGhost }) => {
     };
 
     if (loading) return (
-        <div className="p-20 flex flex-col items-center justify-center space-y-6">
-            <div className="w-12 h-12 border-4 border-white/10 border-t-white animate-spin rounded-full" />
-            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] animate-pulse">Loading rankings...</span>
+        <div className="p-24 flex flex-col items-center justify-center space-y-6">
+            <div className="relative">
+                <div className="w-16 h-16 rounded-full border-4 border-[var(--text-accent)]/20 border-t-[var(--text-accent)] animate-spin" />
+                <Trophy className="absolute inset-0 m-auto text-[var(--text-accent)] opacity-20" size={24} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] animate-pulse opacity-30" style={{ color: 'var(--text-primary)' }}>Syncing_Global_Registry</span>
         </div>
     );
 
     return (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            {rankings.map((user, index) => (
-                <LeaderboardRow
-                    key={user.uid}
-                    user={user}
-                    index={index}
-                    isMe={user.uid === myProfile?.uid}
-                    loadingGhost={loadingGhostId === user.uid}
-                    onChallenge={handleChallenge}
-                />
-            ))}
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <AnimatePresence>
+                {rankings.map((user, index) => (
+                    <LeaderboardRow
+                        key={user.uid}
+                        user={user}
+                        index={index}
+                        isMe={user.uid === myProfile?.uid}
+                        loadingGhost={loadingGhostId === user.uid}
+                        onChallenge={handleChallenge}
+                    />
+                ))}
+            </AnimatePresence>
         </div>
     );
 };
+

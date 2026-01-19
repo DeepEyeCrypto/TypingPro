@@ -40,24 +40,24 @@ export const AchievementToast: React.FC = () => {
             >
                 <div className="flex items-center gap-6 p-5">
                     <div className="relative">
-                        <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-4xl border border-white/20 shadow-inner filter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                        <div className="w-16 h-16 rounded-2xl bg-[var(--glass-bg)] flex items-center justify-center text-4xl border border-glass shadow-xl filter drop-shadow-[0_0_15px_var(--text-accent)]">
                             {active.icon || '🏆'}
                         </div>
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-glow animate-pulse">
-                            <span className="text-black text-[10px] font-black">!</span>
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--text-accent)] rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                            <span className="text-white text-[10px] font-black">!</span>
                         </div>
                     </div>
 
                     <div className="flex-1">
-                        <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] mb-1">Achievement_Unlocked</div>
-                        <h4 className="text-white font-black text-lg tracking-tight leading-tight uppercase">
+                        <div className="text-[10px] font-black uppercase tracking-[0.4em] mb-1 opacity-30" style={{ color: 'var(--text-primary)' }}>Achievement_Unlocked</div>
+                        <h4 className="font-black text-lg tracking-tight leading-tight uppercase italic" style={{ color: 'var(--text-primary)' }}>
                             {active.title || 'Signal_Detected'}
                         </h4>
-                        <p className="text-white/60 font-medium text-sm mt-1">{active.message}</p>
+                        <p className="text-sm mt-1 opacity-60" style={{ color: 'var(--text-primary)' }}>{active.message}</p>
 
                         {active.reward && (
-                            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                                <span className="text-white font-black text-[10px] uppercase tracking-widest">+{active.reward} KEYSTONES</span>
+                            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--glass-bg)] border border-glass shadow-sm">
+                                <span className="font-black text-[10px] uppercase tracking-widest text-[var(--text-accent)]">+{active.reward} KEYSTONES</span>
                                 <span className="text-xs">💎</span>
                             </div>
                         )}
@@ -70,17 +70,18 @@ export const AchievementToast: React.FC = () => {
                                     active.onAction();
                                     handleClose(active.id);
                                 }}
-                                className="px-5 py-2.5 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:scale-105 active:scale-95 transition-all shadow-glow"
+                                className="px-5 py-2.5 bg-[var(--text-accent)] text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
                             >
                                 {active.actionLabel || 'EXECUTE'}
                             </button>
                         )}
                         <button
                             onClick={() => handleClose(active.id)}
-                            className="p-2.5 text-white/20 hover:text-white/100 transition-colors self-end"
+                            className="p-2.5 transition-colors self-end opacity-20 hover:opacity-100"
+                            style={{ color: 'var(--text-primary)' }}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>

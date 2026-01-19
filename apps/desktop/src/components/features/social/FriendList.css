@@ -1,52 +1,51 @@
 /* 
- * FRIEND LIST V5 - SOCIAL GRID
- * Optimized for high-performance glass cards and status indicators
+ * FRIEND LIST - ELITE SOCIAL GRID
  */
-
-.friend-section {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    flex: 1;
-}
 
 .friend-list-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
-/* Status Indicator Extensions */
-.status-ring.ring-active::after {
-    border-width: 2px;
+.status-indicator {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-bg);
 }
 
-/* Specialized Badge for Live WPM */
-.live-wpm-badge {
-    background: rgba(0, 243, 255, 0.1);
-    border: 0.5px solid rgba(0, 243, 255, 0.2);
-    padding: 0 4px;
-    border-radius: 2px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    color: var(--v5-accent);
-    animation: wpm-flicker 2s infinite;
+.status-online {
+    background-color: var(--text-accent);
+    box-shadow: 0 0 10px var(--text-accent);
 }
 
-@keyframes wpm-flicker {
+.status-offline {
+    background-color: #6b7280;
+}
+
+.wpm-pulse {
+    animation: wpm-text-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes wpm-text-pulse {
 
     0%,
     100% {
         opacity: 1;
+        transform: scale(1);
     }
 
     50% {
         opacity: 0.7;
+        transform: scale(0.98);
     }
 }
 
-/* Responsive Overrides */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .friend-list-grid {
         grid-template-columns: 1fr;
     }

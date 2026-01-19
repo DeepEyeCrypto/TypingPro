@@ -32,12 +32,12 @@ export const CertificationCard: React.FC<CertificationCardProps> = ({
     return (
         <div
             className={`
-                relative p-10 rounded-[3rem] border transition-all duration-700
+                relative p-10 rounded-[3rem] border transition-all duration-700 overflow-hidden
                 ${earned
-                    ? 'bg-black/10 border-black/20 shadow-[0_32px_64px_rgba(0,0,0,0.1)]'
+                    ? 'bg-[var(--accent-soft)] border-[var(--text-accent)]/30 shadow-2xl'
                     : locked
-                        ? 'bg-black/20 border-black/5 opacity-30 grayscale'
-                        : 'bg-white/5 border-white/10 hover:border-black/20 hover:bg-black/10'
+                        ? 'bg-[var(--glass-bg)] border-glass opacity-30 grayscale'
+                        : 'bg-[var(--glass-bg)] border-glass hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)]'
                 }
             `}
         >
@@ -51,9 +51,9 @@ export const CertificationCard: React.FC<CertificationCardProps> = ({
             {/* Earned badge */}
             {earned && (
                 <div
-                    className="absolute -top-3 -right-3 px-5 py-2 rounded-full text-[10px] font-black border border-white/20 shadow-2xl bg-white text-black z-20 tracking-widest uppercase"
+                    className="absolute -top-3 -right-3 px-5 py-2 rounded-full text-[10px] font-black border border-[var(--text-accent)]/20 shadow-2xl bg-[var(--text-accent)] text-white z-20 tracking-widest uppercase italic"
                 >
-                    ✓_EARNED
+                    ✓_VALIDATED
                 </div>
             )}
 
@@ -61,38 +61,39 @@ export const CertificationCard: React.FC<CertificationCardProps> = ({
             <div className="text-7xl mb-10 text-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.1)]">{icon}</div>
 
             {/* Tier name */}
-            <h3 className="text-2xl font-black text-center mb-6 text-white uppercase tracking-tighter">
+            <h3 className="text-2xl font-black text-center mb-6 uppercase tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>
                 {tierInfo.name}
             </h3>
 
             {/* Requirements */}
             <div className="space-y-3 mb-10 text-center">
-                <div className="text-white opacity-60 font-black text-[10px] uppercase tracking-widest">
-                    THRESHOLD: <span className="text-white text-sm">{tierInfo.min_wpm}+</span> WPM
+                <div className="font-black text-[10px] uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>
+                    THRESHOLD: <span className="text-[var(--text-accent)] text-sm">{tierInfo.min_wpm}+</span> WPM
                 </div>
-                <div className="text-white opacity-60 font-black text-[10px] uppercase tracking-widest">
-                    PRECISION: <span className="text-white text-sm">{tierInfo.min_accuracy}%+</span> ACC
+                <div className="font-black text-[10px] uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>
+                    PRECISION: <span className="text-[var(--text-accent)] text-sm">{tierInfo.min_accuracy}%+</span> ACC
                 </div>
             </div>
 
             {/* Reward */}
-            <div className="text-center mb-10 px-6 py-3 bg-black/5 rounded-full border border-black/10">
-                <span className="font-black text-white tracking-widest text-sm">+{tierInfo.keystones_reward}</span>
-                <span className="text-white opacity-40 text-[10px] ml-2 font-black uppercase tracking-widest">Keystones</span>
+            <div className="text-center mb-10 px-6 py-3 bg-[var(--accent-soft)] rounded-full border border-[var(--text-accent)]/10">
+                <span className="font-black tracking-widest text-sm text-[var(--text-accent)]">+{tierInfo.keystones_reward}</span>
+                <span className="text-[10px] ml-2 font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>Keystones</span>
             </div>
 
             {/* Actions */}
             {earned && certification ? (
                 <button
                     onClick={onViewCertificate}
-                    className="w-full py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all bg-white text-black hover:scale-105 active:scale-95 shadow-2xl"
+                    className="w-full py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all bg-[var(--text-accent)] text-white hover:scale-105 active:scale-95 shadow-xl shadow-[var(--text-accent)]/20"
                 >
                     View_Credentials
                 </button>
             ) : !locked ? (
                 <button
                     onClick={onAttempt}
-                    className="w-full py-4 bg-black/5 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-black/10 transition-all border border-black/10 hover:border-black/20"
+                    className="w-full py-4 bg-[var(--glass-bg)] border border-glass rounded-full text-[10px] font-black uppercase tracking-widest hover:border-[var(--text-accent)] hover:text-[var(--text-accent)] transition-all"
+                    style={{ color: 'var(--text-primary)' }}
                 >
                     Initial_Attempt
                 </button>

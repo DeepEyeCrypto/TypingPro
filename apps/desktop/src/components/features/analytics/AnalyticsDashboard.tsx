@@ -2,21 +2,35 @@
 // ANALYTICS DASHBOARD: VisionOS-style deep-eye neural analysis
 // ═══════════════════════════════════════════════════════════════════
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useStatsStore } from '../../../core/store/statsStore';
+import { useAuthStore } from '../../../core/store/authStore';
 import { WeaknessAnalyzer, WeaknessProfile } from '../../../core/weaknessAnalyzer';
 import { coachService, CoachVerdict } from '../../../core/coachService';
 import { GlassCard } from '../../ui/GlassCard';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BarChart3, Binary, Activity, Sparkles, Brain, Zap, Target, ShieldCheck, Cpu } from 'lucide-react';
+import { getRankForWPM, getLevelInfo } from '../../../core/rankSystem';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip as RechartTooltip,
+    ResponsiveContainer,
+    AreaChart,
+    Area
+} from 'recharts';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ICONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const EyeIcon = ({ pulsed = false }: { pulsed?: boolean }) => (
     <div className={`relative w-24 h-24 flex items-center justify-center ${pulsed ? 'animate-pulse' : ''}`}>
-        <div className="absolute inset-0 bg-cyan-500/10 rounded-full blur-3xl"></div>
-        <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center glass-unified shadow-2xl">
-            <div className={`w-5 h-5 rounded-full bg-cyan-400 opacity-40 ${pulsed ? 'animate-ping' : ''}`}></div>
+        <div className="absolute inset-0 bg-[var(--text-accent)] opacity-[0.05] rounded-full blur-3xl"></div>
+        <div className="w-16 h-16 rounded-3xl border border-glass flex items-center justify-center glass-panel shadow-2xl overflow-hidden bg-[var(--glass-bg)]">
+            <div className={`w-6 h-6 rounded-full bg-[var(--text-accent)] opacity-20 ${pulsed ? 'animate-ping' : ''}`}></div>
             <div className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]"></div>
         </div>
     </div>
@@ -28,16 +42,26 @@ interface Props {
 }
 
 export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStartDrill }) => {
-    const { sessionHistory, stats } = useStatsStore();
+    const { sessionHistory } = useStatsStore();
+
+    const stats = useMemo(() => {
+        if (sessionHistory.length === 0) return { bestWpm: 0, wpm: 0, accuracy: 100, streak: 0 };
+        const bestWpm = Math.max(...sessionHistory.map(s => s.wpm));
+        const avgWpm = Math.round(sessionHistory.reduce((a, b) => a + b.wpm, 0) / sessionHistory.length);
+        const avgAcc = Math.round(sessionHistory.reduce((a, b) => a + b.accuracy, 0) / sessionHistory.length);
+        return { bestWpm, wpm: avgWpm, accuracy: avgAcc, streak: 0 };
+    }, [sessionHistory]);
 
     const {
-        bestWpm = 0,
-        wpm = 0,
-        accuracy = 100,
-        streak = 0,
-        rank = 'UNRANKED',
-        level = 1
-    } = stats || {};
+        bestWpm,
+        wpm,
+        accuracy,
+    } = stats;
+
+    const streak = stats.streak; // Or pull from achievementStore if needed
+
+    const levelInfo = getLevelInfo(useAuthStore.getState().profile?.rank_points || 0);
+    const currentRank = getRankForWPM(bestWpm);
 
     const [profile, setProfile] = useState<WeaknessProfile | null>(null);
     const [verdict, setVerdict] = useState<CoachVerdict | null>(null);
@@ -69,38 +93,58 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
         }
     };
 
+    // Prepare chart data (Last 30 sessions)
+    const chartData = [...sessionHistory]
+        .reverse()
+        .slice(-30)
+        .map((s, i) => ({
+            name: `S-${i + 1}`,
+            wpm: s.wpm,
+            accuracy: s.accuracy,
+            timestamp: s.timestamp
+        }));
+
     return (
         <div className="w-full flex flex-col gap-10 p-4 md:p-6 max-w-7xl mx-auto pb-32 animate-in fade-in duration-700">
+            {/* NEURAL STATUS HEADER */}
+            <div className="relative overflow-hidden bg-[var(--glass-bg)] backdrop-blur-[64px] rounded-[2.5rem] p-6 flex flex-wrap items-center justify-between gap-6 border border-glass shadow-2xl">
+                {/* Scan Beam */}
+                <motion.div
+                    animate={{ left: ['-10%', '110%'] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-0 w-1 h-full bg-gradient-to-b from-transparent via-[var(--text-accent)] to-transparent opacity-20 blur-md z-0"
+                />
 
-            {/* Header Area */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-8">
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 relative z-10">
                     <button
                         onClick={onBack}
-                        className="glass-pill p-3 text-gray-900 shadow-lg hover:scale-110 active:scale-95 transition-all"
+                        className="p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all opacity-40 hover:opacity-100"
+                        style={{ color: 'var(--text-primary)' }}
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft size={18} />
                     </button>
                     <div>
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] block mb-1">Neural Statistics</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">
-                            DeepEye<span className="not-italic text-white/20">.Analytics</span>
-                        </h1>
+                        <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-40 italic block mb-1" style={{ color: 'var(--text-primary)' }}>Integrity_Verification_Lock</span>
+                        <h1 className="text-2xl font-black italic tracking-tighter uppercase" style={{ color: 'var(--text-primary)' }}>Performance_Lab<span className="text-[var(--text-accent)]">.v4</span></h1>
                     </div>
                 </div>
 
-                <div className="flex gap-6 items-center">
-                    <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Protocol Rank</span>
-                        <span className="text-xl font-black text-white italic">{rank}</span>
+                <div className="flex gap-8 relative z-10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>Sync: <span className="text-green-400">Stable</span></span>
                     </div>
-                    <div className="w-px h-8 bg-white/10" />
-                    <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Growth Level</span>
-                        <span className="text-xl font-black text-cyan-400">LVL {level}</span>
+                    <div className="flex items-center gap-3">
+                        <ShieldCheck size={14} className="text-[var(--text-accent)] opacity-40" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>Security: <span className="text-[var(--text-accent)]">Active</span></span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-accent)] bg-[var(--accent-soft)] px-3 py-1 rounded-full border border-[var(--text-accent)]/20 shadow-lg shadow-[var(--text-accent)]/10">
+                            PRO_TIER
+                        </span>
                     </div>
                 </div>
-            </header>
+            </div>
 
             {/* Core Metrics Row */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -110,9 +154,9 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                     { label: "Precision", value: `${Math.round(accuracy)}`, unit: "%" },
                     { label: "Neural Loop", value: `${streak}`, unit: "DAYS" }
                 ].map((m, i) => (
-                    <GlassCard key={i} variant="compact" className="text-center py-6">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-2">{m.label}</span>
-                        <div className="text-3xl font-black text-white tracking-tighter">
+                    <GlassCard key={i} variant="compact" className="text-center py-6 border-b-2 border-transparent hover:border-[var(--text-accent)] transition-all">
+                        <span className="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-40" style={{ color: 'var(--text-primary)' }}>{m.label}</span>
+                        <div className="text-3xl font-black tracking-tighter" style={{ color: 'var(--text-primary)' }}>
                             {m.value} <small className="text-[10px] opacity-30 font-bold">{m.unit}</small>
                         </div>
                     </GlassCard>
@@ -137,26 +181,26 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
 
                                 <div className="min-h-[140px]">
                                     {isAnalyzing ? (
-                                        <div className="space-y-4 font-mono text-xs text-cyan-400/60">
-                                            <p className="animate-pulse">_ DECODING_PHYSIOLOGICAL_BOTTLENECKS...</p>
-                                            <p className="animate-pulse delay-700">_ SYNCING_SIGNAL_VELOCITY_CURVES...</p>
-                                            <p className="animate-pulse delay-1000">_ CALIBRATING_INTERFERENCE_MAP...</p>
+                                        <div className="space-y-4 font-mono text-[10px] text-[var(--text-accent)]">
+                                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ repeat: Infinity, duration: 2 }}>_ EXECUTING_DEEP_NEURAL_RECONSTRUCTION...</motion.p>
+                                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}>_ ISOLATING_KINEMATIC_INCOHERENCE...</motion.p>
+                                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ repeat: Infinity, duration: 2, delay: 1 }}>_ SIGNAL_SYNC: 98.4% COMPLETED...</motion.p>
                                         </div>
                                     ) : verdict ? (
                                         <div className="space-y-4">
-                                            <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic leading-none">
+                                            <h3 className="text-3xl font-black tracking-tighter uppercase italic leading-none" style={{ color: 'var(--text-primary)' }}>
                                                 {verdict.identify_habit}
                                             </h3>
-                                            <p className="text-lg text-white/60 leading-relaxed font-bold">
+                                            <p className="text-lg opacity-60 leading-relaxed font-bold" style={{ color: 'var(--text-secondary)' }}>
                                                 {verdict.insight}
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
-                                            <h3 className="text-3xl font-black text-white/20 tracking-tighter uppercase italic leading-none">
+                                            <h3 className="text-3xl font-black tracking-tighter uppercase italic leading-none opacity-20" style={{ color: 'var(--text-primary)' }}>
                                                 Neural Coach Dormant
                                             </h3>
-                                            <p className="text-white/40 text-sm leading-relaxed font-bold uppercase tracking-widest">
+                                            <p className="text-[var(--text-secondary)] text-sm leading-relaxed font-bold uppercase tracking-widest opacity-40">
                                                 Initiate scan to decompile mechanical interference patterns.
                                             </p>
                                         </div>
@@ -166,12 +210,96 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                                 {!isAnalyzing && (
                                     <button
                                         onClick={askCoach}
-                                        className="glass-pill px-10 py-4 text-xs font-black text-gray-900 shadow-xl uppercase tracking-widest transform transition-all active:scale-95"
+                                        className="bg-[var(--text-accent)] text-white px-10 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transform transition-all active:scale-95 shadow-xl shadow-[var(--text-accent)]/20 hover:scale-105"
                                     >
                                         {verdict ? "Recalibrate Scan" : "Initialize Diagnostics"}
                                     </button>
                                 )}
                             </div>
+                        </div>
+                    </GlassCard>
+
+                    {/* VELOCITY CONTINUUM (30 Session Trend) */}
+                    <GlassCard variant="large" className="p-8">
+                        <div className="flex justify-between items-end mb-8">
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 block mb-1" style={{ color: 'var(--text-primary)' }}>Velocity Continuum</span>
+                                <h3 className="text-2xl font-black italic tracking-tighter uppercase" style={{ color: 'var(--text-primary)' }}>Neural Trend_Line</h3>
+                            </div>
+                            <div className="flex gap-6">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-[var(--text-accent)] shadow-[0_0_8px_var(--text-accent)]" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Throughput (WPM)</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-cyan-400 opacity-30 shadow-[0_0_8px_rgba(34,211,238,0.5)]" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Precision (%)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="h-72 w-full mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData}>
+                                    <defs>
+                                        <linearGradient id="colorWpm" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="var(--text-accent)" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="var(--text-accent)" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        hide
+                                    />
+                                    <YAxis
+                                        yAxisId="left"
+                                        orientation="left"
+                                        stroke="rgba(255,255,255,0.1)"
+                                        fontSize={10}
+                                        tickFormatter={(val) => `${val}`}
+                                        axisLine={false}
+                                        tickLine={false}
+                                    />
+                                    <YAxis
+                                        yAxisId="right"
+                                        orientation="right"
+                                        stroke="rgba(255,255,255,0.1)"
+                                        fontSize={10}
+                                        domain={[0, 100]}
+                                        hide
+                                    />
+                                    <RechartTooltip
+                                        contentStyle={{
+                                            backgroundColor: 'rgba(0,0,0,0.8)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '16px',
+                                            fontSize: '10px',
+                                            fontWeight: 'bold'
+                                        }}
+                                        itemStyle={{ color: '#fff' }}
+                                    />
+                                    <Area
+                                        yAxisId="left"
+                                        type="monotone"
+                                        dataKey="wpm"
+                                        stroke="var(--text-accent)"
+                                        strokeWidth={4}
+                                        fillOpacity={1}
+                                        fill="url(#colorWpm)"
+                                        animationDuration={2000}
+                                    />
+                                    <Line
+                                        yAxisId="right"
+                                        type="monotone"
+                                        dataKey="accuracy"
+                                        stroke="rgba(34,211,238,0.3)"
+                                        strokeWidth={2}
+                                        dot={false}
+                                        animationDuration={2500}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     </GlassCard>
 
@@ -260,6 +388,6 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                     50% { transform: translateY(480px); }
                 }
             `}</style>
-        </div>
+        </div >
     );
 });

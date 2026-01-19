@@ -6,20 +6,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../context/ThemeContext';
 import { ThemeSwitcher } from '../ThemeSwitcher';
-
-type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature';
-
-const THEMES: { name: ThemeType; label: string; emoji: string }[] = [
-  { name: 'vision', label: 'Vision', emoji: '🔮' },
-  { name: 'arctic', label: 'Arctic', emoji: '❄️' },
-  { name: 'cyberpunk', label: 'Cyber', emoji: '⚡' },
-  { name: 'aurora', label: 'Aurora', emoji: '🌌' },
-  { name: 'nature', label: 'Nature', emoji: '🌿' },
-];
-
-
-
-
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { Zap, Monitor, Layout, Key } from 'lucide-react';
 
 interface TopBarProps {
   stats?: {
@@ -27,6 +15,7 @@ interface TopBarProps {
     accuracy?: number;
     streak?: number;
     rank?: string;
+    rankIcon?: string;
   };
   onSettingsClick?: () => void;
   onProfileClick?: () => void;
@@ -65,38 +54,64 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
   };
 
   return (
-    <header className="glass-panel flex items-center justify-between px-8 py-4 mb-6 h-16 shrink-0 transition-all">
+    <header className="glass-panel flex items-center justify-between px-6 py-3 mb-4 h-14 shrink-0 transition-all">
 
-      {/* 1. BRANDING & IDENTITY */}
-      <div className="flex items-center gap-4">
-        <div className="w-8 h-8 glass-panel-dark flex items-center justify-center text-accent shadow-xl font-black">P</div>
-        <h1 className="text-sm font-black text-primary tracking-[0.2em] italic">
-          TYPING<span className="text-accent not-italic">PRO</span>
-        </h1>
+      {/* 1. BRANDING & IDENTITY + THEME SWITCHER */}
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 bg-[var(--accent-soft)] border border-[var(--text-accent)]/20 rounded-lg flex items-center justify-center text-[var(--text-accent)] shadow-xl font-black">P</div>
+          <h1 className="text-sm font-black tracking-[0.2em] italic" style={{ color: 'var(--text-primary)' }}>
+            TYPING<span className="text-[var(--text-accent)] not-italic">PRO</span>
+          </h1>
+        </div>
+        <div className="hidden md:block">
+          <ThemeSwitcher />
+        </div>
       </div>
 
 
 
       {/* 3. STATS CLUSTER */}
       <div className="flex items-center gap-12 ml-auto mr-12">
+        {stats?.rankIcon && (
+          <div className="flex flex-col items-center">
+            <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Tier</span>
+            <span className="text-lg">{stats.rankIcon}</span>
+          </div>
+        )}
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black text-secondary uppercase tracking-widest leading-none">Velocity</span>
-          <span className="text-lg font-black text-primary tabular-nums">{stats?.wpm ?? 0} <small className="text-[9px] text-secondary">WPM</small></span>
+          <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Velocity</span>
+          <span className="text-lg font-black tabular-nums" style={{ color: 'var(--text-primary)' }}>{stats?.wpm ?? 0} <small className="text-[9px] opacity-60">WPM</small></span>
         </div>
-        <div className="w-px h-6 bg-secondary opacity-20" />
+        <div className="w-px h-6 bg-[var(--text-primary)] opacity-10" />
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black text-secondary uppercase tracking-widest leading-none">Precision</span>
-          <span className="text-lg font-black text-primary tabular-nums">{stats?.accuracy ?? 100}%</span>
+          <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Precision</span>
+          <span className="text-lg font-black tabular-nums" style={{ color: 'var(--text-primary)' }}>{stats?.accuracy ?? 100}%</span>
         </div>
-        <div className="w-px h-6 bg-secondary opacity-20" />
+        <div className="w-px h-6 bg-[var(--text-primary)] opacity-10" />
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black text-secondary uppercase tracking-widest leading-none">Active Loop</span>
-          <span className="text-lg font-black text-accent tabular-nums">{stats?.streak ?? 0}D</span>
+          <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Active Loop</span>
+          <span className="text-lg font-black tabular-nums text-[var(--text-accent)]">{stats?.streak ?? 0}D</span>
         </div>
       </div>
 
-      {/* 4. THEME SWITCHER (INTEGRATED) */}
-      <ThemeSwitcher className="hidden xl:flex mr-6" />
+      {/* 4. ZEN MODE BUTTON */}
+      <div className="hidden xl:flex items-center gap-4 mr-6">
+        <button
+          onClick={async () => {
+            const zenWin = WebviewWindow.getByLabel('zen');
+            if (zenWin) {
+              await (await zenWin).show();
+              await (await zenWin).setFocus();
+            }
+          }}
+          className="p-3 rounded-xl bg-[var(--glass-bg)] border border-glass hover:bg-[var(--glass-hover)] transition-all group relative"
+          title="Neural Zen Mode"
+        >
+          <Zap size={16} className="text-[var(--text-accent)] group-hover:scale-110 transition-transform" />
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black text-[8px] font-black uppercase tracking-widest text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">Zen_Mode</div>
+        </button>
+      </div>
 
       {/* 3. USER & ACTIONS */}
       <div className="flex items-center gap-4">
@@ -127,34 +142,36 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             {showDropdown && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
-                <div className="absolute right-0 top-full mt-2 w-56 glass-panel rounded-xl p-2 z-50 shadow-2xl border border-glass">
+                <div className="absolute right-0 top-full mt-2 w-64 glass-panel rounded-2xl p-2 z-50 shadow-2xl border border-glass animate-float-in">
                   {/* User Info Header */}
-                  <div className="px-3 py-2 border-b border-glass mb-2">
-                    <p className="text-sm font-bold text-primary truncate">{user.name}</p>
+                  <div className="px-4 py-3 border-b border-glass mb-2">
+                    <p className="text-sm font-black truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</p>
                     {user.email && (
-                      <p className="text-[10px] text-secondary truncate">{user.email}</p>
+                      <p className="text-[10px] truncate opacity-60" style={{ color: 'var(--text-secondary)' }}>{user.email}</p>
                     )}
-                    <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest text-accent glass-panel-dark px-2 py-0.5 rounded-full">
-                      {user.provider}
-                    </span>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="inline-block text-[8px] font-black uppercase tracking-widest text-[var(--text-accent)] bg-[var(--accent-soft)] px-2 py-0.5 rounded-full border border-[var(--text-accent)]/20">
+                        {user.provider}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Profile Link */}
                   <button
                     onClick={() => { onProfileClick?.(); setShowDropdown(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-secondary hover:text-primary hover:bg-white/10 rounded-lg transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm font-semibold rounded-xl transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)]"
                   >
                     <UserIcon />
-                    <span className="font-medium">Profile</span>
+                    <span className="font-bold">Neural_Profile</span>
                   </button>
 
                   {/* Logout */}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-sm font-semibold rounded-xl transition-all text-red-500 hover:bg-red-500/10"
                   >
                     <LogoutIcon />
-                    <span className="font-medium">Sign Out</span>
+                    <span className="font-bold uppercase tracking-widest text-[10px]">Terminate_Session</span>
                   </button>
                 </div>
               </>
@@ -166,7 +183,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             <button
               onClick={() => login('google')}
               disabled={isLoading}
-              className="w-10 h-10 rounded-full border border-white/10 glass-panel overflow-hidden hover:border-white/40 transition-all shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+              className="w-10 h-10 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] overflow-hidden hover:border-[var(--text-accent)]/40 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
               title="Sign in with Google"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -180,10 +197,10 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             <button
               onClick={() => login('github')}
               disabled={isLoading}
-              className="w-10 h-10 rounded-full border border-white/10 glass-panel overflow-hidden hover:border-white/40 transition-all shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+              className="w-10 h-10 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] overflow-hidden hover:border-[var(--text-accent)]/40 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
               title="Sign in with GitHub"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" style={{ fill: 'var(--text-primary)' }}>
                 <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.42 22 12c0-5.523-4.477-10-10-10z" />
               </svg>
             </button>

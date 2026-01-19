@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { friendService } from '../../../core/friendService';
 import { UserProfile } from '../../../core/userService';
 import { useAuthStore } from '../../../core/store/authStore';
-import './Visuals.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, UserPlus, Check, Loader2, Signal, Eye } from 'lucide-react';
 
 export const UserSearch = () => {
     const { profile: myProfile } = useAuthStore();
@@ -18,7 +19,6 @@ export const UserSearch = () => {
         setSearching(true);
         try {
             const users = await friendService.searchUsers(query);
-            // Filter out self
             setResults(users.filter(u => u.uid !== myProfile?.uid));
         } catch (error) {
             console.error(error);
@@ -35,66 +35,90 @@ export const UserSearch = () => {
     };
 
     return (
-        <div className={`space-y-8 animate-in fade-in duration-700 ${searching ? 'scanline-container' : ''}`}>
-            <div className="flex items-center justify-between px-4">
-                <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Search Players</h3>
+        <div className="space-y-8 animate-in fade-in duration-700">
+            <div className="flex items-center justify-between px-2">
+                <div className="flex items-center gap-2">
+                    <Signal size={12} className="text-[var(--text-accent)] opacity-40" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 italic" style={{ color: 'var(--text-primary)' }}>Broadcast_Sync_Search</h3>
+                </div>
             </div>
 
             <form onSubmit={handleSearch} className="relative group">
+                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
+                    <Search size={16} style={{ color: 'var(--text-primary)' }} />
+                </div>
                 <input
                     type="text"
-                    placeholder="Search username..."
+                    placeholder="Search_Node_ID..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full glass-unified rounded-full px-8 py-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all font-mono tracking-wider shadow-2xl"
+                    className="w-full bg-white/5 border border-white/5 rounded-[1.5rem] pl-14 pr-16 py-5 text-sm placeholder:opacity-20 focus:outline-none focus:border-[var(--text-accent)]/40 transition-all font-mono tracking-wider shadow-2xl backdrop-blur-3xl"
+                    style={{ color: 'var(--text-primary)' }}
                 />
+
+                {/* Internal Scan Beam */}
+                <motion.div
+                    animate={{ left: ['-10%', '110%'] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-0 w-px h-full bg-gradient-to-b from-transparent via-[var(--text-accent)] to-transparent opacity-10 pointer-events-none"
+                />
+
                 <button
                     type="submit"
                     disabled={searching}
-                    className="absolute right-3 top-2.5 p-2 rounded-full bg-white text-black hover:scale-110 active:scale-90 transition-all disabled:opacity-50"
+                    className="absolute right-2.5 top-2.5 p-3 rounded-xl bg-[var(--text-accent)] text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-[var(--text-accent)]/30"
                 >
                     {searching ? (
-                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <Eye className="w-5 h-5" />
                     )}
                 </button>
             </form>
 
             <div className="space-y-3">
-                {results.map(user => (
-                    <div key={user.uid} className="flex items-center gap-6 p-4 rounded-[2rem] bg-white/5 border border-white/5 hover:border-white/20 hover:bg-white/10 transition-all group">
-                        <img src={user.avatar_url} alt={user.username} className="w-12 h-12 rounded-full border-2 border-white/10 group-hover:border-white/40 transition-all shadow-xl" />
-                        <div className="flex-1 min-w-0">
-                            <span className="text-sm font-black text-white block truncate tracking-tight">{user.username}</span>
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Avg: {user.avg_wpm} WPM</span>
-                        </div>
-                        {requestSent === user.uid ? (
-                            <div className="px-4 py-2 rounded-full bg-white text-black shadow-xl">
-                                <span className="text-[10px] font-black uppercase tracking-widest">Request Sent</span>
+                <AnimatePresence>
+                    {results.map((user, i) => (
+                        <motion.div
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            key={user.uid}
+                            className="flex items-center gap-4 p-4 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 hover:border-[var(--text-accent)]/30 transition-all group"
+                        >
+                            <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white/10 group-hover:border-[var(--text-accent)]/50 transition-colors shadow-2xl">
+                                <img src={user.avatar_url} alt={user.username} className="w-full h-full object-cover" />
                             </div>
-                        ) : (
-                            <button
-                                onClick={() => sendRequest(user)}
-                                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 border border-white/10 text-white hover:bg-white hover:text-black transition-all"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-                ))}
+                            <div className="flex-1 min-w-0">
+                                <span className="text-sm font-black block truncate tracking-tight" style={{ color: 'var(--text-primary)' }}>{user.username}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-black uppercase tracking-widest opacity-30 italic" style={{ color: 'var(--text-primary)' }}>Peak_Spd:</span>
+                                    <span className="text-[10px] font-black text-[var(--text-accent)] tracking-tighter">{user.avg_wpm || 0} WPM</span>
+                                </div>
+                            </div>
+                            {requestSent === user.uid ? (
+                                <div className="p-3 rounded-xl bg-green-500/20 text-green-400 border border-green-500/30">
+                                    <Check size={16} />
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => sendRequest(user)}
+                                    className="p-3 rounded-xl bg-white/5 border border-white/10 text-[var(--text-primary)] hover:bg-[var(--text-accent)] hover:text-white hover:border-[var(--text-accent)] transition-all shadow-md"
+                                >
+                                    <UserPlus size={16} />
+                                </button>
+                            )}
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+
                 {results.length === 0 && query && !searching && (
-                    <div className="py-12 text-center bg-white/2 border border-dashed border-white/10 rounded-[2rem] px-10">
-                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] leading-loose">
-                            No matches found<br />
-                            <span className="opacity-40 text-[8px]">Try a different username</span>
+                    <div className="py-16 text-center bg-white/5 border-2 border-dashed border-white/5 rounded-[2.5rem] px-10">
+                        <ShieldAlert className="mx-auto mb-4 opacity-10" size={32} />
+                        <p className="text-[10px] font-black uppercase tracking-[0.5em] leading-loose opacity-20" style={{ color: 'var(--text-primary)' }}>
+                            No_Sync_Matches_Found<br />
+                            <span className="opacity-40 text-[8px] tracking-[0.2em] italic">Verify Node ID Connectivity</span>
                         </p>
                     </div>
                 )}
@@ -102,3 +126,4 @@ export const UserSearch = () => {
         </div>
     );
 };
+

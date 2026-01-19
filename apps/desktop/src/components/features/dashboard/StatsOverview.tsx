@@ -25,8 +25,8 @@ const StatsOverview: React.FC = () => {
                 <div className="flex-1 w-full min-h-[200px] flex items-center justify-center mt-6">
                     <Suspense fallback={
                         <div className="flex flex-col items-center gap-4">
-                            <div className="w-12 h-12 glass-pill animate-spin border-t-2 border-cyan-400" />
-                            <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Compiling Hologram...</span>
+                            <div className="w-12 h-12 rounded-full border-2 border-glass border-t-[var(--text-accent)] animate-spin" />
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-30" style={{ color: 'var(--text-primary)' }}>Compiling Hologram...</span>
                         </div>
                     }>
                         <WpmGlassChart data={data} />
@@ -35,27 +35,27 @@ const StatsOverview: React.FC = () => {
             </GlassCard>
 
             {/* QUICK METRICS */}
-            <GlassCard variant="large" className="col-span-1 flex flex-col items-center justify-center py-10">
+            <GlassCard variant="large" className="col-span-1 flex flex-col items-center justify-center py-10 shadow-2xl border-glass">
                 <div className="text-center w-full mb-10">
-                    <span className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] block mb-6 italic">Mean Signal Velocity</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.4em] block mb-6 italic opacity-20" style={{ color: 'var(--text-primary)' }}>Mean Signal Velocity</span>
                     <div className="relative">
-                        <span className="text-8xl font-black text-white tracking-tighter tabular-nums drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                        <span className="text-8xl font-black tracking-tighter tabular-nums drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] italic" style={{ color: 'var(--text-primary)' }}>
                             {averageWpm}
                         </span>
-                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
-                            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Words / Min</span>
+                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-full">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-accent)]">Words / Min</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="w-full flex flex-col items-center gap-10 mt-6 pt-10 border-t border-white/5">
+                <div className="w-full flex flex-col items-center gap-10 mt-6 pt-10 border-t border-glass shadow-inner">
                     <RankBadge wpm={averageWpm} />
 
                     <div className="flex flex-col items-center gap-2">
-                        <span className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em] italic">Current Precision</span>
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] italic opacity-20" style={{ color: 'var(--text-primary)' }}>Current Precision</span>
                         <div className="flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-                            <span className="text-4xl font-black text-white tabular-nums tracking-tighter">{latestAccuracy}%</span>
+                            <div className="w-2.5 h-2.5 rounded-full bg-[var(--text-accent)] shadow-[0_0_15px_var(--text-accent)]" />
+                            <span className="text-4xl font-black tabular-nums tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>{latestAccuracy}%</span>
                         </div>
                     </div>
                 </div>

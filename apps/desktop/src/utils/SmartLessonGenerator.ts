@@ -1,10 +1,6 @@
 import { CURRICULUM } from '../data/lessons'
 import { WeaknessProfile, WeaknessAnalyzer } from '../core/weaknessAnalyzer'
-import { TOP_BIGRAMS, TOP_100_WORDS, generateBigramDrill } from '../data/wordLists'
-
-const COMMON_WORDS = [
-    'the', 'be', 'of', 'and', 'a', 'to', 'in', 'he', 'have', 'it', 'that', 'for', 'they', 'I', 'with', 'as', 'not', 'on', 'she', 'at', 'by', 'this', 'we', 'you', 'do', 'but', 'from', 'or', 'which', 'one', 'would', 'all', 'will', 'there', 'say', 'who', 'make', 'when', 'can', 'more', 'if', 'no', 'man', 'out', 'other', 'so', 'what', 'time', 'up', 'go', 'about', 'than', 'into', 'could', 'state', 'only', 'new', 'year', 'some', 'take', 'come', 'these', 'know', 'see', 'use', 'get', 'like', 'then', 'first', 'any', 'work', 'now', 'may', 'such', 'give', 'over', 'think', 'most', 'even', 'find', 'day', 'also', 'after', 'way', 'many', 'must', 'look', 'before', 'great', 'back', 'through', 'long', 'where', 'much', 'should', 'well', 'people', 'down', 'own', 'just', 'because', 'good', 'each', 'those', 'feel', 'seem', 'how', 'high', 'too', 'place', 'little', 'world', 'very', 'still', 'nation', 'hand', 'old', 'life', 'tell', 'write', 'become', 'here', 'show', 'house', 'both', 'between', 'need', 'mean', 'call', 'develop', 'under', 'last', 'right', 'move', 'thing', 'general', 'school', 'never', 'same', 'another', 'begin', 'while', 'number', 'part', 'turn', 'real', 'leave', 'might', 'want', 'point', 'form', 'off', 'child', 'few', 'small', 'since', 'against', 'ask', 'late', 'home', 'interest', 'large', 'person', 'end', 'open', 'public', 'follow', 'during', 'present', 'without', 'again', 'hold', 'govern', 'around', 'possible', 'head', 'consider', 'word', 'program', 'problem', 'however', 'lead', 'system', 'set', 'order', 'eye', 'plan', 'run', 'keep', 'face', 'fact', 'group', 'play', 'stand', 'increase', 'early', 'course', 'change', 'help', 'line'
-]
+import { TOP_BIGRAMS, TOP_100_WORDS, TOP_1000_WORDS, generateBigramDrill } from '../data/wordLists'
 
 /**
  * Generates a smart lesson based on weak keys.
@@ -19,7 +15,7 @@ export const SmartLessonGenerator = {
     generate: (weakKeys: string[], lengthWords: number = 30): string => {
         if (!weakKeys || weakKeys.length === 0) {
             // Fallback: Random words
-            return Array.from({ length: lengthWords }, () => COMMON_WORDS[Math.floor(Math.random() * COMMON_WORDS.length)]).join(' ')
+            return Array.from({ length: lengthWords }, () => TOP_1000_WORDS[Math.floor(Math.random() * TOP_1000_WORDS.length)]).join(' ')
         }
 
         const weakSet = new Set(weakKeys.map(k => k.toLowerCase()))
@@ -31,7 +27,7 @@ export const SmartLessonGenerator = {
 
         // If no weak words found (unlikely), fallback
         if (weakWords.length === 0) {
-            return Array.from({ length: lengthWords }, () => COMMON_WORDS[Math.floor(Math.random() * COMMON_WORDS.length)]).join(' ')
+            return Array.from({ length: lengthWords }, () => TOP_1000_WORDS[Math.floor(Math.random() * TOP_1000_WORDS.length)]).join(' ')
         }
 
         const lessonWords: string[] = []
@@ -41,7 +37,7 @@ export const SmartLessonGenerator = {
             if (Math.random() < 0.7) {
                 lessonWords.push(weakWords[Math.floor(Math.random() * weakWords.length)])
             } else {
-                lessonWords.push(COMMON_WORDS[Math.floor(Math.random() * COMMON_WORDS.length)])
+                lessonWords.push(TOP_1000_WORDS[Math.floor(Math.random() * TOP_1000_WORDS.length)])
             }
         }
 
@@ -74,9 +70,7 @@ export const SmartLessonGenerator = {
 
         if (!profile || profile.totalKeysTracked === 0) {
             // No data yet, return random common words
-            return Array.from({ length: lengthWords }, () =>
-                COMMON_WORDS[Math.floor(Math.random() * COMMON_WORDS.length)]
-            ).join(' ')
+            return Array.from({ length: lengthWords }, () => TOP_1000_WORDS[Math.floor(Math.random() * TOP_1000_WORDS.length)]).join(' ')
         }
 
         // Get critical keys
@@ -92,7 +86,7 @@ export const SmartLessonGenerator = {
         const criticalSet = new Set(criticalKeys.map(k => k.toLowerCase()))
 
         // Find words containing critical keys
-        const weakWords = [...COMMON_WORDS, ...TOP_100_WORDS].filter(word =>
+        const weakWords = [...TOP_1000_WORDS, ...TOP_100_WORDS].filter(word =>
             word.split('').some(char => criticalSet.has(char))
         )
 
@@ -114,7 +108,7 @@ export const SmartLessonGenerator = {
                 lessonWords.push(relevantBigrams[Math.floor(Math.random() * relevantBigrams.length)])
             } else {
                 // 20% common words for flow
-                lessonWords.push(COMMON_WORDS[Math.floor(Math.random() * COMMON_WORDS.length)])
+                lessonWords.push(TOP_1000_WORDS[Math.floor(Math.random() * TOP_1000_WORDS.length)])
             }
         }
 

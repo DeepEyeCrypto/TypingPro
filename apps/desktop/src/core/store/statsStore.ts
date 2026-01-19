@@ -29,6 +29,12 @@ interface StatsState {
     bestReplays: Record<string, ReplayData>, // Best replay per lesson
     unlockedIds: string[],
     completedIds: string[],
+    getStats: () => {
+        bestWpm: number,
+        wpm: number,
+        accuracy: number,
+        streak: number
+    },
     recordAttempt: (lessonId: string, wpm: number, accuracy: number, errors?: Record<string, number>, graphData?: { time: number, wpm: number, raw: number }[], replayData?: ReplayData) => void,
     loadStats: (stats: Record<string, LessonStats>, history?: SessionResult[], errors?: Record<string, number>, replays?: Record<string, ReplayData>, unlocked?: string[], completed?: string[]) => void,
     setProgress: (unlocked: string[], completed: string[]) => void
@@ -41,6 +47,17 @@ export const useStatsStore = create<StatsState>((set) => ({
     bestReplays: JSON.parse(localStorage.getItem('typing_replays') || '{}'),
     unlockedIds: CURRICULUM.map(l => l.id), // UNLOCK_ALL: Always unlock everything by default
     completedIds: JSON.parse(localStorage.getItem('completedIds') || '[]'),
+    getStats: () => {
+        const historyStr = localStorage.getItem('typing_history');
+        const history = historyStr ? JSON.parse(historyStr) : [];
+        if (history.length === 0) return { bestWpm: 0, wpm: 0, accuracy: 100, streak: 0 };
+
+        const bestWpm = Math.max(...history.map((s: any) => s.wpm));
+        const avgWpm = Math.round(history.reduce((a: any, b: any) => a + b.wpm, 0) / history.length);
+        const avgAcc = Math.round(history.reduce((a: any, b: any) => a + b.accuracy, 0) / history.length);
+
+        return { bestWpm, wpm: avgWpm, accuracy: avgAcc, streak: 0 };
+    },
 
     recordAttempt: (lessonId, wpm, accuracy, errors = {}, graphData = [], replayData) => set((state) => {
         // Update per-lesson bests

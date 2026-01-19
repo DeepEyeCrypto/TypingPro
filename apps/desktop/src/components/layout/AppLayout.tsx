@@ -34,7 +34,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
                 {/* Left: Sidebar */}
                 {sidebar && (
-                    <div className="w-16 shrink-0 hidden md:block">
+                    <div className="w-20 shrink-0 hidden md:block">
                         {sidebar}
                     </div>
                 )}

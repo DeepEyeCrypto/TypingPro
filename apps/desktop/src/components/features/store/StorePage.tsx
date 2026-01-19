@@ -72,14 +72,14 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
     };
 
     return (
-        <div className="w-full h-full text-white p-6 overflow-y-auto">
+        <div className="w-full h-full p-6 overflow-y-auto" style={{ color: 'var(--text-primary)' }}>
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-4">
                     {onBack && (
                         <button
                             onClick={onBack}
-                            className="text-white opacity-50 hover:opacity-100 transition-colors"
+                            className="text-[var(--text-primary)] opacity-50 hover:opacity-100 transition-colors"
                         >
                             ← Back
                         </button>
@@ -93,7 +93,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
 
             {/* Purchase Message Toast */}
             {purchaseMessage && (
-                <div className="fixed top-4 right-4 bg-white border border-white/10 text-white px-4 py-2 rounded-lg z-50 shadow-xl">
+                <div className="fixed top-4 right-4 glass-panel bg-[var(--text-accent)] text-white px-6 py-3 rounded-2xl z-50 shadow-2xl border border-white/20 animate-float-in">
                     {purchaseMessage}
                 </div>
             )}
@@ -104,9 +104,9 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                     <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${selectedCategory === cat
-                            ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.3)] border border-white/20'
-                            : 'bg-white/5 text-white opacity-40 hover:opacity-100 hover:bg-white/10 border border-white/10'
+                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${selectedCategory === cat
+                            ? 'bg-[var(--text-accent)] text-white shadow-lg border-[var(--text-accent)]'
+                            : 'bg-[var(--glass-bg)] text-[var(--text-secondary)] opacity-60 hover:opacity-100 hover:bg-[var(--glass-hover)] border-glass'
                             }`}
                     >
                         {CATEGORY_LABELS[cat]}

@@ -8,6 +8,8 @@ import { CertificationTest } from './CertificationTest';
 import { CertificateDisplay } from './CertificateDisplay';
 import { CertificationTier, UserCertification, CertificationTest as CertTest } from '../../../types/certifications';
 import { CERTIFICATION_TIERS } from '../../../data/certifications';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Award, ShieldCheck, Zap } from 'lucide-react';
 import {
     startCertificationTest,
     completeCertificationTest,
@@ -104,22 +106,37 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
     }
 
     return (
-        <div className="min-h-full p-6">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="min-h-full p-6 lg:p-10 max-w-7xl mx-auto pb-32"
+        >
             {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-                {onBack && (
-                    <button
-                        onClick={onBack}
-                        className="text-white opacity-60 hover:opacity-100 transition-colors"
-                    >
-                        ← Back
-                    </button>
-                )}
-                <div>
-                    <h1 className="text-2xl font-bold text-white">Certifications</h1>
-                    <p className="text-white opacity-60 text-sm">Official typing skill certifications</p>
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-glass pb-10 mb-10">
+                <div className="flex items-center gap-6">
+                    {onBack && (
+                        <button
+                            onClick={onBack}
+                            className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-glass shadow-lg hover:scale-110 active:scale-95 transition-all text-[var(--text-primary)]"
+                        >
+                            <ArrowLeft size={20} />
+                        </button>
+                    )}
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] block mb-1 opacity-40" style={{ color: 'var(--text-primary)' }}>Validation Protocols</span>
+                        <h1 className="text-4xl font-black tracking-tighter uppercase italic" style={{ color: 'var(--text-primary)' }}>
+                            Elite<span className="not-italic opacity-20">.Certifications</span>
+                        </h1>
+                    </div>
                 </div>
-            </div>
+
+                <div className="flex items-center gap-4">
+                    <div className="px-5 py-2 rounded-xl bg-[var(--glass-bg)] border border-glass flex items-center gap-3">
+                        <Award className="text-[var(--text-accent)] w-5 h-5" />
+                        <span className="text-[10px] font-black tracking-widest uppercase opacity-60" style={{ color: 'var(--text-primary)' }}>Verified Identity: {username}</span>
+                    </div>
+                </div>
+            </header>
 
             {/* Test result notification */}
             {testResult && (
@@ -156,20 +173,24 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
             )}
 
             {/* Tiers grid */}
-            <CertificationTiers
-                earnedCertifications={earnedCertifications}
-                onAttempt={handleAttempt}
-                onViewCertificate={setViewingCertificate}
-            />
+            <div className="animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                <CertificationTiers
+                    earnedCertifications={earnedCertifications}
+                    onAttempt={handleAttempt}
+                    onViewCertificate={setViewingCertificate}
+                />
+            </div>
 
             {/* Certificate modal */}
-            {viewingCertificate && (
-                <CertificateDisplay
-                    certification={viewingCertificate}
-                    username={username}
-                    onClose={() => setViewingCertificate(null)}
-                />
-            )}
-        </div>
+            <AnimatePresence>
+                {viewingCertificate && (
+                    <CertificateDisplay
+                        certification={viewingCertificate}
+                        username={username}
+                        onClose={() => setViewingCertificate(null)}
+                    />
+                )}
+            </AnimatePresence>
+        </motion.div>
     );
 };

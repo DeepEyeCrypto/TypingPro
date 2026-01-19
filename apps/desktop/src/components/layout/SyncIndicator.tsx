@@ -25,9 +25,15 @@ export const SyncIndicator = () => {
     if (!user) return null
 
     return (
-        <div className={`sync-indicator ${synced ? 'synced' : 'pending'}`}>
-            <span className="sync-dot"></span>
-            <span className="sync-label">{synced ? 'SYNCED' : 'NOT SYNCED'}</span>
+        <div className={`
+            flex items-center gap-2.5 px-3 py-1.5 rounded-full border shadow-sm transition-all duration-500
+            ${synced
+                ? 'bg-[var(--accent-soft)] border-[var(--text-accent)]/20 text-[var(--text-accent)]'
+                : 'bg-orange-500/10 border-orange-500/20 text-orange-400 animate-pulse'
+            }
+        `}>
+            <div className={`w-1.5 h-1.5 rounded-full ${synced ? 'bg-[var(--text-accent)] shadow-[0_0_8px_var(--text-accent)]' : 'bg-orange-500 shadow-[0_0_8px_orange]'}`} />
+            <span className="text-[9px] font-black uppercase tracking-[0.15em]">{synced ? 'Neural_Sync_Active' : 'Sync_Pending'}</span>
         </div>
     )
 }

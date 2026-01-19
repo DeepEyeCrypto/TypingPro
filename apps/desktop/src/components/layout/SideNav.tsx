@@ -54,26 +54,25 @@ const SideNavComponent: React.FC<SideNavProps> = ({
 
     return (
         <aside
-            className="glass-panel flex flex-col items-center justify-between h-full w-16 py-6 transition-transform duration-300 ease-in-out fixed left-0 top-0 z-40 transform -translate-x-full md:translate-x-0 md:relative"
-            style={{ '--contrast-text': textColor } as React.CSSProperties}
+            className="glass-panel flex flex-col items-center justify-between h-full w-14 py-5 transition-transform duration-300 ease-in-out fixed left-0 top-0 z-40 transform -translate-x-full md:translate-x-0 md:relative"
         >
             {/* Navigation Items */}
-            <nav className="flex flex-col items-center gap-4 w-full">
+            <nav className="flex flex-col items-center gap-2 w-full">
                 {items.filter(item => item.id !== 'settings').map((item) => (
                     <button
                         key={item.id}
                         onClick={item.onClick}
                         className={`
-                            w-10 h-10 flex items-center justify-center rounded-xl 
-                            transition-all duration-200 ease-out shrink-0
+                            w-9 h-9 flex items-center justify-center rounded-lg 
+                            transition-all duration-300 ease-out shrink-0
                             ${item.active
-                                ? 'glass-panel-dark text-accent shadow-lg'
-                                : 'text-secondary hover:text-primary hover:bg-[var(--glass-hover)]'
+                                ? 'bg-[var(--text-accent)] text-white shadow-lg scale-110'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] border border-transparent hover:border-glass'
                             }
                         `}
                         title={item.label}
                     >
-                        {React.cloneElement(item.icon as React.ReactElement, { size: 20 })}
+                        {React.cloneElement(item.icon as React.ReactElement, { size: 16 })}
                     </button>
                 ))}
             </nav>
@@ -82,10 +81,10 @@ const SideNavComponent: React.FC<SideNavProps> = ({
             <div className="flex-1" />
 
             {/* Bottom Controls */}
-            <div className="flex flex-col gap-4 items-center w-full">
+            <div className="flex flex-col gap-2 items-center w-full">
                 {/* Sync indicator */}
                 {syncing && (
-                    <div className="text-[10px] text-accent animate-pulse font-medium tracking-wider">
+                    <div className="text-[8px] text-[var(--text-accent)] animate-pulse font-black tracking-[0.15em] mb-1 uppercase">
                         SYNC
                     </div>
                 )}
@@ -93,10 +92,10 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                 {/* Volume Toggle */}
                 <button
                     onClick={toggleMute}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl text-secondary hover:text-primary hover:bg-white/10 transition-all duration-200"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] border border-transparent hover:border-glass"
                     title={isMuted ? "Unmute" : "Mute"}
                 >
-                    {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                    {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
                 </button>
 
                 {/* Settings (if in items) */}
@@ -104,18 +103,18 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                     <button
                         onClick={items.find(i => i.id === 'settings')?.onClick}
                         className={`
-                            w-10 h-10 flex items-center justify-center rounded-xl 
-                            transition-all duration-200 ease-out
+                            w-9 h-9 flex items-center justify-center rounded-lg 
+                            transition-all duration-300 ease-out border
                             ${items.find(i => i.id === 'settings')?.active
-                                ? 'glass-panel-dark text-accent'
-                                : 'text-secondary hover:text-primary hover:bg-[var(--glass-hover)]'
+                                ? 'bg-[var(--text-accent)] text-white shadow-lg border-[var(--text-accent)] scale-110'
+                                : 'bg-[var(--glass-bg)] border-glass text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)]'
                             }
                         `}
                         title="Settings"
                     >
                         {React.cloneElement(
                             items.find(i => i.id === 'settings')?.icon as React.ReactElement,
-                            { size: 18 }
+                            { size: 16 }
                         )}
                     </button>
                 )}

@@ -25,7 +25,7 @@ const Character = React.memo(({ char, state, isGhost, isCaret, caretStyle }: Cha
         <span className={`char ${state} ${isGhost ? 'ghost-active' : ''}`}>
             {char === ' ' ? '\u00A0' : char}
             {isCaret && <div className={`caret blinking caret-${caretStyle}`} />}
-            {isGhost && <div className={`caret caret-${caretStyle}`} style={{ opacity: 0.3, background: '#000', boxShadow: '0 0 10px rgba(0,0,0,0.5)' }} />}
+            {isGhost && <div className={`caret ghost-caret caret-${caretStyle}`} />}
         </span>
     );
 }, (prev, next) => {

@@ -6,6 +6,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CertificationTier, CertificationTest as CertTest, TIER_COLORS, TIER_ICONS } from '../../../types/certifications';
 import { CERTIFICATION_TIERS } from '../../../data/certifications';
 import { formatTimeRemaining } from '../../../core/certificationService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Clock, Zap, Target, ShieldAlert } from 'lucide-react';
 
 interface CertificationTestProps {
     test: CertTest;
@@ -92,62 +94,78 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
     const progress = (charIndex / test.text.length) * 100;
 
     return (
-        <div className="min-h-full p-6 flex flex-col">
+        <div className="min-h-full p-6 lg:p-10 flex flex-col max-w-7xl mx-auto pb-32">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between mb-10 border-b border-glass pb-8">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={onCancel}
-                        className="text-white opacity-60 hover:opacity-100 transition-colors"
+                        className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-glass shadow-lg hover:scale-110 active:scale-95 transition-all text-[var(--text-primary)]"
                     >
-                        ← Cancel
+                        <ArrowLeft size={20} />
                     </button>
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl">{icon}</span>
-                        <h1 className="text-xl font-bold" style={{ color }}>
-                            {tierInfo?.name} Certification Test
-                        </h1>
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] block mb-1 opacity-40" style={{ color: 'var(--text-primary)' }}>Validation_In_Progress</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">{icon}</span>
+                            <h1 className="text-3xl font-black italic uppercase tracking-tighter" style={{ color: 'var(--text-primary)' }}>
+                                {tierInfo?.name} <span className="text-[var(--text-accent)]">Protocol</span>
+                            </h1>
+                        </div>
                     </div>
                 </div>
 
                 {/* Timer */}
                 <div
                     className={`
-            text-3xl font-mono font-bold px-4 py-2 rounded-lg
-            ${timeLeft <= 60 ? 'bg-black/10 text-white animate-pulse border border-black/20' : 'bg-black/5 text-white'}
-          `}
+                        flex items-center gap-4 px-8 py-4 rounded-3xl bg-[var(--glass-bg)] border-2 transition-all duration-500
+                        ${timeLeft <= 60 ? 'border-[var(--text-accent)] shadow-[0_0_20px_var(--text-accent)]/20 animate-pulse' : 'border-glass shadow-xl'}
+                    `}
                 >
-                    {formatTimeRemaining(timeLeft)}
+                    <Clock size={20} className={timeLeft <= 60 ? 'text-[var(--text-accent)]' : 'opacity-40'} />
+                    <span className="text-4xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>
+                        {formatTimeRemaining(timeLeft)}
+                    </span>
                 </div>
             </div>
 
             {/* Requirements reminder */}
-            <div className="flex gap-6 mb-6 text-sm">
-                <div className="text-white opacity-60">
-                    Required: <span style={{ color }}>{tierInfo?.min_wpm}+ WPM</span>
+            <div className="flex gap-8 mb-10">
+                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--glass-bg)] border border-glass rounded-xl shadow-md">
+                    <Zap size={14} className="text-[var(--text-accent)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>Required:</span>
+                    <span className="text-xs font-black italic text-[var(--text-accent)]">{tierInfo?.min_wpm}+ WPM</span>
                 </div>
-                <div className="text-white opacity-60">
-                    Accuracy: <span style={{ color }}>{tierInfo?.min_accuracy}%+</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--glass-bg)] border border-glass rounded-xl shadow-md">
+                    <Target size={14} className="text-[var(--text-accent)]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>Precision:</span>
+                    <span className="text-xs font-black italic text-[var(--text-accent)]">{tierInfo?.min_accuracy}%+</span>
                 </div>
             </div>
 
             {/* Text display */}
-            <div className="flex-1 bg-white/5 rounded-xl p-6 mb-6 overflow-auto">
+            <div className="flex-1 bg-[var(--glass-bg)] border border-glass rounded-[4rem] p-12 lg:p-16 mb-10 overflow-auto shadow-2xl relative">
                 {!isStarted ? (
-                    <div className="flex flex-col items-center justify-center h-full gap-6">
-                        <div className="text-6xl">{icon}</div>
-                        <h2 className="text-2xl font-bold text-white">Ready to begin?</h2>
-                        <p className="text-white opacity-60 text-center max-w-md">
-                            You will have 5 minutes to type the text below as quickly and accurately as possible.
-                            Focus on both speed and precision.
-                        </p>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center justify-center h-full gap-8 text-center"
+                    >
+                        <div className="text-9xl drop-shadow-[0_0_30px_rgba(var(--text-accent),0.5)] mb-4">{icon}</div>
+                        <div className="space-y-4">
+                            <h2 className="text-4xl font-black uppercase italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>Synchronize Pulse</h2>
+                            <p className="text-sm opacity-40 max-w-md font-bold leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                                You will have 5 minutes to validate your synaptic throughput.
+                                Any error below {tierInfo?.min_accuracy}% results in immediate protocol failure.
+                            </p>
+                        </div>
                         <button
                             onClick={startTest}
-                            className="px-8 py-4 bg-white text-black rounded-xl text-lg font-bold hover:bg-white/90 transition-all"
+                            className="px-12 py-5 bg-[var(--text-accent)] text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.4em] shadow-2xl shadow-[var(--text-accent)]/30 hover:scale-110 active:scale-95 transition-all"
                         >
-                            Start Test
+                            Initiate_Sequence
                         </button>
-                    </div>
+                    </motion.div>
                 ) : (
                     <div className="text-lg leading-relaxed font-mono">
                         {test.text.split('').map((char, i) => {
@@ -178,34 +196,33 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
 
             {/* Stats bar */}
             {isStarted && (
-                <div className="space-y-4">
-                    {/* Progress bar */}
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                            className="h-full rounded-full transition-all duration-300"
-                            style={{
-                                width: `${progress}%`,
-                                backgroundColor: color,
-                            }}
+                <div className="space-y-8 animate-in slide-in-from-bottom-6 duration-700">
+                    <div className="flex justify-between items-end mb-2 px-4">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 italic" style={{ color: 'var(--text-primary)' }}>Validation_Spectrum</span>
+                        <div className="flex gap-10">
+                            <div className="text-right">
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-20 block mb-1" style={{ color: 'var(--text-primary)' }}>Precision</span>
+                                <span className={`text-2xl font-black italic tracking-tighter ${accuracy < (tierInfo?.min_accuracy || 95) ? 'text-red-500 animate-pulse' : 'text-[var(--text-accent)]'}`}>
+                                    {accuracy}%
+                                </span>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-20 block mb-1" style={{ color: 'var(--text-primary)' }}>Errors</span>
+                                <span className="text-2xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>{errors}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="h-4 w-full bg-[var(--glass-bg)] border border-glass rounded-full overflow-hidden p-1 shadow-inner">
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress}%` }}
+                            transition={{ duration: 0.3 }}
+                            className="h-full bg-[var(--text-accent)] rounded-full shadow-[0_0_15px_var(--text-accent)]"
                         />
                     </div>
-
-                    {/* Live stats */}
-                    <div className="flex justify-between text-sm">
-                        <div className="text-white opacity-60">
-                            Progress: <span className="text-white font-bold">{Math.round(progress)}%</span>
-                        </div>
-                        <div className="text-white opacity-60">
-                            Characters: <span className="text-white font-bold">{charIndex}/{test.text.length}</span>
-                        </div>
-                        <div className="text-white opacity-60">
-                            Accuracy: <span className={accuracy >= (tierInfo?.min_accuracy || 95) ? 'text-white' : 'text-white font-black underline'}>
-                                {accuracy}%
-                            </span>
-                        </div>
-                        <div className="text-white opacity-60">
-                            Errors: <span className="text-white font-black">{errors}</span>
-                        </div>
+                    <div className="flex justify-between px-4">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-20" style={{ color: 'var(--text-primary)' }}>Buffer: {charIndex} / {test.text.length} Signals</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-accent)]">{Math.round(progress)}% Processed</span>
                     </div>
                 </div>
             )}
