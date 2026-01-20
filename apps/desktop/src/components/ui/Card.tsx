@@ -7,6 +7,7 @@ interface CardProps {
     className?: string;
     action?: React.ReactNode;
     glimmer?: boolean; // Enable glimmer effect
+    blurLevel?: string;
 }
 
 export const Card: React.FC<CardProps> = ({ title, subtitle, children, className = '', action, glimmer = false }) => {

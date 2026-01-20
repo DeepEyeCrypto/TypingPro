@@ -54,7 +54,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
 
     return (
         <aside
-            className="glass-panel flex flex-col items-center justify-between h-full w-14 py-5 transition-transform duration-300 ease-in-out fixed left-0 top-0 z-40 transform -translate-x-full md:translate-x-0 md:relative"
+            className="glass-panel gpu-accelerated flex flex-col items-center justify-between h-full w-14 py-5 transition-transform duration-300 ease-in-out fixed left-0 top-0 z-40 transform -translate-x-full md:translate-x-0 md:relative"
         >
             {/* Navigation Items */}
             <nav className="flex flex-col items-center gap-2 w-full">

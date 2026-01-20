@@ -10,7 +10,7 @@ import { RankBadge } from '../../layout/RankBadge';
 import { ReleaseHub } from './ReleaseHub';
 import { ActivityFeed } from './ActivityFeed';
 import { GlassCard } from '../../ui/GlassCard';
-import { ArrowLeft, Globe, Zap, Users, Shield, Cpu, Activity, MessageSquare, Sword, Search } from 'lucide-react';
+import { ArrowLeft, Globe, Zap, Users, Shield, Cpu, Activity, MessageSquare, Sword, Search, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Props {

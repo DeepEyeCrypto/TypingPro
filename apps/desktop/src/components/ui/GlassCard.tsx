@@ -61,6 +61,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     // Build class string
     const baseClasses = `
         ${mode === 'dark' ? 'glass-panel-dark' : 'glass-panel'}
+        gpu-accelerated
         ${paddingMap[variant]}
         ${radiusMap[cornerRadius]}
         ${interactive ? 'cursor-pointer hover:shadow-lg' : ''}

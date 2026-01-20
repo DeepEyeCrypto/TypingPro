@@ -5,7 +5,7 @@ import { useStatsStore } from '../core/store/statsStore'
 import { WeaknessAnalyzer } from '../core/weaknessAnalyzer'
 
 import { syncService } from '../core/syncService'
-import { useRustAudio } from './useRustAudio'
+import { useTypingSound } from './useTypingSound'
 
 import { raceService } from '../core/raceService'
 import { liveRaceService } from '../core/liveRaceService';
@@ -18,11 +18,27 @@ import { generateDailyChallenges, updateChallengeProgress } from '../core/challe
 import { activityService } from '../core/activityService'
 import { useMissionStore } from '../core/store/missionStore'
 import { usePresenceStore } from '../core/store/presenceStore'
+import { useJuiceEngine } from './useJuiceEngine'
 
 export const useTyping = () => {
-    const { playTypingSound } = useRustAudio()
+    const { playKeypress, playError } = useTypingSound()
     const { user } = useAuthStore() // Get user to attach to race
     const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel' | 'dashboard' | 'store' | 'achievements' | 'certification' | 'settings' | 'coach'>('selection')
+    const {
+        fuel,
+        isShakeActive,
+        isComboPulse,
+        triggerCorrect,
+        triggerError,
+        triggerWordComplete,
+        getParticleColor
+    } = useJuiceEngine({
+        isSurvivalMode: view === 'typing', // Example: only survival in typing view
+        onGameOver: () => {
+            // handle survival fail
+            console.log("GAME OVER: Out of Fuel");
+        }
+    })
     const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
     const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null)
     const [challengerGhost, setChallengerGhost] = useState<{ charAndTime: { char: string, time: number }[] } | undefined>(undefined)
@@ -90,7 +106,7 @@ export const useTyping = () => {
     const [isPaused, setIsPaused] = useState(false)
     const [totalPausedTime, setTotalPausedTime] = useState(0)
     const [lastPauseStart, setLastPauseStart] = useState<number | null>(null)
-    const timerRef = useRef<NodeJS.Timeout | null>(null)
+    const timerRef = useRef<any>(null)
     const graphDataRef = useRef<{ time: number, wpm: number, raw: number }[]>([])
     const metricsRef = useRef(metrics)
     const lastSyncTimeRef = useRef<number>(0) // ⚡️ Throttling Ref
@@ -140,7 +156,7 @@ export const useTyping = () => {
 
     // Graph Sampling
     useEffect(() => {
-        let interval: NodeJS.Timeout
+        let interval: any
         // CRITICAL FIX: Stop sampling if result is showing to prevent infinite timer
         if (view === 'typing' && !isPaused && startTime > 0 && !showResult) {
             interval = setInterval(() => {
@@ -188,7 +204,12 @@ export const useTyping = () => {
         graphDataRef.current = []
         currentReplayRef.current = []
 
-        await startSession(lesson.text)
+        try {
+            await startSession(lesson.text)
+        } catch (error) {
+            console.error("Failed to start backend session:", error)
+            // Continue anyway to allow typing in UI even if scoring engine fails
+        }
         setView('typing')
         setShowResult(false)
         startIdleTimer()
@@ -426,7 +447,7 @@ export const useTyping = () => {
                 mission.failMission(failReason)
             }
         }
-    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playTypingSound, mission])
+    }, [metrics, currentLesson, completedIds, unlockedIds, recordAttempt, errors, startTime, totalKeystrokes, totalPausedTime, user, setProgress, setChallengeProgress, addKeystones, unlockBadge, addNotification, perfectSessions, totalCumulativeKeystrokes, unlockedBadges, localStreak, setLocalStreak, challengeProgress, playKeypress, playError, mission])
 
     useEffect(() => {
         if (currentLesson && input.length === currentLesson.text.length && input.length > 0) {
@@ -448,7 +469,8 @@ export const useTyping = () => {
                 return
             }
             setInput((prev: string) => prev.slice(0, -1))
-            playTypingSound('backspace')
+            playKeypress() // Use click for backspace too or backspace specific
+            triggerError() // Backspace breaks the flow
             return
         }
 
@@ -474,9 +496,15 @@ export const useTyping = () => {
                     ...prev,
                     [targetChar]: (prev[targetChar] || 0) + 1
                 }))
-                playTypingSound('error')
+                playError()
+                triggerError()
             } else {
-                playTypingSound('mechanical')
+                playKeypress()
+                triggerCorrect()
+                // Check if word completed
+                if (char === ' ' || input.length + 1 === currentLesson.text.length) {
+                    triggerWordComplete()
+                }
             }
 
             // 2. LOGIC / SCORING PATH (Async, non-blocking)
@@ -557,6 +585,7 @@ export const useTyping = () => {
         finalStats,
         errors,
         isPaused,
+        stressLevel,
         ghostReplay, // Export ghost data for UI
         missionState: mission.state,
         missionData: mission.data,
@@ -564,8 +593,13 @@ export const useTyping = () => {
         startMission,
         deployMission,
         resetMission: mission.resetMission,
-        stressLevel,
         activeMatchId,
-        setActiveMatchId
+        setActiveMatchId,
+        juice: {
+            fuel,
+            isShakeActive,
+            isComboPulse,
+            particleColor: getParticleColor()
+        }
     }
 }

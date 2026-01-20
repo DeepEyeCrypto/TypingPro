@@ -6,6 +6,7 @@ import React from 'react';
 import { TypingField } from '../features/typing/TypingField';
 import { GlassCard } from '../ui/GlassCard';
 import { MissionHUD } from '../features/typing/MissionHUD';
+import { SurvivalFuelBar } from '../ui/SurvivalFuelBar';
 
 interface TypingTestPageProps {
     targetText: string;
@@ -23,7 +24,13 @@ interface TypingTestPageProps {
         targetWpm: number;
         minAccuracy: number;
         stressLevel: number;
-    }
+    };
+    juice?: {
+        fuel: number;
+        isShakeActive: boolean;
+        isComboPulse: boolean;
+        particleColor: string;
+    };
 }
 
 export const TypingTestPage: React.FC<TypingTestPageProps> = ({
@@ -33,7 +40,8 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
     onKeyDown,
     stats,
     onReset,
-    missionData
+    missionData,
+    juice
 }) => {
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] w-full max-w-5xl mx-auto p-4 animate-in fade-in duration-1000">
@@ -58,12 +66,17 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
             </div>
 
             {/* Main Typing Surface */}
+            <div className="w-full max-w-4xl mb-6">
+                <SurvivalFuelBar fuel={juice?.fuel || 0} isSurvivalMode={!!juice && active} />
+            </div>
+
             <GlassCard variant="large" className="w-full relative shadow-[0_40px_100px_rgba(0,0,0,0.6)] py-16">
                 <TypingField
                     targetText={targetText}
                     input={input}
                     active={active}
                     onKeyDown={onKeyDown}
+                    juice={juice}
                 />
 
                 {missionData?.isMission && (

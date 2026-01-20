@@ -1,9 +1,10 @@
-import React from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { TypingField } from './TypingField'
 import { KeyboardOverlay } from './KeyboardOverlay'
 import { HandGuide } from './HandGuide'
 import { MissionHUD } from './MissionHUD'
 import { ReplayData } from '../../../core/store/statsStore'
+import { SurvivalFuelBar } from '../../ui/SurvivalFuelBar'
 import './TypingArea.css'
 
 interface TypingAreaProps {
@@ -21,6 +22,13 @@ interface TypingAreaProps {
         currentWpm: number;
         accuracy: number;
         stressLevel: number;
+    },
+    lesson: any,
+    juice?: {
+        fuel: number,
+        isShakeActive: boolean,
+        isComboPulse: boolean,
+        particleColor: string
     }
 }
 
@@ -33,7 +41,8 @@ export const TypingArea = React.memo(({
     isPaused,
     ghostReplay,
     missionData,
-    lesson // Added lesson prop
+    lesson,
+    juice
 }: TypingAreaProps) => {
     return (
         <div className="flex flex-col h-full overflow-hidden text-white animate-in fade-in duration-700">
@@ -60,6 +69,10 @@ export const TypingArea = React.memo(({
 
             {/* Main Area */}
             <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-12 relative overflow-hidden">
+                <div className="w-full max-w-4xl">
+                    <SurvivalFuelBar fuel={juice?.fuel || 0} isSurvivalMode={!!juice} />
+                </div>
+
                 <TypingField
                     targetText={targetText}
                     input={input}
@@ -67,6 +80,7 @@ export const TypingArea = React.memo(({
                     onKeyDown={onKeyDown}
                     isPaused={isPaused}
                     ghostReplay={ghostReplay}
+                    juice={juice}
                 />
 
                 {missionData?.isMission && (

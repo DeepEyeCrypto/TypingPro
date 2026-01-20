@@ -99,9 +99,9 @@ class SoundManager {
         const variantId = Math.floor(Math.random() * 5) + 1;
         const variant = `click${variantId}`;
 
-        // Organic variation
-        const rate = 0.98 + Math.random() * 0.04;
-        const detune = (Math.random() - 0.5) * 50;
+        // Organic variation: Expanded range for ASMR realism (0.9 to 1.1)
+        const rate = 0.9 + Math.random() * 0.2;
+        const detune = (Math.random() - 0.5) * 100; // Increased detune for character
 
         this.play(variant, { rate, detune });
     }
@@ -153,10 +153,23 @@ class SoundManager {
         }
     }
 
+    public setMute(muted: boolean) {
+        this.isMuted = muted;
+        this.setVolume(this.masterVolume);
+    }
+
     public toggleMute() {
         this.isMuted = !this.isMuted;
         this.setVolume(this.masterVolume); // Re-applies mute logic
         return this.isMuted;
+    }
+
+    public playSpace() {
+        this.play('space');
+    }
+
+    public playError() {
+        this.play('error');
     }
 }
 

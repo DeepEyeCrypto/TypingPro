@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useSettingsStore } from '../../../core/store/settingsStore'
 import { ReplayData } from '../../../core/store/statsStore'
+import { JuiceCanvas, JuiceCanvasHandle } from '../../ui/JuiceCanvas'
 import './TypingField.css'
 
 interface TypingFieldProps {
@@ -9,7 +10,13 @@ interface TypingFieldProps {
     active: boolean,
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void,
     isPaused?: boolean,
-    ghostReplay?: ReplayData
+    ghostReplay?: ReplayData,
+    juice?: {
+        fuel: number,
+        isShakeActive: boolean,
+        isComboPulse: boolean,
+        particleColor: string
+    }
 }
 
 interface CharacterProps {
@@ -37,9 +44,10 @@ const Character = React.memo(({ char, state, isGhost, isCaret, caretStyle }: Cha
         prev.caretStyle === next.caretStyle;
 });
 
-export const TypingField = React.memo(({ targetText, input, active, onKeyDown, isPaused, ghostReplay }: TypingFieldProps) => {
+export const TypingField = React.memo(({ targetText, input, active, onKeyDown, isPaused, ghostReplay, juice }: TypingFieldProps) => {
     const { fontSize, caretStyle } = useSettingsStore()
     const inputRef = useRef<HTMLInputElement>(null)
+    const juiceRef = useRef<JuiceCanvasHandle>(null)
 
     // LOCAL BUFFER for sub-1ms feedback: Uncontrolled State
     // We only sync from props on reset or explicit change
@@ -97,6 +105,42 @@ export const TypingField = React.memo(({ targetText, input, active, onKeyDown, i
     }, [active])
 
     useEffect(() => {
+        if (!juiceRef.current || !active) return;
+
+        // Find caret position for particles
+        const caretEl = document.querySelector('.char.pending .caret');
+        if (caretEl) {
+            const rect = caretEl.getBoundingClientRect();
+
+            // Check if we just completed a word (triggered by length change)
+            // Or if we just had a correct key
+            // This is a bit reactive, ideally we trigger from useTyping callback
+            // For now, let's use the localInput length to detect changes
+        }
+    }, [localInput.length]);
+
+    // TRICK: Expose particle burst via side-effect of input length
+    useEffect(() => {
+        if (!juiceRef.current || localInput.length === 0) return;
+
+        const caretEl = document.querySelector('.char .caret');
+        if (caretEl) {
+            const rect = caretEl.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+
+            const isCorrect = localInput[localInput.length - 1] === targetText[localInput.length - 1];
+            if (isCorrect) {
+                juiceRef.current.spawnSpark(x, y, juice?.particleColor || '#3b82f6');
+                // If space or end of text, spawn burst
+                if (targetText[localInput.length - 1] === ' ' || localInput.length === targetText.length) {
+                    juiceRef.current.spawnBurst(x, y, juice?.particleColor || '#3b82f6', 15);
+                }
+            }
+        }
+    }, [localInput.length]);
+
+    useEffect(() => {
         focusInput()
         const handleGlobalClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement
@@ -116,7 +160,12 @@ export const TypingField = React.memo(({ targetText, input, active, onKeyDown, i
     const textChars = React.useMemo(() => targetText.split(''), [targetText]);
 
     return (
-        <div className="typing-field" style={{ fontSize: `${fontSize}px` }} onClick={focusInput}>
+        <div
+            className={`typing-field ${juice?.isShakeActive ? 'animate-juice-shake' : ''} ${juice?.isComboPulse ? 'combo-flash' : ''}`}
+            style={{ fontSize: `${fontSize}px` }}
+            onClick={focusInput}
+        >
+            <JuiceCanvas ref={juiceRef} />
             <input
                 ref={inputRef}
                 className="hidden-input-field"

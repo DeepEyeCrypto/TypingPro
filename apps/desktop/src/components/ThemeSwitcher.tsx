@@ -1,11 +1,13 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 
-type ThemeType = 'vision' | 'arctic' | 'aurora' | 'nature' | 'neural' | 'neumorphism';
+type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature' | 'neural' | 'neumorphism' | 'liquid';
 
 const THEMES: { name: ThemeType; label: string; emoji: string }[] = [
     { name: 'vision', label: 'Vision', emoji: '🔮' },
     { name: 'arctic', label: 'Arctic', emoji: '❄️' },
+    { name: 'cyberpunk', label: 'Cyber', emoji: '⚡' },
+    { name: 'liquid', label: 'Liquid', emoji: '💧' },
     { name: 'aurora', label: 'Aurora', emoji: '🌌' },
     { name: 'nature', label: 'Evergreen', emoji: '🌲' },
     { name: 'neural', label: 'Neural', emoji: '🧠' },

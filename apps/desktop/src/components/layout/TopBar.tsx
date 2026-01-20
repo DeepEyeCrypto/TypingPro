@@ -54,7 +54,10 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
   };
 
   return (
-    <header className="glass-panel flex items-center justify-between px-6 py-3 mb-4 h-14 shrink-0 transition-all">
+    <header
+      data-tauri-drag-region
+      className="glass-panel gpu-accelerated flex items-center justify-between px-6 py-3 mb-4 h-14 shrink-0 transition-all"
+    >
 
       {/* 1. BRANDING & IDENTITY + THEME SWITCHER */}
       <div className="flex items-center gap-6">
@@ -108,7 +111,10 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
           className="p-3 rounded-xl bg-[var(--glass-bg)] border border-glass hover:bg-[var(--glass-hover)] transition-all group relative"
           title="Neural Zen Mode"
         >
-          <Zap size={16} className="text-[var(--text-accent)] group-hover:scale-110 transition-transform" />
+          {/* Custom SVG for Zap to avoid Lucide JSX versioning issues */}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-accent)] group-hover:scale-110 transition-transform">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
           <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black text-[8px] font-black uppercase tracking-widest text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">Zen_Mode</div>
         </button>
       </div>

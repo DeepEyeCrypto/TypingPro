@@ -11,17 +11,18 @@
     transform: translateZ(0);
 
     /* Layout Fixes */
-    max-width: 1400px;
+    max-width: 900px;
+    width: 100%;
     margin: 0 auto;
-    text-align: left;
+    text-align: center;
     white-space: pre-wrap;
     overflow-wrap: break-word;
-    word-break: normal;
-    padding: 0 1rem;
-    min-height: 20vh;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    word-break: break-word;
+    /* Ensure it wraps correctly */
+    padding: 1rem 2rem;
+    min-height: 100px;
+    display: block;
+    /* Allow children to flow naturally and wrap */
     perspective: 1000px;
 }
 

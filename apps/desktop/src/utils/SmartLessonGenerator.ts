@@ -21,7 +21,7 @@ export const SmartLessonGenerator = {
         const weakSet = new Set(weakKeys.map(k => k.toLowerCase()))
 
         // Find words containing at least one weak key
-        const weakWords = COMMON_WORDS.filter(word => {
+        const weakWords = TOP_1000_WORDS.filter(word => {
             return word.split('').some(char => weakSet.has(char))
         })
 

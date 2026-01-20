@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature' | 'neural' | 'neumorphism';
+type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature' | 'neural' | 'neumorphism' | 'liquid';
 
 interface ThemeContextType {
     theme: ThemeType;
@@ -27,8 +27,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         localStorage.setItem('typingpro-theme', newTheme);
     };
 
-    if (!mounted) return <>{children}</>;
-
+    // We must always wrap children in the provider, even if not fully mounted yet,
+    // to prevent hooks (like useTheme) in child components from throwing during initial render.
     return (
         <ThemeContext.Provider value={{ theme, setTheme }}>
             {children}

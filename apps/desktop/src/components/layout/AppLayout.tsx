@@ -30,11 +30,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
 
             {/* Main layout container with padding for floating effect */}
-            <div className="relative z-10 flex w-full h-full p-4 gap-6">
+            <div className="relative z-10 flex w-full h-full pt-10 px-4 pb-4 gap-6">
 
                 {/* Left: Sidebar */}
                 {sidebar && (
-                    <div className="w-20 shrink-0 hidden md:block">
+                    <div className="w-14 shrink-0 hidden md:block">
                         {sidebar}
                     </div>
                 )}

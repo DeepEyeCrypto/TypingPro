@@ -44,9 +44,6 @@ export default defineConfig({
       },
     },
     outDir: 'dist',
-    emptyOutDir: true,
-    typescript: {
-      ignoreBuildErrors: true
-    }
+    emptyOutDir: true
   }
 })
