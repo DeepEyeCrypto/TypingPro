@@ -96,12 +96,12 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
                 <div className="mt-16 flex justify-center">
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 group cursor-pointer" onClick={onReset}>
-                            <kbd className="px-3 py-1 rounded-lg bg-[var(--glass-bg)] border border-glass text-[10px] font-black shadow-md group-hover:scale-110 transition-transform" style={{ color: 'var(--text-primary)' }}>TAB</kbd>
+                            <kbd className="px-3 py-1 rounded-lg glass-panel text-[10px] font-black shadow-md group-hover:scale-110 transition-transform" style={{ color: 'var(--text-primary)' }}>TAB</kbd>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>Reset Interface</span>
                         </div>
-                        <div className="w-px h-4 border-r border-glass" />
+                        <div className="w-px h-4 border-r border-white/10" />
                         <div className="flex items-center gap-2">
-                            <kbd className="bg-[var(--glass-bg)] border border-glass px-3 py-1 rounded-lg text-[10px] font-black opacity-50" style={{ color: 'var(--text-primary)' }}>ESC</kbd>
+                            <kbd className="glass-panel px-3 py-1 rounded-lg text-[10px] font-black opacity-50" style={{ color: 'var(--text-primary)' }}>ESC</kbd>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40" style={{ color: 'var(--text-primary)' }}>System Pause</span>
                         </div>
                     </div>
@@ -112,7 +112,7 @@ export const TypingTestPage: React.FC<TypingTestPageProps> = ({
             <div className="mt-12 flex gap-4 opacity-40 hover:opacity-100 transition-opacity">
                 <button
                     onClick={onReset}
-                    className="px-8 py-2.5 rounded-2xl bg-[var(--glass-bg)] border border-glass text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[var(--glass-hover)] transition-all"
+                    className="px-8 py-2.5 rounded-2xl glass-panel text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[var(--glass-hover)] transition-all"
                     style={{ color: 'var(--text-primary)' }}
                 >
                     Hard Reset

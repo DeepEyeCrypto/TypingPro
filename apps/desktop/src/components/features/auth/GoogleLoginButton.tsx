@@ -13,7 +13,7 @@ export const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ className 
             onClick={() => login('google')}
             disabled={isLoading}
             className={`
-                glass-unified glass-pill w-full h-14 flex items-center justify-center gap-4 
+                glass-panel glass-pill w-full h-14 flex items-center justify-center gap-4 
                 group hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 
                 ${className}
             `}

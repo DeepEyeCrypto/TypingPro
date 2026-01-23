@@ -13,6 +13,7 @@ export interface UserProfile {
     // Stats
     highest_wpm: number;
     avg_wpm: number;
+    avg_accuracy?: number;
     total_races: number;
     rank_points: number;
     unlocked_lessons?: string[];
@@ -83,6 +84,7 @@ export const userService = {
                 created_at: Date.now(),
                 highest_wpm: 0,
                 avg_wpm: 0,
+                avg_accuracy: 100,
                 total_races: 0,
                 rank_points: 0,
                 unlocked_badges: [],
@@ -129,6 +131,9 @@ export const userService = {
                 const oldTotalWpm = (data.avg_wpm || 0) * (data.total_races || 0);
                 const newAvg = Math.round((oldTotalWpm + wpm) / newTotalRaces);
 
+                const oldTotalAcc = (data.avg_accuracy || 100) * (data.total_races || 0);
+                const newAvgAcc = Math.round((oldTotalAcc + accuracy) / newTotalRaces);
+
                 const { calculateXP } = await import('./rankSystem');
                 const earnedXP = calculateXP(wpm, accuracy);
 
@@ -137,6 +142,7 @@ export const userService = {
                     total_races: newTotalRaces,
                     highest_wpm: newHighest,
                     avg_wpm: newAvg,
+                    avg_accuracy: newAvgAcc,
                     rank_points: (data.rank_points || 0) + earnedXP
                 }, { merge: true });
             }

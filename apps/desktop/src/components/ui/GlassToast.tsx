@@ -58,7 +58,7 @@ export const GlassToast: React.FC<GlassToastProps> = ({
                     exit={{ opacity: 0, x: 50, scale: 0.9 }}
                     className="fixed bottom-8 right-8 z-[200] pointer-events-auto"
                 >
-                    <div className="glass-unified px-6 py-4 flex items-center gap-4 shadow-2xl min-w-[300px] border-l-4 border-l-white/20">
+                    <div className="glass-panel px-6 py-4 flex items-center gap-4 shadow-2xl min-w-[300px] border-l-4 border-l-white/20">
                         <div className="text-xl filter drop-shadow-md">
                             {typeIcons[type]}
                         </div>

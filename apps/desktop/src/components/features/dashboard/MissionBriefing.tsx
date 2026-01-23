@@ -33,12 +33,12 @@ export const MissionBriefing: React.FC<MissionBriefingProps> = ({ isOpen, onClos
                         className="w-full max-w-4xl relative"
                     >
                         {/* Corner Accents */}
-                        <div className="absolute -top-4 -left-4 w-12 h-12 border-t-2 border-l-2 border-glass opacity-40" />
-                        <div className="absolute -top-4 -right-4 w-12 h-12 border-t-2 border-r-2 border-glass opacity-40" />
-                        <div className="absolute -bottom-4 -left-4 w-12 h-12 border-b-2 border-l-2 border-glass opacity-40" />
-                        <div className="absolute -bottom-4 -right-4 w-12 h-12 border-b-2 border-r-2 border-glass opacity-40" />
+                        <div className="absolute -top-4 -left-4 w-12 h-12 border-t-2 border-l-2 border-white/10 opacity-40" />
+                        <div className="absolute -top-4 -right-4 w-12 h-12 border-t-2 border-r-2 border-white/10 opacity-40" />
+                        <div className="absolute -bottom-4 -left-4 w-12 h-12 border-b-2 border-l-2 border-white/10 opacity-40" />
+                        <div className="absolute -bottom-4 -right-4 w-12 h-12 border-b-2 border-r-2 border-white/10 opacity-40" />
 
-                        <div className="bg-[var(--glass-bg)] border border-glass rounded-[4rem] p-12 lg:p-20 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.8)] relative overflow-hidden">
+                        <div className="glass-panel rounded-[4rem] p-12 lg:p-20 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.8)] relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-br from-[var(--text-accent)]/5 to-transparent pointer-events-none" />
                             {/* Mission Header */}
                             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 lg:mb-16">
@@ -62,14 +62,14 @@ export const MissionBriefing: React.FC<MissionBriefingProps> = ({ isOpen, onClos
 
                             {/* Mission Parameters */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 mb-12 lg:mb-20">
-                                <div className="p-8 lg:p-10 bg-[var(--glass-bg)] border border-glass rounded-[2rem] shadow-xl">
+                                <div className="p-8 lg:p-10 glass-panel rounded-[2rem] shadow-xl">
                                     <span className="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] block mb-3" style={{ color: 'var(--text-primary)' }}>TARGET_SPEED</span>
                                     <div className="flex items-baseline space-x-2">
                                         <span className="text-5xl lg:text-6xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>{missionData.targetWpm}</span>
                                         <span className="text-[10px] font-black opacity-40 tracking-widest uppercase" style={{ color: 'var(--text-primary)' }}>WPM</span>
                                     </div>
                                 </div>
-                                <div className="p-8 lg:p-10 bg-[var(--glass-bg)] border border-glass rounded-[2rem] shadow-xl">
+                                <div className="p-8 lg:p-10 glass-panel rounded-[2rem] shadow-xl">
                                     <span className="text-[10px] font-black opacity-30 uppercase tracking-[0.3em] block mb-3" style={{ color: 'var(--text-primary)' }}>PRECISION_MIN</span>
                                     <div className="flex items-baseline space-x-2">
                                         <span className="text-5xl lg:text-6xl font-black tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>{missionData.accuracy}%</span>
@@ -96,7 +96,7 @@ export const MissionBriefing: React.FC<MissionBriefingProps> = ({ isOpen, onClos
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="w-full lg:w-1/3 p-8 bg-[var(--glass-bg)] border border-glass rounded-[2rem] shadow-inner">
+                                <div className="w-full lg:w-1/3 p-8 glass-panel rounded-[2rem] shadow-inner">
                                     <div className="flex items-center text-[10px] font-black tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--text-accent)' }}>
                                         <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />

@@ -60,7 +60,7 @@ export const NeuralCoach: React.FC<NeuralCoachProps> = ({ onStartDrill }) => {
             </div>
 
             {/* Main Insight Card */}
-            <div className="bg-[var(--glass-bg)] border border-glass rounded-[4rem] p-12 lg:p-16 shadow-2xl relative overflow-hidden group">
+            <div className="glass-panel rounded-[4rem] p-12 lg:p-16 shadow-2xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-8">
                     <div className="flex flex-col items-end">
                         <span className="text-[10px] font-black uppercase tracking-widest opacity-20 mb-1" style={{ color: 'var(--text-primary)' }}>Habit_Severity</span>
@@ -86,14 +86,14 @@ export const NeuralCoach: React.FC<NeuralCoachProps> = ({ onStartDrill }) => {
             <div>
                 <div className="flex items-center gap-4 mb-8">
                     <h2 className="text-[10px] font-black uppercase tracking-[0.6em] opacity-40" style={{ color: 'var(--text-primary)' }}>Correction_Protocols</h2>
-                    <div className="flex-1 h-px border-t border-glass"></div>
+                    <div className="flex-1 h-px border-t border-white/10"></div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {verdict.recommended_drills.map((drill, i) => (
                         <div
                             key={i}
-                            className="bg-[var(--glass-bg)] border border-glass rounded-[3rem] p-8 transition-all hover:bg-[var(--glass-hover)] group cursor-pointer"
+                            className="glass-panel rounded-[3rem] p-8 transition-all hover:bg-[var(--glass-hover)] group cursor-pointer"
                             onClick={() => onStartDrill({ title: drill.title, text: drill.text })}
                         >
                             <div className="w-12 h-12 rounded-2xl bg-[var(--accent-soft)] border border-[var(--text-accent)]/20 flex items-center justify-center text-[var(--text-accent)] mb-6 transition-transform group-hover:scale-110">
@@ -114,7 +114,7 @@ export const NeuralCoach: React.FC<NeuralCoachProps> = ({ onStartDrill }) => {
             <div className="pt-8 flex justify-center">
                 <button
                     onClick={fetchAnalysis}
-                    className="px-8 py-3 rounded-2xl border border-glass bg-[var(--glass-bg)] hover:bg-[var(--glass-hover)] text-[10px] font-black uppercase tracking-[0.4em] transition-all opacity-40 hover:opacity-100"
+                    className="px-8 py-3 rounded-2xl glass-panel hover:bg-[var(--glass-hover)] text-[10px] font-black uppercase tracking-[0.4em] transition-all opacity-40 hover:opacity-100"
                     style={{ color: 'var(--text-primary)' }}
                 >
                     Recalibrate_Coach

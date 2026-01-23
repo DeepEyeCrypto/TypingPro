@@ -27,10 +27,10 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
 
     return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl animate-in fade-in duration-300" onClick={onClose}>
-            <div className="bg-[var(--glass-bg)] border border-glass rounded-[2rem] p-8 w-full max-w-lg shadow-[0_50px_100px_rgba(0,0,0,0.4)] relative overflow-hidden group" onClick={e => e.stopPropagation()}>
+            <div className="glass-panel rounded-[2rem] p-8 w-full max-w-lg shadow-[0_50px_100px_rgba(0,0,0,0.4)] relative overflow-hidden group" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-black uppercase tracking-tighter italic" style={{ color: 'var(--text-primary)' }}>Configuration</h2>
-                    <button className="px-3 py-1 bg-[var(--glass-hover)] border border-glass rounded-lg text-[10px] font-black opacity-40 hover:opacity-100 transition-all" style={{ color: 'var(--text-primary)' }} onClick={onClose}>ESC</button>
+                    <button className="px-3 py-1 glass-panel bg-[var(--glass-hover)] rounded-lg text-[10px] font-black opacity-40 hover:opacity-100 transition-all" style={{ color: 'var(--text-primary)' }} onClick={onClose}>ESC</button>
                 </div>
 
                 <div className="mb-8">
@@ -41,7 +41,7 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                                 key={t.id}
                                 className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all border ${settings.theme === t.id
                                     ? 'bg-[var(--text-accent)] text-white border-[var(--text-accent)] shadow-lg'
-                                    : 'bg-[var(--glass-bg)] border-glass opacity-60 hover:opacity-100 hover:bg-[var(--glass-hover)]'}`}
+                                    : 'glass-panel opacity-60 hover:opacity-100 hover:bg-[var(--glass-hover)]'}`}
                                 style={{ color: settings.theme === t.id ? 'white' : 'var(--text-primary)' }}
                                 onClick={() => settings.setTheme(t.id)}
                             >
@@ -54,10 +54,10 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                 <div className="mb-8">
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-3 block opacity-20" style={{ color: 'var(--text-primary)' }}>Audio Engine</span>
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-[var(--glass-bg)] border border-glass rounded-2xl">
+                        <div className="flex items-center justify-between p-4 glass-panel rounded-2xl">
                             <span className="font-black text-sm uppercase tracking-tight italic opacity-80" style={{ color: 'var(--text-primary)' }}>Sound Effects</span>
                             <button
-                                className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${settings.soundEnabled ? 'bg-[var(--text-accent)] text-white' : 'bg-[var(--glass-hover)] border-glass opacity-40'}`}
+                                className={`px-4 py-1.5 rounded-lg text-[10px] font-black transition-all ${settings.soundEnabled ? 'bg-[var(--text-accent)] text-white' : 'glass-panel bg-[var(--glass-hover)] opacity-40'}`}
                                 onClick={() => settings.setSoundEnabled(!settings.soundEnabled)}
                             >
                                 {settings.soundEnabled ? 'AUTHORIZED' : 'DISABLED'}
@@ -83,7 +83,7 @@ export const SettingsPanel = ({ onClose }: SettingsPanelProps) => {
                                     key={p.id}
                                     className={`px-3 py-2 rounded-xl text-[10px] font-black tracking-tight transition-all border ${settings.activeSoundProfileId === p.id
                                         ? 'bg-[var(--text-accent)] text-white border-[var(--text-accent)] shadow-md'
-                                        : 'bg-[var(--glass-bg)] border-glass opacity-40 hover:opacity-100'}`}
+                                        : 'glass-panel opacity-40 hover:opacity-100'}`}
                                     style={{ color: settings.activeSoundProfileId === p.id ? 'white' : 'var(--text-primary)' }}
                                     onClick={() => settings.setSoundProfile(p.id)}
                                 >

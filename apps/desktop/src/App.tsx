@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { invoke } from '@tauri-apps/api/core'
-import { useAuthStore } from './core/store/authStore'
+import { useAuthStore, initializeAuthListener } from './core/store/authStore'
 import { ArrowLeft, Brain, Home, Keyboard, BarChart3, Users2, Trophy, ShoppingBag, Settings, CheckCircle2 } from 'lucide-react'
 import { useTyping } from './hooks/useTyping'
 import { useSettingsStore } from './core/store/settingsStore'
@@ -94,10 +94,15 @@ const App: React.FC = () => {
   // Auth & Session Initialization
   useEffect(() => {
     const initSession = async () => {
-      // 1. Check persistence
+      // 1. Initialize Firebase auth listener
+      initializeAuthListener()
+
+      // 2. Check persistence
       await checkSession()
 
+      // 3. Validate session and refresh token if needed
       if (useAuthStore.getState().user) {
+        await useAuthStore.getState().validateSession()
         await syncService.pullFromCloud()
       }
 
@@ -108,6 +113,17 @@ const App: React.FC = () => {
       setTimeout(() => setIsLoading(false), 500)
     }
     initSession()
+  }, [])
+
+  // Periodic token refresh (every 50 minutes)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (useAuthStore.getState().user) {
+        useAuthStore.getState().validateSession()
+      }
+    }, 50 * 60 * 1000) // 50 minutes
+
+    return () => clearInterval(interval)
   }, [])
 
   // Refresh weakness profile when returning to dashboard
@@ -250,6 +266,16 @@ const App: React.FC = () => {
     updatePresence();
   }, [typing.view]);
 
+  // 11. Background Image Sync: Apply custom background to CSS variable
+  const { backgroundImage } = useSettingsStore();
+  useEffect(() => {
+    if (backgroundImage) {
+      document.body.style.setProperty('--bg-image', `url("${backgroundImage}")`);
+    } else {
+      document.body.style.removeProperty('--bg-image');
+    }
+  }, [backgroundImage]);
+
   const gatekeeperPassed = typing.currentLesson
     ? (Math.round(typing.metrics.accuracy) === 100 && Math.round(typing.metrics.raw_wpm) >= Math.max(28, typing.currentLesson.targetWPM))
     : false
@@ -294,10 +320,15 @@ const App: React.FC = () => {
               title="TYPINGPRO EXPERT ENGINE"
               typing={typing}
               stats={{
-                wpm: Math.round(typing.metrics.adjusted_wpm),
-                accuracy: Math.round(typing.metrics.accuracy),
+                wpm: (typing.view === 'typing' || typing.view === 'duel')
+                  ? Math.round(typing.metrics.adjusted_wpm)
+                  : (useAuthStore.getState().profile?.highest_wpm || 0),
+                accuracy: (typing.view === 'typing' || typing.view === 'duel')
+                  ? Math.round(typing.metrics.accuracy)
+                  : (useAuthStore.getState().profile?.avg_accuracy || 100),
                 rank: getRankForWPM(useAuthStore.getState().profile?.highest_wpm || 0).name,
-                rankIcon: getRankForWPM(useAuthStore.getState().profile?.highest_wpm || 0).icon
+                rankIcon: getRankForWPM(useAuthStore.getState().profile?.highest_wpm || 0).icon,
+                streak: useAchievementStore.getState().streak.current_streak || 0
               }}
               actions={
                 <div className="flex items-center space-x-2">

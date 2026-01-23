@@ -67,7 +67,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                             transition-all duration-300 ease-out shrink-0
                             ${item.active
                                 ? 'bg-[var(--text-accent)] text-white shadow-lg scale-110'
-                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] border border-transparent hover:border-glass'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] border border-transparent hover:border-white/20'
                             }
                         `}
                         title={item.label}
@@ -92,7 +92,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                 {/* Volume Toggle */}
                 <button
                     onClick={toggleMute}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] border border-transparent hover:border-glass"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-300 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] border border-transparent hover:border-white/20"
                     title={isMuted ? "Unmute" : "Mute"}
                 >
                     {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -107,7 +107,7 @@ const SideNavComponent: React.FC<SideNavProps> = ({
                             transition-all duration-300 ease-out border
                             ${items.find(i => i.id === 'settings')?.active
                                 ? 'bg-[var(--text-accent)] text-white shadow-lg border-[var(--text-accent)] scale-110'
-                                : 'bg-[var(--glass-bg)] border-glass text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)]'
+                                : 'glass-panel text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)]'
                             }
                         `}
                         title="Settings"

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useSettingsStore } from '../core/store/settingsStore';
 
 type ThemeType = 'vision' | 'arctic' | 'cyberpunk' | 'aurora' | 'nature' | 'neural' | 'neumorphism' | 'liquid';
 
@@ -10,27 +11,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [theme, setThemeState] = useState<ThemeType>('nature');
+    const { theme, setTheme: setGlobalTheme } = useSettingsStore();
     const [mounted, setMounted] = useState(false);
 
-    // Load theme from localStorage on mount
+    // Initial sync of theme to document body
     useEffect(() => {
-        const saved = localStorage.getItem('typingpro-theme') as ThemeType || 'nature';
-        setThemeState(saved);
-        document.body.setAttribute('data-theme', saved);
+        document.body.setAttribute('data-theme', theme);
         setMounted(true);
     }, []);
 
     const setTheme = (newTheme: ThemeType) => {
-        setThemeState(newTheme);
+        setGlobalTheme(newTheme);
         document.body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('typingpro-theme', newTheme);
     };
 
-    // We must always wrap children in the provider, even if not fully mounted yet,
-    // to prevent hooks (like useTheme) in child components from throwing during initial render.
     return (
-        <ThemeContext.Provider value={{ theme, setTheme }}>
+        <ThemeContext.Provider value={{ theme: theme as ThemeType, setTheme }}>
             {children}
         </ThemeContext.Provider>
     );

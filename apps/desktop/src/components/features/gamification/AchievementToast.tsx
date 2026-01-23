@@ -40,7 +40,7 @@ export const AchievementToast: React.FC = () => {
             >
                 <div className="flex items-center gap-6 p-5">
                     <div className="relative">
-                        <div className="w-16 h-16 rounded-2xl bg-[var(--glass-bg)] flex items-center justify-center text-4xl border border-glass shadow-xl filter drop-shadow-[0_0_15px_var(--text-accent)]">
+                        <div className="w-16 h-16 rounded-2xl glass-panel flex items-center justify-center text-4xl shadow-xl filter drop-shadow-[0_0_15px_var(--text-accent)]">
                             {active.icon || '🏆'}
                         </div>
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--text-accent)] rounded-full flex items-center justify-center shadow-lg animate-pulse">
@@ -56,7 +56,7 @@ export const AchievementToast: React.FC = () => {
                         <p className="text-sm mt-1 opacity-60" style={{ color: 'var(--text-primary)' }}>{active.message}</p>
 
                         {active.reward && (
-                            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--glass-bg)] border border-glass shadow-sm">
+                            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel shadow-sm leading-none">
                                 <span className="font-black text-[10px] uppercase tracking-widest text-[var(--text-accent)]">+{active.reward} KEYSTONES</span>
                                 <span className="text-xs">💎</span>
                             </div>

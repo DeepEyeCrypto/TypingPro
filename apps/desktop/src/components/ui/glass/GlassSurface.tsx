@@ -25,7 +25,7 @@ export const GlassSurface: React.FC<GlassSurfaceProps> = ({
     };
 
     return (
-        <div className={`glass-unified ${radiusMap[cornerRadius]} ${className}`}>
+        <div className={`glass-panel ${radiusMap[cornerRadius]} ${className}`}>
             {children}
         </div>
     );

@@ -107,7 +107,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                    STAGE 7: RANK PROGRESSION HERO
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
                 <motion.div variants={itemVariants} className="col-span-1 md:col-span-2">
-                    <div className="relative group overflow-hidden bg-[var(--glass-bg)] border border-glass rounded-[4rem] p-12 lg:p-16 shadow-2xl">
+                    <div className="relative group overflow-hidden glass-panel rounded-[4rem] p-12 lg:p-16 shadow-2xl">
                         <div className="absolute inset-0 bg-gradient-to-br from-[var(--text-accent)]/10 to-transparent pointer-events-none" />
 
                         {/* Scanning Beam */}
@@ -150,7 +150,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 italic" style={{ color: 'var(--text-primary)' }}>Synchronization_Progress</span>
                                 <span className="text-lg font-black italic text-[var(--text-accent)]">{Math.round(progress)}%</span>
                             </div>
-                            <div className="h-4 w-full bg-[var(--glass-bg)] border border-glass rounded-full overflow-hidden p-1 shadow-inner">
+                            <div className="h-4 w-full glass-panel rounded-full overflow-hidden p-1 shadow-inner">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${progress}%` }}
@@ -188,7 +188,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                             <p className="text-sm max-w-[200px] opacity-40 font-bold" style={{ color: 'var(--text-primary)' }}>
                                 Validate velocity benchmarks and earn official digital credentials.
                             </p>
-                            <div className="w-14 h-14 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-2xl shadow-xl">
+                            <div className="w-14 h-14 rounded-2xl glass-panel flex items-center justify-center text-2xl shadow-xl">
                                 🎖️
                             </div>
                         </div>
@@ -216,7 +216,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                                     Consult_AI_Coach <ArrowRight size={14} />
                                 </button>
                             </div>
-                            <div className="w-14 h-14 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-2xl shadow-xl group-hover/drill:scale-110 transition-transform">
+                            <div className="w-14 h-14 rounded-2xl glass-panel flex items-center justify-center text-2xl shadow-xl group-hover/drill:scale-110 transition-transform">
                                 🧠
                             </div>
                         </div>
@@ -253,7 +253,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 {/* Level & Rewards Section */}
                 <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Experience Level */}
-                    <div className="lg:col-span-1 bg-[var(--glass-bg)] border border-glass rounded-[3rem] p-8 flex flex-col justify-between overflow-hidden relative">
+                    <div className="lg:col-span-1 glass-panel rounded-[3rem] p-8 flex flex-col justify-between overflow-hidden relative">
                         <div className="absolute -top-4 -right-4 w-24 h-24 bg-[var(--text-accent)]/10 blur-3xl rounded-full" />
                         <div>
                             <div className="flex items-center gap-2 mb-4">
@@ -281,7 +281,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </div>
 
                     {/* Rank Rewards */}
-                    <div className="lg:col-span-2 bg-[var(--glass-bg)] border border-glass rounded-[3rem] p-8">
+                    <div className="lg:col-span-2 glass-panel rounded-[3rem] p-8">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
                                 <Award size={16} className="text-[var(--text-accent)]" />

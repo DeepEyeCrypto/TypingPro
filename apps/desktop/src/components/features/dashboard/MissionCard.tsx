@@ -11,27 +11,27 @@ interface MissionCardProps {
 
 export const MissionCard: React.FC<MissionCardProps & { className?: string }> = ({ title, label, description, targetWpm, onStart, className }) => {
     return (
-        <div className={`glass-unified p-6 lg:p-10 h-full flex flex-col justify-between group cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all hover:translate-y-[-4px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden text-white ${className}`}>
+        <div className={`glass-panel p-6 lg:p-10 h-full flex flex-col justify-between group cursor-pointer hover:bg-[var(--glass-hover)] hover:border-[var(--glass-border)] transition-all hover:translate-y-[-4px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden ${className}`}>
             {/* Ambient Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[100px] group-hover:bg-white/10 transition-colors duration-700" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent-soft)] blur-[100px] group-hover:opacity-80 transition-opacity duration-700" />
 
             <div>
                 <div className="flex justify-between items-start mb-8">
-                    <span className="text-[10px] font-black text-white opacity-40 tracking-[0.4em] uppercase">
+                    <span className="text-[10px] font-black opacity-40 tracking-[0.4em] uppercase" style={{ color: 'var(--text-secondary)' }}>
                         {label}
                     </span>
                     <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                        <span className="text-[10px] font-black text-white opacity-60 tracking-widest uppercase">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--text-accent)] animate-pulse" />
+                        <span className="text-[10px] font-black opacity-60 tracking-widest uppercase" style={{ color: 'var(--text-accent)' }}>
                             ACTIVE
                         </span>
                     </div>
                 </div>
 
-                <h2 className="text-2xl lg:text-4xl font-bold text-white mb-2 lg:mb-4 tracking-tighter leading-tight">
+                <h2 className="text-2xl lg:text-4xl font-bold mb-2 lg:mb-4 tracking-tighter leading-tight" style={{ color: 'var(--text-primary)' }}>
                     {title}
                 </h2>
-                <p className="text-white opacity-50 text-sm lg:text-base leading-relaxed max-w-[320px] font-medium">
+                <p className="opacity-50 text-sm lg:text-base leading-relaxed max-w-[320px] font-medium" style={{ color: 'var(--text-secondary)' }}>
                     {description}
                 </p>
             </div>
@@ -44,7 +44,7 @@ export const MissionCard: React.FC<MissionCardProps & { className?: string }> = 
                 >
                     START_MISSION
                 </Button>
-                <div className="text-[10px] font-black text-white opacity-40 bg-white/5 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md uppercase tracking-widest">
+                <div className="text-[10px] font-black opacity-40 bg-[var(--accent-soft)] px-4 py-2 rounded-full border border-[var(--glass-border)] backdrop-blur-md uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>
                     {targetWpm} WPM_THR
                 </div>
             </div>

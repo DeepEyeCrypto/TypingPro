@@ -4,6 +4,7 @@ import { GlassCard } from '../../ui/GlassCard';
 import { GlassModal } from '../../ui/GlassModal';
 import { Trophy, Share2, Download, Zap, ShieldCheck, Target, Binary } from 'lucide-react';
 import { getRankForWPM } from '../../../core/rankSystem';
+import { toast } from '../../../core/store/toastStore';
 
 interface TrophyRoomProps {
     isOpen: boolean;
@@ -33,7 +34,7 @@ export const TrophyRoom: React.FC<TrophyRoomProps> = ({
         // For now, we'll just copy a text summary
         const summary = `🏆 TypingPro Elite Status: ${username} | Rank: ${rank.name} | ${bestWpm} WPM | ${accuracy}% Acc`;
         navigator.clipboard.writeText(summary);
-        alert('Neural summary copied to buffer!');
+        toast.success('Neural summary copied to buffer!');
     };
 
     return (

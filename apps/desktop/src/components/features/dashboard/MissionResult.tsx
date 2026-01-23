@@ -39,7 +39,7 @@ export const MissionResult: React.FC<MissionResultProps> = ({
                     animate={{ scale: 1, y: 0, opacity: 1 }}
                     exit={{ scale: 0.9, y: 20, opacity: 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="relative w-full max-w-2xl bg-[var(--glass-bg)] p-12 shadow-2xl overflow-hidden border border-glass rounded-[4rem]"
+                    className="relative w-full max-w-2xl glass-panel p-12 shadow-2xl overflow-hidden rounded-[4rem]"
                     style={{ color: 'var(--text-primary)' }}
                 >
                     {/* Background Glow */}
@@ -77,14 +77,14 @@ export const MissionResult: React.FC<MissionResultProps> = ({
 
                         {/* Stats Grid */}
                         <div className="grid grid-cols-2 gap-6 w-full mb-12">
-                            <div className="bg-[var(--glass-bg)] border border-glass rounded-[2.5rem] p-8 relative group overflow-hidden transition-all hover:bg-[var(--glass-hover)] shadow-inner">
+                            <div className="glass-panel rounded-[2.5rem] p-8 relative group overflow-hidden transition-all hover:bg-[var(--glass-hover)] shadow-inner">
                                 <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-accent)] font-black mb-2">VELOCITY_LOG</div>
                                 <div className="flex items-baseline justify-center gap-1">
                                     <span className="text-5xl font-black tracking-tighter">{wpm}</span>
                                     <span className="text-xs font-black opacity-40">WPM</span>
                                 </div>
                             </div>
-                            <div className="bg-[var(--glass-bg)] border border-glass rounded-[2.5rem] p-8 relative group overflow-hidden transition-all hover:bg-[var(--glass-hover)] shadow-inner">
+                            <div className="glass-panel rounded-[2.5rem] p-8 relative group overflow-hidden transition-all hover:bg-[var(--glass-hover)] shadow-inner">
                                 <div className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-accent)] font-black mb-2">PRECISION_LOG</div>
                                 <div className="flex items-baseline justify-center gap-1">
                                     <span className="text-5xl font-black tracking-tighter">{accuracy}</span>
@@ -109,7 +109,7 @@ export const MissionResult: React.FC<MissionResultProps> = ({
                         {/* Actions */}
                         <div className="flex flex-col md:flex-row items-center gap-4 w-full">
                             <button
-                                className="w-full md:flex-1 py-4 rounded-2xl border border-glass bg-[var(--glass-bg)] hover:bg-[var(--glass-hover)] font-black text-[10px] uppercase tracking-[0.3em] transition-all opacity-40 hover:opacity-100"
+                                className="w-full md:flex-1 py-4 rounded-2xl glass-panel hover:bg-[var(--glass-hover)] font-black text-[10px] uppercase tracking-[0.3em] transition-all opacity-40 hover:opacity-100"
                                 onClick={onClose}
                             >
                                 ABORT_TO_BASE

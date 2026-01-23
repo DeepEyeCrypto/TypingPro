@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { GlassCard } from '../ui/GlassCard';
 // import '../styles/glass.css';
 
@@ -10,6 +10,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     const [progress, setProgress] = useState(0);
     const [statusOpacity, setStatusOpacity] = useState(1);
     const [exitAnimation, setExitAnimation] = useState(false);
+    const onCompleteRef = useRef(onComplete);
+
+    // Keep ref updated
+    useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -17,7 +23,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                 if (prev >= 100) {
                     clearInterval(interval);
                     setTimeout(() => setExitAnimation(true), 500);
-                    setTimeout(onComplete, 1200);
+                    setTimeout(() => onCompleteRef.current(), 1200);
                     return 100;
                 }
                 // Varying speed for "organic" loading feel
@@ -27,7 +33,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         }, 30);
 
         return () => clearInterval(interval);
-    }, [onComplete]);
+    }, []); // Empty deps - run once on mount
 
     // Status message cycling for flair
     const [statusMsg, setStatusMsg] = useState('Starting engine');
@@ -74,8 +80,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
             {/* Central Loading Unit */}
             <GlassCard
-                variant="glass"
-                className="w-[420px] p-8 border-white/20 relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.8)] glass-unified"
+                variant="default"
+                className="w-[420px] p-8 border-white/20 relative overflow-hidden group shadow-[0_40px_100px_rgba(0,0,0,0.8)] glass-panel"
             >
                 {/* Prismatic Sheen Integrated */}
                 <div className="absolute inset-0 prismatic-sheen opacity-40 pointer-events-none" />

@@ -30,6 +30,29 @@ export default {
                 'glass-bg': 'rgba(255, 255, 255, 0.08)',
                 'glass-border': 'rgba(255, 255, 255, 0.12)',
                 'contrast-text': 'var(--contrast-text, #FFFFFF)',
+
+                // Theme-aware semantic colors (use CSS variables)
+                glass: {
+                    bg: 'var(--glass-bg)',
+                    border: 'var(--glass-border)',
+                    hover: 'var(--glass-hover)',
+                    active: 'var(--glass-active)',
+                },
+                text: {
+                    primary: 'var(--text-primary)',
+                    secondary: 'var(--text-secondary)',
+                    accent: 'var(--text-accent)',
+                },
+                accent: {
+                    DEFAULT: 'var(--text-accent)',
+                    soft: 'var(--accent-soft)',
+                },
+                card: {
+                    dark: {
+                        bg: 'var(--card-dark-bg)',
+                        border: 'var(--card-dark-border)',
+                    },
+                },
             },
             borderRadius: {
                 'glass': '12px',

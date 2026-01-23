@@ -1,0 +1,105 @@
+{
+    "name": "TypingPro E2E Test Suite",
+    "version": "1.0.0",
+    "description": "Comprehensive end-to-end tests for TypingPro application",
+    "testDirectory": "./tests/e2e",
+    "baseUrl": "http://localhost:1420",
+    "timeout": 30000,
+    "retries": 2,
+    "workers": 4,
+    "reporter": [
+        [
+            "html",
+            {
+                "outputFolder": "test-results/html"
+            }
+        ],
+        [
+            "json",
+            {
+                "outputFile": "test-results/results.json"
+            }
+        ],
+        [
+            "junit",
+            {
+                "outputFile": "test-results/junit.xml"
+            }
+        ]
+    ],
+    "use": {
+        "screenshot": "only-on-failure",
+        "video": "retain-on-failure",
+        "trace": "on-first-retry"
+    },
+    "projects": [
+        {
+            "name": "chromium",
+            "use": {
+                "browserName": "chromium",
+                "viewport": {
+                    "width": 1920,
+                    "height": 1080
+                }
+            }
+        },
+        {
+            "name": "firefox",
+            "use": {
+                "browserName": "firefox",
+                "viewport": {
+                    "width": 1920,
+                    "height": 1080
+                }
+            }
+        },
+        {
+            "name": "webkit",
+            "use": {
+                "browserName": "webkit",
+                "viewport": {
+                    "width": 1920,
+                    "height": 1080
+                }
+            }
+        },
+        {
+            "name": "mobile",
+            "use": {
+                "browserName": "chromium",
+                "viewport": {
+                    "width": 375,
+                    "height": 667
+                },
+                "isMobile": true
+            }
+        }
+    ],
+    "testMatch": "**/*.spec.ts",
+    "testIgnore": "**/node_modules/**",
+    "globalSetup": "./tests/setup/global-setup.ts",
+    "globalTeardown": "./tests/setup/global-teardown.ts",
+    "env": {
+        "TEST_GOOGLE_EMAIL": "${TEST_GOOGLE_EMAIL}",
+        "TEST_GOOGLE_PASSWORD": "${TEST_GOOGLE_PASSWORD}",
+        "VITE_FIREBASE_API_KEY": "${VITE_FIREBASE_API_KEY}",
+        "VITE_FIREBASE_PROJECT_ID": "${VITE_FIREBASE_PROJECT_ID}",
+        "VITE_GOOGLE_CLIENT_ID": "${VITE_GOOGLE_CLIENT_ID}",
+        "VITE_GEMINI_API_KEY": "${VITE_GEMINI_API_KEY}"
+    },
+    "coverage": {
+        "enabled": true,
+        "provider": "istanbul",
+        "reporter": [
+            "text",
+            "html",
+            "lcov"
+        ],
+        "exclude": [
+            "**/node_modules/**",
+            "**/tests/**",
+            "**/*.spec.ts",
+            "**/*.test.ts"
+        ]
+    }
+}

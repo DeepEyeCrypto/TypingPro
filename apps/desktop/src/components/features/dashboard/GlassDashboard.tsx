@@ -25,9 +25,7 @@ const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', delay =
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
             className={`
-                bg-[var(--glass-bg)] 
-                backdrop-blur-[64px] 
-                border border-glass 
+                glass-panel
                 rounded-[3rem] 
                 p-10
                 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)]
@@ -63,10 +61,10 @@ const CertificationCard: React.FC<CertificationCardProps> = ({ currentWpm, requi
         <GlassCard delay={0.1} className="h-full flex flex-col justify-between">
             <div>
                 <div className="flex justify-between items-start mb-12">
-                    <div className="w-16 h-16 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-3xl shadow-xl">
+                    <div className="w-16 h-16 rounded-2xl glass-panel flex items-center justify-center text-3xl shadow-xl">
                         🎓
                     </div>
-                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase bg-[var(--glass-bg)] border border-glass backdrop-blur-md ${isUnlocked
+                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase glass-panel backdrop-blur-md ${isUnlocked
                         ? 'text-[var(--text-accent)]'
                         : 'opacity-30'
                         }`}
@@ -84,11 +82,11 @@ const CertificationCard: React.FC<CertificationCardProps> = ({ currentWpm, requi
                 </p>
 
                 <div className="flex gap-4 mb-2">
-                    <div className="px-5 py-2.5 bg-[var(--glass-bg)] border border-glass rounded-2xl shadow-inner">
+                    <div className="px-5 py-2.5 glass-panel rounded-2xl shadow-inner">
                         <span className="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-20" style={{ color: 'var(--text-primary)' }}>Required</span>
                         <span className="text-xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>{requiredWpm} WPM</span>
                     </div>
-                    <div className="px-5 py-2.5 bg-[var(--glass-bg)] border border-glass rounded-2xl shadow-inner">
+                    <div className="px-5 py-2.5 glass-panel rounded-2xl shadow-inner">
                         <span className="text-[10px] font-black uppercase tracking-widest block mb-1 opacity-20" style={{ color: 'var(--text-primary)' }}>Min Acc</span>
                         <span className="text-xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>99%</span>
                     </div>
@@ -132,10 +130,10 @@ const SmartDrillCard: React.FC<SmartDrillCardProps> = ({ drillFocuses, onStartDr
     return (
         <GlassCard delay={0.2} className="h-full flex flex-col">
             <div className="flex justify-between items-start mb-12">
-                <div className="w-16 h-16 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-3xl shadow-xl">
+                <div className="w-16 h-16 rounded-2xl glass-panel flex items-center justify-center text-3xl shadow-xl">
                     🧠
                 </div>
-                <div className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase bg-[var(--glass-bg)] border border-glass text-[var(--text-accent)] backdrop-blur-md">
+                <div className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase glass-panel text-[var(--text-accent)] backdrop-blur-md">
                     AI Adaptive
                 </div>
             </div>
@@ -158,8 +156,8 @@ const SmartDrillCard: React.FC<SmartDrillCardProps> = ({ drillFocuses, onStartDr
                             ${focus.status === 'completed'
                                 ? 'bg-[var(--glass-hover)] border-[var(--text-accent)]/20'
                                 : focus.status === 'available'
-                                    ? 'bg-[var(--glass-bg)] border-glass hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)]/40 shadow-inner'
-                                    : 'bg-[var(--glass-bg)] border-transparent opacity-10 cursor-not-allowed'
+                                    ? 'glass-panel hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)]/40 shadow-inner'
+                                    : 'glass-panel border-transparent opacity-10 cursor-not-allowed'
                             }
                         `}
                     >
@@ -205,7 +203,7 @@ const MiniAnalytics: React.FC<MiniAnalyticsProps> = ({ wpm, accuracy, streak }) 
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>Average Speed</p>
 
-                <div className="h-2 w-full bg-[var(--glass-bg)] border border-glass rounded-full mt-6 overflow-hidden">
+                <div className="h-2 w-full glass-panel rounded-full mt-6 overflow-hidden">
                     <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${(wpm / 150) * 100}%` }}
@@ -283,7 +281,7 @@ export const GlassDashboard: React.FC<GlassDashboardProps> = ({ onStartCertifica
                             <span className="text-xs font-black uppercase tracking-[0.5em] block mb-3 opacity-30" style={{ color: 'var(--text-primary)' }}>Dashboard</span>
                             <h1 className="text-6xl font-black tracking-tighter leading-none uppercase italic" style={{ color: 'var(--text-primary)' }}>Mission Hub</h1>
                         </div>
-                        <div className="hidden sm:flex items-center gap-4 px-6 py-3 rounded-2xl bg-[var(--glass-bg)] border border-glass backdrop-blur-md shadow-lg">
+                        <div className="hidden sm:flex items-center gap-4 px-6 py-3 rounded-2xl glass-panel backdrop-blur-md shadow-lg">
                             <div className="w-2.5 h-2.5 rounded-full bg-[var(--text-accent)] animate-pulse shadow-[0_0_12px_var(--text-accent)]" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 font-mono" style={{ color: 'var(--text-primary)' }}>Online_Node</span>
                         </div>
@@ -313,7 +311,7 @@ export const GlassDashboard: React.FC<GlassDashboardProps> = ({ onStartCertifica
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.6 + i * 0.1 }}
-                                className="bg-[var(--glass-bg)] border border-glass rounded-[2rem] p-6 hover:bg-[var(--glass-hover)] transition-all cursor-crosshair group shadow-xl"
+                                className="glass-panel rounded-[2rem] p-6 hover:bg-[var(--glass-hover)] transition-all cursor-crosshair group shadow-xl"
                             >
                                 <div className="text-3xl mb-4 group-hover:scale-110 transition-transform opacity-40 grayscale group-hover:grayscale-0">{stat.icon}</div>
                                 <div className="text-2xl font-black italic tracking-tighter leading-none mb-1" style={{ color: 'var(--text-primary)' }}>{stat.value}</div>

@@ -22,7 +22,7 @@ export const SurvivalFuelBar: React.FC<SurvivalFuelBarProps> = ({ fuel, isSurviv
                 </span>
             </div>
 
-            <div className="h-4 w-full bg-[var(--glass-bg)] border border-glass rounded-full overflow-hidden p-0.5 shadow-inner relative">
+            <div className="h-4 w-full glass-panel rounded-full overflow-hidden p-0.5 shadow-inner relative">
                 {/* Background Glow */}
                 <div className={`absolute inset-0 opacity-10 blur-md transition-colors duration-500 ${isLow ? 'bg-red-500' : 'bg-[var(--text-accent)]'}`} />
 

@@ -91,7 +91,7 @@ export const GamificationPage: React.FC<GamificationPageProps> = ({
                         Share_Profile
                     </button>
                     {/* Tab navigation */}
-                    <div className="flex gap-2 p-1.5 bg-[var(--glass-bg)] border border-glass rounded-2xl">
+                    <div className="flex gap-2 p-1.5 glass-panel rounded-2xl">
                         {(['overview', 'badges', 'certifications', 'leaderboard'] as const).map(tab => (
                             <button
                                 key={tab}

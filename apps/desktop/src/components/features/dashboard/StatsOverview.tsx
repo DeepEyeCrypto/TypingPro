@@ -25,7 +25,7 @@ const StatsOverview: React.FC = () => {
                 <div className="flex-1 w-full min-h-[200px] flex items-center justify-center mt-6">
                     <Suspense fallback={
                         <div className="flex flex-col items-center gap-4">
-                            <div className="w-12 h-12 rounded-full border-2 border-glass border-t-[var(--text-accent)] animate-spin" />
+                            <div className="w-12 h-12 rounded-full border-2 border-white/10 border-t-[var(--text-accent)] animate-spin" />
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-30" style={{ color: 'var(--text-primary)' }}>Compiling Hologram...</span>
                         </div>
                     }>
@@ -35,7 +35,7 @@ const StatsOverview: React.FC = () => {
             </GlassCard>
 
             {/* QUICK METRICS */}
-            <GlassCard variant="large" className="col-span-1 flex flex-col items-center justify-center py-10 shadow-2xl border-glass">
+            <GlassCard variant="large" className="col-span-1 flex flex-col items-center justify-center py-10 shadow-2xl glass-panel">
                 <div className="text-center w-full mb-10">
                     <span className="text-[11px] font-black uppercase tracking-[0.4em] block mb-6 italic opacity-20" style={{ color: 'var(--text-primary)' }}>Mean Signal Velocity</span>
                     <div className="relative">
@@ -48,7 +48,7 @@ const StatsOverview: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="w-full flex flex-col items-center gap-10 mt-6 pt-10 border-t border-glass shadow-inner">
+                <div className="w-full flex flex-col items-center gap-10 mt-6 pt-10 border-t border-white/10 shadow-inner">
                     <RankBadge wpm={averageWpm} />
 
                     <div className="flex flex-col items-center gap-2">

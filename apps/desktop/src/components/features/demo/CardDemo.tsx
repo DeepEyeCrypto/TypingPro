@@ -32,7 +32,7 @@ export const CardDemo: React.FC = () => {
                         </h2>
                         <div className="flex gap-3">
                             {['GPU_READY', 'NEURAL_LINK', 'STABLE'].map(tag => (
-                                <span key={tag} className="px-4 py-1.5 glass-unified text-[9px] font-black tracking-widest uppercase text-white/60">
+                                <span key={tag} className="px-4 py-1.5 glass-panel text-[9px] font-black tracking-widest uppercase text-white/60">
                                     {tag}
                                 </span>
                             ))}

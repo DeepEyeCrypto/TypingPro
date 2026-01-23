@@ -1,20 +1,21 @@
 {
   "name": "typingpro-monorepo",
   "private": true,
-  "version": "1.2.57",
+  "version": "1.2.58",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
     "dev": "npm run dev --workspace=@typingpro/desktop",
-    "build": "node scripts/check-env.cjs && npm run build --workspace=@typingpro/desktop",
+    "build": "node scripts/validate-env.cjs && node scripts/check-env.cjs && npm run build --workspace=@typingpro/desktop",
     "tauri": "npm run tauri --workspace=@typingpro/desktop",
     "build:mac": "export $(grep -v '^#' apps/desktop/.env | xargs) && npm run build --workspace=@typingpro/desktop && npm run tauri --workspace=@typingpro/desktop -- build",
     "release:patch": "npm version patch --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:minor": "npm version minor --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "release:major": "npm version major --no-git-tag-version && node scripts/sync-tauri-version.cjs",
     "verify:glass": "node scripts/verify-glass.js",
+    "verify:env": "node scripts/validate-env.cjs",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint . --ext ts,tsx && npm run lint:css"
   },

@@ -31,7 +31,7 @@ export const CertificationTiers: React.FC<CertificationTiersProps> = ({
                     <h2 className="text-xs font-black uppercase tracking-[0.5em] opacity-40 mb-2" style={{ color: 'var(--text-primary)' }}>Protocol Stages</h2>
                     <p className="text-xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>Ascend the Skill Hierarchy</p>
                 </div>
-                <div className="flex items-center gap-6 bg-[var(--glass-bg)] border border-glass p-6 rounded-[2rem] shadow-xl">
+                <div className="flex items-center gap-6 glass-panel p-6 rounded-[2rem] shadow-xl">
                     <div className="text-right">
                         <div className="text-xs font-black uppercase tracking-widest opacity-30" style={{ color: 'var(--text-primary)' }}>Nodes_Validated</div>
                         <div className="text-3xl font-black italic text-[var(--text-accent)]">{earnedCount}<span className="text-[10px] opacity-20 not-italic ml-1">/ 5</span></div>
@@ -56,7 +56,7 @@ export const CertificationTiers: React.FC<CertificationTiersProps> = ({
             </div>
 
             {/* Progress bar */}
-            <div className="mt-12 p-8 bg-[var(--glass-bg)] border border-glass rounded-[3rem] shadow-2xl overflow-hidden relative">
+            <div className="mt-12 p-8 glass-panel rounded-[3rem] shadow-2xl overflow-hidden relative">
                 <div className="absolute top-0 right-0 p-6 opacity-5">
                     <Target size={120} />
                 </div>
@@ -65,7 +65,7 @@ export const CertificationTiers: React.FC<CertificationTiersProps> = ({
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 italic" style={{ color: 'var(--text-primary)' }}>Completion_Spectrum</span>
                         <span className="text-lg font-black italic text-[var(--text-accent)]">{earnedCount * 20}%</span>
                     </div>
-                    <div className="h-3 bg-[var(--glass-bg)] border border-glass rounded-full overflow-hidden p-0.5">
+                    <div className="h-3 glass-panel rounded-full overflow-hidden p-0.5">
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${earnedCount * 20}%` }}

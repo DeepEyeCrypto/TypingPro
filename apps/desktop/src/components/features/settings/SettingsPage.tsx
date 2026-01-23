@@ -59,7 +59,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                    Appearance Section
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-                <section className="py-6 border-b border-glass">
+                <section className="py-6 border-b border-white/10">
                     <h3 className="text-lg font-bold mb-6 tracking-tight" style={{ color: 'var(--text-primary)' }}>Appearance</h3>
 
                     <div className="flex flex-col gap-8">
@@ -77,7 +77,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                                             px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2
                                             ${theme === t.id
                                                 ? 'bg-[var(--text-accent)] text-white shadow-lg scale-105'
-                                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] bg-[var(--glass-bg)] border border-glass'
+                                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-hover)] glass-panel'
                                             }
                                         `}
                                     >
@@ -97,7 +97,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                                 <select
                                     value={settings.fontFamily}
                                     onChange={(e) => settings.setFontFamily(e.target.value)}
-                                    className="w-full p-4 rounded-2xl bg-[var(--glass-bg)] text-[var(--text-primary)] font-black text-sm outline-none border border-glass focus:border-[var(--text-accent)] transition-all shadow-inner"
+                                    className="w-full p-4 rounded-2xl glass-panel text-[var(--text-primary)] font-black text-sm outline-none focus:border-[var(--text-accent)] transition-all shadow-inner"
                                 >
                                     <option value="Inter">Inter (Sans)</option>
                                     <option value="JetBrains Mono">JetBrains Mono (Console)</option>
@@ -126,7 +126,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                 {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                    Audio Section
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-                <section className="py-6 border-b border-glass">
+                <section className="py-6 border-b border-white/10">
                     <h3 className="text-lg font-bold mb-6 tracking-tight" style={{ color: 'var(--text-primary)' }}>Audio Experience</h3>
 
                     <div className="flex flex-col gap-6">
@@ -136,7 +136,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                                 onClick={() => settings.setSoundEnabled(!settings.soundEnabled)}
                                 className={`
                                     w-14 h-8 rounded-full p-1 transition-all duration-300 shadow-inner
-                                    ${settings.soundEnabled ? 'bg-[var(--text-accent)]' : 'bg-[var(--glass-bg)] border border-glass'}
+                                    ${settings.soundEnabled ? 'bg-[var(--text-accent)]' : 'glass-panel'}
                                 `}
                             >
                                 <div className={`
@@ -173,7 +173,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onBack }) => {
                 <section className="py-6">
                     <h3 className="text-lg font-black text-red-500 mb-6 tracking-tight uppercase italic">Integrity & Data</h3>
                     <div className="flex flex-wrap gap-4">
-                        <button className="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-[var(--glass-bg)] border border-glass text-[var(--text-primary)] hover:bg-[var(--glass-hover)] transition-all">
+                        <button className="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest glass-panel text-[var(--text-primary)] hover:bg-[var(--glass-hover)] transition-all">
                             Sync Local Cache
                         </button>
                         <button className="px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all">

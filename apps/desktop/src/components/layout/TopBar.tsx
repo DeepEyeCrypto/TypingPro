@@ -60,41 +60,41 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
     >
 
       {/* 1. BRANDING & IDENTITY + THEME SWITCHER */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 bg-[var(--accent-soft)] border border-[var(--text-accent)]/20 rounded-lg flex items-center justify-center text-[var(--text-accent)] shadow-xl font-black">P</div>
-          <h1 className="text-sm font-black tracking-[0.2em] italic" style={{ color: 'var(--text-primary)' }}>
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 glass-panel bg-[var(--accent-soft)] rounded-lg flex items-center justify-center text-[var(--text-accent)] shadow-xl font-black text-xs sm:text-base">P</div>
+          <h1 className="text-xs sm:text-sm font-black tracking-[0.15em] sm:tracking-[0.2em] italic" style={{ color: 'var(--text-primary)' }}>
             TYPING<span className="text-[var(--text-accent)] not-italic">PRO</span>
           </h1>
         </div>
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <ThemeSwitcher />
         </div>
       </div>
 
 
 
-      {/* 3. STATS CLUSTER */}
-      <div className="flex items-center gap-12 ml-auto mr-12">
+      {/* 3. STATS CLUSTER - Hidden on mobile, condensed on tablet, full on desktop */}
+      <div className="hidden md:flex items-center gap-4 lg:gap-12 ml-auto mr-4 lg:mr-12">
         {stats?.rankIcon && (
-          <div className="flex flex-col items-center">
+          <div className="hidden lg:flex flex-col items-center">
             <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Tier</span>
-            <span className="text-lg">{stats.rankIcon}</span>
+            <span className="text-base lg:text-lg">{stats.rankIcon}</span>
           </div>
         )}
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Velocity</span>
-          <span className="text-lg font-black tabular-nums" style={{ color: 'var(--text-primary)' }}>{stats?.wpm ?? 0} <small className="text-[9px] opacity-60">WPM</small></span>
+          <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>WPM</span>
+          <span className="text-sm lg:text-lg font-black tabular-nums" style={{ color: 'var(--text-primary)' }}>{stats?.wpm ?? 0} <small className="hidden lg:inline text-[9px] opacity-60">WPM</small></span>
         </div>
-        <div className="w-px h-6 bg-[var(--text-primary)] opacity-10" />
+        <div className="w-px h-4 lg:h-6 bg-[var(--text-primary)] opacity-10" />
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Precision</span>
-          <span className="text-lg font-black tabular-nums" style={{ color: 'var(--text-primary)' }}>{stats?.accuracy ?? 100}%</span>
+          <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>ACC</span>
+          <span className="text-sm lg:text-lg font-black tabular-nums" style={{ color: 'var(--text-primary)' }}>{stats?.accuracy ?? 100}%</span>
         </div>
-        <div className="w-px h-6 bg-[var(--text-primary)] opacity-10" />
+        <div className="w-px h-4 lg:h-6 bg-[var(--text-primary)] opacity-10" />
         <div className="flex flex-col items-center">
-          <span className="text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Active Loop</span>
-          <span className="text-lg font-black tabular-nums text-[var(--text-accent)]">{stats?.streak ?? 0}D</span>
+          <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest leading-none opacity-40" style={{ color: 'var(--text-primary)' }}>Streak</span>
+          <span className="text-sm lg:text-lg font-black tabular-nums text-[var(--text-accent)]">{stats?.streak ?? 0}D</span>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
               await (await zenWin).setFocus();
             }
           }}
-          className="p-3 rounded-xl bg-[var(--glass-bg)] border border-glass hover:bg-[var(--glass-hover)] transition-all group relative"
+          className="flex items-center gap-3 px-4 py-2 glass-panel rounded-2xl group transition-all hover:bg-[var(--glass-hover)]"
           title="Neural Zen Mode"
         >
           {/* Custom SVG for Zap to avoid Lucide JSX versioning issues */}
@@ -129,7 +129,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
           <div className="relative">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="w-10 h-10 rounded-full border border-glass glass-panel overflow-hidden hover:border-accent transition-all shadow-xl group"
+              className="w-10 h-10 rounded-full glass-panel overflow-hidden hover:border-accent transition-all shadow-xl group"
             >
               {user.avatar_url ? (
                 <img
@@ -148,9 +148,9 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             {showDropdown && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
-                <div className="absolute right-0 top-full mt-2 w-64 glass-panel rounded-2xl p-2 z-50 shadow-2xl border border-glass animate-float-in">
+                <div className="absolute right-0 top-full mt-2 w-64 glass-panel rounded-2xl p-2 z-50 shadow-2xl animate-float-in">
                   {/* User Info Header */}
-                  <div className="px-4 py-3 border-b border-glass mb-2">
+                  <div className="px-4 py-3 border-b border-white/10 mb-2">
                     <p className="text-sm font-black truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</p>
                     {user.email && (
                       <p className="text-[10px] truncate opacity-60" style={{ color: 'var(--text-secondary)' }}>{user.email}</p>
@@ -189,7 +189,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             <button
               onClick={() => login('google')}
               disabled={isLoading}
-              className="w-10 h-10 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] overflow-hidden hover:border-[var(--text-accent)]/40 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+              className="w-10 h-10 rounded-full glass-panel overflow-hidden hover:border-[var(--text-accent)]/40 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
               title="Sign in with Google"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -203,7 +203,7 @@ export const TopBar: React.FC<TopBarProps> = ({ stats, onSettingsClick, onProfil
             <button
               onClick={() => login('github')}
               disabled={isLoading}
-              className="w-10 h-10 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] overflow-hidden hover:border-[var(--text-accent)]/40 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
+              className="w-10 h-10 rounded-full glass-panel overflow-hidden hover:border-[var(--text-accent)]/40 transition-all shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center"
               title="Sign in with GitHub"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" style={{ fill: 'var(--text-primary)' }}>

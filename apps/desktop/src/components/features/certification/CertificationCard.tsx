@@ -36,14 +36,14 @@ export const CertificationCard: React.FC<CertificationCardProps> = ({
                 ${earned
                     ? 'bg-[var(--accent-soft)] border-[var(--text-accent)]/30 shadow-2xl'
                     : locked
-                        ? 'bg-[var(--glass-bg)] border-glass opacity-30 grayscale'
-                        : 'bg-[var(--glass-bg)] border-glass hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)]'
+                        ? 'glass-panel opacity-30 grayscale'
+                        : 'glass-panel hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)]'
                 }
             `}
         >
             {/* Lock overlay */}
             {locked && (
-                <div className="absolute inset-0 flex items-center justify-center glass-unified rounded-[3rem] z-10">
+                <div className="absolute inset-0 flex items-center justify-center glass-panel rounded-[3rem] z-10">
                     <span className="text-5xl drop-shadow-[0_0_20px_rgba(0,0,0,1)]">🔒</span>
                 </div>
             )}
@@ -92,7 +92,7 @@ export const CertificationCard: React.FC<CertificationCardProps> = ({
             ) : !locked ? (
                 <button
                     onClick={onAttempt}
-                    className="w-full py-4 bg-[var(--glass-bg)] border border-glass rounded-full text-[10px] font-black uppercase tracking-widest hover:border-[var(--text-accent)] hover:text-[var(--text-accent)] transition-all"
+                    className="w-full py-4 glass-panel rounded-full text-[10px] font-black uppercase tracking-widest hover:border-[var(--text-accent)] hover:text-[var(--text-accent)] transition-all"
                     style={{ color: 'var(--text-primary)' }}
                 >
                     Initial_Attempt

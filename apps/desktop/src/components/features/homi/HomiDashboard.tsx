@@ -47,7 +47,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                 <div className="glass-panel p-8 flex flex-col gap-6">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-[var(--glass-bg)] rounded-[1.2rem] flex items-center justify-center shadow-xl border border-glass overflow-hidden">
+                            <div className="w-12 h-12 glass-panel rounded-[1.2rem] flex items-center justify-center shadow-xl overflow-hidden">
                                 {user?.avatar_url ? (
                                     <img src={user.avatar_url} className="w-full h-full object-cover" alt="User" />
                                 ) : (
@@ -62,7 +62,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                             </div>
                         </div>
                     </div>
-                    <div className="bg-[var(--glass-bg)] border border-glass backdrop-blur-md rounded-2xl h-12 px-5 flex items-center text-sm font-semibold focus-within:bg-[var(--glass-hover)] transition-all shadow-inner">
+                    <div className="glass-panel backdrop-blur-md rounded-2xl h-12 px-5 flex items-center text-sm font-semibold focus-within:bg-[var(--glass-hover)] transition-all shadow-inner">
                         <Mic size={18} className="mr-3 text-[var(--text-accent)]" />
                         <span className="truncate opacity-90 italic text-[var(--text-secondary)]">AI Coach Listening...</span>
                     </div>
@@ -80,7 +80,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
 
                     <div className="text-[10px] font-black uppercase tracking-[0.2em] px-4 py-3 mt-6 text-[var(--text-accent)] opacity-90">Next Assignment</div>
                     <div
-                        className="p-5 bg-[var(--glass-bg)] border border-glass rounded-[2rem] mb-2 hover:bg-[var(--glass-hover)] transition-all cursor-pointer group"
+                        className="p-5 glass-panel rounded-[2rem] mb-2 hover:bg-[var(--glass-hover)] transition-all cursor-pointer group"
                         onClick={() => onStartLesson(nextLesson)}
                     >
                         <div className="flex justify-between items-start mb-2">
@@ -106,7 +106,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                             {keystones.toLocaleString()} <small className="text-xs opacity-70 font-normal">K$</small>
                         </div>
                         <button
-                            className="w-full py-3 rounded-2xl bg-[var(--glass-hover)] hover:bg-[var(--glass-active)] flex items-center justify-center transition-all font-black text-[10px] uppercase tracking-widest text-[var(--text-primary)] border border-glass"
+                            className="w-full py-3 rounded-2xl bg-[var(--glass-hover)] hover:bg-[var(--glass-active)] flex items-center justify-center transition-all font-black text-[10px] uppercase tracking-widest text-[var(--text-primary)] glass-panel"
                             onClick={() => onSetView('store')}
                         >
                             Open Market_Node
@@ -127,7 +127,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                             <h3 className="text-2xl font-black text-[var(--text-primary)] tracking-tight mb-1">Synaptic_Coach</h3>
                             <p className="text-[var(--text-accent)] text-sm font-semibold tracking-wide uppercase italic opacity-80">Personalized Weakness_Targeting Active</p>
                         </div>
-                        <div className="p-4 rounded-[1.5rem] border border-glass shadow-inner bg-[var(--glass-bg)]">
+                        <div className="p-4 rounded-[1.5rem] glass-panel shadow-inner">
                             <Cpu className="text-[var(--text-accent)]" size={24} />
                         </div>
                     </div>
@@ -152,7 +152,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                     {/* Speed Card */}
                     <div className="glass-panel-dark p-8 flex flex-col justify-between border-l-4 shadow-xl group hover:scale-[1.02] transition-all" style={{ borderLeftColor: 'var(--text-accent)' }}>
                         <div className="flex justify-between items-start">
-                            <div className="p-4 rounded-[1.8rem] shadow-inner transition-all group-hover:bg-[var(--glass-hover)] bg-[var(--glass-bg)] text-[var(--text-accent)]">
+                            <div className="p-4 rounded-[1.8rem] shadow-inner transition-all group-hover:bg-[var(--glass-hover)] glass-panel text-[var(--text-accent)]">
                                 <Zap size={24} />
                             </div>
                             <div className="bg-[var(--glass-active)] px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-[var(--text-accent)]">Velocity</div>
@@ -167,10 +167,10 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                     {/* Accuracy Card */}
                     <div className="glass-panel p-8 flex flex-col justify-between shadow-xl group hover:scale-[1.02] transition-all">
                         <div className="flex justify-between items-start">
-                            <div className="p-4 rounded-[1.8rem] shadow-inner transition-all group-hover:scale-110 bg-[var(--glass-bg)] text-[var(--text-accent)]">
+                            <div className="p-4 rounded-[1.8rem] shadow-inner transition-all group-hover:scale-110 glass-panel text-[var(--text-accent)]">
                                 <ShieldCheck size={24} />
                             </div>
-                            <div className="bg-[var(--glass-active)] border border-glass px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-[var(--text-accent)]">Precision</div>
+                            <div className="bg-[var(--glass-active)] glass-panel px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-[var(--text-accent)]">Precision</div>
                         </div>
                         <div>
                             <div className="text-xs font-bold uppercase tracking-[0.2em] mb-1 text-[var(--text-accent)] opacity-80">Consistency Index</div>
@@ -182,7 +182,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                 </div>
 
                 {/* TELEMETRY CHART */}
-                <div className="col-span-2 glass-panel-dark p-10 relative overflow-hidden border border-glass shadow-2xl">
+                <div className="col-span-2 glass-panel-dark p-10 relative overflow-hidden shadow-2xl">
                     <div className="flex justify-between items-center mb-10 relative z-10">
                         <h3 className="text-[var(--text-primary)] text-xl font-black tracking-tight flex items-center gap-3">
                             <BarChart3 className="text-[var(--text-accent)]" size={20} /> Neural_Telemetry
@@ -218,15 +218,15 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
                             <span className="text-[10px] font-black uppercase tracking-widest block leading-none mb-1 text-[var(--text-accent)] opacity-80">Goal Protocol</span>
                             <span className="text-xl font-black tracking-tighter text-[var(--text-primary)]">THR_SPEED</span>
                         </div>
-                        <div className="p-2 rounded-xl border border-glass text-[var(--text-accent)] bg-[var(--glass-bg)]">
+                        <div className="p-2 rounded-xl glass-panel text-[var(--text-accent)]">
                             <Zap size={20} />
                         </div>
                     </div>
 
                     <div className="relative w-56 h-56 flex items-center justify-center group/dial cursor-pointer scale-110">
                         {/* Static Frame */}
-                        <div className="absolute inset-0 rounded-full border-[1px] border-dashed transition-transform group-hover/dial:rotate-45 duration-1000 border-glass"></div>
-                        <div className="absolute inset-8 rounded-full shadow-2xl transition-all bg-[var(--glass-hover)] backdrop-blur-md border border-glass"></div>
+                        <div className="absolute inset-0 rounded-full border-[1px] border-dashed transition-transform group-hover/dial:rotate-45 duration-1000 border-white/20"></div>
+                        <div className="absolute inset-8 rounded-full shadow-2xl transition-all glass-panel backdrop-blur-md"></div>
 
                         {/* Dynamic Progress Ring */}
                         <svg className="absolute inset-0 w-full h-full rotate-[-90deg]">
@@ -254,7 +254,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
 
                     <div className="flex gap-4 w-full justify-center pt-10">
                         <button
-                            className="w-16 h-16 rounded-[2.2rem] flex items-center justify-center transition-all active:scale-95 text-3xl font-black shadow-lg bg-[var(--glass-bg)] text-[var(--text-primary)] border border-glass"
+                            className="w-16 h-16 rounded-[2.2rem] flex items-center justify-center transition-all active:scale-95 text-3xl font-black shadow-lg glass-panel text-[var(--text-primary)]"
                             onClick={() => setTargetWpm(prev => Math.max(10, prev - 5))}
                         >
                             <Minus size={24} />
@@ -270,7 +270,7 @@ export const HomiDashboard: React.FC<HomiDashboardProps> = ({ onSetView, onStart
 
                 {/* CHALLENGE TILE */}
                 <div
-                    className="col-span-1 glass-panel p-10 flex flex-col items-center justify-center border-dashed border-4 gap-5 hover:bg-[var(--glass-hover)] transition-all cursor-pointer group border-[var(--glass-border)]"
+                    className="col-span-1 glass-panel p-10 flex flex-col items-center justify-center border-dashed border-4 gap-5 hover:bg-[var(--glass-hover)] transition-all cursor-pointer group"
                     onClick={() => onSetView('selection')}
                 >
                     <div className="w-20 h-20 rounded-[2.5rem] flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-12 transition-all bg-[var(--text-accent)]">

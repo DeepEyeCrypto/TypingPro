@@ -46,7 +46,7 @@ export const ProgressDashboard = () => {
 
             <div className="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Rank Badge */}
-                <Card className="rank-card md:col-span-2 bg-[var(--glass-bg)] border border-glass rounded-3xl p-8 shadow-xl" title="Current Standing">
+                <Card className="rank-card md:col-span-2 glass-panel rounded-3xl p-8 shadow-xl" title="Current Standing">
                     <div className="flex items-center justify-between">
                         {currentRank && <RankBadge rank={currentRank} progress={progress} />}
                         {nextRank && (
@@ -59,26 +59,26 @@ export const ProgressDashboard = () => {
                 </Card>
 
                 {/* Average WPM */}
-                <Card title="Average WPM" subtitle="Last 10 sessions" className="bg-[var(--glass-bg)] border border-glass rounded-3xl p-6 shadow-xl">
+                <Card title="Average WPM" subtitle="Last 10 sessions" className="glass-panel rounded-3xl p-6 shadow-xl">
                     <div className="text-5xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>{averageWPM}</div>
                 </Card>
 
                 {/* Peak WPM */}
-                <Card title="Peak WPM" subtitle="All-time best" className="bg-[var(--glass-bg)] border border-glass rounded-3xl p-6 shadow-xl">
+                <Card title="Peak WPM" subtitle="All-time best" className="glass-panel rounded-3xl p-6 shadow-xl">
                     <div className="text-5xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>{peakWPM}</div>
                 </Card>
 
                 {/* Total Sessions */}
-                <Card title="Total Sessions" subtitle="Practice makes perfect" className="bg-[var(--glass-bg)] border border-glass rounded-3xl p-6 shadow-xl">
+                <Card title="Total Sessions" subtitle="Practice makes perfect" className="glass-panel rounded-3xl p-6 shadow-xl">
                     <div className="text-5xl font-black italic tracking-tighter" style={{ color: 'var(--text-primary)' }}>{sessionHistory.length}</div>
                 </Card>
             </div>
 
             {/* 30-Day Chart */}
-            <Card title="30-Day Progress" subtitle="Average WPM per day" className="bg-[var(--glass-bg)] border border-glass rounded-[2rem] p-8 shadow-2xl">
+            <Card title="30-Day Progress" subtitle="Average WPM per day" className="glass-panel rounded-[2rem] p-8 shadow-2xl">
                 {chartData.length > 0 ? (
                     <div className="chart flex gap-6 h-72 mt-8">
-                        <div className="chart-y-axis flex flex-col justify-between text-[10px] font-black uppercase tracking-[0.2em] opacity-20 pr-4 border-r border-glass" style={{ color: 'var(--text-primary)' }}>
+                        <div className="chart-y-axis flex flex-col justify-between text-[10px] font-black uppercase tracking-[0.2em] opacity-20 pr-4 border-r border-white/10" style={{ color: 'var(--text-primary)' }}>
                             <span>{maxWPM}</span>
                             <span>{Math.round(maxWPM / 2)}</span>
                             <span>0</span>

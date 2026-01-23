@@ -5,6 +5,7 @@
 import React from 'react';
 import { UserCertification, TIER_COLORS, TIER_ICONS } from '../../../types/certifications';
 import { CERTIFICATION_TIERS } from '../../../data/certifications';
+import { toast } from '../../../core/store/toastStore';
 
 interface CertificateDisplayProps {
     certification: UserCertification;
@@ -32,7 +33,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
             <div
-                className="relative max-w-2xl w-full glass-unified rounded-3xl overflow-hidden"
+                className="relative max-w-2xl w-full glass-panel rounded-3xl overflow-hidden"
                 style={{
                     boxShadow: `0 0 60px ${color}40`,
                     border: `2px solid ${color}`,
@@ -124,7 +125,7 @@ export const CertificateDisplay: React.FC<CertificateDisplayProps> = ({
                             onClick={() => {
                                 // Future: Download as image/PDF
                                 navigator.clipboard.writeText(certification.verification_code);
-                                alert('Verification code copied!');
+                                toast.success('Verification code copied!');
                             }}
                         >
                             Copy Code

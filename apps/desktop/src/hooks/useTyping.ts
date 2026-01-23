@@ -23,7 +23,7 @@ import { useJuiceEngine } from './useJuiceEngine'
 export const useTyping = () => {
     const { playKeypress, playError } = useTypingSound()
     const { user } = useAuthStore() // Get user to attach to race
-    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel' | 'dashboard' | 'store' | 'achievements' | 'certification' | 'settings' | 'coach'>('selection')
+    const [view, setView] = useState<'selection' | 'typing' | 'analytics' | 'social' | 'lobby' | 'duel' | 'dashboard' | 'store' | 'achievements' | 'certification' | 'settings' | 'coach' | 'profile'>('selection')
     const {
         fuel,
         isShakeActive,
@@ -215,7 +215,8 @@ export const useTyping = () => {
         startIdleTimer()
     }
 
-    const startMission = async (lesson: Lesson, targetWpm: number, minAccuracy: number, constraints: string[]) => {
+    const startMission = async (lesson: Lesson | null, targetWpm: number, minAccuracy: number, constraints: string[] = []) => {
+        if (!lesson) return; // Handle null lesson case
         mission.setBriefing({ lesson, targetWpm, minAccuracy, constraints })
         // The UI will handle the transition to OPERATIONAL via mission.startMission()
     }

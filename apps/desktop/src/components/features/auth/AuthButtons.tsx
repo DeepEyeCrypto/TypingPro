@@ -65,7 +65,7 @@ export const AuthButtons: React.FC = () => {
               onClick={() => setShowDropdown(false)}
             />
             {/* Menu */}
-            <div className="absolute right-0 top-full mt-2 w-56 glass-unified rounded-xl p-2 z-50 shadow-2xl border border-white/10">
+            <div className="absolute right-0 top-full mt-2 w-56 glass-panel rounded-xl p-2 z-50 shadow-2xl border border-white/10">
               {/* User Info */}
               <div className="px-3 py-2 border-b border-white/10 mb-2">
                 <p className="text-sm font-bold text-white truncate">{user.name}</p>
@@ -99,7 +99,7 @@ export const AuthButtons: React.FC = () => {
       <button
         onClick={() => login('google')}
         disabled={isLoading}
-        className="glass-unified w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 group border border-white/10 hover:border-white/20"
+        className="glass-panel w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 group border border-white/10 hover:border-white/20"
         title="Sign in with Google"
       >
         <div className="group-hover:scale-110 transition-transform">
@@ -111,7 +111,7 @@ export const AuthButtons: React.FC = () => {
       <button
         onClick={() => login('github')}
         disabled={isLoading}
-        className="glass-unified w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 group border border-white/10 hover:border-white/20 text-white"
+        className="glass-panel w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all disabled:opacity-50 group border border-white/10 hover:border-white/20 text-white"
         title="Sign in with GitHub"
       >
         <div className="group-hover:scale-110 transition-transform">

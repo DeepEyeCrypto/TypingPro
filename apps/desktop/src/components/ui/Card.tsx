@@ -12,7 +12,7 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ title, subtitle, children, className = '', action, glimmer = false }) => {
     return (
-        <div className={`bg-[var(--glass-bg)] border border-glass p-6 relative overflow-hidden group ${className}`}>
+        <div className={`glass-panel p-6 relative overflow-hidden group ${className}`}>
             {/* Minimal top highlight for depth */}
             <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--text-primary)]/5 to-transparent pointer-events-none" />
 

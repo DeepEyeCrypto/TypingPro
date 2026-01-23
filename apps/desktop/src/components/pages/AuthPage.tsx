@@ -26,7 +26,7 @@ export const AuthPage: React.FC = () => {
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 100 }}
-                            className="w-20 h-20 bg-[var(--glass-bg)] border border-glass rounded-[2rem] mx-auto mb-8 flex items-center justify-center shadow-2xl"
+                            className="w-20 h-20 glass-panel rounded-[2rem] mx-auto mb-8 flex items-center justify-center shadow-2xl"
                         >
                             <span className="text-4xl font-black" style={{ color: 'var(--text-primary)' }}>P</span>
                         </motion.div>
@@ -43,7 +43,7 @@ export const AuthPage: React.FC = () => {
                         <button
                             onClick={() => login('github')}
                             disabled={isLoading}
-                            className="bg-[var(--glass-bg)] border border-glass rounded-2xl w-full h-16 flex items-center justify-center gap-4 group hover:bg-[var(--glass-hover)] active:scale-[0.98] transition-all disabled:opacity-50 shadow-lg"
+                            className="glass-panel rounded-2xl w-full h-16 flex items-center justify-center gap-4 group hover:bg-[var(--glass-hover)] active:scale-[0.98] transition-all disabled:opacity-50 shadow-lg"
                         >
                             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
                                 <svg className="w-7 h-7" viewBox="0 0 24 24" fill="black">

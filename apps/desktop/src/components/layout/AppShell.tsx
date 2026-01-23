@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
-import { useSettingsStore } from '../../core/store/settingsStore';
 import { useSoundEngine } from '../../hooks/useSoundEngine';
 
 
@@ -10,7 +9,7 @@ const MuteToggle: React.FC = () => {
         <button
             onClick={toggleMute}
             className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border border-white/5
-                ${isMuted ? 'bg-white/5 text-white/20' : 'glass-unified text-white shadow-glass-edge'} 
+                ${isMuted ? 'bg-white/5 text-white/20' : 'glass-panel text-white shadow-glass-edge'} 
                 hover:scale-105 active:scale-95`}
             title={isMuted ? "Unmute Audio" : "Mute Audio"}
         >
@@ -35,13 +34,9 @@ interface AppShellProps {
  * Overhauled for High-Fidelity Deep Glass aesthetic.
  */
 export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, activeView }) => {
-    const { backgroundImage } = useSettingsStore();
-    const effectiveBackgroundImage = backgroundImage || localStorage.getItem('pref_bg_image') || '';
-
     return (
         <div
             className="flex h-screen w-screen bg-transparent overflow-hidden select-none font-sans relative"
-            style={effectiveBackgroundImage ? { backgroundImage: `url("${effectiveBackgroundImage}")`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
         >
             {/* Minimal Ambient Overlay - Optional or Removed based on "Invisible Container" */}
             <div className="absolute inset-0 bg-transparent z-0 pointer-events-none" />
@@ -56,12 +51,12 @@ export const AppShell: React.FC<AppShellProps> = ({ sidebar, topbar, children, a
             {/* Removed background color/blur from main wrapper to allow transparency */}
             <div className="flex-1 flex flex-col relative z-10 min-w-0 bg-transparent gpu-accelerated">
 
-                <header className="flex-none h-16 mx-6 mt-4 md:ml-32 transition-all z-50">
+                <header className="flex-none h-14 sm:h-16 mx-2 sm:mx-4 lg:mx-6 mt-2 sm:mt-4 md:ml-16 lg:ml-32 transition-all z-50">
                     {topbar}
                 </header>
 
-                {/* SCROLLABLE CONTENT */}
-                <main className="flex-1 overflow-y-auto relative p-4 md:p-6 lg:p-12 md:pl-28 lg:pl-32 custom-scrollbar contain-content bg-transparent">
+                {/* SCROLLABLE CONTENT - Responsive padding */}
+                <main className="flex-1 overflow-y-auto relative p-2 sm:p-4 md:p-6 lg:p-12 md:pl-16 lg:pl-28 xl:pl-32 custom-scrollbar contain-content bg-transparent">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeView}

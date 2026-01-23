@@ -29,7 +29,7 @@ import {
 const EyeIcon = ({ pulsed = false }: { pulsed?: boolean }) => (
     <div className={`relative w-24 h-24 flex items-center justify-center ${pulsed ? 'animate-pulse' : ''}`}>
         <div className="absolute inset-0 bg-[var(--text-accent)] opacity-[0.05] rounded-full blur-3xl"></div>
-        <div className="w-16 h-16 rounded-3xl border border-glass flex items-center justify-center glass-panel shadow-2xl overflow-hidden bg-[var(--glass-bg)]">
+        <div className="w-16 h-16 rounded-3xl flex items-center justify-center glass-panel shadow-2xl overflow-hidden">
             <div className={`w-6 h-6 rounded-full bg-[var(--text-accent)] opacity-20 ${pulsed ? 'animate-ping' : ''}`}></div>
             <div className="absolute w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]"></div>
         </div>
@@ -107,7 +107,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
     return (
         <div className="w-full flex flex-col gap-10 p-4 md:p-6 max-w-7xl mx-auto pb-32 animate-in fade-in duration-700">
             {/* NEURAL STATUS HEADER */}
-            <div className="relative overflow-hidden bg-[var(--glass-bg)] backdrop-blur-[64px] rounded-[2.5rem] p-6 flex flex-wrap items-center justify-between gap-6 border border-glass shadow-2xl">
+            <div className="relative overflow-hidden glass-panel backdrop-blur-[64px] rounded-[2.5rem] p-6 flex flex-wrap items-center justify-between gap-6 shadow-2xl">
                 {/* Scan Beam */}
                 <motion.div
                     animate={{ left: ['-10%', '110%'] }}
@@ -361,7 +361,7 @@ export const AnalyticsDashboard: React.FC<Props> = React.memo(({ onBack, onStart
                         {profile ? (
                             <div className="space-y-4 mt-4">
                                 {profile.errorProneKeys.slice(0, 5).map(k => (
-                                    <div key={k.key} className="flex items-center justify-between p-3 glass-unified group hover:bg-white/5 transition-colors">
+                                    <div key={k.key} className="flex items-center justify-between p-3 glass-panel group hover:bg-white/5 transition-colors">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-xl glass-pill flex items-center justify-center text-lg font-black text-gray-900 shadow-md">
                                                 {k.key.toUpperCase()}

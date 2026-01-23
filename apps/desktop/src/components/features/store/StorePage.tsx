@@ -106,7 +106,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                         onClick={() => setSelectedCategory(cat)}
                         className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${selectedCategory === cat
                             ? 'bg-[var(--text-accent)] text-white shadow-lg border-[var(--text-accent)]'
-                            : 'bg-[var(--glass-bg)] text-[var(--text-secondary)] opacity-60 hover:opacity-100 hover:bg-[var(--glass-hover)] border-glass'
+                            : 'glass-panel text-[var(--text-secondary)] opacity-60 hover:opacity-100 hover:bg-[var(--glass-hover)]'
                             }`}
                     >
                         {CATEGORY_LABELS[cat]}
@@ -127,7 +127,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onBack }) => {
                             className={`p-4 transition-all ${getRarityBorder(cosmetic.rarity)}`}
                         >
                             {/* Preview Image */}
-                            <div className="aspect-square glass-unified mb-3 flex items-center justify-center overflow-hidden shadow-inner">
+                            <div className="aspect-square glass-panel mb-3 flex items-center justify-center overflow-hidden shadow-inner">
                                 {cosmetic.preview_url ? (
                                     <img
                                         src={cosmetic.preview_url}

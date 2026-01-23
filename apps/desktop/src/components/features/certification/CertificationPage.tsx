@@ -16,6 +16,7 @@ import {
     createUserCertification,
     canAttemptTier,
 } from '../../../core/certificationService';
+import { toast } from '../../../core/store/toastStore';
 
 interface CertificationPageProps {
     userId: string;
@@ -44,7 +45,7 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
     const handleAttempt = useCallback((tier: CertificationTier) => {
         const check = canAttemptTier(tier, earnedCertifications);
         if (!check.canAttempt) {
-            alert(check.reason);
+            toast.error(check.reason);
             return;
         }
 
@@ -112,12 +113,12 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
             className="min-h-full p-6 lg:p-10 max-w-7xl mx-auto pb-32"
         >
             {/* Header */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-glass pb-10 mb-10">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/10 pb-10 mb-10">
                 <div className="flex items-center gap-6">
                     {onBack && (
                         <button
                             onClick={onBack}
-                            className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-glass shadow-lg hover:scale-110 active:scale-95 transition-all text-[var(--text-primary)]"
+                            className="p-3 rounded-2xl glass-panel shadow-lg hover:scale-110 active:scale-95 transition-all text-[var(--text-primary)]"
                         >
                             <ArrowLeft size={20} />
                         </button>
@@ -131,7 +132,7 @@ export const CertificationPage: React.FC<CertificationPageProps> = ({
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="px-5 py-2 rounded-xl bg-[var(--glass-bg)] border border-glass flex items-center gap-3">
+                    <div className="px-5 py-2 rounded-xl glass-panel flex items-center gap-3">
                         <Award className="text-[var(--text-accent)] w-5 h-5" />
                         <span className="text-[10px] font-black tracking-widest uppercase opacity-60" style={{ color: 'var(--text-primary)' }}>Verified Identity: {username}</span>
                     </div>

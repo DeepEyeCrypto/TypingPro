@@ -12,6 +12,7 @@ import { ActivityFeed } from './ActivityFeed';
 import { GlassCard } from '../../ui/GlassCard';
 import { ArrowLeft, Globe, Zap, Users, Shield, Cpu, Activity, MessageSquare, Sword, Search, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from '../../../core/store/toastStore';
 
 interface Props {
     onBack: () => void;
@@ -30,7 +31,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
             const duelId = await friendService.createDuelChallenge(user.id, friends[0].uid);
             setActiveDuelId(duelId);
         } else {
-            alert("No friends online to duel! Try adding some friends first.");
+            toast.info("No friends online to duel! Try adding some friends first.");
         }
     };
 
@@ -38,7 +39,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
         return (
             <div className="h-full flex flex-col items-center justify-center p-6 animate-in fade-in duration-700">
                 <GlassCard variant="large" className="text-center max-w-md py-12">
-                    <div className="w-16 h-16 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center mx-auto mb-8 shadow-2xl">
+                    <div className="w-16 h-16 rounded-2xl glass-panel flex items-center justify-center mx-auto mb-8 shadow-2xl">
                         <Shield className="text-[var(--text-accent)]" size={32} />
                     </div>
                     <h2 className="text-2xl font-black tracking-widest mb-4 uppercase italic" style={{ color: 'var(--text-primary)' }}>Access Encrypted</h2>
@@ -61,7 +62,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
     return (
         <div className="w-full flex flex-col gap-10 p-4 md:p-6 max-w-7xl mx-auto pb-32 animate-in fade-in duration-700">
             {/* NEURAL STATUS HEADER */}
-            <div className="relative overflow-hidden bg-[var(--glass-bg)] backdrop-blur-[64px] rounded-[2.5rem] p-6 flex flex-wrap items-center justify-between gap-6 border border-glass shadow-2xl">
+            <div className="relative overflow-hidden glass-panel backdrop-blur-[64px] rounded-[2.5rem] p-6 flex flex-wrap items-center justify-between gap-6 shadow-2xl">
                 {/* Scan Beam */}
                 <motion.div
                     animate={{ left: ['-10%', '110%'] }}
@@ -106,7 +107,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
 
                 <div className="p-10 flex flex-col md:flex-row items-center gap-12 relative z-10">
                     <div className="relative group/avatar">
-                        <div className="w-40 h-40 rounded-[2.5rem] overflow-hidden border-4 border-glass bg-[var(--glass-bg)] shadow-2xl transition-transform group-hover/avatar:scale-105 duration-500">
+                        <div className="w-40 h-40 rounded-[2.5rem] overflow-hidden glass-panel shadow-2xl transition-transform group-hover/avatar:scale-105 duration-500">
                             <img
                                 src={profile?.avatar_url || user.avatar_url || ''}
                                 alt="Avatar"
@@ -139,7 +140,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                             <div className="flex gap-4">
                                 <button
                                     onClick={onNavigateToLobby}
-                                    className="px-8 py-3.5 rounded-2xl border border-glass bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center gap-3"
+                                    className="px-8 py-3.5 rounded-2xl glass-panel bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all flex items-center gap-3"
                                     style={{ color: 'var(--text-primary)' }}
                                 >
                                     <Globe size={14} />
@@ -162,7 +163,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                                 { label: 'Signals', value: `${profile?.total_races || 0}`, unit: '', icon: <Cpu size={12} /> },
                                 { label: 'Neural_Pts', value: `${profile?.rank_points || 0}`, unit: 'RP', icon: <Target size={12} />, accent: true },
                             ].map((stat, i) => (
-                                <div key={i} className="p-4 bg-white/5 rounded-3xl border border-glass group/stat hover:border-[var(--text-accent)]/50 transition-colors">
+                                <div key={i} className="p-4 bg-white/5 rounded-3xl border border-white/10 group/stat hover:border-[var(--text-accent)]/50 transition-colors">
                                     <div className="flex items-center gap-2 mb-2 opacity-30 group-hover/stat:opacity-100 transition-opacity">
                                         {stat.icon}
                                         <span className="text-[8px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>{stat.label}</span>
@@ -174,7 +175,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
                             ))}
                         </div>
 
-                        <div className="pt-8 border-t border-glass">
+                        <div className="pt-8 border-t border-white/10">
                             <RankBadge
                                 wpm={profile?.highest_wpm || 0}
                                 progress={getProgressToNextRank(profile?.highest_wpm || 0).percent}
@@ -214,7 +215,7 @@ export const SocialDashboard: React.FC<Props> = ({ onBack, onPlayGhost, onNaviga
             </div>
 
             {/* TECH FOOTER */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 border-t border-glass pt-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 border-t border-white/10 pt-16">
                 <div className="space-y-8">
                     <div className="flex items-center gap-3 px-2">
                         <Activity size={16} className="text-green-500" />

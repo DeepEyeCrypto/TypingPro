@@ -96,11 +96,11 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
     return (
         <div className="min-h-full p-6 lg:p-10 flex flex-col max-w-7xl mx-auto pb-32">
             {/* Header */}
-            <div className="flex items-center justify-between mb-10 border-b border-glass pb-8">
+            <div className="flex items-center justify-between mb-10 border-b border-white/10 pb-8">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={onCancel}
-                        className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-glass shadow-lg hover:scale-110 active:scale-95 transition-all text-[var(--text-primary)]"
+                        className="p-3 rounded-2xl glass-panel shadow-lg hover:scale-110 active:scale-95 transition-all text-[var(--text-primary)]"
                     >
                         <ArrowLeft size={20} />
                     </button>
@@ -118,8 +118,8 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
                 {/* Timer */}
                 <div
                     className={`
-                        flex items-center gap-4 px-8 py-4 rounded-3xl bg-[var(--glass-bg)] border-2 transition-all duration-500
-                        ${timeLeft <= 60 ? 'border-[var(--text-accent)] shadow-[0_0_20px_var(--text-accent)]/20 animate-pulse' : 'border-glass shadow-xl'}
+                        flex items-center gap-4 px-8 py-4 rounded-3xl glass-panel border-2 transition-all duration-500
+                        ${timeLeft <= 60 ? 'border-[var(--text-accent)] shadow-[0_0_20px_var(--text-accent)]/20 animate-pulse' : 'border-white/10 shadow-xl'}
                     `}
                 >
                     <Clock size={20} className={timeLeft <= 60 ? 'text-[var(--text-accent)]' : 'opacity-40'} />
@@ -131,12 +131,12 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
 
             {/* Requirements reminder */}
             <div className="flex gap-8 mb-10">
-                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--glass-bg)] border border-glass rounded-xl shadow-md">
+                <div className="flex items-center gap-2 px-4 py-2 glass-panel rounded-xl shadow-md">
                     <Zap size={14} className="text-[var(--text-accent)]" />
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>Required:</span>
                     <span className="text-xs font-black italic text-[var(--text-accent)]">{tierInfo?.min_wpm}+ WPM</span>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--glass-bg)] border border-glass rounded-xl shadow-md">
+                <div className="flex items-center gap-2 px-4 py-2 glass-panel rounded-xl shadow-md">
                     <Target size={14} className="text-[var(--text-accent)]" />
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--text-primary)' }}>Precision:</span>
                     <span className="text-xs font-black italic text-[var(--text-accent)]">{tierInfo?.min_accuracy}%+</span>
@@ -144,7 +144,7 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
             </div>
 
             {/* Text display */}
-            <div className="flex-1 bg-[var(--glass-bg)] border border-glass rounded-[4rem] p-12 lg:p-16 mb-10 overflow-auto shadow-2xl relative">
+            <div className="flex-1 glass-panel rounded-[4rem] p-12 lg:p-16 mb-10 overflow-auto shadow-2xl relative">
                 {!isStarted ? (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -212,7 +212,7 @@ export const CertificationTest: React.FC<CertificationTestProps> = ({
                             </div>
                         </div>
                     </div>
-                    <div className="h-4 w-full bg-[var(--glass-bg)] border border-glass rounded-full overflow-hidden p-1 shadow-inner">
+                    <div className="h-4 w-full glass-panel rounded-full overflow-hidden p-1 shadow-inner">
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}

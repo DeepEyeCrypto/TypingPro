@@ -26,7 +26,7 @@ export const LessonSelector = ({
       {/* Dashboard Hero Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Next Lesson Card */}
-        <Card blurLevel="l3" className="relative group overflow-hidden bg-[var(--glass-bg)] border border-glass rounded-[3rem] p-10 shadow-2xl transition-all hover:bg-[var(--glass-hover)]">
+        <Card blurLevel="l3" className="relative group overflow-hidden glass-panel rounded-[3rem] p-10 shadow-2xl transition-all hover:bg-[var(--glass-hover)]">
           <div className="absolute top-0 right-0 p-6">
             <span className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30" style={{ color: 'var(--text-primary)' }}>Up Next</span>
           </div>
@@ -56,7 +56,7 @@ export const LessonSelector = ({
         </Card>
 
         {/* AI COACH Card */}
-        <Card blurLevel="l3" className="relative group overflow-hidden bg-[var(--glass-bg)] border border-glass rounded-[3rem] p-10 shadow-2xl transition-all hover:bg-[var(--glass-hover)] shadow-[0_32px_64px_-16px_rgba(var(--text-accent),0.1)]">
+        <Card blurLevel="l3" className="relative group overflow-hidden glass-panel rounded-[3rem] p-10 shadow-2xl transition-all hover:bg-[var(--glass-hover)] shadow-[0_32px_64px_-16px_rgba(var(--text-accent),0.1)]">
           <div className="absolute top-0 right-0 p-6">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[var(--text-accent)] animate-pulse shadow-[0_0_8px_var(--text-accent)]"></div>
@@ -103,7 +103,7 @@ export const LessonSelector = ({
         <div key={stage} className="mb-12 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center gap-4">
             <h2 className="text-xs font-black uppercase tracking-[0.5em] opacity-40" style={{ color: 'var(--text-primary)' }}>{stage}</h2>
-            <div className="flex-1 h-px border-t border-glass"></div>
+            <div className="flex-1 h-px border-t border-white/10"></div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -116,8 +116,8 @@ export const LessonSelector = ({
                   key={lesson.id}
                   onClick={() => onSelect(lesson)}
                   className={`
-                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden bg-[var(--glass-bg)]
-                    border-glass hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)] cursor-pointer shadow-2xl hover:translate-y-[-4px]
+                    group text-left p-10 rounded-[3rem] border transition-all duration-500 relative overflow-hidden glass-panel
+                    hover:bg-[var(--glass-hover)] hover:border-[var(--text-accent)] cursor-pointer shadow-2xl hover:translate-y-[-4px]
                   `}
                 >
                   <div className="space-y-6 relative z-10">

@@ -38,7 +38,7 @@ export const ProfilePage: React.FC = () => {
             <GlassCard variant="large" className="flex flex-col md:flex-row items-center gap-8 py-10 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--text-accent)] opacity-[0.03] blur-[100px] pointer-events-none" />
                 <div className="relative group shrink-0">
-                    <div className="w-32 h-32 rounded-3xl overflow-hidden border-4 border-glass bg-[var(--glass-bg)] shadow-2xl transition-transform group-hover:scale-105">
+                    <div className="w-32 h-32 rounded-3xl overflow-hidden glass-panel shadow-2xl transition-transform group-hover:scale-105">
                         <img
                             src={user?.avatar_url || `https://api.dicebear.com/7.x/api/bottts/svg?seed=${user?.name || 'User'}`}
                             alt="avatar"
@@ -125,18 +125,18 @@ export const ProfilePage: React.FC = () => {
                STAGE 8: ACCOUNT ACTIONS
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
             <div className="flex flex-col gap-4">
-                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-[var(--glass-hover)] transition-all border border-glass">
+                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-[var(--glass-hover)] transition-all border border-white/10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🔑</div>
+                        <div className="w-12 h-12 rounded-2xl glass-panel flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🔑</div>
                         <div>
                             <span className="text-sm font-black uppercase tracking-widest block" style={{ color: 'var(--text-primary)' }}>Neural_Keys</span>
                             <span className="text-[10px] text-[var(--text-secondary)] opacity-60 font-bold uppercase">Update Authentication Protocols</span>
                         </div>
                     </div>
                 </button>
-                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-[var(--glass-hover)] transition-all border border-glass">
+                <button className="glass-panel p-6 flex items-center justify-between group hover:bg-[var(--glass-hover)] transition-all border border-white/10">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-[var(--glass-bg)] border border-glass flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🛡️</div>
+                        <div className="w-12 h-12 rounded-2xl glass-panel flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">🛡️</div>
                         <div>
                             <span className="text-sm font-black uppercase tracking-widest block" style={{ color: 'var(--text-primary)' }}>Telemetry_Privacy</span>
                             <span className="text-[10px] text-[var(--text-secondary)] opacity-60 font-bold uppercase">Manage Neural Link Secrecy</span>
@@ -152,8 +152,8 @@ export const ProfilePage: React.FC = () => {
                         </div>
                     </div>
                 </button>
-            </div>
+            </div >
 
-        </div>
+        </div >
     );
 };
