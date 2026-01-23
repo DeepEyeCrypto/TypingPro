@@ -14,8 +14,11 @@
 
     /* Light Mode: Crystal Glass */
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    backdrop-filter: blur(10px);
+    /* REDUCED from 40px saturate(180%) */
+    -webkit-backdrop-filter: blur(10px);
+    will-change: transform;
+    backface-visibility: hidden;
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 100px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);

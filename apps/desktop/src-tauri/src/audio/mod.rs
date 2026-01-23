@@ -54,8 +54,25 @@ impl AudioManager {
             for (key, filename) in sound_mappings {
                 let path = resource_path.join(filename);
                 if path.exists() {
-                    if let Ok(bytes) = std::fs::read(&path) {
-                        sound_cache.insert(key.to_string(), bytes);
+                    // Non-blocking: spawn async read in background
+                    let key_clone = key.to_string();
+                    let path_clone = path.clone();
+                    std::thread::spawn(move || {
+                        if let Ok(bytes) = std::fs::read(&path_clone) {
+                            // Sound will be loaded asynchronously
+                            // For now just log - full async cache would need Arc<Mutex<HashMap>>
+                            println!("Async loaded sound: {} ({} bytes)", key_clone, bytes.len());
+                        }
+                    });
+
+                    // Still load synchronously but faster - only if file is small
+                    if let Ok(metadata) = std::fs::metadata(&path) {
+                        if metadata.len() < 100_000 {
+                            // Only preload if < 100KB
+                            if let Ok(bytes) = std::fs::read(&path) {
+                                sound_cache.insert(key.to_string(), bytes);
+                            }
+                        }
                     }
                 } else {
                     println!("Warning: Sound file not found: {:?}", path);

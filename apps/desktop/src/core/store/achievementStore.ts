@@ -11,6 +11,9 @@ interface AchievementState {
     totalKeystrokes: number,
     perfectSessions: number,
     challengeProgress: Record<string, any>,
+    isInitialized: boolean,
+
+    initialize: () => void,
 
     // Actions
     setAchievements: (data: {
@@ -38,13 +41,42 @@ interface AchievementState {
 }
 
 export const useAchievementStore = create<AchievementState>((set) => ({
-    unlockedBadges: JSON.parse(localStorage.getItem('unlocked_badges') || '[]'),
-    streak: JSON.parse(localStorage.getItem('streak_data') || '{"current_streak": 0, "longest_streak": 0, "last_practice_date": null}'),
-    certifications: JSON.parse(localStorage.getItem('user_certifications') || '[]'),
-    keystones: parseInt(localStorage.getItem('user_keystones') || '0'),
-    totalKeystrokes: parseInt(localStorage.getItem('total_keystrokes') || '0'),
-    perfectSessions: parseInt(localStorage.getItem('perfect_sessions') || '0'),
-    challengeProgress: JSON.parse(localStorage.getItem('challenge_progress') || '{}'),
+    unlockedBadges: [],
+    streak: { current_streak: 0, longest_streak: 0, last_practice_date: null },
+    certifications: [],
+    keystones: 0,
+    totalKeystrokes: 0,
+    perfectSessions: 0,
+    challengeProgress: {},
+    isInitialized: false,
+
+    initialize: () => {
+        if (get().isInitialized) return;
+
+        try {
+            const unlockedBadges = JSON.parse(localStorage.getItem('unlocked_badges') || '[]');
+            const streak = JSON.parse(localStorage.getItem('streak_data') || '{"current_streak": 0, "longest_streak": 0, "last_practice_date": null}');
+            const certifications = JSON.parse(localStorage.getItem('user_certifications') || '[]');
+            const keystones = parseInt(localStorage.getItem('user_keystones') || '0');
+            const totalKeystrokes = parseInt(localStorage.getItem('total_keystrokes') || '0');
+            const perfectSessions = parseInt(localStorage.getItem('perfect_sessions') || '0');
+            const challengeProgress = JSON.parse(localStorage.getItem('challenge_progress') || '{}');
+
+            set({
+                unlockedBadges,
+                streak,
+                certifications,
+                keystones,
+                totalKeystrokes,
+                perfectSessions,
+                challengeProgress,
+                isInitialized: true
+            });
+        } catch (e) {
+            console.error("[AchievementStore] Hydration Failed", e);
+            set({ isInitialized: true });
+        }
+    },
 
     setAchievements: (data) => set((state) => {
         const newState = {

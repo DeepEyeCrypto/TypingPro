@@ -22,6 +22,7 @@
         "center": true,
         "transparent": false,
         "decorations": true,
+        "backgroundColor": "#ffffff",
         "titleBarStyle": "Visible",
         "devtools": true
       },
@@ -34,8 +35,9 @@
         "resizable": false,
         "fullscreen": false,
         "decorations": false,
-        "transparent": true,
+        "transparent": false,
         "alwaysOnTop": true,
+        "backgroundColor": "#ffffff",
         "skipTaskbar": true,
         "visible": false,
         "center": true,

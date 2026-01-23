@@ -4,6 +4,10 @@ import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ThemeProvider } from './context/ThemeContext'
+import { disableHardwareAccelOnMac } from './utils/hardwareAccelDisable'
+
+// ☢️ NUCLEAR OPTION: Initializing Global Mac GPU Killswitch
+disableHardwareAccelOnMac();
 
 const ErrorFallback = ({ message, stack }: { message: string, stack?: string }) => (
   <div style={{
@@ -53,6 +57,27 @@ async function init() {
 
   try {
     console.log("APP_STARTUP: Initializing...");
+
+    // Show lightweight loader immediately
+    root.render(
+      <div style={{
+        background: '#050505',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontFamily: 'system-ui'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚡</div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.6 }}>Loading TypingPro...</div>
+        </div>
+      </div>
+    );
+
+    // Small delay to let loader render and be visible
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     // Dynamically import App to catch evaluation errors
     const { default: App } = await import('./App');

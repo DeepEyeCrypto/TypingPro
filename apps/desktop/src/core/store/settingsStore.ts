@@ -19,18 +19,51 @@ interface SettingsState {
     setSoundEnabled: (enabled: boolean) => void,
     setSoundVolume: (volume: number) => void,
     setSoundProfile: (id: string) => void,
-    setBackgroundImage: (url: string) => void // [NEW]
+    setBackgroundImage: (url: string) => void,
+    isInitialized: boolean,
+    initialize: () => void
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
-    theme: (localStorage.getItem('pref_theme') as ThemeType) || 'nature',
-    fontSize: Number(localStorage.getItem('pref_font_size')) || 24,
-    fontFamily: localStorage.getItem('pref_font_family') || 'JetBrains Mono',
-    caretStyle: (localStorage.getItem('pref_caret') as CaretStyle) || 'line',
-    soundEnabled: localStorage.getItem('pref_sound') === 'true',
-    soundVolume: Number(localStorage.getItem('pref_sound_volume')) || 50,
-    activeSoundProfileId: localStorage.getItem('pref_sound_profile') || 'mechanical',
-    backgroundImage: localStorage.getItem('pref_bg_image') || '',
+    theme: 'vision',
+    fontSize: 24,
+    fontFamily: 'JetBrains Mono',
+    caretStyle: 'line',
+    soundEnabled: true,
+    soundVolume: 50,
+    activeSoundProfileId: 'mechanical',
+    backgroundImage: '',
+    isInitialized: false,
+
+    initialize: () => {
+        if (get().isInitialized) return;
+
+        try {
+            const theme = (localStorage.getItem('pref_theme') as ThemeType) || 'vision';
+            const fontSize = Number(localStorage.getItem('pref_font_size')) || 24;
+            const fontFamily = localStorage.getItem('pref_font_family') || 'JetBrains Mono';
+            const caretStyle = (localStorage.getItem('pref_caret') as CaretStyle) || 'line';
+            const soundEnabled = localStorage.getItem('pref_sound') !== 'false'; // Default to true
+            const soundVolume = Number(localStorage.getItem('pref_sound_volume')) || 50;
+            const activeSoundProfileId = localStorage.getItem('pref_sound_profile') || 'mechanical';
+            const backgroundImage = localStorage.getItem('pref_bg_image') || '';
+
+            set({
+                theme,
+                fontSize,
+                fontFamily,
+                caretStyle,
+                soundEnabled,
+                soundVolume,
+                activeSoundProfileId,
+                backgroundImage,
+                isInitialized: true
+            });
+        } catch (e) {
+            console.error("[SettingsStore] Hydration Failed", e);
+            set({ isInitialized: true });
+        }
+    },
 
     setTheme: (theme) => {
         localStorage.setItem('pref_theme', theme)

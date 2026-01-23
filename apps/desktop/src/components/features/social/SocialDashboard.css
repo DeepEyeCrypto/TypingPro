@@ -8,7 +8,7 @@
     color: #000;
     overflow-y: auto;
     background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
 }
 
 .social-dashboard::-webkit-scrollbar {
@@ -79,7 +79,7 @@
     display: flex;
     gap: 2.5rem;
     background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
     padding: 2.5rem;
     border-radius: 20px;
     border: 1px solid rgba(0, 0, 0, 0.08);

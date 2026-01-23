@@ -29,32 +29,64 @@ interface StatsState {
     bestReplays: Record<string, ReplayData>, // Best replay per lesson
     unlockedIds: string[],
     completedIds: string[],
+    isInitialized: boolean, // New initialization flag
     getStats: () => {
         bestWpm: number,
         wpm: number,
         accuracy: number,
         streak: number
     },
+    initialize: () => void, // New init function
     recordAttempt: (lessonId: string, wpm: number, accuracy: number, errors?: Record<string, number>, graphData?: { time: number, wpm: number, raw: number }[], replayData?: ReplayData) => void,
     loadStats: (stats: Record<string, LessonStats>, history?: SessionResult[], errors?: Record<string, number>, replays?: Record<string, ReplayData>, unlocked?: string[], completed?: string[]) => void,
     setProgress: (unlocked: string[], completed: string[]) => void
 }
 
-export const useStatsStore = create<StatsState>((set) => ({
-    lessonStats: JSON.parse(localStorage.getItem('typing_stats') || '{}'),
-    sessionHistory: JSON.parse(localStorage.getItem('typing_history') || '[]'),
-    characterErrors: JSON.parse(localStorage.getItem('typing_errors') || '{}'),
-    bestReplays: JSON.parse(localStorage.getItem('typing_replays') || '{}'),
-    unlockedIds: CURRICULUM.map(l => l.id), // UNLOCK_ALL: Always unlock everything by default
-    completedIds: JSON.parse(localStorage.getItem('completedIds') || '[]'),
+export const useStatsStore = create<StatsState>((set, get) => ({
+    lessonStats: {},
+    sessionHistory: [],
+    characterErrors: {},
+    bestReplays: {},
+    unlockedIds: CURRICULUM.map(l => l.id),
+    completedIds: [],
+    isInitialized: false,
+
+    initialize: () => {
+        if (get().isInitialized) return;
+
+        try {
+            console.log("[StatsStore] Initializing (Hydrating from localStorage)...");
+            const lessonStats = JSON.parse(localStorage.getItem('typing_stats') || '{}');
+            const sessionHistory = JSON.parse(localStorage.getItem('typing_history') || '[]');
+            const characterErrors = JSON.parse(localStorage.getItem('typing_errors') || '{}');
+            const bestReplays = JSON.parse(localStorage.getItem('typing_replays') || '{}');
+            const completedIds = JSON.parse(localStorage.getItem('completedIds') || '[]');
+
+            set({
+                lessonStats,
+                sessionHistory,
+                characterErrors,
+                bestReplays,
+                completedIds,
+                isInitialized: true
+            });
+            console.log("[StatsStore] Hydration Complete.");
+        } catch (e) {
+            console.error("[StatsStore] Hydration Failed", e);
+            set({ isInitialized: true }); // Still mark as init to avoid loops
+        }
+    },
     getStats: () => {
-        const historyStr = localStorage.getItem('typing_history');
-        const history = historyStr ? JSON.parse(historyStr) : [];
+        const history = get().sessionHistory;
         if (history.length === 0) return { bestWpm: 0, wpm: 0, accuracy: 100, streak: 0 };
 
-        const bestWpm = Math.max(...history.map((s: any) => s.wpm));
-        const avgWpm = Math.round(history.reduce((a: any, b: any) => a + b.wpm, 0) / history.length);
-        const avgAcc = Math.round(history.reduce((a: any, b: any) => a + b.accuracy, 0) / history.length);
+        const wpmValues = history.map(s => s.wpm);
+        const bestWpm = Math.max(...wpmValues);
+        const totalWpm = history.reduce((acc, s) => acc + s.wpm, 0);
+        const totalAcc = history.reduce((acc, s) => acc + s.accuracy, 0);
+
+        const avgWpm = Math.round(totalWpm / history.length);
+        const avgAcc = Math.round(totalAcc / history.length);
 
         return { bestWpm, wpm: avgWpm, accuracy: avgAcc, streak: 0 };
     },

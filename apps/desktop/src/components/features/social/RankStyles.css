@@ -90,7 +90,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
     animation: celebrateFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

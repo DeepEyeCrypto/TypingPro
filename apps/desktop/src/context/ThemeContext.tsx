@@ -14,15 +14,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const { theme, setTheme: setGlobalTheme } = useSettingsStore();
     const [mounted, setMounted] = useState(false);
 
-    // Initial sync of theme to document body
+    // Reactively sync theme to document body whenever it changes
     useEffect(() => {
         document.body.setAttribute('data-theme', theme);
         setMounted(true);
-    }, []);
+    }, [theme]);
 
     const setTheme = (newTheme: ThemeType) => {
         setGlobalTheme(newTheme);
-        document.body.setAttribute('data-theme', newTheme);
     };
 
     return (

@@ -94,7 +94,15 @@ const App: React.FC = () => {
   // Auth & Session Initialization
   useEffect(() => {
     const initSession = async () => {
-      // 1. Initialize Firebase auth listener
+      // Defer heavy initialization to let UI render first (optimized timing)
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 0. Initialize Stores (Deferred Hydration)
+      useStatsStore.getState().initialize();
+      useSettingsStore.getState().initialize();
+      useAchievementStore.getState().initialize();
+
+      // 1. Initialize Firebase auth listener (non-blocking)
       initializeAuthListener()
 
       // 2. Check persistence
