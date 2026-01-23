@@ -12,8 +12,8 @@ Summary of all hotfix-related documentation and deliverables.
 | [TYPINGPRO_DEBUGGING_GUIDE.md](./TYPINGPRO_DEBUGGING_GUIDE.md) | **Dev Support** - Guide for troubleshooting future issues. |
 | [GIT_COMMIT_GUIDE.md](./GIT_COMMIT_GUIDE.md) | **Release Support** - Git commands and commit策略. |
 | [FINAL_DEPLOYMENT_CHECKLIST.md](./FINAL_DEPLOYMENT_CHECKLIST.md) | **Quality Gate** - Final checks before production. |
-| [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) | *Pending* - Final report of work done. |
-| [WALKTHROUGH_SUMMARY.md](./WALKTHROUGH_SUMMARY.md) | *Pending* - Sequential walkthrough of implementation. |
+| [COMPLETION_REPORT.md](./COMPLETION_REPORT.md) | **Complete** - Final report of work done. |
+| [WALKTHROUGH_SUMMARY.md](./WALKTHROUGH_SUMMARY.md) | **Complete** - Sequential walkthrough of implementation. |
 
 ## 🔗 Quick Links
 
