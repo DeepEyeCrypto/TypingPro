@@ -466,7 +466,7 @@ body {
 
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-blur: 32px;
+  --glass-blur: 12px;
   --glass-radius: 48px;
   --glass-shadow:
     0 40px 100px rgba(0, 0, 0, 0.8),
@@ -507,14 +507,8 @@ body {
 }
 
 [data-theme='liquid'] body::before {
-  content: '';
-  inset: -20%;
-  position: fixed;
-  z-index: -1;
-  background-image: inherit;
-  background-size: cover;
-  animation: liquid-swirl 60s linear infinite;
-  filter: blur(20px);
+  display: none !important;
+  /* Performance fix: Removing extreme backdrop blur layer */
 }
 
 @keyframes liquid-swirl {

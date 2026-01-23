@@ -2,33 +2,26 @@ import { load } from '@tauri-apps/plugin-store';
 
 // Initialize the store
 // We use a lazy initialization pattern because load() is async
-let store: Awaited<ReturnType<typeof load>> | null = null;
+let store: any | null = null;
 
 const getStore = async () => {
     // @ts-ignore
     if (typeof window !== 'undefined' && !window.__TAURI__) {
-        // Return a mock store using localStorage for browser dev
         return {
-            set: async (key: string, value: any) => {
-                try {
-                    localStorage.setItem(key, JSON.stringify(value));
-                } catch (e) { console.error('LocalStorage set error', e) }
-            },
+            set: async (key: string, value: any) => { localStorage.setItem(key, JSON.stringify(value)); },
             get: async <T>(key: string): Promise<T | null> => {
-                try {
-                    const item = localStorage.getItem(key);
-                    return item ? JSON.parse(item) : null;
-                } catch (e) { return null; }
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : null;
             },
-            delete: async (key: string) => {
-                localStorage.removeItem(key);
-            },
-            save: async () => { } // No-op for localStorage
+            delete: async (key: string) => { localStorage.removeItem(key); },
+            save: async () => { }
         } as any;
     }
 
     if (!store) {
+        console.log('[StoreService] Loading settings.dat...');
         store = await load('settings.dat', { autoSave: true });
+        console.log('[StoreService] Store ready.');
     }
     return store;
 };

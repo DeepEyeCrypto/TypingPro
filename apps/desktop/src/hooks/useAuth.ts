@@ -158,11 +158,15 @@ export const useAuth = () => {
             }
 
             // 2. Listen for Deep Links (Production flow)
-            unlisten = await onDeepLinkOpenUrl(async (urls) => {
-                for (const urlStr of urls) {
-                    handleAuthCallback(urlStr);
-                }
-            });
+            try {
+                unlisten = await onDeepLinkOpenUrl(async (urls) => {
+                    for (const urlStr of urls) {
+                        handleAuthCallback(urlStr);
+                    }
+                });
+            } catch (err) {
+                console.error('Failed to initialize deep link listener:', err);
+            }
         };
 
         initAuth();

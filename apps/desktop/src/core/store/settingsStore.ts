@@ -24,7 +24,7 @@ interface SettingsState {
     initialize: () => void
 }
 
-export const useSettingsStore = create<SettingsState>((set) => ({
+export const useSettingsStore = create<SettingsState>((set, get) => ({
     theme: 'vision',
     fontSize: 24,
     fontFamily: 'JetBrains Mono',

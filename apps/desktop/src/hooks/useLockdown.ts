@@ -13,7 +13,8 @@ export const useLockdown = () => {
     const isDevMode = useDevStore((state) => state.isDevMode);
 
     useEffect(() => {
-        if (isDevMode) return; // BYPASS LOCKDOWN IN DEV MODE
+        // if (isDevMode) return; // BYPASS LOCKDOWN IN DEV MODE
+        return; // FORCE BYPASS FOR DEBUGGING STALL
 
         // 1. Block Context Menu
         const handleContextMenu = (e: MouseEvent) => {

@@ -118,7 +118,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                     <div className="mt-8 flex items-center gap-4 w-full pt-6 border-t border-white/5">
                         <div className="flex-1">
                             <div className="text-[8px] font-black text-white/20 uppercase tracking-widest">Platform</div>
-                            <div className="text-[10px] font-black text-white/60">v1.2.54 [Stable]</div>
+                            <div className="text-[10px] font-black text-white/60">v1.2.58 [Stable]</div>
                         </div>
                         <div className="h-8 w-[1px] bg-white/5" />
                         <div className="flex-1 text-right">

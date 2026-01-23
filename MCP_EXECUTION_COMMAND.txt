@@ -1,0 +1,13 @@
+# MCP Execution Command
+
+Use the following command to execute the autonomous fix protocol:
+
+```bash
+npx @typingpro/mcp-agent --protocol MCP_PROMPT_DE.md --project apps/desktop --auto-commit --verify
+```
+
+Or via direct prompt injection:
+
+```bash
+cat MCP_PROMPT_DE.md | mcp-cli --mode autonomous
+```

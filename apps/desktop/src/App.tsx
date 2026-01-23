@@ -94,31 +94,38 @@ const App: React.FC = () => {
   // Auth & Session Initialization
   useEffect(() => {
     const initSession = async () => {
-      // Defer heavy initialization to let UI render first (optimized timing)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // 0. Transition FAST to UI (non-blocking approach)
+      // We show the splash screen for a minimum duration but let the app start
+      setTimeout(() => setIsLoading(false), 800);
 
-      // 0. Initialize Stores (Deferred Hydration)
-      useStatsStore.getState().initialize();
-      useSettingsStore.getState().initialize();
-      useAchievementStore.getState().initialize();
+      // 1. Initialize Stores (Deferred Hydration) - Hardened with per-store catch
+      try { useStatsStore.getState().initialize(); } catch (e) { console.error("StatsStore Init Fail", e); }
+      try { useSettingsStore.getState().initialize(); } catch (e) { console.error("SettingsStore Init Fail", e); }
+      try { useAchievementStore.getState().initialize(); } catch (e) { console.error("AchievementStore Init Fail", e); }
 
-      // 1. Initialize Firebase auth listener (non-blocking)
+      // 2. Initialize Firebase auth listener (non-blocking)
+      console.log("[App] Initializing Auth Listener...");
       initializeAuthListener()
 
-      // 2. Check persistence
-      await checkSession()
+      // 3. Check persistence & validate session (Background)
+      try {
+        const hasSession = await checkSession();
+        console.log("[App] Session Check Result:", hasSession);
 
-      // 3. Validate session and refresh token if needed
-      if (useAuthStore.getState().user) {
-        await useAuthStore.getState().validateSession()
-        await syncService.pullFromCloud()
-      }
+        if (useAuthStore.getState().user) {
+          console.log("[App] Validating existing session...");
+          await useAuthStore.getState().validateSession()
+          await syncService.pullFromCloud()
+        }
+      } catch (e) { console.error("Session initialization fail", e); }
 
-      // Load weakness profile
-      const profile = await WeaknessAnalyzer.loadProfile()
-      setWeaknessProfile(profile)
+      // 4. Load weakness profile
+      try {
+        const profile = await WeaknessAnalyzer.loadProfile()
+        setWeaknessProfile(profile)
+      } catch (e) { console.error("Weakness profile fail", e); }
 
-      setTimeout(() => setIsLoading(false), 500)
+      console.log("[App] Background Startup Sequence Complete.");
     }
     initSession()
   }, [])

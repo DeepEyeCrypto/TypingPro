@@ -40,7 +40,7 @@ interface AchievementState {
     resetAchievements: () => void
 }
 
-export const useAchievementStore = create<AchievementState>((set) => ({
+export const useAchievementStore = create<AchievementState>((set, get) => ({
     unlockedBadges: [],
     streak: { current_streak: 0, longest_streak: 0, last_practice_date: null },
     certifications: [],
