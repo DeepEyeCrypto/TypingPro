@@ -202,6 +202,37 @@
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  THEME 9: EMERALD (V6.0 Apex – Deep Forest & Bio-Digital)                ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+[data-theme='emerald'] {
+  --bg-image: url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=2670&auto=format&fit=crop');
+  --bg-color: #020d0b;
+
+  --glass-bg: rgba(2, 20, 18, 0.7);
+  --glass-border: rgba(46, 97, 94, 0.3);
+  --glass-blur: 15px;
+  --glass-radius: 32px;
+  --glass-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(46, 97, 94, 0.15);
+  --glass-hover: rgba(46, 97, 94, 0.2);
+  --glass-active: rgba(46, 97, 94, 0.3);
+
+  --text-primary: #f0fdfa;
+  --text-secondary: #99f6e4;
+  --text-accent: #2dd4bf;
+  --accent-soft: rgba(45, 212, 191, 0.1);
+
+  --card-dark-bg: rgba(2, 20, 18, 0.9);
+  --card-dark-border: rgba(46, 97, 94, 0.2);
+
+  /* Specialized V6 Variables */
+  --emerald-primary: #224A47;
+  --emerald-accent: #2e615e;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════════╗
    ║  THEME 7: NEUMORPHISM (Soft 3D – Light & Tactile)                        ║
    ╚══════════════════════════════════════════════════════════════════════════╝ */
 

@@ -10,6 +10,9 @@ import { ThemePreviewCarousel } from '../../ThemePreviewCarousel';
 import { getRankForWPM, getNextRank, calculateProgress, getWPMToNextRank, getLevelInfo, RANK_REWARDS } from '../../../core/rankSystem';
 import { WeaknessProfile } from '../../../core/weaknessAnalyzer';
 import { Zap, Target, TrendingUp, BarChart3, Binary, ShieldAlert, ArrowRight, Award, Sparkles } from 'lucide-react';
+import { NeuralDecoder } from './NeuralDecoder';
+import { QuantumDashboard } from './QuantumDashboard';
+import { CognitiveRadioGrid } from './CognitiveRadioGrid';
 
 interface DashboardPageProps {
     username: string;
@@ -174,7 +177,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </div>
                 </motion.div>
 
-                {/* Certification Test Hero */}
+                {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   PHASE L: V6 CORE NEURAL & QUANTUM COMPONENTS
+                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+                <motion.div variants={itemVariants} className="col-span-1 md:col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <NeuralDecoder wpm={wpm} accuracy={accuracy} className="lg:col-span-1" />
+                    <QuantumDashboard className="lg:col-span-1" />
+                    <CognitiveRadioGrid wpm={wpm} accuracy={accuracy} className="lg:col-span-1" />
+                </motion.div>
+
+                {/* Certification Test Hero (Moved down or adjusted) */}
                 <motion.div variants={itemVariants}>
                     <GlassCard
                         title="Certification"
